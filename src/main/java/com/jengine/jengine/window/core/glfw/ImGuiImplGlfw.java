@@ -1,42 +1,11 @@
-package com.jengine.jengine;
+package com.jengine.jengine.window.core.glfw;
 
-import imgui.ImGui;
-import imgui.ImGuiIO;
-import imgui.ImGuiPlatformIO;
-import imgui.ImGuiViewport;
-import imgui.ImVec2;
-import imgui.callback.ImPlatformFuncViewport;
-import imgui.callback.ImPlatformFuncViewportFloat;
-import imgui.callback.ImPlatformFuncViewportImVec2;
-import imgui.callback.ImPlatformFuncViewportString;
-import imgui.callback.ImPlatformFuncViewportSuppBoolean;
-import imgui.callback.ImPlatformFuncViewportSuppImVec2;
-import imgui.callback.ImStrConsumer;
-import imgui.callback.ImStrSupplier;
-import imgui.flag.ImGuiBackendFlags;
-import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiKey;
-import imgui.flag.ImGuiMouseButton;
-import imgui.flag.ImGuiMouseCursor;
-import imgui.flag.ImGuiNavInput;
-import imgui.flag.ImGuiViewportFlags;
-import imgui.internal.ImGuiContext;
+import imgui.*;
+import imgui.callback.*;
+import imgui.flag.*;
 import imgui.lwjgl3.glfw.ImGuiImplGlfwNative;
-import jakarta.annotation.PostConstruct;
 import org.lwjgl.PointerBuffer;
-import org.lwjgl.glfw.GLFWCharCallback;
-import org.lwjgl.glfw.GLFWCursorEnterCallback;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMonitorCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
-import org.lwjgl.glfw.GLFWNativeWin32;
-import org.lwjgl.glfw.GLFWScrollCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.glfw.GLFWWindowFocusCallback;
-import org.lwjgl.glfw.Callbacks;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.lwjgl.glfw.*;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -51,11 +20,7 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  * It supports clipboard, gamepad, mouse and keyboard in the same way the original Dear ImGui code does. You can copy-paste this class in your codebase and
  * modify the rendering routine in the way you'd like.
  */
-@Component
-public class IMGUIExample {
-    @Autowired
-    private WindowRepository windowRepository;
-
+public class ImGuiImplGlfw {
     private static final String OS = System.getProperty("os.name", "generic").toLowerCase();
     protected static final boolean IS_WINDOWS = OS.contains("win");
     protected static final boolean IS_APPLE = OS.contains("mac") || OS.contains("darwin");
@@ -244,12 +209,18 @@ public class IMGUIExample {
         wantUpdateMonitors = true;
     }
 
-    private ImGuiContext context;
+    /**
+     * Method to do an initialization of the {@link ImGuiImplGlfw} state. It SHOULD be called before calling the {@link ImGuiImplGlfw#newFrame()} method.
+     * <p>
+     * Method takes two arguments, which should be a valid GLFW window pointer and a boolean indicating whether or not to install callbacks.
+     *
+     * @param windowId         pointer to the window
+     * @param installCallbacks should window callbacks be installed
+     * @return true if everything initialized
+     */
+    public boolean init(final long windowId, final boolean installCallbacks) {
+        this.windowPtr = windowId;
 
-    @PostConstruct
-    public boolean init() {
-        final long windowId = this.windowPtr = windowRepository.getWindow();
-        context = ImGui.createContext();
         detectGlfwVersionAndEnabledFeatures();
 
         final ImGuiIO io = ImGui.getIO();
@@ -312,15 +283,15 @@ public class IMGUIExample {
         mouseCursors[ImGuiMouseCursor.NotAllowed] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
         glfwSetErrorCallback(prevErrorCallback);
 
-//        if (installCallbacks) {
-        callbacksInstalled = true;
-        prevUserCallbackWindowFocus = glfwSetWindowFocusCallback(windowId, this::windowFocusCallback);
-        prevUserCallbackCursorEnter = glfwSetCursorEnterCallback(windowId, this::cursorEnterCallback);
-        prevUserCallbackMouseButton = glfwSetMouseButtonCallback(windowId, this::mouseButtonCallback);
-        prevUserCallbackScroll = glfwSetScrollCallback(windowId, this::scrollCallback);
-        prevUserCallbackKey = glfwSetKeyCallback(windowId, this::keyCallback);
-        prevUserCallbackChar = glfwSetCharCallback(windowId, this::charCallback);
-//        }
+        if (installCallbacks) {
+            callbacksInstalled = true;
+            prevUserCallbackWindowFocus = glfwSetWindowFocusCallback(windowId, this::windowFocusCallback);
+            prevUserCallbackCursorEnter = glfwSetCursorEnterCallback(windowId, this::cursorEnterCallback);
+            prevUserCallbackMouseButton = glfwSetMouseButtonCallback(windowId, this::mouseButtonCallback);
+            prevUserCallbackScroll = glfwSetScrollCallback(windowId, this::scrollCallback);
+            prevUserCallbackKey = glfwSetKeyCallback(windowId, this::keyCallback);
+            prevUserCallbackChar = glfwSetCharCallback(windowId, this::charCallback);
+        }
         // Update monitors the first time (note: monitor callback are broken in GLFW 3.2 and earlier, see github.com/glfw/glfw/issues/784)
         updateMonitors();
         prevUserCallbackMonitor = glfwSetMonitorCallback(this::monitorCallback);
@@ -369,6 +340,9 @@ public class IMGUIExample {
         updateGamepads();
     }
 
+    /**
+     * Method to restore {@link org.lwjgl.glfw.GLFW} to it's state prior to calling method {@link ImGuiImplGlfw#init(long, boolean)}.
+     */
     public void dispose() {
         shutdownPlatformInterface();
 
@@ -534,13 +508,13 @@ public class IMGUIExample {
     }
 
     private void mapAnalog(
-            final int navNo,
-            final int axisNo,
-            final float v0,
-            final float v1,
-            final FloatBuffer axis,
-            final int axisCount,
-            final ImGuiIO io
+        final int navNo,
+        final int axisNo,
+        final float v0,
+        final float v1,
+        final FloatBuffer axis,
+        final int axisCount,
+        final ImGuiIO io
     ) {
         float v = axisCount > axisNo ? axis.get(axisNo) : v0;
         v = (v - v0) / (v1 - v0);
@@ -670,13 +644,13 @@ public class IMGUIExample {
             glfwSetWindowPos(data.window, (int) vp.getPosX(), (int) vp.getPosY());
 
             // Install GLFW callbacks for secondary viewports
-            glfwSetMouseButtonCallback(data.window, IMGUIExample.this::mouseButtonCallback);
-            glfwSetScrollCallback(data.window, IMGUIExample.this::scrollCallback);
-            glfwSetKeyCallback(data.window, IMGUIExample.this::keyCallback);
-            glfwSetCharCallback(data.window, IMGUIExample.this::charCallback);
-            glfwSetWindowCloseCallback(data.window, IMGUIExample.this::windowCloseCallback);
-            glfwSetWindowPosCallback(data.window, IMGUIExample.this::windowPosCallback);
-            glfwSetWindowSizeCallback(data.window, IMGUIExample.this::windowSizeCallback);
+            glfwSetMouseButtonCallback(data.window, ImGuiImplGlfw.this::mouseButtonCallback);
+            glfwSetScrollCallback(data.window, ImGuiImplGlfw.this::scrollCallback);
+            glfwSetKeyCallback(data.window, ImGuiImplGlfw.this::keyCallback);
+            glfwSetCharCallback(data.window, ImGuiImplGlfw.this::charCallback);
+            glfwSetWindowCloseCallback(data.window, ImGuiImplGlfw.this::windowCloseCallback);
+            glfwSetWindowPosCallback(data.window, ImGuiImplGlfw.this::windowPosCallback);
+            glfwSetWindowSizeCallback(data.window, ImGuiImplGlfw.this::windowSizeCallback);
 
             glfwMakeContextCurrent(data.window);
             glfwSwapInterval(0);
