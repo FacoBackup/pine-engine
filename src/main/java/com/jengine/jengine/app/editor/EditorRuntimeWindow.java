@@ -3,15 +3,9 @@ package com.jengine.jengine.app.editor;
 import com.jengine.jengine.window.FloatState;
 import com.jengine.jengine.window.State;
 import com.jengine.jengine.window.StringState;
-import com.jengine.jengine.window.core.AbstractWindow;
-import com.jengine.jengine.window.core.Configuration;
 import com.jengine.jengine.window.core.Icons;
-import com.jengine.jengine.window.core.WindowRuntimeException;
-import imgui.*;
-import imgui.flag.ImGuiConfigFlags;
+import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
-import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImString;
 
 public class EditorRuntimeWindow extends RuntimeWindow {
     private final State<Integer> count = new State<>(0);

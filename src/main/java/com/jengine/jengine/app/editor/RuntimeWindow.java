@@ -2,13 +2,10 @@ package com.jengine.jengine.app.editor;
 
 import com.jengine.jengine.window.core.AbstractWindow;
 import com.jengine.jengine.window.core.Configuration;
-import com.jengine.jengine.window.core.Icons;
 import com.jengine.jengine.window.core.WindowRuntimeException;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImString;
 
 public abstract class RuntimeWindow extends AbstractWindow {
 
