@@ -1,7 +1,7 @@
 package com.jengine.jengine.app.engine.resource.mesh;
 
 import jakarta.annotation.Nullable;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -26,80 +26,80 @@ public class Mesh {
         this.vertexCount = indices.length;
         this.loaded = true;
 
-        vaoId = GL30.glGenVertexArrays();
-        GL30.glBindVertexArray(vaoId);
+        vaoId = GL46.glGenVertexArrays();
+        GL46.glBindVertexArray(vaoId);
 
-        vertexVboId = GL30.glGenBuffers();
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, vertexVboId);
+        vertexVboId = GL46.glGenBuffers();
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vertexVboId);
         FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(vertices.length);
         vertexBuffer.put(vertices).flip();
-        GL30.glBufferData(GL30.GL_ARRAY_BUFFER, vertexBuffer, GL30.GL_STATIC_DRAW);
-        GL30.glVertexAttribPointer(0, 3, GL30.GL_FLOAT, false, 0, 0);
-        GL30.glEnableVertexAttribArray(0);
+        GL46.glBufferData(GL46.GL_ARRAY_BUFFER, vertexBuffer, GL46.GL_STATIC_DRAW);
+        GL46.glVertexAttribPointer(0, 3, GL46.GL_FLOAT, false, 0, 0);
+        GL46.glEnableVertexAttribArray(0);
         MemoryUtil.memFree(vertexBuffer);
 
-        indexVboId = GL30.glGenBuffers();
-        GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, indexVboId);
+        indexVboId = GL46.glGenBuffers();
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, indexVboId);
         IntBuffer indexBuffer = MemoryUtil.memAllocInt(indices.length);
         indexBuffer.put(indices).flip();
-        GL30.glBufferData(GL30.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL30.GL_STATIC_DRAW);
+        GL46.glBufferData(GL46.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL46.GL_STATIC_DRAW);
         MemoryUtil.memFree(indexBuffer);
 
         if (uvs != null) {
-            uvVboId = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, uvVboId);
+            uvVboId = GL46.glGenBuffers();
+            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, uvVboId);
             FloatBuffer uvBuffer = MemoryUtil.memAllocFloat(uvs.length);
             uvBuffer.put(uvs).flip();
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, uvBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(1, 2, GL30.GL_FLOAT, false, 0, 0);
-            GL30.glEnableVertexAttribArray(1);
+            GL46.glBufferData(GL46.GL_ARRAY_BUFFER, uvBuffer, GL46.GL_STATIC_DRAW);
+            GL46.glVertexAttribPointer(1, 2, GL46.GL_FLOAT, false, 0, 0);
+            GL46.glEnableVertexAttribArray(1);
             MemoryUtil.memFree(uvBuffer);
         }
 
         if (normals != null) {
-            normalVboId = GL30.glGenBuffers();
-            GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, normalVboId);
+            normalVboId = GL46.glGenBuffers();
+            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, normalVboId);
             FloatBuffer normalBuffer = MemoryUtil.memAllocFloat(normals.length);
             normalBuffer.put(normals).flip();
-            GL30.glBufferData(GL30.GL_ARRAY_BUFFER, normalBuffer, GL30.GL_STATIC_DRAW);
-            GL30.glVertexAttribPointer(2, 3, GL30.GL_FLOAT, false, 0, 0);
-            GL30.glEnableVertexAttribArray(2);
+            GL46.glBufferData(GL46.GL_ARRAY_BUFFER, normalBuffer, GL46.GL_STATIC_DRAW);
+            GL46.glVertexAttribPointer(2, 3, GL46.GL_FLOAT, false, 0, 0);
+            GL46.glEnableVertexAttribArray(2);
             MemoryUtil.memFree(normalBuffer);
         }
 
-        GL30.glBindVertexArray(0);
+        GL46.glBindVertexArray(0);
     }
 
     public void bindResources() {
-        GL30.glBindVertexArray(vaoId);
+        GL46.glBindVertexArray(vaoId);
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, vertexVboId);
-        GL30.glEnableVertexAttribArray(0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vertexVboId);
+        GL46.glEnableVertexAttribArray(0);
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, uvVboId);
-        GL30.glEnableVertexAttribArray(1);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, uvVboId);
+        GL46.glEnableVertexAttribArray(1);
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, normalVboId);
-        GL30.glEnableVertexAttribArray(2);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, normalVboId);
+        GL46.glEnableVertexAttribArray(2);
 
-        GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, indexVboId);
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, indexVboId);
     }
 
     public void unbindResources() {
-        GL30.glBindBuffer(GL30.GL_ELEMENT_ARRAY_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        GL30.glDisableVertexAttribArray(0);
-        GL30.glDisableVertexAttribArray(1);
-        GL30.glDisableVertexAttribArray(2);
+        GL46.glDisableVertexAttribArray(0);
+        GL46.glDisableVertexAttribArray(1);
+        GL46.glDisableVertexAttribArray(2);
 
-        GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
+        GL46.glBindVertexArray(0);
     }
 
     public void draw() {
         bindResources();
-        GL30.glDrawElements(GL30.GL_TRIANGLES, vertexCount, GL30.GL_UNSIGNED_INT, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_TRIANGLES, vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(0);
     }
 
     /**
@@ -107,28 +107,28 @@ public class Mesh {
      */
     public void drawLineLoop() {
         bindResources();
-        GL30.glDrawElements(GL30.GL_LINE_LOOP, vertexCount, GL30.GL_UNSIGNED_INT, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_LINE_LOOP, vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(0);
     }
 
 
     public void drawTriangleStrip() {
         bindResources();
-        GL30.glDrawElements(GL30.GL_TRIANGLE_STRIP, vertexCount, GL30.GL_UNSIGNED_INT, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_TRIANGLE_STRIP, vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(0);
     }
 
     public void drawTriangleFan() {
         bindResources();
-        GL30.glDrawElements(GL30.GL_TRIANGLE_FAN, vertexCount, GL30.GL_UNSIGNED_INT, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_TRIANGLE_FAN, vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(0);
     }
 
 
     public void drawLines() {
         bindResources();
-        GL30.glDrawElements(GL30.GL_LINES, vertexCount, GL30.GL_UNSIGNED_INT, 0);
-        GL30.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_LINES, vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(0);
     }
 
     public String getId() {
@@ -151,10 +151,3 @@ public class Mesh {
         return loaded;
     }
 }
-
-
-
-
-
-
-

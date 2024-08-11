@@ -5,14 +5,9 @@ import com.jengine.jengine.app.engine.resource.AbstractShader;
 import com.jengine.jengine.app.engine.resource.IShader;
 
 
-public class VisibilityShader extends AbstractShader implements IShader {
+public class DirectShadowsShader extends AbstractShader implements IShader {
     public void compile() throws ResourceRuntimeException {
-        compile("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag");
+        compile("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag");
     }
 }
-
-
-
-
-
 
