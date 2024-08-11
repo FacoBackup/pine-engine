@@ -1,5 +1,6 @@
 package com.jengine.jengine.window.core;
 
+import com.jengine.jengine.IResource;
 import com.jengine.jengine.Loggable;
 import com.jengine.jengine.window.core.gl3.ImGuiImplGl3;
 import com.jengine.jengine.window.core.glfw.ImGuiImplGlfw;
@@ -15,7 +16,7 @@ import java.io.InputStream;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
-public abstract class AbstractWindow implements Loggable {
+public abstract class AbstractWindow implements IResource {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
 
@@ -238,18 +239,4 @@ public abstract class AbstractWindow implements Loggable {
      * Method called once, after application run loop.
      */
     public abstract void postRun();
-
-    protected byte[] loadFromResources(String name) throws WindowRuntimeException {
-        try {
-            ClassLoader classLoader = AbstractWindow.class.getClassLoader();
-            try (InputStream inputStream = classLoader.getResourceAsStream(name)) {
-                if (inputStream != null) {
-                    return inputStream.readAllBytes();
-                }
-            }
-        } catch (Exception e) {
-            throw WindowRuntimeException.rethrow(e);
-        }
-        throw new WindowRuntimeException("No resource found for " + name);
-    }
 }

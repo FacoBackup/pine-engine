@@ -2,14 +2,12 @@ package com.jengine.jengine.app.engine.resource;
 
 import org.lwjgl.opengl.GL46;
 
-import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class UBO {
-    static class UBOItem {
+    public static class UBOItem {
         int offset;
         int dataSize;
         int chunkSize;
@@ -21,7 +19,7 @@ public class UBO {
         }
     }
 
-    static class UBOData {
+    public static class UBOData {
         String name;
         String type;
         Integer offset;
@@ -39,33 +37,24 @@ public class UBO {
         }
     }
 
-    private List<UBOItem> items = new ArrayList<>();
-    private List<String> keys = new ArrayList<>();
-    private Buffer buffer;
-    private String blockName;
-    private int blockPoint;
+    private final List<UBOItem> items = new ArrayList<>();
+    private final List<String> keys = new ArrayList<>();
+    private final int buffer;
+    private final String blockName;
+    private final int blockPoint;
 
     private static int blockPointIncrement = 0;
 
     private static int[] getGlslSizes(String type) {
-        switch (type) {
-            case "float":
-            case "int":
-            case "bool":
-                return new int[]{4, 4};
-            case "mat4":
-                return new int[]{64, 64};
-            case "mat3":
-                return new int[]{48, 48};
-            case "vec2":
-                return new int[]{8, 8};
-            case "vec3":
-                return new int[]{16, 12};
-            case "vec4":
-                return new int[]{16, 16};
-            default:
-                return new int[]{0, 0};
-        }
+        return switch (type) {
+            case "float", "int", "bool" -> new int[]{4, 4};
+            case "mat4" -> new int[]{64, 64};
+            case "mat3" -> new int[]{48, 48};
+            case "vec2" -> new int[]{8, 8};
+            case "vec3" -> new int[]{16, 12};
+            case "vec4" -> new int[]{16, 16};
+            default -> new int[]{0, 0};
+        };
     }
 
     public UBO(String blockName, List<UBOData> dataArray) {
@@ -80,7 +69,7 @@ public class UBO {
         this.blockPoint = blockPointIncrement++;
         buffer = GL46.glCreateBuffers();
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, buffer);
-        GL46.glBufferData(GL46.GL_UNIFORM_BUFFER, bufferSize, (Buffer) null, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBufferData(GL46.GL_UNIFORM_BUFFER, bufferSize, GL46.GL_DYNAMIC_DRAW);
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
         GL46.glBindBufferBase(GL46.GL_UNIFORM_BUFFER, this.blockPoint, buffer);
     }
@@ -101,14 +90,14 @@ public class UBO {
     }
 
 
-    public void updateData(String name, Buffer data) {
+    public void updateData(String name, ByteBuffer data) {
         UBOItem item = items.get(keys.indexOf(name));
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, buffer);
         GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, item.offset, data);
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
     }
 
-    public void updateBuffer(Buffer data) {
+    public void updateBuffer(ByteBuffer data) {
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, buffer);
         GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, 0, data);
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
