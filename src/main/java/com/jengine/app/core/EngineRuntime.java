@@ -1,9 +1,9 @@
 package com.jengine.app.core;
 
 import com.jengine.app.ResourceRuntimeException;
-import com.jengine.app.core.resource.MeshRepository;
-import com.jengine.app.core.resource.ShaderRepository;
-import com.jengine.app.core.resource.WorldRepository;
+import com.jengine.app.core.repository.MeshRepository;
+import com.jengine.app.core.repository.ShaderRepository;
+import com.jengine.app.core.repository.WorldRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
