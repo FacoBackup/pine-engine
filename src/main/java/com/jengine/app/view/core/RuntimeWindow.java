@@ -1,45 +1,39 @@
 package com.jengine.app.view.core;
 
 import com.jengine.app.ResourceRuntimeException;
-import com.jengine.app.view.component.AbstractUI;
+import com.jengine.app.view.component.View;
+import com.jengine.app.view.component.panel.AbstractPanel;
+import com.jengine.app.view.component.view.AbstractView;
 import com.jengine.app.view.core.window.AbstractWindow;
 import com.jengine.app.view.core.window.WindowConfiguration;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
-import imgui.flag.ImGuiWindowFlags;
 
 public abstract class RuntimeWindow extends AbstractWindow {
 
     protected ImFont roboto;
     protected ImFont material;
-    private final String windowTitle;
-    protected AbstractUI<?> root;
+    private AbstractPanel root;
 
     protected RuntimeWindow(String windowTitle) {
         super();
-        this.windowTitle = windowTitle;
     }
 
-    protected abstract AbstractUI<?> setupUI();
+    protected abstract AbstractPanel setupUI();
 
     @Override
-    public void configure(final WindowConfiguration config) {
-        config.setTitle(windowTitle);
-    }
-
-    @Override
-    public void preRun() {
+    public void preStart() {
         root = setupUI();
     }
 
     @Override
-    public void postRun() {
+    public void postStart() {
         root = null;
     }
 
     @Override
-    protected void initialize(final WindowConfiguration config) {
-        super.initialize(config);
+    public void onInitialize() {
+        super.onInitialize();
 
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
@@ -67,15 +61,31 @@ public abstract class RuntimeWindow extends AbstractWindow {
     }
 
     @Override
-    public void process() {
+    public void render(long index) {
         if (root != null) {
             ImGui.pushFont(roboto);
             ImGui.pushFont(material);
 
-            root.render();
+            root.render(index);
 
             ImGui.popFont();
             ImGui.popFont();
         }
+    }
+
+
+    @Override
+    public boolean isVisible() {
+        return true;
+    }
+
+    @Override
+    public String getId() {
+        return null;
+    }
+
+    @Override
+    public View getElementById(String id) {
+        return null;
     }
 }

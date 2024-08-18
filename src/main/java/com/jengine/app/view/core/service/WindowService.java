@@ -27,17 +27,16 @@ public class WindowService {
 
     public void start(final AbstractWindow app) {
         initialize(app);
-        app.preRun();
+        app.preStart();
         while (!GLFW.glfwWindowShouldClose(app.getHandle()) && !shouldStop) {
             app.runFrame();
         }
-        app.postRun();
+        app.postStart();
         app.dispose();
     }
 
     private void initialize(final AbstractWindow app) {
-        final WindowConfiguration config = new WindowConfiguration(app.getWindowName(), app.getWindowWidth(), app.getWindowHeight(), app.isFullScreen());
-        app.configure(config);
-        app.init(config);
+        app.setConfig(new WindowConfiguration(app.getWindowName(), app.getWindowWidth(), app.getWindowHeight(), app.isFullScreen()));
+        app.onInitialize();
     }
 }

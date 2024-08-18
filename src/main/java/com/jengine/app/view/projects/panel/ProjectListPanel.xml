@@ -1,0 +1,17 @@
+<block title="Projects">
+    <list>
+        <input label="Edit"/>
+        <button>
+            Edit
+        </button>
+        <button>
+            Remove
+        </button>
+        <button>
+            Open
+        </button>
+    </list>
+    <button>
+        New project
+    </button>
+</block>

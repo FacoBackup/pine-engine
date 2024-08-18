@@ -1,15 +1,12 @@
 package com.jengine.app.view.projects;
 
-import com.jengine.app.view.component.AbstractUI;
-import com.jengine.app.view.component.ButtonUI;
-import com.jengine.app.view.component.ContainerUI;
-import com.jengine.app.view.component.ListUI;
+import com.jengine.app.view.component.view.AbstractView;
+import com.jengine.app.view.component.view.ButtonView;
+import com.jengine.app.view.component.view.BlockView;
+import com.jengine.app.view.component.view.RepeatingView;
 import com.jengine.app.view.core.RuntimeWindow;
 import com.jengine.app.view.core.state.ConstStringState;
-import com.jengine.app.view.core.state.FloatState;
-import com.jengine.app.view.core.state.State;
 import com.jengine.app.view.core.state.StringState;
-import com.jengine.app.view.core.window.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
 
@@ -24,9 +21,9 @@ public class ProjectsWindow extends RuntimeWindow {
     }
 
     @Override
-    public AbstractUI<?> setupUI() {
-        return new ContainerUI("Projects", false,
-                new ListUI<>(rows) {
+    public AbstractView<?> setupUI() {
+        return new BlockView("Projects", false,
+                new RepeatingView<>(rows) {
                     @Override
                     public void renderRow(ProjectDTO row, int i) {
                         StringState nameState = row.getName();
@@ -60,7 +57,7 @@ public class ProjectsWindow extends RuntimeWindow {
                         }
                     }
                 },
-                new ButtonUI(ConstStringState.of("New project")) {
+                new ButtonView(ConstStringState.of("New project")) {
                     @Override
                     public void onClick() {
                         rows.add(new ProjectDTO());

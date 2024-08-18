@@ -9,6 +9,10 @@ public class WindowRuntimeException extends Exception {
         super(e);
     }
 
+    public WindowRuntimeException(String msg, Exception e) {
+        super(msg, e);
+    }
+
     public static WindowRuntimeException rethrow(Exception e) {
         return new WindowRuntimeException(e);
     }

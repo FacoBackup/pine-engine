@@ -1,11 +1,10 @@
 package com.jengine.app.view.editor;
 
-import com.jengine.app.view.component.AbstractUI;
-import com.jengine.app.view.component.ContainerUI;
+import com.jengine.app.view.component.View;
+import com.jengine.app.view.component.panel.AbstractPanel;
+import com.jengine.app.view.component.view.AbstractView;
+import com.jengine.app.view.component.view.BlockView;
 import com.jengine.app.view.core.RuntimeWindow;
-import com.jengine.app.view.core.state.FloatState;
-import com.jengine.app.view.core.state.State;
-import com.jengine.app.view.core.state.StringState;
 
 
 public class WorldEditorWindow extends RuntimeWindow {
@@ -14,8 +13,8 @@ public class WorldEditorWindow extends RuntimeWindow {
     }
 
     @Override
-    protected AbstractUI<?> setupUI() {
-        return new ContainerUI("E", true);
+    protected AbstractPanel setupUI() {
+        return null;
     }
 
     //    @Override
