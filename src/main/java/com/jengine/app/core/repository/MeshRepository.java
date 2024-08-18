@@ -31,7 +31,6 @@ public class MeshRepository implements IResource {
         public RawStaticMesh CUBE;
         public RawStaticMesh CYLINDER;
         public RawStaticMesh PLANE;
-        public RawStaticMesh CUBE_LINEAR;
     }
 
     public void loadAll() throws ResourceRuntimeException {
@@ -41,7 +40,6 @@ public class MeshRepository implements IResource {
         staticMeshes.put(StaticMesh.CUBE, new Mesh(StaticMesh.CUBE.name(), rawStaticMeshes.CUBE.vertices, rawStaticMeshes.CUBE.indices, rawStaticMeshes.CUBE.normals, rawStaticMeshes.CUBE.uvs));
         staticMeshes.put(StaticMesh.CYLINDER, new Mesh(StaticMesh.CYLINDER.name(), rawStaticMeshes.CYLINDER.vertices, rawStaticMeshes.CYLINDER.indices, rawStaticMeshes.CYLINDER.normals, rawStaticMeshes.CYLINDER.uvs));
         staticMeshes.put(StaticMesh.PLANE, new Mesh(StaticMesh.PLANE.name(), rawStaticMeshes.PLANE.vertices, rawStaticMeshes.PLANE.indices, rawStaticMeshes.PLANE.normals, rawStaticMeshes.PLANE.uvs));
-        staticMeshes.put(StaticMesh.CUBE_LINEAR, new Mesh(StaticMesh.CUBE_LINEAR.name(), rawStaticMeshes.CUBE_LINEAR.vertices, rawStaticMeshes.CUBE_LINEAR.indices, rawStaticMeshes.CUBE_LINEAR.normals, rawStaticMeshes.CUBE_LINEAR.uvs));
     }
 
     Mesh addMesh(float[] vertices, int[] indices, @Nullable float[] normals, @Nullable float[] uvs) {

@@ -14,7 +14,7 @@ public class EditorRuntimeWindow extends RuntimeWindow {
     private final FloatState flt = new FloatState(1);
 
     public EditorRuntimeWindow() {
-        super( "World Editor");
+        super("World Editor");
     }
 
     @Override
@@ -22,7 +22,7 @@ public class EditorRuntimeWindow extends RuntimeWindow {
         ImGui.text("OS: [" + System.getProperty("os.name") + "] Arch: [" + System.getProperty("os.arch") + "]");
         ImGui.text("Hello, World! ");
         if (ImGui.button(Icons.SAVE + " Save")) {
-            count.setState(count.getState()+1);
+            count.setState(count.getState() + 1);
         }
         ImGui.sameLine();
         ImGui.text(String.valueOf(count));
@@ -33,4 +33,20 @@ public class EditorRuntimeWindow extends RuntimeWindow {
         ImGui.text("Extra");
     }
 
+
+    public int getWindowWidth() {
+        return 960;
+    }
+
+    public String getWindowName() {
+        return "World Editor";
+    }
+
+    public int getWindowHeight() {
+        return 540;
+    }
+
+    public boolean isFullScreen() {
+        return false;
+    }
 }

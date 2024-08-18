@@ -23,11 +23,11 @@ public abstract class AbstractWindow implements IResource {
     protected long handle;
     protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
 
-    public void init(final Configuration config) {
+    public void init(final WindowConfiguration config) {
         initWindow(config);
         initialize(config);
         try {
-             initFonts();
+            initFonts();
         } catch (Exception e) {
             getLogger().warn(e.getMessage(), e);
         }
@@ -52,7 +52,7 @@ public abstract class AbstractWindow implements IResource {
      *
      * @param config configuration object with basic window information
      */
-    protected void initWindow(final Configuration config) {
+    protected void initWindow(final WindowConfiguration config) {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!GLFW.glfwInit()) {
@@ -120,23 +120,14 @@ public abstract class AbstractWindow implements IResource {
      *
      * @param config configuration object with basic window information
      */
-    protected void initialize(final Configuration config) {
+    protected void initialize(final WindowConfiguration config) {
         ImGui.createContext();
-    }
-
-    /**
-     * Main application loop.
-     */
-    public void run() {
-        while (!GLFW.glfwWindowShouldClose(handle)) {
-            runFrame();
-        }
     }
 
     /**
      * Method used to run the next frame.
      */
-    protected void runFrame() {
+    public void runFrame() {
         startFrame();
         process();
         endFrame();
@@ -227,7 +218,7 @@ public abstract class AbstractWindow implements IResource {
      *
      * @param config configuration object with basic window information
      */
-    public abstract void configure(final Configuration config);
+    public abstract void configure(final WindowConfiguration config);
 
     /**
      * Method called once, before application run loop.
@@ -238,4 +229,12 @@ public abstract class AbstractWindow implements IResource {
      * Method called once, after application run loop.
      */
     public abstract void postRun();
+
+    public abstract int getWindowWidth();
+
+    public abstract String getWindowName();
+
+    public abstract int getWindowHeight();
+
+    public abstract boolean isFullScreen();
 }

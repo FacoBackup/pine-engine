@@ -1,8 +1,13 @@
 package com.jengine.app.core.components.system;
 
+import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
+import org.springframework.stereotype.Component;
 
-public class PhysicsSystem extends IteratingSystem {    @Override
+@Component
+@All
+public class PhysicsSystem extends IteratingSystem {
+    @Override
     protected void process(int id) {
     }
 }

@@ -2,7 +2,7 @@ package com.jengine.app.view.core;
 
 import com.jengine.app.ResourceRuntimeException;
 import com.jengine.app.view.core.window.AbstractWindow;
-import com.jengine.app.view.core.window.Configuration;
+import com.jengine.app.view.core.window.WindowConfiguration;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiWindowFlags;
@@ -19,7 +19,7 @@ public abstract class RuntimeWindow extends AbstractWindow {
     }
 
     @Override
-    public void configure(final Configuration config) {
+    public void configure(final WindowConfiguration config) {
         config.setTitle(windowTitle);
     }
 
@@ -32,7 +32,7 @@ public abstract class RuntimeWindow extends AbstractWindow {
     }
 
     @Override
-    protected void initialize(final Configuration config) {
+    protected void initialize(final WindowConfiguration config) {
         super.initialize(config);
 
         final ImGuiIO io = ImGui.getIO();

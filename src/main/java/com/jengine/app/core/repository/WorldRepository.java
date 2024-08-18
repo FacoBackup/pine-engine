@@ -9,10 +9,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jengine.app.core.components.component.AbstractComponent;
 import com.jengine.app.core.components.system.*;
-import com.jengine.app.core.service.serialization.SerializableRepository;
+import com.jengine.app.core.components.serialization.SerializableRepository;
+import com.jengine.app.core.components.serialization.SerializableResource;
 import jakarta.annotation.PostConstruct;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -26,97 +28,37 @@ import java.util.stream.Collectors;
 public class WorldRepository extends SerializableRepository {
 
     private static final String ENTITY_KEY = "entity";
-
-    @Autowired
-    private PreLoopSystem preLoopSystem;
-
-    @Autowired
-    private GarbageCollectorSystem garbageCollectorSystem;
-
-    @Autowired
-    private ScriptExecutorSystem scriptExecutorSystem;
-
-    @Autowired
-    private DirectionalShadowSystem directionalShadowSystem;
-
-    @Autowired
-    private OmniShadowSystem omniShadowSystem;
-
-    @Autowired
-    private VisibilityRendererSystem visibilityRendererSystem;
-
-    @Autowired
-    private AmbientOcclusionSystem ambientOcclusionSystem;
-
-    @Autowired
-    private PreRendererSystem preRendererSystem;
-
-    @Autowired
-    private AtmosphereRendererSystem atmosphereRendererSystem;
-
-    @Autowired
-    private TerrainRendererSystem terrainRendererSystem;
-
-    @Autowired
-    private OpaqueRendererSystem opaqueRendererSystem;
-
-    @Autowired
-    private DecalRendererSystem decalRendererSystem;
-
-    @Autowired
-    private SpriteRenderer spriteRenderer;
-
-    @Autowired
-    private PostRendererSystem postRendererSystem;
-
-    @Autowired
-    private TransparencyRendererSystem transparencyRendererSystem;
-
-    @Autowired
-    private GlobalIlluminationSystem globalIlluminationSystem;
-
-    @Autowired
-    private BokehDOFSystem bokehDOFSystem;
-
-    @Autowired
-    private MotionBlurSystem motionBlurSystem;
-
-    @Autowired
-    private BloomSystem bloomSystem;
-
-    @Autowired
-    private PostProcessingSystem postProcessingSystem;
-
-    @Autowired
-    private CompositionSystem compositionSystem;
-
+    private static final String COMPONENTS_KEY = "components";
     private final WorldSerializationManager manager = new WorldSerializationManager();
     private World world;
+
+    @Autowired
+    private ApplicationContext context;
 
     @PostConstruct
     public void init() {
         world = new World(new WorldConfigurationBuilder()
-                .with(preLoopSystem)
-                .with(garbageCollectorSystem)
-                .with(scriptExecutorSystem)
-                .with(directionalShadowSystem)
-                .with(omniShadowSystem)
-                .with(visibilityRendererSystem)
-                .with(ambientOcclusionSystem)
-                .with(preRendererSystem)
-                .with(atmosphereRendererSystem)
-                .with(terrainRendererSystem)
-                .with(opaqueRendererSystem)
-                .with(decalRendererSystem)
-                .with(spriteRenderer)
-                .with(postRendererSystem)
-                .with(transparencyRendererSystem)
-                .with(globalIlluminationSystem)
-                .with(bokehDOFSystem)
-                .with(motionBlurSystem)
-                .with(bloomSystem)
-                .with(postProcessingSystem)
-                .with(compositionSystem)
+                .with(context.getBean(PreLoopSystem.class))
+                .with(context.getBean(GarbageCollectorSystem.class))
+                .with(context.getBean(ScriptExecutorSystem.class))
+                .with(context.getBean(DirectionalShadowSystem.class))
+                .with(context.getBean(OmniShadowSystem.class))
+                .with(context.getBean(VisibilityRendererSystem.class))
+                .with(context.getBean(AmbientOcclusionSystem.class))
+                .with(context.getBean(PreRendererSystem.class))
+                .with(context.getBean(AtmosphereRendererSystem.class))
+                .with(context.getBean(TerrainRendererSystem.class))
+                .with(context.getBean(OpaqueRendererSystem.class))
+                .with(context.getBean(DecalRendererSystem.class))
+                .with(context.getBean(SpriteRenderer.class))
+                .with(context.getBean(PostRendererSystem.class))
+                .with(context.getBean(TransparencyRendererSystem.class))
+                .with(context.getBean(GlobalIlluminationSystem.class))
+                .with(context.getBean(BokehDOFSystem.class))
+                .with(context.getBean(MotionBlurSystem.class))
+                .with(context.getBean(BloomSystem.class))
+                .with(context.getBean(PostProcessingSystem.class))
+                .with(context.getBean(CompositionSystem.class))
                 .build()
                 .setSystem(manager));
         manager.setSerializer(new JsonArtemisSerializer(world));
@@ -126,43 +68,60 @@ public class WorldRepository extends SerializableRepository {
         return world;
     }
 
+
+    @Override
+    protected void parseInternal(JsonElement data) {
+        JsonArray entities = data.getAsJsonArray();
+        for (JsonElement entity : entities) {
+            try {
+                JsonObject obj = entity.getAsJsonObject();
+                int entityId = world.create();
+                JsonArray componentsJson = obj.get(COMPONENTS_KEY).getAsJsonArray();
+                for (JsonElement component : componentsJson) {
+                    JsonObject objComponent = component.getAsJsonObject();
+                    var componentEntity = (SerializableResource) world.edit(entityId).create((Class<? extends Component>) Class.forName(objComponent.get(CLASS_KEY).getAsString()));
+                    componentEntity.parse(objComponent);
+                }
+            } catch (Exception ex) {
+                getLogger().error("Error while parsing entity", ex);
+            }
+        }
+        world.process();
+    }
+
     @Override
     public JsonElement serializeData() {
         final List<ComponentMapper<? extends Component>> components = new ArrayList<>();
-        final Set<Class<? extends AbstractComponent>> classes = new HashSet<>();
-        collectComponents(world, classes, components);
+        final Reflections reflections = new Reflections(AbstractComponent.class.getPackageName());
+        final Set<Class<? extends AbstractComponent>> classes = new HashSet<>(reflections.getSubTypesOf(AbstractComponent.class));
+        classes.forEach(c -> {
+            components.add(world.getMapper(c));
+        });
 
         final JsonArray instances = new JsonArray();
         IntBag entities = world.getAspectSubscriptionManager()
-                .get(Aspect.all(classes.stream().map(c -> (Class<? extends Component>) c).collect(Collectors.toSet())))
+                .get(Aspect.one(classes.stream().map(c -> (Class<? extends Component>) c).collect(Collectors.toSet())))
                 .getEntities();
 
         int[] entityIds = entities.getData();
         for (int i = 0; i < entities.size(); i++) {
-            serializeEntity(instances, world.getEntity(entityIds[i]), components);
+            instances.add(serializeEntity(world.getEntity(entityIds[i]), components));
         }
         return instances;
     }
 
-    private static void collectComponents(World world, Set<Class<? extends AbstractComponent>> classes, List<ComponentMapper<? extends Component>> components) {
-        final Reflections reflections = new Reflections(AbstractComponent.class.getPackageName());
-        classes.addAll(reflections.getSubTypesOf(AbstractComponent.class));
-        classes.forEach(c -> {
-            components.add(world.getMapper(c));
-        });
-    }
-
-    private static void serializeEntity(JsonArray instances, Entity entity, List<ComponentMapper<? extends Component>> components) {
+    private static JsonElement serializeEntity(Entity entity, List<ComponentMapper<? extends Component>> components) {
+        JsonObject json = new JsonObject();
+        json.addProperty(ENTITY_KEY, entity.getId());
+        JsonArray entityComponents = new JsonArray();
         for (var component : components) {
             var instance = (AbstractComponent) component.get(entity);
-            JsonObject serialized = instance.serialize();
-            serialized.addProperty(ENTITY_KEY, entity.getId());
-            instances.add(serialized);
+            if(instance != null) {
+                JsonObject serialized = instance.serialize();
+                entityComponents.add(serialized);
+            }
         }
-    }
-
-    @Override
-    protected void parseInternal(JsonObject data) {
-        // TODO
+        json.add(COMPONENTS_KEY, entityComponents);
+        return json;
     }
 }

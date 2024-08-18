@@ -5,6 +5,5 @@ public enum StaticMesh {
     SPHERE,
     CUBE,
     CYLINDER,
-    PLANE,
-    CUBE_LINEAR;
+    PLANE;
 }

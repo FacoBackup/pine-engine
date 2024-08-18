@@ -1,25 +1,17 @@
 package com.jengine.app.view.core.window;
 
-/**
- * Data class to provide basic information about the window. Like, the title name etc.
- */
-public class Configuration {
-    /**
-     * Application title.
-     */
-    private String title = "ImGui Java Application";
-    /**
-     * Application window width.
-     */
+public class WindowConfiguration {
+    private String title;
     private int width = 1280;
-    /**
-     * Application window height.
-     */
     private int height = 768;
-    /**
-     * When true, application will be maximized by default.
-     */
     private boolean fullScreen = false;
+
+    public WindowConfiguration(String title, int width, int height, boolean fullScreen) {
+        this.title = title;
+        this.width = width;
+        this.height = height;
+        this.fullScreen = fullScreen;
+    }
 
     public String getTitle() {
         return title;

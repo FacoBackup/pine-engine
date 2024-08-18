@@ -21,8 +21,7 @@ public class EngineRuntime {
     @Autowired
     private MeshRepository meshes;
 
-    @PostConstruct
-    private void init() throws ResourceRuntimeException {
+    public void init() throws ResourceRuntimeException {
         shaders.compileAll();
         meshes.loadAll();
     }

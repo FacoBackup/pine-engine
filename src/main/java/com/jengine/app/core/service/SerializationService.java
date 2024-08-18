@@ -1,9 +1,10 @@
 package com.jengine.app.core.service;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.jengine.app.core.service.serialization.SerializableRepository;
+import com.jengine.app.core.components.serialization.SerializableRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,9 @@ public class SerializationService {
         return serializedRepositories.toString();
     }
 
-    public void parseAll(JsonArray serializedRepositories){
-        for(JsonElement repoDump : serializedRepositories){
+    public void parseAll(String serialized){
+        JsonArray repos = new Gson().fromJson(serialized, JsonArray.class);
+        for(JsonElement repoDump : repos){
             JsonObject dump = repoDump.getAsJsonObject();
             for(var repo : repositories){
                 if(repo.isCompatible(dump)){
