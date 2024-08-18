@@ -146,6 +146,32 @@
             <version>1.10.8</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.onedaybeard.artemis</groupId>
+            <artifactId>artemis-odb-serializer</artifactId>
+            <version>2.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.onedaybeard.artemis</groupId>
+            <artifactId>artemis-odb-serializer-json-libgdx</artifactId>
+            <version>2.3.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.badlogicgames.gdx/gdx -->
+        <dependency>
+            <groupId>com.badlogicgames.gdx</groupId>
+            <artifactId>gdx</artifactId>
+            <version>1.12.1</version>
+        </dependency>
     </dependencies>
 
     <build>
