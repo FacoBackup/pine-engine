@@ -7,6 +7,11 @@ public class StringState extends State<ImString> {
         super(new ImString(maxLength));
     }
 
+    public StringState setState(String state) {
+        super.setState(new ImString(state));
+        return this;
+    }
+
     @Override
     public String toString() {
         return state.get();

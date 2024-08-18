@@ -1,6 +1,7 @@
 package com.jengine.app.view.core;
 
 import com.jengine.app.ResourceRuntimeException;
+import com.jengine.app.view.component.AbstractUI;
 import com.jengine.app.view.core.window.AbstractWindow;
 import com.jengine.app.view.core.window.WindowConfiguration;
 import imgui.*;
@@ -12,11 +13,14 @@ public abstract class RuntimeWindow extends AbstractWindow {
     protected ImFont roboto;
     protected ImFont material;
     private final String windowTitle;
+    protected AbstractUI<?> root;
 
     protected RuntimeWindow(String windowTitle) {
         super();
         this.windowTitle = windowTitle;
     }
+
+    protected abstract AbstractUI<?> setupUI();
 
     @Override
     public void configure(final WindowConfiguration config) {
@@ -25,10 +29,12 @@ public abstract class RuntimeWindow extends AbstractWindow {
 
     @Override
     public void preRun() {
+        root = setupUI();
     }
 
     @Override
     public void postRun() {
+        root = null;
     }
 
     @Override
@@ -62,15 +68,14 @@ public abstract class RuntimeWindow extends AbstractWindow {
 
     @Override
     public void process() {
-        if (ImGui.begin("T", ImGuiWindowFlags.AlwaysAutoResize)) {
+        if (root != null) {
             ImGui.pushFont(roboto);
             ImGui.pushFont(material);
-            renderUI();
+
+            root.render();
+
             ImGui.popFont();
             ImGui.popFont();
         }
-        ImGui.end();
     }
-
-    public abstract void renderUI();
 }
