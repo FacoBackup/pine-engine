@@ -30,7 +30,21 @@ public class ProjectRowPanel extends AbstractPanel {
         name.setOnChange(dto::setName);
         name.setState(dto.getName());
 
-        edit.setOnClick(() -> name.setEnabled(!name.isEnabled()));
+        name.setEnabled(false);
+
+        edit.setOnClick(() -> {
+            name.setEnabled(!name.isEnabled());
+            dto.setName(name.getValue());
+            if(name.isEnabled()) {
+                edit.setInnerText("Save");
+                remove.setVisible(false);
+                open.setVisible(false);
+            }else{
+                edit.setInnerText("Edit");
+                remove.setVisible(true);
+                open.setVisible(true);
+            }
+        });
         remove.setOnClick(() -> removeProject.accept(dto));
         open.setOnClick(() -> openProject.accept(dto));
     }

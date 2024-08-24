@@ -5,12 +5,13 @@ import com.pine.app.view.component.panel.AbstractPanel;
 import com.pine.app.view.core.state.StringState;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
+import imgui.flag.ImGuiWindowFlags;
 
 import java.util.function.Consumer;
 
 public class InputView extends AbstractView {
     private Consumer<String> onChange;
-    private boolean enabled = false;
+    private boolean enabled = true;
     private final StringState state = new StringState(100);
 
     public InputView(View parent, String id, AbstractPanel panel) {
@@ -18,17 +19,19 @@ public class InputView extends AbstractView {
     }
 
     @Override
-    public void render(long index) {
-        if (enabled) {
-            if (ImGui.inputText("##edit" + index, state.getState(), ImGuiInputTextFlags.EnterReturnsTrue)) {
-                enabled = false;
-                if (onChange != null) {
-                    onChange.accept(state.toString());
-                }
-            }
+    public void render() {
+        int flags;
+        if (!enabled) {
+            flags = ImGuiInputTextFlags.ReadOnly;
         } else {
-            ImGui.text(state.toString());
-            ImGui.sameLine();
+            flags = ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.CallbackEdit;
+        }
+
+        if (ImGui.inputText(internalId, state.getState(), flags)) {
+            enabled = false;
+            if (onChange != null) {
+                onChange.accept(state.get());
+            }
         }
     }
 
@@ -50,5 +53,9 @@ public class InputView extends AbstractView {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getValue() {
+        return state.get();
     }
 }

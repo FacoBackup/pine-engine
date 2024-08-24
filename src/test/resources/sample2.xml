@@ -3,6 +3,8 @@
     <button id="newProject">
         New project
     </button>
-    <list id="list"/>
+    <list id="list">
+        Projects
+    </list>
     Projects
 </window>

@@ -3,6 +3,7 @@ package com.pine.app.view.projects.panel;
 import com.pine.app.view.component.panel.AbstractPanel;
 import com.pine.app.view.component.view.ButtonView;
 import com.pine.app.view.component.view.RepeatingView;
+import com.pine.app.view.component.view.WindowView;
 import com.pine.app.view.projects.ProjectDTO;
 
 import java.util.List;
@@ -19,13 +20,15 @@ public class ProjectListPanel extends AbstractPanel {
     public void onInitialize() {
         super.onInitialize();
         var list = (RepeatingView) getElementById("list");
+        var window = (WindowView) list.getParent();
+        window.setDimensions(getWindowDimensions());
+
         var create = (ButtonView) getElementById("newProject");
         create.setOnClick(() -> {
             data.add(new ProjectDTO());
         });
         list.setGetView((item) -> new ProjectRowPanel((ProjectDTO) item, this::openProject, this::removeProject));
         list.setData(data);
-        list.setTitle("Projects");
     }
 
     private void removeProject(ProjectDTO projectDTO) {

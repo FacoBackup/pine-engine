@@ -25,7 +25,7 @@ public abstract class RuntimeWindow extends AbstractWindow {
         io.setIniFilename(null);
         io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
-        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+//        io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         io.setConfigViewportsNoTaskBarIcon(true);
     }
 
@@ -47,14 +47,14 @@ public abstract class RuntimeWindow extends AbstractWindow {
     }
 
     @Override
-    public void render(long index) {
-//        ImGui.pushFont(roboto);
-//        ImGui.pushFont(material);
+    public void render() {
+        ImGui.pushFont(roboto);
+        ImGui.pushFont(material);
 
-        root.render(index);
+        root.render();
 
-//        ImGui.popFont();
-//        ImGui.popFont();
+        ImGui.popFont();
+        ImGui.popFont();
     }
 
     protected void appendChild(View view){

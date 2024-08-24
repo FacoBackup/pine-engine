@@ -3,8 +3,11 @@ package com.pine.app.view.component.panel;
 import com.pine.app.view.component.View;
 import com.pine.app.view.component.ViewTag;
 import com.pine.app.view.component.view.AbstractView;
+import com.pine.app.view.core.service.WindowService;
+import com.pine.app.view.core.window.AbstractWindow;
 import com.pine.app.view.core.window.WindowRuntimeException;
 import jakarta.annotation.Nullable;
+import org.springframework.context.ApplicationContext;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -22,22 +25,17 @@ import java.util.Objects;
 
 public abstract class AbstractPanel extends AbstractView {
     private final Map<String, View> views = new HashMap<>();
-    protected boolean isVisible = true;
-
-    public AbstractPanel(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
-    }
 
     public AbstractPanel() {
         super(null, null, null);
     }
 
     @Override
-    public void render(long index) {
-        if (!isVisible) {
+    public void render() {
+        if (!visible) {
             return;
         }
-        super.render(index + 1);
+        super.render();
     }
 
     @Override
@@ -53,11 +51,11 @@ public abstract class AbstractPanel extends AbstractView {
         }
     }
 
-    protected byte[] loadXML(){
+    protected byte[] loadXML() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try (InputStream s = classloader.getResourceAsStream("ui" + File.separator + getClass().getSimpleName() + ".xml")) {
             if (s != null) {
-               return s.readAllBytes();
+                return s.readAllBytes();
             }
         } catch (Exception e) {
             getLogger().warn("Unable to load {}", getClass().getSimpleName(), e);
@@ -68,7 +66,7 @@ public abstract class AbstractPanel extends AbstractView {
     private void processTag(Node node, AbstractView parent) throws WindowRuntimeException {
         final String tag = node.getNodeName();
         final ViewTag viewTag = ViewTag.valueOfTag(tag);
-        if(viewTag == null){
+        if (viewTag == null) {
             return;
         }
 
@@ -107,7 +105,8 @@ public abstract class AbstractPanel extends AbstractView {
         if (id != null) {
             views.put(id, instance);
         }
-        children.add(instance);
+        parent.getChildren().add(instance);
+        instance.onInitialize();
         return instance;
     }
 
@@ -120,30 +119,28 @@ public abstract class AbstractPanel extends AbstractView {
         return null;
     }
 
-    @Override
-    public void setVisible(boolean visible) {
-        isVisible = visible;
-    }
-
-    @Override
-    public boolean isVisible() {
-        return isVisible;
-    }
-
     public void appendChild(View child, AbstractView parent) {
         parent.getChildren().add(child);
         if (child.getId() != null) {
             views.put(child.getId(), child);
+        }
+        if (child.getClass().isAssignableFrom(AbstractPanel.class)) {
+            ((AbstractPanel) child).setParent(parent);
         }
         child.onInitialize();
     }
 
     @Override
     public void appendChild(View child) {
-        getChildren().add(child);
-        if (child.getId() != null) {
-            views.put(child.getId(), child);
-        }
-        child.onInitialize();
+        appendChild(child, this);
+    }
+
+    protected void setParent(View parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public int[] getWindowDimensions() {
+        return WindowService.getCurrentWindow().getWindowDimensions();
     }
 }

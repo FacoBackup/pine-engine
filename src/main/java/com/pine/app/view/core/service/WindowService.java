@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class WindowService {
     public static boolean shouldStop = false;
+    public static AbstractWindow currentWindow;
 
     @Autowired
     private WindowRepository windowRepository;
@@ -20,8 +21,13 @@ public class WindowService {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shouldStop = true));
     }
 
+    public static AbstractWindow getCurrentWindow() {
+        return currentWindow;
+    }
+
     public void addWindow(AbstractWindow app) {
         windowRepository.addWindow(app);
+        currentWindow = app;
         app.setConfig(new WindowConfiguration(app.getWindowName(), app.getWindowWidth(), app.getWindowHeight(), app.isFullScreen()));
         app.onInitialize();
         while (!GLFW.glfwWindowShouldClose(app.getHandle()) && !shouldStop) {

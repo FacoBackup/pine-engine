@@ -12,12 +12,12 @@ public class ButtonView extends AbstractView {
     }
 
     @Override
-    public void render(long index) {
+    public void render() {
         if (!visible) {
             return;
         }
 
-        if (ImGui.button(innerText + "##" + index) && onClick != null) {
+        if (ImGui.button(innerText + internalId) && onClick != null) {
             onClick.run();
         }
     }

@@ -8,12 +8,16 @@ public class StringState extends State<ImString> {
     }
 
     public StringState setState(String state) {
-        super.setState(new ImString(state));
+        getState().set(state);
         return this;
     }
 
     @Override
     public String toString() {
+        return state.get();
+    }
+
+    public String get() {
         return state.get();
     }
 }

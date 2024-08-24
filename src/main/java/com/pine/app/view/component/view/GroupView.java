@@ -3,7 +3,6 @@ package com.pine.app.view.component.view;
 import com.pine.app.view.component.View;
 import com.pine.app.view.component.panel.AbstractPanel;
 import imgui.ImGui;
-import imgui.flag.ImGuiWindowFlags;
 
 public class GroupView extends AbstractView {
     public GroupView(View parent, String id, AbstractPanel panel) {
@@ -11,9 +10,9 @@ public class GroupView extends AbstractView {
     }
 
     @Override
-    public void render(long index) {
+    public void render() {
         ImGui.beginGroup();
-        super.render(index);
+        super.render();
         ImGui.endGroup();
     }
 }

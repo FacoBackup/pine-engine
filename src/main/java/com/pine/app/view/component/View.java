@@ -1,6 +1,5 @@
 package com.pine.app.view.component;
 
-import com.pine.app.Loggable;
 
 public interface View extends Renderable {
 
@@ -8,13 +7,15 @@ public interface View extends Renderable {
 
     boolean isVisible();
 
-    default void setVisible(boolean visible) {
-
-    }
+    void setVisible(boolean visible);
 
     String getId();
 
     View getElementById(String id);
 
     View getParent();
+
+    View getPanel();
+
+    int[] getWindowDimensions();
 }

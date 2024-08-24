@@ -24,6 +24,7 @@ public abstract class AbstractWindow implements IResource, Renderable {
     protected long handle;
     protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
     private WindowConfiguration windowConfig;
+    private final int[] dimensions = new int[2];
 
     @Override
     public void onInitialize() {
@@ -53,6 +54,8 @@ public abstract class AbstractWindow implements IResource, Renderable {
 
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         handle = GLFW.glfwCreateWindow(config.getWidth(), config.getHeight(), config.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
+        dimensions[0] = config.getWidth();
+        dimensions[1] = config.getHeight();
 
         if (handle == MemoryUtil.NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -86,6 +89,8 @@ public abstract class AbstractWindow implements IResource, Renderable {
             @Override
             public void invoke(final long window, final int width, final int height) {
                 runFrame();
+                dimensions[0] = width;
+                dimensions[1] = height;
             }
         });
     }
@@ -107,7 +112,7 @@ public abstract class AbstractWindow implements IResource, Renderable {
         imGuiGlfw.newFrame();
         ImGui.newFrame();
 
-        render(0);
+        render();
 
         endFrame();
     }
@@ -155,5 +160,9 @@ public abstract class AbstractWindow implements IResource, Renderable {
 
     public void setConfig(WindowConfiguration windowConfiguration) {
         this.windowConfig = windowConfiguration;
+    }
+
+    public int[] getWindowDimensions() {
+        return dimensions;
     }
 }

@@ -5,9 +5,10 @@ import jakarta.annotation.Nullable;
 
 public enum ViewTag {
     FRAGMENT("fragment", null, true),
-    BLOCK("window", WindowView.class, true),
+    WINDOW("window", WindowView.class, true),
     BUTTON("button", ButtonView.class, false),
     INPUT("input", InputView.class, false),
+    ACCORDION("accordion", AccordionView.class, true),
     GROUP("group", GroupView.class, true),
     INLINE("inline", InlineView.class, true),
     LIST("list", RepeatingView.class, false);

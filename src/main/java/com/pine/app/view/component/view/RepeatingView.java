@@ -11,19 +11,15 @@ public class RepeatingView extends AbstractView {
     private List<? extends RepeatingViewItem> data = Collections.emptyList();
     private final Map<String, View> containers = new HashMap<>();
     private Function<RepeatingViewItem, View> getView;
-    private String title;
 
     public RepeatingView(View parent, String id, AbstractPanel panel) {
         super(parent, id, panel);
     }
 
     @Override
-    public void render(long index) {
-        ImGui.beginGroup();
-        for (int i = 0; i < data.size(); i++) {
+    public void render() {
+        for (RepeatingViewItem item : data) {
             ImGui.beginGroup();
-            ImGui.sameLine();
-            RepeatingViewItem item = data.get(i);
             String key = item.getKey();
             View container;
             if (containers.get(key) == null) {
@@ -33,12 +29,9 @@ public class RepeatingView extends AbstractView {
             } else {
                 container = containers.get(key);
             }
-            container.render(index + i);
-            index++;
+            container.render();
             ImGui.endGroup();
         }
-        ImGui.endGroup();
-
     }
 
     public void setGetView(Function<RepeatingViewItem, View> getView) {
@@ -47,9 +40,5 @@ public class RepeatingView extends AbstractView {
 
     public void setData(List<? extends RepeatingViewItem> data) {
         this.data = data;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 }

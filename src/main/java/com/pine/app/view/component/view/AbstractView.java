@@ -7,11 +7,13 @@ import org.springframework.lang.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public abstract class AbstractView implements View {
+    protected final String internalId;
     protected final String id;
     protected final List<View> children = new ArrayList<>();
-    protected final View parent;
+    protected View parent;
     private final AbstractPanel panel;
     protected String innerText;
     protected boolean visible = true;
@@ -20,8 +22,10 @@ public abstract class AbstractView implements View {
         this.panel = panel;
         this.parent = parent;
         this.id = id;
+        this.internalId = "##" + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
+    @Override
     public AbstractPanel getPanel() {
         return panel;
     }
@@ -93,12 +97,14 @@ public abstract class AbstractView implements View {
     }
 
     @Override
-    public void render(long index) {
+    public void render() {
         for (View child : children) {
-            child.render(index);
-            index++;
+            child.render();
         }
     }
 
-
+    @Override
+    public int[] getWindowDimensions() {
+        return panel.getWindowDimensions();
+    }
 }
