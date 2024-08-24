@@ -13,10 +13,12 @@ import javax.xml.parsers.DocumentBuilder;
 
 import org.w3c.dom.Document;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class AbstractPanel extends AbstractView {
     private final Map<String, View> views = new HashMap<>();
@@ -32,7 +34,7 @@ public abstract class AbstractPanel extends AbstractView {
 
     @Override
     public void render(long index) {
-        if (isVisible) {
+        if (!isVisible) {
             return;
         }
         super.render(index + 1);
@@ -40,28 +42,50 @@ public abstract class AbstractPanel extends AbstractView {
 
     @Override
     public void onInitialize() {
+        try {
+            final byte[] xml = loadXML();
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            Document document = docBuilder.parse(new ByteArrayInputStream(xml));
+            processTag(document.getDocumentElement(), this);
+        } catch (Exception e) {
+            getLogger().warn("Unable to parse XML", e);
+        }
+    }
+
+    protected byte[] loadXML(){
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try (InputStream s = classloader.getResourceAsStream("ui" + File.separator + getClass().getSimpleName() + ".xml")) {
             if (s != null) {
-                try {
-                    DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-                    DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-                    Document document = docBuilder.parse(s);
-                    processTag(document.getDocumentElement(), this);
-                } catch (Exception e) {
-                    getLogger().warn("Unable to parse XML", e);
-                }
+               return s.readAllBytes();
             }
         } catch (Exception e) {
             getLogger().warn("Unable to load {}", getClass().getSimpleName(), e);
         }
+        throw new RuntimeException("Unable to load " + getClass().getSimpleName());
     }
 
     private void processTag(Node node, AbstractView parent) throws WindowRuntimeException {
-        AbstractView instance = instantiateView(node, parent);
-        NodeList nodeList = node.getChildNodes();
+        final String tag = node.getNodeName();
+        final ViewTag viewTag = ViewTag.valueOfTag(tag);
+        if(viewTag == null){
+            return;
+        }
+
+        final boolean isView = !Objects.equals(ViewTag.FRAGMENT.getTag(), tag);
+        final NodeList nodeList = node.getChildNodes();
+        AbstractView instance = parent;
+        if (isView) {
+            instance = instantiateView(viewTag, node, parent);
+        }
+
         for (int i = 0; i < nodeList.getLength(); i++) {
-            processChild(nodeList.item(i), instance);
+            Node currentNode = nodeList.item(i);
+            if (currentNode.getNodeType() == Node.ELEMENT_NODE && viewTag.isChildrenSupported()) {
+                processTag(currentNode, instance);
+            } else if (isView && currentNode.getNodeType() == Node.TEXT_NODE) {
+                instance.setInnerText(currentNode.getTextContent().trim());
+            }
         }
     }
 
@@ -70,23 +94,12 @@ public abstract class AbstractPanel extends AbstractView {
         return views.get(id);
     }
 
-    private void processChild(Node currentNode, AbstractView instance) throws WindowRuntimeException {
-        if (currentNode.getNodeType() == Node.ELEMENT_NODE && ViewTag.valueOfTag(instance).isChildrenSupported()) {
-            processTag(currentNode, instance);
-        } else if (currentNode.getNodeType() != Node.ELEMENT_NODE) {
-            instance.setInnerText(currentNode.getTextContent());
-        }
-    }
-
-    private AbstractView instantiateView(Node node, AbstractView parent) throws WindowRuntimeException {
-        String id = getId(node);
-        final String tag = node.getNodeName();
-        final ViewTag viewTag = ViewTag.valueOfTag(tag);
+    private AbstractView instantiateView(ViewTag viewTag, Node node, AbstractView parent) throws WindowRuntimeException {
+        final String id = getId(node);
         if (viewTag == null) {
-            throw new WindowRuntimeException("Could not find tag with name " + tag);
+            throw new WindowRuntimeException("Could not find tag with name " + node.getNodeName());
         }
-        AbstractView instance;
-        instance = AbstractView.instantiate(viewTag.getClazz(), parent, id, this);
+        final AbstractView instance = AbstractView.instantiate(viewTag.getClazz(), parent, id, this);
         if (instance == null) {
             throw new WindowRuntimeException("Could not instantiate view " + viewTag.getClazz());
         }
@@ -94,6 +107,7 @@ public abstract class AbstractPanel extends AbstractView {
         if (id != null) {
             views.put(id, instance);
         }
+        children.add(instance);
         return instance;
     }
 

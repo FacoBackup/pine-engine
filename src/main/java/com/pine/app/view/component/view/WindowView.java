@@ -5,11 +5,11 @@ import com.pine.app.view.component.panel.AbstractPanel;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 
-public class BlockView extends AbstractView {
+public class WindowView extends AbstractView {
     private boolean autoResize = false;
-    private String label = "";
+    private String label = "Window";
 
-    public BlockView(View parent, String id, AbstractPanel panel) {
+    public WindowView(View parent, String id, AbstractPanel panel) {
         super(parent, id, panel);
     }
 

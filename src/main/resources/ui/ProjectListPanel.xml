@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<block title="Projects">
-    <button>
+<window title="Projects">
+    <button id="newProject">
         New project
     </button>
     <list id="list"/>
-</block>
+</window>

@@ -2,6 +2,7 @@ package com.pine.app.view.core.window;
 
 import com.pine.app.IResource;
 import com.pine.app.ResourceRuntimeException;
+import com.pine.app.view.component.Renderable;
 import com.pine.app.view.component.View;
 import com.pine.app.view.core.window.gl3.ImGuiImplGl3;
 import com.pine.app.view.core.window.glfw.ImGuiImplGlfw;
@@ -16,7 +17,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
-public abstract class AbstractWindow implements IResource, View {
+public abstract class AbstractWindow implements IResource, Renderable {
     private static final String GLSL_VERSION = "#version 130";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
@@ -28,7 +29,7 @@ public abstract class AbstractWindow implements IResource, View {
     public void onInitialize() {
         createGLFWContext(windowConfig);
         ImGui.createContext();
-
+        postCreation();
         try {
             initFonts();
         } catch (Exception e) {
@@ -37,6 +38,8 @@ public abstract class AbstractWindow implements IResource, View {
         imGuiGlfw.init(handle, true);
         imGuiGl3.init(GLSL_VERSION);
     }
+
+    protected abstract void postCreation();
 
     protected void createGLFWContext(final WindowConfiguration config) {
         GLFWErrorCallback.createPrint(System.err).set();

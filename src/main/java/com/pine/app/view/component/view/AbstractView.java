@@ -35,6 +35,7 @@ public abstract class AbstractView implements View {
         return id;
     }
 
+    @Override
     public View getParent() {
         return parent;
     }
@@ -71,6 +72,7 @@ public abstract class AbstractView implements View {
         innerText = textContent;
     }
 
+    @Override
     public String getInnerText() {
         return innerText;
     }
@@ -97,4 +99,6 @@ public abstract class AbstractView implements View {
             index++;
         }
     }
+
+
 }

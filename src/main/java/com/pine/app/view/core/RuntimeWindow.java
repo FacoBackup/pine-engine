@@ -20,9 +20,7 @@ public abstract class RuntimeWindow extends AbstractWindow {
     };
 
     @Override
-    public void onInitialize() {
-        super.onInitialize();
-
+    protected void postCreation() {
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
         io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
@@ -50,31 +48,16 @@ public abstract class RuntimeWindow extends AbstractWindow {
 
     @Override
     public void render(long index) {
-        ImGui.pushFont(roboto);
-        ImGui.pushFont(material);
+//        ImGui.pushFont(roboto);
+//        ImGui.pushFont(material);
 
         root.render(index);
 
-        ImGui.popFont();
-        ImGui.popFont();
+//        ImGui.popFont();
+//        ImGui.popFont();
     }
 
     protected void appendChild(View view){
         root.appendChild(view);
-    }
-
-    @Override
-    public boolean isVisible() {
-        return true;
-    }
-
-    @Override
-    public String getId() {
-        return null;
-    }
-
-    @Override
-    public View getElementById(String id) {
-        return null;
     }
 }

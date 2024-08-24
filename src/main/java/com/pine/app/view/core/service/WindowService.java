@@ -21,11 +21,7 @@ public class WindowService {
     }
 
     public void addWindow(AbstractWindow app) {
-        start(app);
         windowRepository.addWindow(app);
-    }
-
-    public void start(final AbstractWindow app) {
         app.setConfig(new WindowConfiguration(app.getWindowName(), app.getWindowWidth(), app.getWindowHeight(), app.isFullScreen()));
         app.onInitialize();
         while (!GLFW.glfwWindowShouldClose(app.getHandle()) && !shouldStop) {
@@ -33,5 +29,4 @@ public class WindowService {
         }
         app.dispose();
     }
-
 }

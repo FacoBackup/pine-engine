@@ -21,10 +21,11 @@ public class ProjectRowPanel extends AbstractPanel {
 
     @Override
     public void onInitialize() {
-        ButtonView edit = appendChild(ButtonView.class);
-        ButtonView remove = appendChild(ButtonView.class);
-        ButtonView open = appendChild(ButtonView.class);
-        name = appendChild(InputView.class);
+        super.onInitialize();
+        var edit = (ButtonView) getElementById("edit");
+        var remove = (ButtonView) getElementById("delete");
+        var open = (ButtonView) getElementById("open");
+        name = (InputView) getElementById("name");
 
         name.setOnChange(dto::setName);
         name.setState(dto.getName());

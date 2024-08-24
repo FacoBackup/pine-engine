@@ -4,10 +4,13 @@ import com.pine.app.view.component.view.*;
 import jakarta.annotation.Nullable;
 
 public enum ViewTag {
-    BLOCK("block", BlockView.class, true),
+    FRAGMENT("fragment", null, true),
+    BLOCK("window", WindowView.class, true),
     BUTTON("button", ButtonView.class, false),
     INPUT("input", InputView.class, false),
-    LIST("list", RepeatingView.class, true);
+    GROUP("group", GroupView.class, true),
+    INLINE("inline", InlineView.class, true),
+    LIST("list", RepeatingView.class, false);
 
     private final String tag;
     private final Class<? extends AbstractView> clazz;
