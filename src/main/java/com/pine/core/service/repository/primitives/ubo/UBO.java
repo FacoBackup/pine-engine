@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UBO extends AbstractResource<UBOCreationData> {
+    private static int blockPointIncrement = 0;
+
     @Override
     public ResourceType getResourceType() {
         return ResourceType.UBO;
@@ -28,8 +30,6 @@ public class UBO extends AbstractResource<UBOCreationData> {
     private final String blockName;
     private final int blockPoint;
 
-    private static int blockPointIncrement = 0;
-
     public UBO(String id, UBOCreationData dto) {
         super(id);
         int bufferSize = calculate(dto.data());
@@ -46,6 +46,10 @@ public class UBO extends AbstractResource<UBOCreationData> {
         GL46.glBufferData(GL46.GL_UNIFORM_BUFFER, bufferSize, GL46.GL_DYNAMIC_DRAW);
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
         GL46.glBindBufferBase(GL46.GL_UNIFORM_BUFFER, this.blockPoint, buffer);
+    }
+
+    public int getBuffer() {
+        return buffer;
     }
 
     public void bindWithShader(int shaderProgram) {

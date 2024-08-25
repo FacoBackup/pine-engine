@@ -13,32 +13,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Shader extends AbstractResource<ShaderCreationDTO> {
-    private int program;
-    private final List<UniformDTO> uniformDTOS = new ArrayList<>();
-    private final Map<String, Integer> uniformMap = new HashMap<>();
-    private int currentSamplerIndex = 0;
-    private boolean readyToUse = false;
-    private String vertexResourceName;
-    private String fragmentResourceName;
+    private final int program;
+    private final Map<String, UniformDTO> uniforms = new HashMap<>();
+    private boolean valid = true;
 
     public Shader(String id, ShaderCreationDTO dto) {
         super(id);
-        // TODO
-    }
-
-    public void compile(String vertexResourceName, String fragmentResourceName) throws RuntimeException {
         program = GL46.glCreateProgram();
-        this.vertexResourceName = vertexResourceName;
-        this.fragmentResourceName = fragmentResourceName;
 
         try {
-            String vertex = new String(FSUtil.loadResource(vertexResourceName));
-            String fragment = new String(FSUtil.loadResource(fragmentResourceName));
-            prepareShaders(vertex, fragment);
+            prepareShaders(dto.vertex(), dto.fragment());
         } catch (RuntimeException ex) {
-            getLogger().error("Error loading shader {} {}", vertexResourceName, fragmentResourceName, ex);
-            throw ex;
+            valid = false;
         }
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public int getProgram() {
+        return program;
     }
 
     private void prepareShaders(final String vertex, final String fragment) {
@@ -54,16 +49,7 @@ public class Shader extends AbstractResource<ShaderCreationDTO> {
         extractUniforms(vertex);
         extractUniforms(fragment);
 
-        uniformDTOS.removeIf(u -> u == null || u.getuLocation() == null && (u.getuLocations() == null || u.getuLocations().isEmpty()));
-
-        for (UniformDTO uniformDTO : uniformDTOS) {
-            uniformMap.put(uniformDTO.getName(), uniformDTO.getuLocation() != null ? uniformDTO.getuLocation() : uniformDTO.getuLocations().getFirst());
-        }
-
-        this.readyToUse = true;
         getLogger().info("Shader status {}", GL46.glGetError());
-
-        // TODO - BIND UBOs
     }
 
     private int compileShader(String shaderCode, int shaderType) {
@@ -90,7 +76,7 @@ public class Shader extends AbstractResource<ShaderCreationDTO> {
             String name = matcher.group(6).replace(" ", "").trim();
 
             if (GLSLType.valueOfEnum(type) != null) {
-                uniformDTOS.add(new UniformDTO(GLSLType.valueOfEnum(type), name, GL46.glGetUniformLocation(program, name)));
+                uniforms.put(name, new UniformDTO(GLSLType.valueOfEnum(type), name, GL46.glGetUniformLocation(program, name)));
                 continue;
             }
 
@@ -104,7 +90,7 @@ public class Shader extends AbstractResource<ShaderCreationDTO> {
                         if (line.contains(glslType.name())) {
                             String[] parts = line.trim().split("\\s+");
                             String fieldName = parts[parts.length - 1].replace(";", "").trim();
-                            uniformDTOS.add(new UniformDTO(glslType, fieldName, name, GL46.glGetUniformLocation(program, name + "." + fieldName)));
+                            uniforms.put(name, new UniformDTO(glslType, fieldName, name, GL46.glGetUniformLocation(program, name + "." + fieldName)));
                         }
                     }
                 }
@@ -112,96 +98,8 @@ public class Shader extends AbstractResource<ShaderCreationDTO> {
         }
     }
 
-    public List<UniformDTO> getUniforms() {
-        return uniformDTOS;
-    }
-
-    public Map<String, Integer> getUniformMap() {
-        return uniformMap;
-    }
-
-    public void bindProgram() {
-        if (readyToUse) {
-            this.currentSamplerIndex = 0;
-            GL46.glUseProgram(this.program);
-        } else {
-            warn();
-        }
-    }
-
-    public void bind(UniformDTO uniformDTO, Object data) {
-        if (readyToUse) {
-
-            if (data == null) return;
-            Integer uLocation = uniformDTO.getuLocation();
-            switch (uniformDTO.getType()) {
-                case f:
-                    if (data instanceof FloatBuffer) {
-                        GL46.glUniform1fv(uLocation, (FloatBuffer) data);
-                    }
-                    break;
-                case vec2:
-                    if (data instanceof FloatBuffer) {
-                        GL46.glUniform2fv(uLocation, (FloatBuffer) data);
-                    }
-                    break;
-
-                case vec3:
-                    if (data instanceof FloatBuffer) {
-                        GL46.glUniform3fv(uLocation, (FloatBuffer) data);
-                    }
-                    break;
-                case vec4:
-                    if (data instanceof FloatBuffer) {
-                        GL46.glUniform4fv(uLocation, (FloatBuffer) data);
-                    }
-                    break;
-                case ivec2:
-                    if (data instanceof IntBuffer) {
-                        GL46.glUniform2iv(uLocation, (IntBuffer) data);
-                    }
-                    break;
-                case ivec3:
-                    if (data instanceof IntBuffer) {
-                        GL46.glUniform3iv(uLocation, (IntBuffer) data);
-                    }
-                    break;
-                case bool:
-                    if (data instanceof IntBuffer) {
-                        GL46.glUniform1iv(uLocation, (IntBuffer) data);
-                    }
-                    break;
-                case mat3:
-                    if (data instanceof FloatBuffer) {
-                        GL46.glUniformMatrix3fv(uLocation, false, (FloatBuffer) data);
-                    }
-                    break;
-
-                case mat4:
-                    if (data instanceof FloatBuffer) {
-                        GL46.glUniformMatrix4fv(uLocation, false, (FloatBuffer) data);
-                    }
-                    break;
-                case samplerCube:
-                    if (data instanceof Integer) {
-                        GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
-                        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, (Integer) data);
-                        GL46.glUniform1i(uLocation, currentSamplerIndex);
-                        currentSamplerIndex++;
-                    }
-                    break;
-
-                case sampler2D:
-                    // Add binding code for sampler2D here if needed
-                    break;
-            }
-        } else {
-            warn();
-        }
-    }
-
-    private void warn() {
-        getLogger().warn("Shader is not ready {} {}", vertexResourceName, fragmentResourceName);
+    public Map<String, UniformDTO> getUniforms() {
+        return uniforms;
     }
 
     @Override

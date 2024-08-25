@@ -7,15 +7,15 @@ import com.pine.core.service.repository.primitives.material.MaterialDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class MaterialRepository implements IResourceRepository<MaterialDTO, MaterialDTO> {
+public class MaterialRepository implements IResourceRepository<Material, MaterialDTO, MaterialDTO> {
 
     @Override
-    public void bind(String id, MaterialDTO data) {
+    public void bind(Material instance, MaterialDTO data) {
 
     }
 
     @Override
-    public void bind(String id) {
+    public void bind(Material instance) {
 
     }
 
@@ -25,12 +25,12 @@ public class MaterialRepository implements IResourceRepository<MaterialDTO, Mate
     }
 
     @Override
-    public <T extends IResource> T add(MaterialDTO data) {
+    public IResource add(MaterialDTO data) {
         return null;
     }
 
     @Override
-    public void remove(String id) {
-
+    public void remove(Material id) {
+        // TODO - Remove shader, textures will be GCed dynamically
     }
 }

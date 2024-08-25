@@ -2,27 +2,35 @@ package com.pine.core.service.common;
 
 import com.pine.app.Loggable;
 
-public interface IResourceRepository<R extends IResourceRuntimeData, C extends IResourceCreationData> extends Loggable {
+import java.util.UUID;
+
+public interface IResourceRepository<T extends IResource, R extends IResourceRuntimeData, C extends IResourceCreationData> extends Loggable {
 
     /**
      * Bind with custom data
-     * @param id Resource ID
-     * @param data Data object
+     *
+     * @param instance Resource
+     * @param data     Data object
      */
-    void bind(String id, R data);
+    void bind(T instance, R data);
 
     /**
      * Bind with no data
-     * @param id Resource ID
+     *
+     * @param instance Resource
      */
-    void bind(String id);
+    void bind(T instance);
 
     /**
      * Unbind last resource bound of that type
      */
     void unbind();
 
-    <T extends IResource> T add(C data);
+    IResource add(C data);
 
-    void remove(String id);
+    void remove(T resource);
+
+    default String getId() {
+        return UUID.randomUUID().toString();
+    }
 }

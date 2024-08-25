@@ -9,15 +9,15 @@ import com.pine.core.service.repository.primitives.terrain.TerrainCreationDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TerrainRepository implements IResourceRepository< EmptyRuntimeData, TerrainCreationDTO> {
+public class TerrainRepository implements IResourceRepository<Terrain, EmptyRuntimeData, TerrainCreationDTO> {
 
     @Override
-    public void bind(String id, EmptyRuntimeData data) {
+    public void bind(Terrain instance, EmptyRuntimeData data) {
 
     }
 
     @Override
-    public void bind(String id) {
+    public void bind(Terrain instance) {
 
     }
 
@@ -27,12 +27,12 @@ public class TerrainRepository implements IResourceRepository< EmptyRuntimeData,
     }
 
     @Override
-    public <T extends IResource> T add(TerrainCreationDTO data) {
+    public IResource add(TerrainCreationDTO data) {
         return null;
     }
 
     @Override
-    public void remove(String id) {
-
+    public void remove(Terrain id) {
+        // TODO - Unload mesh and texture, since both will be linked directly to the terrain resource
     }
 }

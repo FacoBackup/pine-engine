@@ -9,14 +9,15 @@ import com.pine.core.service.repository.primitives.mesh.MeshDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class MeshRepository implements IResourceRepository<EmptyRuntimeData, MeshDTO> {
+public class MeshRepository implements IResourceRepository<Mesh, EmptyRuntimeData, MeshDTO> {
+
     @Override
-    public void bind(String id, EmptyRuntimeData data) {
+    public void bind(Mesh instance, EmptyRuntimeData data) {
 
     }
 
     @Override
-    public void bind(String id) {
+    public void bind(Mesh instance) {
 
     }
 
@@ -26,12 +27,12 @@ public class MeshRepository implements IResourceRepository<EmptyRuntimeData, Mes
     }
 
     @Override
-    public <T extends IResource> T add(MeshDTO data) {
+    public IResource add(MeshDTO data) {
         return null;
     }
 
     @Override
-    public void remove(String id) {
-
+    public void remove(Mesh id) {
+        // TODO - remove last used and unbind if is bound for some reason (probably will never happen)
     }
 }

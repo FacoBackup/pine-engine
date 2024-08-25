@@ -4,12 +4,18 @@ import com.pine.common.serialization.SerializableRepository;
 import com.pine.core.service.common.IResource;
 import com.pine.core.service.common.IResourceCreationData;
 import com.pine.core.service.repository.*;
+import com.pine.core.service.repository.primitives.audio.Audio;
 import com.pine.core.service.repository.primitives.audio.AudioDTO;
+import com.pine.core.service.repository.primitives.material.Material;
 import com.pine.core.service.repository.primitives.material.MaterialDTO;
+import com.pine.core.service.repository.primitives.mesh.Mesh;
 import com.pine.core.service.repository.primitives.mesh.MeshDTO;
+import com.pine.core.service.repository.primitives.shader.Shader;
 import com.pine.core.service.repository.primitives.shader.ShaderCreationDTO;
+import com.pine.core.service.repository.primitives.terrain.Terrain;
 import com.pine.core.service.repository.primitives.terrain.TerrainCreationDTO;
 import com.pine.core.service.repository.primitives.texture.TextureCreationDTO;
+import com.pine.core.service.repository.primitives.ubo.UBO;
 import com.pine.core.service.repository.primitives.ubo.UBOCreationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -52,8 +58,8 @@ public abstract class ResourceRepository extends SerializableRepository {
     private final Map<String, Long> sinceLastUse = new HashMap<>();
     private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
 
-    public <C extends IResourceCreationData, T extends IResource> T getResource(C data) {
-        T instance = null;
+    public <C extends IResourceCreationData> IResource addResource(C data) {
+        IResource instance = null;
         switch (data.getResourceType()) {
             case UBO: {
                 instance = uboRepository.add((UBOCreationData) data);
@@ -84,7 +90,10 @@ public abstract class ResourceRepository extends SerializableRepository {
                 break;
             }
         }
-
+        if (instance == null) {
+            getLogger().warn("Resource could not be initialized correctly: {}", data.getResourceType());
+            return null;
+        }
         resources.put(instance.getId(), instance);
         sinceLastUse.put(instance.getId(), System.currentTimeMillis());
         return instance;
@@ -102,27 +111,27 @@ public abstract class ResourceRepository extends SerializableRepository {
         }
         switch (resource.getResourceType()) {
             case UBO: {
-                uboRepository.remove(id);
+                uboRepository.remove((UBO) resource);
                 break;
             }
             case MESH: {
-                meshRepository.remove(id);
+                meshRepository.remove((Mesh) resource);
                 break;
             }
             case MATERIAL: {
-                materialRepository.remove(id);
+                materialRepository.remove((Material) resource);
                 break;
             }
             case SHADER: {
-                shaderRepository.remove(id);
+                shaderRepository.remove((Shader) resource);
                 break;
             }
             case AUDIO: {
-                audioRepository.remove(id);
+                audioRepository.remove((Audio) resource);
                 break;
             }
             case TERRAIN: {
-                terrainRepository.remove(id);
+                terrainRepository.remove((Terrain) resource);
                 break;
             }
         }

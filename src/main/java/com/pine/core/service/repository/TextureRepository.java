@@ -8,15 +8,15 @@ import com.pine.core.service.repository.primitives.texture.TextureCreationDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TextureRepository implements IResourceRepository< EmptyRuntimeData, TextureCreationDTO> {
+public class TextureRepository implements IResourceRepository<Texture, EmptyRuntimeData, TextureCreationDTO> {
 
     @Override
-    public void bind(String id, EmptyRuntimeData data) {
+    public void bind(Texture instance, EmptyRuntimeData data) {
 
     }
 
     @Override
-    public void bind(String id) {
+    public void bind(Texture instance) {
 
     }
 
@@ -26,12 +26,12 @@ public class TextureRepository implements IResourceRepository< EmptyRuntimeData,
     }
 
     @Override
-    public <T extends IResource> T add(TextureCreationDTO data) {
+    public IResource add(TextureCreationDTO data) {
         return null;
     }
 
     @Override
-    public void remove(String id) {
+    public void remove(Texture id) {
 
     }
 }

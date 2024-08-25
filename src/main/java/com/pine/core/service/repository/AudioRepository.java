@@ -7,15 +7,15 @@ import com.pine.core.service.repository.primitives.audio.AudioDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AudioRepository implements IResourceRepository< AudioDTO, AudioDTO> {
+public class AudioRepository implements IResourceRepository<Audio, AudioDTO, AudioDTO> {
 
     @Override
-    public void bind(String id, AudioDTO data) {
+    public void bind(Audio instance, AudioDTO data) {
 
     }
 
     @Override
-    public void bind(String id) {
+    public void bind(Audio instance) {
 
     }
 
@@ -25,12 +25,12 @@ public class AudioRepository implements IResourceRepository< AudioDTO, AudioDTO>
     }
 
     @Override
-    public <T extends IResource> T add(AudioDTO data) {
+    public IResource add(AudioDTO data) {
         return null;
     }
 
     @Override
-    public void remove(String id) {
+    public void remove(Audio id) {
 
     }
 }

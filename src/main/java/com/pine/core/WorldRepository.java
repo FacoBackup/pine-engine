@@ -65,6 +65,9 @@ public class WorldRepository extends SerializableRepository {
         return world;
     }
 
+    public void process(){
+        world.process();
+    }
 
     @Override
     protected void parseInternal(JsonElement data) {

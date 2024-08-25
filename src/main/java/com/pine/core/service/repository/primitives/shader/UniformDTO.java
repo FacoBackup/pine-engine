@@ -9,17 +9,17 @@ public class UniformDTO  {
     private final String name;
     private String parent;
     private int arraySize;
-    private List<Integer> uLocations;
-    private final Integer uLocation;
+    private List<Integer> locations;
+    private final Integer location;
 
-    public UniformDTO(GLSLType type, String name, Integer uLocation) {
+    public UniformDTO(GLSLType type, String name, Integer location) {
         this.type = type;
         this.name = name;
-        this.uLocation = uLocation;
+        this.location = location;
     }
 
-    public UniformDTO(GLSLType type, String name, String parent, Integer uLocation) {
-        this(type, name, uLocation);
+    public UniformDTO(GLSLType type, String name, String parent, Integer location) {
+        this(type, name, location);
         this.parent = parent;
     }
 
@@ -39,11 +39,11 @@ public class UniformDTO  {
         return arraySize;
     }
 
-    public List<Integer> getuLocations() {
-        return uLocations;
+    public List<Integer> getLocations() {
+        return locations;
     }
 
-    public Integer getuLocation() {
-        return uLocation;
+    public Integer getLocation() {
+        return location;
     }
 }
