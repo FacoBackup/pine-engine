@@ -1,6 +1,5 @@
 package com.pine.core;
 
-import com.pine.app.ResourceRuntimeException;
 import com.pine.core.repository.MeshRepository;
 import com.pine.core.repository.ShaderRepository;
 import com.pine.core.repository.WorldRepository;
@@ -20,9 +19,8 @@ public class EngineRuntime {
     @Autowired
     private MeshRepository meshes;
 
-    public void init() throws ResourceRuntimeException {
-        shaders.compileAll();
-        meshes.loadAll();
+    public void init() throws RuntimeException {
+
     }
 
     public void render() {

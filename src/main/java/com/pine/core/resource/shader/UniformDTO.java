@@ -4,7 +4,7 @@ import com.pine.core.resource.GLSLType;
 
 import java.util.List;
 
-public class Uniform {
+public class UniformDTO {
     private final GLSLType type;
     private final String name;
     private String parent;
@@ -12,13 +12,13 @@ public class Uniform {
     private List<Integer> uLocations;
     private final Integer uLocation;
 
-    public Uniform(GLSLType type, String name, Integer uLocation) {
+    public UniformDTO(GLSLType type, String name, Integer uLocation) {
         this.type = type;
         this.name = name;
         this.uLocation = uLocation;
     }
 
-    public Uniform(GLSLType type, String name, String parent, Integer uLocation) {
+    public UniformDTO(GLSLType type, String name, String parent, Integer uLocation) {
         this(type, name, uLocation);
         this.parent = parent;
     }

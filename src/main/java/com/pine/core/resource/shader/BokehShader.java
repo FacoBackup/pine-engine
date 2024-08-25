@@ -1,10 +1,9 @@
 package com.pine.core.resource.shader;
 
-import com.pine.app.ResourceRuntimeException;
 
+public class BokehShader extends AbstractShader {
 
-public class BokehShader extends AbstractShader implements IShader {
-    public void compile() throws ResourceRuntimeException {
+    public void compile() throws RuntimeException {
         compile("shaders/QUAD.vert", "shaders/BOKEH.frag");
     }
 }

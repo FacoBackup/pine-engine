@@ -1,10 +1,10 @@
 package com.pine.core.resource.shader;
 
-import com.pine.app.ResourceRuntimeException;
 
+public class TerrainShader extends AbstractShader {
 
-public class TerrainShader extends AbstractShader implements IShader {
-    public void compile() throws ResourceRuntimeException {
+    @Override
+    public void compile() throws RuntimeException {
         compile("shaders/TERRAIN.vert", "shaders/TERRAIN.frag");
     }
 }

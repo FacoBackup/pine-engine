@@ -1,9 +1,9 @@
 package com.pine.core.resource.shader;
 
-import com.pine.app.ResourceRuntimeException;
+public class AtmosphereShader extends AbstractShader {
 
-public class AtmosphereShader extends AbstractShader implements IShader {
-    public void compile() throws ResourceRuntimeException {
+    @Override
+    public void compile() throws RuntimeException {
         compile("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag");
     }
 }

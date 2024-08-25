@@ -1,11 +1,9 @@
 package com.pine.app.view.core;
 
-import com.pine.app.ResourceRuntimeException;
 import com.pine.app.view.component.View;
 import com.pine.app.view.component.panel.AbstractPanel;
-import com.pine.app.view.component.view.AbstractView;
 import com.pine.app.view.core.window.AbstractWindow;
-import com.pine.app.view.core.window.WindowConfiguration;
+import com.pine.util.FSUtil;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
 
@@ -30,7 +28,7 @@ public abstract class RuntimeWindow extends AbstractWindow {
     }
 
     @Override
-    protected void initFonts() throws ResourceRuntimeException {
+    protected void initFonts() throws RuntimeException {
         final ImGuiIO io = ImGui.getIO();
         io.getFonts().addFontDefault();
         final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
@@ -41,8 +39,8 @@ public abstract class RuntimeWindow extends AbstractWindow {
         fontConfig.setMergeMode(true);
 
         final short[] glyphRanges = rangesBuilder.buildRanges();
-        material = io.getFonts().addFontFromMemoryTTF(loadFromResources("icons/MaterialIcons-Regular.ttf"), 14, fontConfig, glyphRanges);
-        roboto = io.getFonts().addFontFromMemoryTTF(loadFromResources("roboto/Roboto-Regular.ttf"), 14, fontConfig, glyphRanges);
+        material = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("icons/MaterialIcons-Regular.ttf"), 14, fontConfig, glyphRanges);
+        roboto = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Regular.ttf"), 14, fontConfig, glyphRanges);
         io.getFonts().build();
     }
 

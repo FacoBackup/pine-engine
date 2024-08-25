@@ -1,10 +1,10 @@
 package com.pine.core.resource.shader;
 
-import com.pine.app.ResourceRuntimeException;
 
+public class OmniDirectShadowsShader extends AbstractShader {
 
-public class OmniDirectShadowsShader extends AbstractShader implements IShader {
-    public void compile() throws ResourceRuntimeException {
+    @Override
+    public void compile() throws RuntimeException {
         compile("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag");
     }
 }

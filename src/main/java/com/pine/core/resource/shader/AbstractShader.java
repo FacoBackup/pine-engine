@@ -1,8 +1,8 @@
 package com.pine.core.resource.shader;
 
-import com.pine.app.IResource;
-import com.pine.app.ResourceRuntimeException;
+import com.pine.app.Loggable;
 import com.pine.core.resource.GLSLType;
+import com.pine.util.FSUtil;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
@@ -11,26 +11,27 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-public abstract class AbstractShader implements IResource {
+public abstract class AbstractShader implements Loggable {
     private int program;
-    private final List<Uniform> uniforms = new ArrayList<>();
+    private final List<UniformDTO> uniformDTOS = new ArrayList<>();
     private final Map<String, Integer> uniformMap = new HashMap<>();
     private int currentSamplerIndex = 0;
     private boolean readyToUse = false;
     private String vertexResourceName;
     private String fragmentResourceName;
 
-    protected void compile(String vertexResourceName, String fragmentResourceName) throws ResourceRuntimeException {
+    public abstract void compile();
+
+    protected void compile(String vertexResourceName, String fragmentResourceName) throws RuntimeException {
         program = GL46.glCreateProgram();
         this.vertexResourceName = vertexResourceName;
         this.fragmentResourceName = fragmentResourceName;
 
         try {
-            String vertex = new String(loadFromResources(vertexResourceName));
-            String fragment = new String(loadFromResources(fragmentResourceName));
+            String vertex = new String(FSUtil.loadResource(vertexResourceName));
+            String fragment = new String(FSUtil.loadResource(fragmentResourceName));
             prepareShaders(vertex, fragment);
-        } catch (ResourceRuntimeException ex) {
+        } catch (RuntimeException ex) {
             getLogger().error("Error loading shader {} {}", vertexResourceName, fragmentResourceName, ex);
             throw ex;
         }
@@ -49,10 +50,10 @@ public abstract class AbstractShader implements IResource {
         extractUniforms(vertex);
         extractUniforms(fragment);
 
-        uniforms.removeIf(u -> u == null || u.getuLocation() == null && (u.getuLocations() == null || u.getuLocations().isEmpty()));
+        uniformDTOS.removeIf(u -> u == null || u.getuLocation() == null && (u.getuLocations() == null || u.getuLocations().isEmpty()));
 
-        for (Uniform uniform : uniforms) {
-            uniformMap.put(uniform.getName(), uniform.getuLocation() != null ? uniform.getuLocation() : uniform.getuLocations().getFirst());
+        for (UniformDTO uniformDTO : uniformDTOS) {
+            uniformMap.put(uniformDTO.getName(), uniformDTO.getuLocation() != null ? uniformDTO.getuLocation() : uniformDTO.getuLocations().getFirst());
         }
 
         this.readyToUse = true;
@@ -85,7 +86,7 @@ public abstract class AbstractShader implements IResource {
             String name = matcher.group(6).replace(" ", "").trim();
 
             if (GLSLType.valueOfEnum(type) != null) {
-                uniforms.add(new Uniform(GLSLType.valueOfEnum(type), name, GL46.glGetUniformLocation(program, name)));
+                uniformDTOS.add(new UniformDTO(GLSLType.valueOfEnum(type), name, GL46.glGetUniformLocation(program, name)));
                 continue;
             }
 
@@ -99,7 +100,7 @@ public abstract class AbstractShader implements IResource {
                         if (line.contains(glslType.name())) {
                             String[] parts = line.trim().split("\\s+");
                             String fieldName = parts[parts.length - 1].replace(";", "").trim();
-                            uniforms.add(new Uniform(glslType, fieldName, name, GL46.glGetUniformLocation(program, name + "." + fieldName)));
+                            uniformDTOS.add(new UniformDTO(glslType, fieldName, name, GL46.glGetUniformLocation(program, name + "." + fieldName)));
                         }
                     }
                 }
@@ -107,8 +108,8 @@ public abstract class AbstractShader implements IResource {
         }
     }
 
-    public List<Uniform> getUniforms() {
-        return uniforms;
+    public List<UniformDTO> getUniforms() {
+        return uniformDTOS;
     }
 
     public Map<String, Integer> getUniformMap() {
@@ -124,12 +125,12 @@ public abstract class AbstractShader implements IResource {
         }
     }
 
-    public void bind(Uniform uniform, Object data) {
+    public void bind(UniformDTO uniformDTO, Object data) {
         if (readyToUse) {
 
             if (data == null) return;
-            Integer uLocation = uniform.getuLocation();
-            switch (uniform.getType()) {
+            Integer uLocation = uniformDTO.getuLocation();
+            switch (uniformDTO.getType()) {
                 case f:
                     if (data instanceof FloatBuffer) {
                         GL46.glUniform1fv(uLocation, (FloatBuffer) data);
