@@ -1,7 +1,7 @@
 package com.pine.core.components.component;
 
 import com.artemis.Component;
-import com.pine.core.components.serialization.SerializableResource;
+import com.pine.common.serialization.SerializableResource;
 
 import java.util.List;
 import java.util.UUID;

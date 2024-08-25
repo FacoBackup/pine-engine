@@ -5,9 +5,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.app.view.core.service.WindowService;
+import com.pine.common.SerializationService;
 import com.pine.core.components.component.MeshComponent;
 import com.pine.core.components.component.TransformationComponent;
-import com.pine.core.repository.WorldRepository;
+import com.pine.core.WorldRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -20,8 +21,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Objects;
 
-import static com.pine.core.components.serialization.SerializableRepository.CLASS_KEY;
-import static com.pine.core.components.serialization.SerializableRepository.DATA_KEY;
+import static com.pine.common.serialization.SerializableRepository.CLASS_KEY;
+import static com.pine.common.serialization.SerializableRepository.DATA_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -32,9 +33,6 @@ class SerializationServiceTest {
 
     @Autowired
     SerializationService serializationService;
-
-    @Autowired
-    WorldService worldService;
 
     @Autowired
     WorldRepository worldRepository;
@@ -49,11 +47,11 @@ class SerializationServiceTest {
 
     @BeforeEach
     void setUpBefore() {
-        int entity = worldService.addEntity();
-        worldService.addComponent(entity, MeshComponent.class);
+        int entity = worldRepository.addEntity();
+        worldRepository.addComponent(entity, MeshComponent.class);
 
-        int entity2 = worldService.addEntity();
-        worldService.addComponent(entity2, TransformationComponent.class);
+        int entity2 = worldRepository.addEntity();
+        worldRepository.addComponent(entity2, TransformationComponent.class);
 
         serialized = serializationService.serializeAll();
     }

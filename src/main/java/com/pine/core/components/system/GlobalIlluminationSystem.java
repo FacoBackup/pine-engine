@@ -4,7 +4,7 @@ import com.artemis.systems.IteratingSystem;
 import org.springframework.stereotype.Component;
 import com.artemis.annotations.All;
 
-@Component
+
 @All
 public class GlobalIlluminationSystem extends IteratingSystem {
     @Override
