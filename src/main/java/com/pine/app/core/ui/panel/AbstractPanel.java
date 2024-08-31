@@ -1,13 +1,12 @@
 package com.pine.app.core.ui.panel;
 
-import com.pine.App;
 import com.pine.app.core.service.WindowService;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewTag;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.WindowRuntimeException;
+import com.pine.common.ContextService;
 import jakarta.annotation.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -17,7 +16,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +38,7 @@ public abstract class AbstractPanel extends AbstractView {
     @Override
     public void onInitialize() {
         try {
-            injectDependencies();
+            ContextService.injectDependencies(this);
 
             final byte[] xml = loadXML();
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -49,21 +47,6 @@ public abstract class AbstractPanel extends AbstractView {
             processTag(document.getDocumentElement(), this);
         } catch (Exception e) {
             getLogger().warn("Unable to parse XML", e);
-        }
-    }
-
-    private void injectDependencies() {
-        Field[] fields = this.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(Autowired.class)) {
-                Object dependency = App.get().getBean(field.getType());
-                field.setAccessible(true);
-                try {
-                    field.set(this, dependency);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException("Failed to inject dependency", e);
-                }
-            }
         }
     }
 
