@@ -22,9 +22,18 @@ import java.util.Objects;
 
 public abstract class AbstractPanel extends AbstractView {
     private final Map<String, View> views = new HashMap<>();
+    private IPanelContext internalContext;
 
     public AbstractPanel() {
         super(null, null, null);
+    }
+
+    final public IPanelContext getContext() {
+        return internalContext;
+    }
+
+    final public void setInternalContext(IPanelContext internalContext) {
+        this.internalContext = internalContext;
     }
 
     @Override
@@ -50,7 +59,7 @@ public abstract class AbstractPanel extends AbstractView {
         }
     }
 
-    protected byte[] loadXML() {
+    public final byte[] loadXML() {
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         try (InputStream s = classloader.getResourceAsStream("ui" + File.separator + getClass().getSimpleName() + ".xml")) {
             if (s != null) {
@@ -87,7 +96,7 @@ public abstract class AbstractPanel extends AbstractView {
     }
 
     @Override
-    public View getElementById(String id) {
+    final public View getElementById(String id) {
         return views.get(id);
     }
 
@@ -118,28 +127,29 @@ public abstract class AbstractPanel extends AbstractView {
         return null;
     }
 
-    public void appendChild(View child, AbstractView parent) {
+    final public void appendChild(View child, AbstractView parent) {
         parent.getChildren().add(child);
         if (child.getId() != null) {
             views.put(child.getId(), child);
         }
         if (child.getClass().isAssignableFrom(AbstractPanel.class)) {
             ((AbstractPanel) child).setParent(parent);
+            ((AbstractPanel) child).setInternalContext(getContext());
         }
         child.onInitialize();
     }
 
     @Override
-    public void appendChild(View child) {
+    final public void appendChild(View child) {
         appendChild(child, this);
     }
 
-    protected void setParent(View parent) {
+    final protected void setParent(View parent) {
         this.parent = parent;
     }
 
     @Override
-    public int[] getWindowDimensions() {
+    final public int[] getWindowDimensions() {
         return WindowService.getCurrentWindow().getWindowDimensions();
     }
 }
