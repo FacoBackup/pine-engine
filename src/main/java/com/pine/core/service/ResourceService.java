@@ -24,6 +24,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.pine.core.service.ResourceRepository.MAX_TIMEOUT;
 
@@ -167,6 +169,10 @@ public class ResourceService implements Loggable {
                 break;
             }
         }
+    }
+
+    public List<IResource> getAllByType(ResourceType type) {
+        return repository.getResources().values().stream().filter(r -> r.getResourceType().equals(type)).collect(Collectors.toList());
     }
 
     @Scheduled(cron = "0 */5 * ? * *")
