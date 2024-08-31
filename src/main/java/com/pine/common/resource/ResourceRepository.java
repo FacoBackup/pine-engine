@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public abstract class ResourceRepository {
+public class ResourceRepository {
     /**
      * 5 minutes
      */

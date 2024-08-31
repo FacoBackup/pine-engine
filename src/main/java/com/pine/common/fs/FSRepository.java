@@ -1,8 +1,7 @@
 package com.pine.common.fs;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,7 +30,12 @@ public class FSRepository {
             if (files != null) {
                 for (File file : files) {
                     if (file.isFile()) {
-                        data.add(new FileInfoDTO(file.getName(), file.getTotalSpace(), FileType.valueOfEnum(file.getName()),file.getAbsolutePath()));
+                        data.add(new FileInfoDTO(
+                                file.getName(),
+                                file.getTotalSpace(),
+                                FileType.valueOfEnum(file.getName()),
+                                file.getAbsolutePath(),
+                                DigestUtils.sha1Hex(file.getAbsolutePath())));
                     }
                 }
             }

@@ -18,4 +18,6 @@ public interface View extends Renderable {
     View getPanel();
 
     int[] getWindowDimensions();
+
+    void appendChild(View child);
 }

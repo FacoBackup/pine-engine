@@ -19,7 +19,6 @@ public class Engine {
 
     @PostConstruct
     public void init() throws RuntimeException {
-        resourceService.addResource(new ShaderCreationDTO("shaders/TERRAIN.vert", "shaders/TERRAIN.frag", "terrain"));
         resourceService.addResource(new ShaderCreationDTO("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite"));
         resourceService.addResource(new ShaderCreationDTO("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility"));
         resourceService.addResource(new ShaderCreationDTO("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen"));

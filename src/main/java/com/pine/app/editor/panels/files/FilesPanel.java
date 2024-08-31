@@ -1,5 +1,6 @@
 package com.pine.app.editor.panels.files;
 
+import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.common.Inject;
 import com.pine.common.fs.FSService;
@@ -12,10 +13,12 @@ public class FilesPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
+        View filesRoot = getElementById("filesRoot");
         setInternalContext(new FilesContext(service.getUserRootPath(), service.readFiles(service.getUserRootPath())));
-        appendChild(new FilesHeaderPanel());
-        appendChild(new FilesTreePanel());
-        appendChild(new FilesDirectoryPanel());
+        filesRoot.appendChild(new FilesHeaderPanel());
+        filesRoot.appendChild(new FilesTreePanel());
+        filesRoot.appendChild(new FilesDirectoryPanel());
+
     }
 
 }

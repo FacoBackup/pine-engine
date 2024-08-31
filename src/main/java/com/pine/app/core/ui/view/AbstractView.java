@@ -48,6 +48,7 @@ public abstract class AbstractView implements View {
     public void onInitialize() {
     }
 
+    @Override
     public void appendChild(View child) {
         panel.appendChild(child, this);
     }

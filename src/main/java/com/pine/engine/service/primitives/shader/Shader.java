@@ -11,17 +11,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Shader extends AbstractResource<ShaderCreationDTO> {
-    private final int program;
+    private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;
 
     public Shader(String id, ShaderCreationDTO dto) {
         super(id);
-        program = GL46.glCreateProgram();
-
         try {
+            program = GL46.glCreateProgram();
             prepareShaders(dto.vertex(), dto.fragment());
-        } catch (RuntimeException ex) {
+        } catch (Exception ex) {
+            getLogger().error("Error while creating shader", ex);
             valid = false;
         }
     }

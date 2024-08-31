@@ -4,6 +4,7 @@ import com.pine.app.core.ui.view.*;
 import jakarta.annotation.Nullable;
 
 public enum ViewTag {
+    TEXT("text", TextView.class, false),
     FRAGMENT("fragment", FragmentView.class, true),
     WINDOW("window", WindowView.class, true),
     BUTTON("button", ButtonView.class, false),

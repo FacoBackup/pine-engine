@@ -140,7 +140,7 @@ public abstract class AbstractPanel extends AbstractView {
     }
 
     @Override
-    final public void appendChild(View child) {
+    public void appendChild(View child) {
         appendChild(child, this);
     }
 
