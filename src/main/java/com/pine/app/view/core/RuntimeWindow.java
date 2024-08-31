@@ -1,9 +1,9 @@
 package com.pine.app.view.core;
 
-import com.pine.app.view.component.View;
-import com.pine.app.view.component.panel.AbstractPanel;
+import com.pine.app.view.core.component.View;
+import com.pine.app.view.core.component.panel.AbstractPanel;
 import com.pine.app.view.core.window.AbstractWindow;
-import com.pine.common.FSUtil;
+import com.pine.common.fs.FSUtil;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
 

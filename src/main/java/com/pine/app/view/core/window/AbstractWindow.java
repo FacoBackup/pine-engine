@@ -1,6 +1,6 @@
 package com.pine.app.view.core.window;
 
-import com.pine.app.view.component.Renderable;
+import com.pine.app.view.core.component.Renderable;
 import com.pine.app.view.core.window.gl3.ImGuiImplGl3;
 import com.pine.app.view.core.window.glfw.ImGuiImplGlfw;
 import imgui.ImGui;

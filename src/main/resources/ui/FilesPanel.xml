@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<window>
+    <button id="newProject">
+        New project
+    </button>
+    <list id="list"/>
+    Projects
+</window>

@@ -1,7 +1,6 @@
 package com.pine.app.view.projects;
 
-import com.pine.app.view.component.view.RepeatingViewItem;
-import com.pine.app.view.core.state.StringState;
+import com.pine.app.view.core.component.view.RepeatingViewItem;
 
 import java.io.File;
 import java.util.Date;

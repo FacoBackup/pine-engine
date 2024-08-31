@@ -1,6 +1,7 @@
 package com.pine.app.view.component.panel;
 
-import com.pine.app.view.component.view.*;
+import com.pine.app.view.core.component.panel.AbstractPanel;
+import com.pine.app.view.core.component.view.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

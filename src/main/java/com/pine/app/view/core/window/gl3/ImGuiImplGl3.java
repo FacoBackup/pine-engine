@@ -95,11 +95,11 @@ public final class ImGuiImplGl3 {
      *  3.0       130       "#version 130"
      *  3.1       140       "#version 140"
      *  3.2       150       "#version 150"
-     *  3.3       330       "#version 330 core"
-     *  4.0       400       "#version 400 core"
-     *  4.1       410       "#version 410 core"
-     *  4.2       420       "#version 410 core"
-     *  4.3       430       "#version 430 core"
+     *  3.3       330       "#version 330 engine"
+     *  4.0       400       "#version 400 engine"
+     *  4.1       410       "#version 410 engine"
+     *  4.2       420       "#version 410 engine"
+     *  4.3       430       "#version 430 engine"
      *  ES 3.0    300       "#version 300 es"   = WebGL 2.0
      * ---------------------------------------
      * </pre>

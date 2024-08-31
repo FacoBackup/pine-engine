@@ -1,8 +1,8 @@
 package com.pine.app.view.projects.panel;
 
-import com.pine.app.view.component.panel.AbstractPanel;
-import com.pine.app.view.component.view.ButtonView;
-import com.pine.app.view.component.view.InputView;
+import com.pine.app.view.core.component.panel.AbstractPanel;
+import com.pine.app.view.core.component.view.ButtonView;
+import com.pine.app.view.core.component.view.InputView;
 import com.pine.app.view.projects.ProjectDTO;
 
 import java.util.function.Consumer;
