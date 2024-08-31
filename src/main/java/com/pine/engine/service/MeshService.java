@@ -1,11 +1,11 @@
 package com.pine.engine.service;
 
 import com.pine.common.resource.IResource;
+import com.pine.common.resource.ResourceService;
 import com.pine.engine.service.primitives.mesh.Mesh;
 import com.pine.engine.service.primitives.mesh.MeshDTO;
 import com.pine.engine.service.primitives.mesh.MeshRenderingMode;
 import com.pine.engine.service.primitives.mesh.MeshRuntimeData;
-import com.pine.common.resource.ResourceService;
 import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
 import org.springframework.lang.NonNull;

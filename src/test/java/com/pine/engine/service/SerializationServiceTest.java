@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.app.view.core.service.WindowService;
+import com.pine.app.core.service.WindowService;
 import com.pine.common.serialization.SerializationService;
 import com.pine.engine.components.component.MeshComponent;
 import com.pine.engine.components.component.TransformationComponent;

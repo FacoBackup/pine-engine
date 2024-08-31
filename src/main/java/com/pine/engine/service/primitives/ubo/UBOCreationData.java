@@ -1,7 +1,7 @@
 package com.pine.engine.service.primitives.ubo;
 
-import com.pine.common.resource.ResourceType;
 import com.pine.common.resource.IResourceCreationData;
+import com.pine.common.resource.ResourceType;
 
 import java.util.List;
 

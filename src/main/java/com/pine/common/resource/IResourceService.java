@@ -1,6 +1,6 @@
 package com.pine.common.resource;
 
-import com.pine.app.Loggable;
+import com.pine.common.Loggable;
 
 import java.util.List;
 

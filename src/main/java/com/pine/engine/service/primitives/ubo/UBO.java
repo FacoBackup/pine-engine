@@ -1,7 +1,7 @@
 package com.pine.engine.service.primitives.ubo;
 
-import com.pine.common.resource.ResourceType;
 import com.pine.common.resource.AbstractResource;
+import com.pine.common.resource.ResourceType;
 import com.pine.engine.service.primitives.GLSLType;
 import org.lwjgl.opengl.GL46;
 

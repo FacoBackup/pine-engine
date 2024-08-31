@@ -1,7 +1,7 @@
 package com.pine.engine.service.primitives.mesh;
 
-import com.pine.common.resource.ResourceType;
 import com.pine.common.resource.IResourceCreationData;
+import com.pine.common.resource.ResourceType;
 import jakarta.annotation.Nullable;
 
 public record MeshDTO(float[] vertices,

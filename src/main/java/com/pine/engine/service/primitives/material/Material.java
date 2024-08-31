@@ -1,8 +1,8 @@
 package com.pine.engine.service.primitives.material;
 
 
-import com.pine.common.resource.ResourceType;
 import com.pine.common.resource.AbstractResource;
+import com.pine.common.resource.ResourceType;
 
 /**
  * Collection of uniforms attributes related to a shader

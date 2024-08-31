@@ -2,9 +2,9 @@ package com.pine.engine.service;
 
 import com.pine.common.resource.IResource;
 import com.pine.common.resource.ResourceService;
+import com.pine.engine.service.primitives.ubo.UBO;
 import com.pine.engine.service.primitives.ubo.UBOCreationData;
 import com.pine.engine.service.primitives.ubo.UBORuntimeData;
-import com.pine.engine.service.primitives.ubo.UBO;
 import org.lwjgl.opengl.GL46;
 import org.springframework.stereotype.Repository;
 
