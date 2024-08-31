@@ -52,33 +52,24 @@ public class UBO extends AbstractResource<UBOCreationData> {
         return buffer;
     }
 
-    public void bindWithShader(int shaderProgram) {
-        GL46.glUseProgram(shaderProgram);
-        int index = GL46.glGetUniformBlockIndex(shaderProgram, blockName);
-        GL46.glUniformBlockBinding(shaderProgram, index, this.blockPoint);
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
+    public static int getBlockPointIncrement() {
+        return blockPointIncrement;
     }
 
-    public void bind() {
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, buffer);
+    public List<UBOItem> getItems() {
+        return items;
     }
 
-    public void unbind() {
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
+    public List<String> getKeys() {
+        return keys;
     }
 
-
-    public void updateData(String name, ByteBuffer data) {
-        UBOItem item = items.get(keys.indexOf(name));
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, buffer);
-        GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, item.offset, data);
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
+    public String getBlockName() {
+        return blockName;
     }
 
-    public void updateBuffer(ByteBuffer data) {
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, buffer);
-        GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, 0, data);
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
+    public int getBlockPoint() {
+        return blockPoint;
     }
 
     private static int calculate(List<UBOData> dataArray) {

@@ -2,10 +2,10 @@ package com.pine.core.service.repository;
 
 import com.pine.common.FSUtil;
 import com.pine.core.service.common.IResource;
-import com.pine.core.service.common.IResourceRepository;
+import com.pine.core.service.common.IResourceService;
 import com.pine.core.service.repository.primitives.shader.Shader;
 import com.pine.core.service.repository.primitives.shader.ShaderCreationDTO;
-import com.pine.core.service.repository.primitives.shader.ShaderRuntimeDTO;
+import com.pine.core.service.repository.primitives.shader.ShaderRuntimeData;
 import com.pine.core.service.repository.primitives.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;
 import org.springframework.stereotype.Repository;
@@ -15,12 +15,12 @@ import java.nio.IntBuffer;
 import java.util.Objects;
 
 @Repository
-public class ShaderRepository implements IResourceRepository<Shader, ShaderRuntimeDTO, ShaderCreationDTO> {
+public class ShaderService implements IResourceService<Shader, ShaderRuntimeData, ShaderCreationDTO> {
     private int currentSamplerIndex = 0;
     private String currentShaderId;
 
     @Override
-    public void bind(Shader instance, ShaderRuntimeDTO data) {
+    public void bind(Shader instance, ShaderRuntimeData data) {
         bindProgram(instance);
         var uniforms = instance.getUniforms();
         for (var entry : data.getUniformData().entrySet()) {

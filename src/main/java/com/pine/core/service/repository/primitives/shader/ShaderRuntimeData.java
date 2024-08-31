@@ -5,7 +5,7 @@ import com.pine.core.service.common.IResourceRuntimeData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShaderRuntimeDTO implements IResourceRuntimeData {
+public class ShaderRuntimeData implements IResourceRuntimeData {
     private final Map<String, Object> uniformData = new HashMap<>();
 
     public Map<String, Object> getUniformData() {

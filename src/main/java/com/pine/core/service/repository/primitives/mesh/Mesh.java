@@ -2,6 +2,7 @@ package com.pine.core.service.repository.primitives.mesh;
 
 import com.pine.core.service.ResourceType;
 import com.pine.core.service.common.AbstractResource;
+import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -16,13 +17,11 @@ public class Mesh extends AbstractResource<MeshDTO> {
     private final int indexVboId;
     private Integer uvVboId;
     private Integer normalVboId;
-    protected boolean loaded = false;
 
     public Mesh(String id, MeshDTO dto) {
         super(id);
         this.triangleCount = dto.indices().length / 3;
         this.vertexCount = dto.indices().length;
-        this.loaded = true;
 
         vaoId = GL46.glGenVertexArrays();
         GL46.glBindVertexArray(vaoId);
@@ -68,65 +67,26 @@ public class Mesh extends AbstractResource<MeshDTO> {
         GL46.glBindVertexArray(0);
     }
 
-    public void bindResources() {
-        GL46.glBindVertexArray(vaoId);
-
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, vertexVboId);
-        GL46.glEnableVertexAttribArray(0);
-
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, uvVboId);
-        GL46.glEnableVertexAttribArray(1);
-
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, normalVboId);
-        GL46.glEnableVertexAttribArray(2);
-
-        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, indexVboId);
+    public int getVaoId() {
+        return vaoId;
     }
 
-    public void unbindResources() {
-        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        GL46.glDisableVertexAttribArray(0);
-        GL46.glDisableVertexAttribArray(1);
-        GL46.glDisableVertexAttribArray(2);
-
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
-        GL46.glBindVertexArray(0);
+    public int getVertexVboId() {
+        return vertexVboId;
     }
 
-    public void draw() {
-        bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLES, vertexCount, GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+    public int getIndexVboId() {
+        return indexVboId;
     }
 
-    /**
-     * Draws the mesh as a line loop.
-     */
-    public void drawLineLoop() {
-        bindResources();
-        GL46.glDrawElements(GL46.GL_LINE_LOOP, vertexCount, GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+    @Nullable
+    public Integer getUvVboId() {
+        return uvVboId;
     }
 
-
-    public void drawTriangleStrip() {
-        bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLE_STRIP, vertexCount, GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
-    }
-
-    public void drawTriangleFan() {
-        bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLE_FAN, vertexCount, GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
-    }
-
-
-    public void drawLines() {
-        bindResources();
-        GL46.glDrawElements(GL46.GL_LINES, vertexCount, GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+    @Nullable
+    public Integer getNormalVboId() {
+        return normalVboId;
     }
 
     @Override
@@ -140,9 +100,5 @@ public class Mesh extends AbstractResource<MeshDTO> {
 
     public int getTriangleCount() {
         return triangleCount;
-    }
-
-    public boolean isLoaded() {
-        return loaded;
     }
 }

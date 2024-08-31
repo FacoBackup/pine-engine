@@ -4,7 +4,7 @@ import com.pine.app.Loggable;
 
 import java.util.UUID;
 
-public interface IResourceRepository<T extends IResource, R extends IResourceRuntimeData, C extends IResourceCreationData> extends Loggable {
+public interface IResourceService<T extends IResource, R extends IResourceRuntimeData, C extends IResourceCreationData> extends Loggable {
 
     /**
      * Bind with custom data

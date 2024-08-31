@@ -5,7 +5,6 @@ public enum ResourceType {
     MATERIAL,
     TEXTURE,
     AUDIO,
-    TERRAIN,
     SHADER,
     UBO
 }

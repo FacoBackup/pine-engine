@@ -1,14 +1,14 @@
 package com.pine.core.service.repository;
 
 import com.pine.core.service.common.IResource;
-import com.pine.core.service.common.IResourceRepository;
+import com.pine.core.service.common.IResourceService;
 import com.pine.core.service.repository.primitives.EmptyRuntimeData;
 import com.pine.core.service.repository.primitives.texture.Texture;
 import com.pine.core.service.repository.primitives.texture.TextureCreationDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TextureRepository implements IResourceRepository<Texture, EmptyRuntimeData, TextureCreationDTO> {
+public class TextureService implements IResourceService<Texture, EmptyRuntimeData, TextureCreationDTO> {
 
     @Override
     public void bind(Texture instance, EmptyRuntimeData data) {
