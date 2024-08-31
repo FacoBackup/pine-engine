@@ -5,7 +5,7 @@ import com.artemis.systems.IteratingSystem;
 import com.pine.core.components.component.TerrainComponent;
 import org.springframework.stereotype.Component;
 
-@Component
+
 @All(TerrainComponent.class)
 public class TerrainRendererSystem extends IteratingSystem {
     @Override

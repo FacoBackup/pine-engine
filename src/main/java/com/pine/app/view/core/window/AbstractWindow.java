@@ -1,9 +1,6 @@
 package com.pine.app.view.core.window;
 
-import com.pine.app.IResource;
-import com.pine.app.ResourceRuntimeException;
 import com.pine.app.view.component.Renderable;
-import com.pine.app.view.component.View;
 import com.pine.app.view.core.window.gl3.ImGuiImplGl3;
 import com.pine.app.view.core.window.glfw.ImGuiImplGlfw;
 import imgui.ImGui;
@@ -17,7 +14,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
-public abstract class AbstractWindow implements IResource, Renderable {
+public abstract class AbstractWindow implements Renderable {
     private static final String GLSL_VERSION = "#version 130";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
@@ -95,7 +92,7 @@ public abstract class AbstractWindow implements IResource, Renderable {
         });
     }
 
-    protected abstract void initFonts() throws WindowRuntimeException, ResourceRuntimeException;
+    protected abstract void initFonts() throws WindowRuntimeException, RuntimeException;
 
     public void dispose() {
         imGuiGl3.dispose();
