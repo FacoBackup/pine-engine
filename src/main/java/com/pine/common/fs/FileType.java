@@ -3,6 +3,8 @@ package com.pine.common.fs;
 import jakarta.annotation.Nullable;
 import org.springframework.lang.NonNull;
 
+import java.util.Objects;
+
 public enum FileType {
     MESH("Mesh", ".pmesh"),
     TEXTURE("Texture", ".ptex"),
@@ -22,7 +24,7 @@ public enum FileType {
     @NonNull
     public static FileType valueOfEnum(String extension) {
         for (FileType ft : FileType.values()) {
-            if (ft.extension.equals(extension)) {
+            if (Objects.equals(ft.extension, extension)) {
                 return ft;
             }
         }

@@ -25,7 +25,7 @@ public class ContextService {
             throw new RuntimeException("Context is not ready");
         }
 
-        Field[] fields = instance.getClass().getDeclaredFields();
+        Field[] fields = instance.getClass().getFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(Inject.class)) {
                 Object dependency = context.getBean(field.getType());

@@ -1,21 +1,24 @@
 package com.pine.app.projects.panel;
 
+import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.InputView;
-import com.pine.app.projects.ProjectDTO;
+import com.pine.app.ProjectDTO;
+import com.pine.common.Inject;
 
 import java.util.function.Consumer;
 
 public class ProjectRowPanel extends AbstractPanel {
+    @Inject
+    public ProjectService projectService;
+
     private final ProjectDTO dto;
-    private final Consumer<ProjectDTO> openProject;
     private final Consumer<ProjectDTO> removeProject;
     private InputView name;
 
-    public ProjectRowPanel(ProjectDTO dto, Consumer<ProjectDTO> openProject, Consumer<ProjectDTO> removeProject) {
+    public ProjectRowPanel(ProjectDTO dto, Consumer<ProjectDTO> removeProject) {
         this.dto = dto;
-        this.openProject = openProject;
         this.removeProject = removeProject;
     }
 
@@ -25,27 +28,27 @@ public class ProjectRowPanel extends AbstractPanel {
         var edit = (ButtonView) getElementById("edit");
         var remove = (ButtonView) getElementById("delete");
         var open = (ButtonView) getElementById("open");
-        name = (InputView) getElementById("name");
 
+        name = (InputView) getElementById("name");
         name.setOnChange(dto::setName);
         name.setState(dto.getName());
-
         name.setEnabled(false);
 
         edit.setOnClick(() -> {
             name.setEnabled(!name.isEnabled());
-            dto.setName(name.getValue());
-            if(name.isEnabled()) {
+            if (name.isEnabled()) {
                 edit.setInnerText("Save");
                 remove.setVisible(false);
                 open.setVisible(false);
-            }else{
+            } else {
+                dto.setName(name.getValue());
                 edit.setInnerText("Edit");
                 remove.setVisible(true);
                 open.setVisible(true);
+                projectService.writeProject(dto);
             }
         });
         remove.setOnClick(() -> removeProject.accept(dto));
-        open.setOnClick(() -> openProject.accept(dto));
+        open.setOnClick(() -> projectService.openProject(dto));
     }
 }

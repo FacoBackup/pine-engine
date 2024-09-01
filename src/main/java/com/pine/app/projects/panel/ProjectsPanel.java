@@ -1,18 +1,23 @@
 package com.pine.app.projects.panel;
 
+import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.RepeatingView;
 import com.pine.app.core.ui.view.WindowView;
-import com.pine.app.projects.ProjectDTO;
+import com.pine.app.ProjectDTO;
+import com.pine.common.Inject;
 
 import java.util.List;
 
 
-public class ProjectListPanel extends AbstractPanel {
+public class ProjectsPanel extends AbstractPanel {
+    @Inject
+    public ProjectService projectService;
+
     private final List<ProjectDTO> data;
 
-    public ProjectListPanel(List<ProjectDTO> data) {
+    public ProjectsPanel(List<ProjectDTO> data) {
         this.data = data;
     }
 
@@ -25,17 +30,14 @@ public class ProjectListPanel extends AbstractPanel {
 
         var create = (ButtonView) getElementById("newProject");
         create.setOnClick(() -> {
-            data.add(new ProjectDTO());
+            data.add(projectService.createNewProject());
         });
-        list.setGetView((item) -> new ProjectRowPanel((ProjectDTO) item, this::openProject, this::removeProject));
+        list.setGetView((item) -> new ProjectRowPanel((ProjectDTO) item, this::removeProject));
         list.setData(data);
     }
 
     private void removeProject(ProjectDTO projectDTO) {
-
-    }
-
-    private void openProject(ProjectDTO projectDTO) {
-
+        projectService.deleteProject(projectDTO);
+        data.remove(projectDTO);
     }
 }

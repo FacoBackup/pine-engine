@@ -18,7 +18,7 @@ public class App implements SmartInitializingSingleton {
 
     @Override
     public void afterSingletonsInstantiated() {
-        windowService.addWindow(new ProjectsWindow());
+        windowService.openWindow(new ProjectsWindow());
         try {
             engine.init();
         } catch (RuntimeException e) {

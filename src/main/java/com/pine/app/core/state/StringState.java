@@ -18,6 +18,6 @@ public class StringState extends State<ImString> {
     }
 
     public String get() {
-        return state.get();
+        return new String(state.getData());
     }
 }

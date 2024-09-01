@@ -3,6 +3,7 @@ package com.pine.app.core.window;
 import com.pine.app.core.ui.Renderable;
 import com.pine.app.core.window.gl3.ImGuiImplGl3;
 import com.pine.app.core.window.glfw.ImGuiImplGlfw;
+import com.pine.common.ContextService;
 import imgui.ImGui;
 import imgui.flag.ImGuiConfigFlags;
 import org.lwjgl.glfw.*;
@@ -23,11 +24,14 @@ public abstract class AbstractWindow implements Renderable {
     private WindowConfiguration windowConfig;
     private final int[] dimensions = new int[2];
 
+    public AbstractWindow() {
+        ContextService.injectDependencies(this);
+    }
+
     @Override
     public void onInitialize() {
         createGLFWContext(windowConfig);
         ImGui.createContext();
-        postCreation();
         try {
             initFonts();
         } catch (Exception e) {
@@ -36,8 +40,6 @@ public abstract class AbstractWindow implements Renderable {
         imGuiGlfw.init(handle, true);
         imGuiGl3.init(GLSL_VERSION);
     }
-
-    protected abstract void postCreation();
 
     protected void createGLFWContext(final WindowConfiguration config) {
         GLFWErrorCallback.createPrint(System.err).set();

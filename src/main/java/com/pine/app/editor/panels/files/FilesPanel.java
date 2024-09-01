@@ -8,7 +8,7 @@ import com.pine.common.fs.FSService;
 public class FilesPanel extends AbstractPanel {
 
     @Inject
-    private FSService service;
+    public FSService service;
 
     @Override
     public void onInitialize() {

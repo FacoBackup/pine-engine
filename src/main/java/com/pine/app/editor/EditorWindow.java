@@ -1,25 +1,25 @@
-package com.pine.app.projects;
+package com.pine.app.editor;
 
-import com.pine.app.ProjectDTO;
 import com.pine.app.ProjectService;
 import com.pine.app.core.RuntimeWindow;
-import com.pine.app.projects.panel.ProjectsPanel;
+import com.pine.app.editor.panels.files.FilesPanel;
 import com.pine.common.Inject;
+import imgui.ImGui;
+import imgui.ImGuiIO;
+import imgui.flag.ImGuiConfigFlags;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class ProjectsWindow extends RuntimeWindow {
-    private final List<ProjectDTO> data = new ArrayList<>();
-
+public class EditorWindow extends RuntimeWindow {
     @Inject
     public ProjectService projectService;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        data.addAll(projectService.listAll());
-        appendChild(new ProjectsPanel(data));
+        ImGuiIO io = ImGui.getIO();
+        io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
+
+        appendChild(new FilesPanel());
     }
 
     public int getWindowWidth() {
@@ -27,7 +27,7 @@ public class ProjectsWindow extends RuntimeWindow {
     }
 
     public String getWindowName() {
-        return "Projects";
+        return projectService.getCurrentProject().getName();
     }
 
     public int getWindowHeight() {

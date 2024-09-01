@@ -1,11 +1,13 @@
 package com.pine.app.core.ui.panel;
 
+import com.pine.app.core.repository.WindowRepository;
 import com.pine.app.core.service.WindowService;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewTag;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.WindowRuntimeException;
 import com.pine.common.ContextService;
+import com.pine.common.Inject;
 import jakarta.annotation.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -21,11 +23,15 @@ import java.util.Map;
 import java.util.Objects;
 
 public abstract class AbstractPanel extends AbstractView {
+    @Inject
+    public WindowRepository windowRepository;
+
     private final Map<String, View> views = new HashMap<>();
     private IPanelContext internalContext;
 
     public AbstractPanel() {
         super(null, null, null);
+        ContextService.injectDependencies(this);
     }
 
     final public IPanelContext getContext() {
@@ -47,8 +53,6 @@ public abstract class AbstractPanel extends AbstractView {
     @Override
     public void onInitialize() {
         try {
-            ContextService.injectDependencies(this);
-
             final byte[] xml = loadXML();
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -149,7 +153,7 @@ public abstract class AbstractPanel extends AbstractView {
     }
 
     @Override
-    final public int[] getWindowDimensions() {
-        return WindowService.getCurrentWindow().getWindowDimensions();
+    public int[] getWindowDimensions() {
+        return windowRepository.getCurrentWindow().getWindowDimensions();
     }
 }

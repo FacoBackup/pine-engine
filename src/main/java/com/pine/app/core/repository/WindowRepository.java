@@ -8,13 +8,13 @@ import java.util.Map;
 
 @Repository
 public class WindowRepository {
-    private final Map<String, AbstractWindow> windows = new HashMap<>();
+    private AbstractWindow currentWindow;
 
-    public <T extends AbstractWindow> void addWindow(T window) {
-        windows.put(window.getClass().getName(), window);
+    public void setCurrentWindow(AbstractWindow currentWindow) {
+        this.currentWindow = currentWindow;
     }
 
-    public AbstractWindow findWindow(Class<? extends AbstractWindow> clazz) {
-        return windows.get(clazz.getName());
+    public AbstractWindow getCurrentWindow() {
+        return currentWindow;
     }
 }
