@@ -1,8 +1,8 @@
 package com.pine;
 
-import com.pine.core.Engine;
-import com.pine.app.view.core.service.WindowService;
-import com.pine.app.view.projects.ProjectsWindow;
+import com.pine.app.core.service.WindowService;
+import com.pine.app.projects.ProjectsWindow;
+import com.pine.engine.Engine;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class App implements SmartInitializingSingleton {
 
     @Override
     public void afterSingletonsInstantiated() {
-        windowService.addWindow(new ProjectsWindow());
+        windowService.openWindow(ProjectsWindow.class);
         try {
             engine.init();
         } catch (RuntimeException e) {

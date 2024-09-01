@@ -2,7 +2,7 @@ package com.pine.common.serialization;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.app.Loggable;
+import com.pine.common.Loggable;
 
 
 public interface SerializableInstance extends Loggable {
