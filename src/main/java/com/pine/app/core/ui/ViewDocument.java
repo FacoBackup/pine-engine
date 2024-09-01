@@ -35,12 +35,10 @@ public class ViewDocument {
         if (child.getId() != null) {
             views.put(child.getId(), child);
         }
-        if (child.getClass().isAssignableFrom(AbstractPanel.class)) {
-            ((AbstractPanel) child).setParent(parent);
-            if (parent.getClass().isAssignableFrom(AbstractPanel.class)) {
-                ((AbstractPanel) child).setInternalContext(((AbstractPanel) parent).getContext());
-            }
+        if(child.getContext() == null || parent.getContext() != null) {
+            child.setInternalContext(parent.getContext());
         }
+        child.setParent(parent);
         child.setDocument(this);
         child.onInitialize();
     }
@@ -61,6 +59,10 @@ public class ViewDocument {
             views.put(id, instance);
         }
         parent.getChildren().add(instance);
+        if(instance.getContext() == null || parent.getContext() != null) {
+            instance.setInternalContext(parent.getContext());
+        }
+        instance.setParent(parent);
         instance.setDocument(this);
         instance.onInitialize();
         return instance;

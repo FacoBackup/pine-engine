@@ -49,7 +49,7 @@ public class ProjectService implements Loggable {
 
     public List<ProjectDTO> listAll() {
         List<ProjectDTO> projects = new ArrayList<>();
-        List<String> directories = fsService.readDirectories(fsService.getUserRootPath());
+        List<String> directories = fsService.readDirectories(FSService.getUserRootPath());
         for (String directory : directories) {
             if (fsService.containsFile(directory, CONFIG_NAME)) {
                 try {

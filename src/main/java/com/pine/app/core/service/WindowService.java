@@ -25,6 +25,10 @@ public class WindowService implements Loggable {
     }
 
     public void openWindow(Class<? extends AbstractWindow> windowClass) {
+        if (WindowService.shouldStop) {
+            return;
+        }
+
         AbstractWindow window;
         try {
             window = windowClass.getConstructor().newInstance();

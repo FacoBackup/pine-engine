@@ -2,6 +2,7 @@ package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewDocument;
+import com.pine.app.core.ui.panel.IPanelContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class AbstractView implements View {
     protected View parent;
     protected String innerText;
     protected boolean visible = true;
+    protected IPanelContext internalContext;
 
     public AbstractView(View parent, String id) {
         this.parent = parent;
@@ -25,6 +27,16 @@ public class AbstractView implements View {
     @Override
     public ViewDocument getDocument() {
         return document;
+    }
+
+    @Override
+    public IPanelContext getContext() {
+        return internalContext;
+    }
+
+    @Override
+    public void setInternalContext(IPanelContext internalContext) {
+        this.internalContext = internalContext;
     }
 
     @Override
@@ -86,6 +98,7 @@ public class AbstractView implements View {
         }
     }
 
+    @Override
     public void setParent(View parent) {
         this.parent = parent;
     }

@@ -1,6 +1,8 @@
 package com.pine.app.core.ui;
 
 
+import com.pine.app.core.ui.panel.IPanelContext;
+
 import java.util.List;
 
 public interface View extends Renderable {
@@ -22,4 +24,10 @@ public interface View extends Renderable {
     ViewDocument getDocument();
 
     void setDocument(ViewDocument document);
+
+    IPanelContext getContext();
+
+    void setInternalContext(IPanelContext internalContext);
+
+    void setParent(View parent);
 }

@@ -21,7 +21,7 @@ public class FSService implements Loggable {
         return repository.readFiles(path);
     }
 
-    public String getUserRootPath() {
+    public static String getUserRootPath() {
         return System.getProperty("user.home");
     }
 

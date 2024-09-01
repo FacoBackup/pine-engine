@@ -17,19 +17,10 @@ import java.io.InputStream;
 import java.util.Objects;
 
 public abstract class AbstractPanel extends AbstractView {
-    private IPanelContext internalContext;
 
     public AbstractPanel() {
         super(null, null);
         ContextService.injectDependencies(this);
-    }
-
-    final public IPanelContext getContext() {
-        return internalContext;
-    }
-
-    final public void setInternalContext(IPanelContext internalContext) {
-        this.internalContext = internalContext;
     }
 
     @Override
