@@ -1,7 +1,6 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class AccordionView extends AbstractView {
@@ -10,9 +9,9 @@ public class AccordionView extends AbstractView {
     }
 
     @Override
-    public void render() {
+    protected void renderInternal() {
         if (ImGui.collapsingHeader(innerText + internalId)) {
-            super.render();
+            super.renderInternal();
         }
     }
 }

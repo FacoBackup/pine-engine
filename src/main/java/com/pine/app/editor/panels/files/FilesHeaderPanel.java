@@ -4,6 +4,14 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.InputView;
 
 public class FilesHeaderPanel extends AbstractPanel {
+    @Override
+    protected String getDefinition() {
+        return """
+            <inline>
+                <input id="path"/>
+            </inline>
+            """;
+    }
 
     @Override
     public void onInitialize() {

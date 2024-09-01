@@ -1,7 +1,6 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class InlineView extends AbstractView {
@@ -11,12 +10,12 @@ public class InlineView extends AbstractView {
     }
 
     @Override
-    public void render() {
+    protected void renderInternal() {
         int qtt = children.size() - 1;
         for (int i = 0; i <= qtt; i++) {
             View child = children.get(i);
             child.render();
-            if (i < qtt) {
+            if (i < qtt && child.isVisible()) {
                 ImGui.sameLine();
             }
         }

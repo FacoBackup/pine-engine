@@ -1,8 +1,6 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
-import imgui.ImGui;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ public class RepeatingView extends AbstractView {
     }
 
     @Override
-    public void render() {
+    protected void renderInternal() {
         if(!visible){
             return;
         }

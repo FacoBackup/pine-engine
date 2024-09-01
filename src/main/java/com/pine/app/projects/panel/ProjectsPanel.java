@@ -1,11 +1,11 @@
 package com.pine.app.projects.panel;
 
+import com.pine.app.ProjectDTO;
 import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.RepeatingView;
 import com.pine.app.core.ui.view.WindowView;
-import com.pine.app.ProjectDTO;
 import com.pine.common.Inject;
 
 import java.util.List;

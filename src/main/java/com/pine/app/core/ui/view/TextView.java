@@ -1,7 +1,6 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class TextView extends AbstractView{
@@ -10,7 +9,7 @@ public class TextView extends AbstractView{
     }
 
     @Override
-    public void render() {
+    protected void renderInternal() {
         ImGui.text(getInnerText());
     }
 }

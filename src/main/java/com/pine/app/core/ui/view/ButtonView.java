@@ -1,7 +1,6 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class ButtonView extends AbstractView {
@@ -12,7 +11,7 @@ public class ButtonView extends AbstractView {
     }
 
     @Override
-    public void render() {
+    protected void renderInternal() {
         if (!visible) {
             return;
         }

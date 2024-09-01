@@ -1,7 +1,6 @@
 package com.pine.engine;
 
 import com.pine.common.resource.IResourceService;
-import com.pine.engine.service.primitives.shader.ShaderCreationDTO;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

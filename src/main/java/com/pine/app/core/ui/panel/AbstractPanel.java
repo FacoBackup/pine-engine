@@ -5,6 +5,7 @@ import com.pine.app.core.ui.ViewTag;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.WindowRuntimeException;
 import com.pine.common.ContextService;
+import org.intellij.lang.annotations.Language;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,17 +25,15 @@ public abstract class AbstractPanel extends AbstractView {
     }
 
     @Override
-    public void render() {
-        if (!visible) {
-            return;
-        }
-        super.render();
-    }
-
-    @Override
     public void onInitialize() {
         try {
-            final byte[] xml = loadXML();
+            String xmlString = getDefinition();
+            byte[] xml;
+            if (xmlString == null) {
+                xml = loadXML();
+            } else {
+                xml = xmlString.getBytes();
+            }
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
             Document document = docBuilder.parse(new ByteArrayInputStream(xml));
@@ -83,5 +82,10 @@ public abstract class AbstractPanel extends AbstractView {
     @Override
     public void appendChild(View child) {
         getDocument().appendChild(child, this);
+    }
+
+    @Language("xml")
+    protected String getDefinition() {
+        return null;
     }
 }

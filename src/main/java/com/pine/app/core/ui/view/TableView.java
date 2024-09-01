@@ -2,7 +2,6 @@ package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
 import imgui.ImGui;
-import imgui.flag.ImGuiWindowFlags;
 
 public class TableView extends RepeatingView {
     private int maxCells = 3;
@@ -12,16 +11,15 @@ public class TableView extends RepeatingView {
     }
 
     @Override
-    public void render() {
-        if (!visible) {
-            return;
-        }
-
+    protected void renderInternal() {
         ImGui.beginTable(innerText + internalId, maxCells);
         for (RepeatingViewItem item : data) {
             String key = item.getKey();
-            ImGui.tableNextColumn();
-            getView(item, key).render();
+            var child = getView(item, key);
+            if (child.isVisible()) {
+                ImGui.tableNextColumn();
+            }
+            child.render();
         }
         ImGui.endTable();
     }

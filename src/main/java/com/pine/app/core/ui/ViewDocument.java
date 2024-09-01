@@ -1,6 +1,5 @@
 package com.pine.app.core.ui;
 
-import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.core.window.WindowRuntimeException;

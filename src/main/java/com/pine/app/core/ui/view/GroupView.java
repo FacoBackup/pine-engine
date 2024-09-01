@@ -1,7 +1,6 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class GroupView extends AbstractView {
@@ -11,9 +10,9 @@ public class GroupView extends AbstractView {
     }
 
     @Override
-    public void render() {
+    protected void renderInternal() {
         ImGui.beginGroup();
-        super.render();
+        super.renderInternal();
         ImGui.endGroup();
     }
 }

@@ -13,13 +13,9 @@ public class DivView extends AbstractView {
     }
 
     @Override
-    public void render() {
-        if (!visible) {
-            return;
-        }
-
+    protected void renderInternal() {
         ImGui.beginChild(innerText + internalId,  width, height, true, ImGuiWindowFlags.NoScrollbar);
-        super.render();
+        super.renderInternal();
         ImGui.endChild();
     }
 

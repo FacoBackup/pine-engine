@@ -1,7 +1,6 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 import imgui.flag.ImGuiWindowFlags;
 
@@ -17,11 +16,7 @@ public class WindowView extends AbstractView {
     }
 
     @Override
-    public void render() {
-        if (!visible) {
-            return;
-        }
-
+    protected void renderInternal() {
         ImGui.setNextWindowPos(position[0], position[1]);
         if (dimensions[0] > 0 && dimensions[1] > 0) {
             ImGui.setNextWindowSize(dimensions[0], dimensions[1]);
@@ -43,7 +38,7 @@ public class WindowView extends AbstractView {
         }
 
         if (ImGui.begin(tempLabel, flags)) {
-            super.render();
+            super.renderInternal();
         }
         ImGui.end();
     }

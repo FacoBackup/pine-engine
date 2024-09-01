@@ -91,8 +91,7 @@ public class AbstractView implements View {
         this.visible = visible;
     }
 
-    @Override
-    public void render() {
+    protected void renderInternal() {
         for (View child : children) {
             child.render();
         }
@@ -101,6 +100,20 @@ public class AbstractView implements View {
     @Override
     public void setParent(View parent) {
         this.parent = parent;
+    }
+
+    @Override
+    public void beforeRender() {
+    }
+
+    @Override
+    final public void render() {
+        if (!visible) {
+            return;
+        }
+
+        beforeRender();
+        renderInternal();
     }
 }
 

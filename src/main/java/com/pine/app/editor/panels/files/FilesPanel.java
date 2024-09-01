@@ -14,6 +14,15 @@ public class FilesPanel extends AbstractPanel {
     }
 
     @Override
+    protected String getDefinition() {
+        return """
+                <window id="filesRoot">
+                    Files
+                </window>
+                """;
+    }
+
+    @Override
     public void onInitialize() {
         super.onInitialize();
         var context = (FilesContext) internalContext;
