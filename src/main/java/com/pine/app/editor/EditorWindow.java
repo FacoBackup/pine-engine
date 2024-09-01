@@ -16,9 +16,6 @@ public class EditorWindow extends AbstractWindow {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        ImGuiIO io = ImGui.getIO();
-        io.setConfigFlags(ImGuiConfigFlags.DockingEnable);
-
         appendChild(new FilesPanel());
     }
 

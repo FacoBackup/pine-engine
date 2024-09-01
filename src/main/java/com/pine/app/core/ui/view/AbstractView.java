@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class AbstractView implements View {
-    private ViewDocument document;
+    protected ViewDocument document;
     protected final String internalId;
     protected final String id;
     protected final List<View> children = new ArrayList<>();

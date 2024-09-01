@@ -29,14 +29,14 @@ public class FSRepository {
             File[] files = directory.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    if (file.isFile()) {
                         data.add(new FileInfoDTO(
                                 file.getName(),
                                 file.getTotalSpace(),
                                 FileType.valueOfEnum(file.getName()),
                                 file.getAbsolutePath(),
-                                DigestUtils.sha1Hex(file.getAbsolutePath())));
-                    }
+                                DigestUtils.sha1Hex(file.getAbsolutePath()),
+                                !file.isFile()
+                        ));
                 }
             }
         } else {

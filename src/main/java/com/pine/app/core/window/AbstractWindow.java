@@ -12,6 +12,7 @@ import com.pine.common.Inject;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
+import imgui.internal.ImGuiContext;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
@@ -25,10 +26,11 @@ public abstract class AbstractWindow implements Renderable {
     private static final String GLSL_VERSION = "#version 130";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
-    private long handle;
+    private long handle = -1;
     protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
     private final int[] dimensions = new int[2];
-    private final ViewDocument document = new ViewDocument(this);
+    private final ViewDocument viewDocument = new ViewDocument(this);
+    private ImGuiContext context;
     private final AbstractPanel root = new AbstractPanel() {
         @Override
         public void onInitialize() {
@@ -36,7 +38,7 @@ public abstract class AbstractWindow implements Renderable {
 
         @Override
         public ViewDocument getDocument() {
-            return document;
+            return viewDocument;
         }
     };
 
@@ -50,7 +52,7 @@ public abstract class AbstractWindow implements Renderable {
     @Override
     public void onInitialize() {
         createGLFWContext();
-        ImGui.createContext();
+        context = ImGui.createContext();
         try {
             initFonts();
         } catch (Exception e) {
@@ -61,8 +63,10 @@ public abstract class AbstractWindow implements Renderable {
 
         final ImGuiIO io = ImGui.getIO();
         io.setIniFilename(null);
-        io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
+        io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard | ImGuiConfigFlags.DockingEnable);
         io.setConfigViewportsNoTaskBarIcon(true);
+        io.setConfigDockingAlwaysTabBar(true);
+        io.setConfigWindowsResizeFromEdges(true);
     }
 
     protected void createGLFWContext() {
@@ -144,7 +148,7 @@ public abstract class AbstractWindow implements Renderable {
     public void dispose() {
         imGuiGl3.dispose();
         imGuiGlfw.dispose();
-        ImGui.destroyContext();
+        ImGui.destroyContext(context);
         Callbacks.glfwFreeCallbacks(handle);
         GLFW.glfwDestroyWindow(handle);
         GLFW.glfwTerminate();
@@ -153,6 +157,9 @@ public abstract class AbstractWindow implements Renderable {
 
     @Override
     public void render() {
+        if (ImGui.getCurrentContext() != context) {
+            return;
+        }
         clearBuffer();
         imGuiGlfw.newFrame();
         ImGui.newFrame();

@@ -26,8 +26,10 @@ public class ProjectsPanel extends AbstractPanel {
     public void onInitialize() {
         super.onInitialize();
         var list = (RepeatingView) getDocument().getElementById("list");
-        var window = (WindowView) list.getParent();
+        var window = (WindowView) getDocument().getElementById("projectWindow");
         window.setDimensions(getDocument().getWindowDimensions());
+        window.setNoMove(true);
+        window.setNoCollapse(true);
 
         var create = (ButtonView) getDocument().getElementById("newProject");
         create.setOnClick(() -> {

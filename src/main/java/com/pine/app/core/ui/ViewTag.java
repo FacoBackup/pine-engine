@@ -12,6 +12,8 @@ public enum ViewTag {
     ACCORDION("accordion", AccordionView.class, true),
     GROUP("group", GroupView.class, true),
     INLINE("inline", InlineView.class, true),
+    DIV("div", DivView.class, true),
+    TABLE("table", TableView.class, true),
     LIST("list", RepeatingView.class, false);
 
     private final String tag;

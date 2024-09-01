@@ -7,8 +7,8 @@ public record FileInfoDTO(
         long fileSize,
         FileType fileType,
         String absolutePath,
-        String hash
-) implements RepeatingViewItem {
+        String hash,
+        boolean isDirectory) implements RepeatingViewItem {
     @Override
     public String getKey() {
         return hash;

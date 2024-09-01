@@ -6,7 +6,6 @@ import com.pine.app.core.window.AbstractWindow;
 import com.pine.common.Loggable;
 import jakarta.annotation.PostConstruct;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +14,7 @@ import java.util.Map;
 @Service
 public class WindowService implements Loggable {
     public static boolean shouldStop = false;
+    public static Long runningWindow;
 
     @Autowired
     private WindowRepository windowRepository;
@@ -39,22 +39,39 @@ public class WindowService implements Loggable {
         final String key = window.getClass().getCanonicalName();
         instances.put(key,
                 new WindowInstance(new Thread(() -> {
-                    window.onInitialize();
-                    while (!GLFW.glfwWindowShouldClose(window.getHandle()) && !shouldStop) {
-                        window.render();
-                    }
-                    window.dispose();
-                    instances.remove(key);
+                    beginLoop(window);
+                    endLoop(window, instances, key);
                 }), window));
         if (instances.containsKey(key)) {
             instances.get(key).thread().start();
         }
     }
 
+    private static void endLoop(AbstractWindow window, Map<String, WindowInstance> instances, String key) {
+        window.dispose();
+        instances.remove(key);
+        runningWindow = null;
+    }
+
+    private static void beginLoop(AbstractWindow window) {
+        boolean shouldRun = true;
+        while (shouldRun && !shouldStop) {
+            if (runningWindow == null) {
+                window.onInitialize();
+                runningWindow = window.getHandle();
+            } else if (runningWindow == window.getHandle()) {
+                shouldRun = !GLFW.glfwWindowShouldClose(window.getHandle());
+                if(shouldRun) {
+                    window.render();
+                }
+            }
+        }
+    }
+
     public void closeWindow(Class<? extends AbstractWindow> windowClass) {
         WindowInstance instance = windowRepository.getInstances().get(windowClass.getCanonicalName());
         if (instance != null) {
-            GLFW.glfwWindowShouldClose(instance.window().getHandle());
+            GLFW.glfwSetWindowShouldClose(instance.window().getHandle(), true);
         }
     }
 

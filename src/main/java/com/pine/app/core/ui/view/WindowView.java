@@ -23,7 +23,9 @@ public class WindowView extends AbstractView {
         }
 
         ImGui.setNextWindowPos(position[0], position[1]);
-        ImGui.setNextWindowSize(dimensions[0], dimensions[1]);
+        if (dimensions[0] > 0 && dimensions[1] > 0) {
+            ImGui.setNextWindowSize(dimensions[0], dimensions[1]);
+        }
 
         final String tempLabel = innerText + internalId;
         int flags = ImGuiWindowFlags.None;
@@ -40,45 +42,26 @@ public class WindowView extends AbstractView {
             flags |= ImGuiWindowFlags.NoCollapse;
         }
 
-        ImGui.begin(tempLabel, flags);
-        super.render();
+        if (ImGui.begin(tempLabel, flags)) {
+            super.render();
+        }
         ImGui.end();
-    }
-
-    public boolean isAutoResize() {
-        return autoResize;
     }
 
     public void setAutoResize(boolean autoResize) {
         this.autoResize = autoResize;
     }
 
-    public int getWidth() {
-        return this.dimensions[0];
-    }
-
     public void setWidth(int width) {
         this.dimensions[0] = width;
-    }
-
-    public int getHeight() {
-        return this.dimensions[1];
     }
 
     public void setHeight(int height) {
         this.dimensions[1] = height;
     }
 
-    public int getLeft() {
-        return this.position[0];
-    }
-
     public void setLeft(int left) {
         this.position[0] = left;
-    }
-
-    public int getTop() {
-        return this.position[1];
     }
 
     public void setTop(int top) {
