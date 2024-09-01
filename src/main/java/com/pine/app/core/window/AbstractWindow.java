@@ -1,10 +1,16 @@
 package com.pine.app.core.window;
 
+import com.pine.app.core.service.WindowService;
 import com.pine.app.core.ui.Renderable;
+import com.pine.app.core.ui.View;
+import com.pine.app.core.ui.ViewDocument;
+import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.window.gl3.ImGuiImplGl3;
 import com.pine.app.core.window.glfw.ImGuiImplGlfw;
 import com.pine.common.ContextService;
+import com.pine.common.Inject;
 import imgui.ImGui;
+import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -19,10 +25,23 @@ public abstract class AbstractWindow implements Renderable {
     private static final String GLSL_VERSION = "#version 130";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
-    protected long handle;
+    private long handle;
     protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
-    private WindowConfiguration windowConfig;
     private final int[] dimensions = new int[2];
+    private final ViewDocument document = new ViewDocument(this);
+    private final AbstractPanel root = new AbstractPanel() {
+        @Override
+        public void onInitialize() {
+        }
+
+        @Override
+        public ViewDocument getDocument() {
+            return document;
+        }
+    };
+
+    @Inject
+    public WindowService windowService;
 
     public AbstractWindow() {
         ContextService.injectDependencies(this);
@@ -30,7 +49,7 @@ public abstract class AbstractWindow implements Renderable {
 
     @Override
     public void onInitialize() {
-        createGLFWContext(windowConfig);
+        createGLFWContext();
         ImGui.createContext();
         try {
             initFonts();
@@ -39,9 +58,14 @@ public abstract class AbstractWindow implements Renderable {
         }
         imGuiGlfw.init(handle, true);
         imGuiGl3.init(GLSL_VERSION);
+
+        final ImGuiIO io = ImGui.getIO();
+        io.setIniFilename(null);
+        io.addConfigFlags(ImGuiConfigFlags.NavEnableKeyboard);
+        io.setConfigViewportsNoTaskBarIcon(true);
     }
 
-    protected void createGLFWContext(final WindowConfiguration config) {
+    protected void createGLFWContext() {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!GLFW.glfwInit()) {
@@ -52,9 +76,9 @@ public abstract class AbstractWindow implements Renderable {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
 
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-        handle = GLFW.glfwCreateWindow(config.getWidth(), config.getHeight(), config.getTitle(), MemoryUtil.NULL, MemoryUtil.NULL);
-        dimensions[0] = config.getWidth();
-        dimensions[1] = config.getHeight();
+        handle = GLFW.glfwCreateWindow(getWindowWidth(), getWindowHeight(), getWindowName(), MemoryUtil.NULL, MemoryUtil.NULL);
+        dimensions[0] = getWindowWidth();
+        dimensions[1] = getWindowHeight();
 
         if (handle == MemoryUtil.NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -75,7 +99,7 @@ public abstract class AbstractWindow implements Renderable {
 
         GLFW.glfwSwapInterval(GLFW.GLFW_TRUE);
 
-        if (config.isFullScreen()) {
+        if (isFullScreen()) {
             GLFW.glfwMaximizeWindow(handle);
         } else {
             GLFW.glfwShowWindow(handle);
@@ -87,14 +111,35 @@ public abstract class AbstractWindow implements Renderable {
         GLFW.glfwSetWindowSizeCallback(handle, new GLFWWindowSizeCallback() {
             @Override
             public void invoke(final long window, final int width, final int height) {
-                runFrame();
+                render();
                 dimensions[0] = width;
                 dimensions[1] = height;
             }
         });
+
+        GLFW.glfwSetWindowCloseCallback(handle, new GLFWWindowCloseCallback() {
+            @Override
+            public void invoke(long l) {
+                windowService.closeWindow(AbstractWindow.this);
+            }
+        });
     }
 
-    protected abstract void initFonts() throws WindowRuntimeException, RuntimeException;
+    private void initFonts() throws RuntimeException {
+//        final ImGuiIO io = ImGui.getIO();
+//        io.getFonts().addFontDefault();
+//        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
+//        rangesBuilder.addRanges(io.getFonts().getGlyphRangesDefault());
+//        rangesBuilder.addRanges(new short[]{(short) 0xe005, (short) 0xf8ff, 0});
+//
+//        final ImFontConfig fontConfig = new ImFontConfig();
+//        fontConfig.setMergeMode(true);
+//
+//        final short[] glyphRanges = rangesBuilder.buildRanges();
+//        material = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("icons/MaterialIcons-Regular.ttf"), 14, fontConfig, glyphRanges);
+//        roboto = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Regular.ttf"), 14, fontConfig, glyphRanges);
+//        io.getFonts().build();
+    }
 
     public void dispose() {
         imGuiGl3.dispose();
@@ -106,14 +151,23 @@ public abstract class AbstractWindow implements Renderable {
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
 
-    public void runFrame() {
+    @Override
+    public void render() {
         clearBuffer();
         imGuiGlfw.newFrame();
         ImGui.newFrame();
 
-        render();
+        root.render();
 
-        endFrame();
+        ImGui.render();
+        imGuiGl3.renderDrawData(ImGui.getDrawData());
+        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+            final long backupWindowPtr = GLFW.glfwGetCurrentContext();
+            ImGui.updatePlatformWindows();
+            ImGui.renderPlatformWindowsDefault();
+            GLFW.glfwMakeContextCurrent(backupWindowPtr);
+        }
+        renderBuffer();
     }
 
     private void clearBuffer() {
@@ -121,25 +175,15 @@ public abstract class AbstractWindow implements Renderable {
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }
 
-    protected void endFrame() {
-        ImGui.render();
-        imGuiGl3.renderDrawData(ImGui.getDrawData());
-
-        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            final long backupWindowPtr = GLFW.glfwGetCurrentContext();
-            ImGui.updatePlatformWindows();
-            ImGui.renderPlatformWindowsDefault();
-            GLFW.glfwMakeContextCurrent(backupWindowPtr);
-        }
-
-        renderBuffer();
-    }
 
     private void renderBuffer() {
         GLFW.glfwSwapBuffers(handle);
         GLFW.glfwPollEvents();
     }
 
+    protected void appendChild(View view) {
+        root.appendChild(view);
+    }
 
     public final long getHandle() {
         return handle;
@@ -156,10 +200,6 @@ public abstract class AbstractWindow implements Renderable {
     public abstract int getWindowHeight();
 
     public abstract boolean isFullScreen();
-
-    public void setConfig(WindowConfiguration windowConfiguration) {
-        this.windowConfig = windowConfiguration;
-    }
 
     public int[] getWindowDimensions() {
         return dimensions;

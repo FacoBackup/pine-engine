@@ -18,17 +18,18 @@ public class ProjectsPanel extends AbstractPanel {
     private final List<ProjectDTO> data;
 
     public ProjectsPanel(List<ProjectDTO> data) {
+        super();
         this.data = data;
     }
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var list = (RepeatingView) getElementById("list");
+        var list = (RepeatingView) getDocument().getElementById("list");
         var window = (WindowView) list.getParent();
-        window.setDimensions(getWindowDimensions());
+        window.setDimensions(getDocument().getWindowDimensions());
 
-        var create = (ButtonView) getElementById("newProject");
+        var create = (ButtonView) getDocument().getElementById("newProject");
         create.setOnClick(() -> {
             data.add(projectService.createNewProject());
         });

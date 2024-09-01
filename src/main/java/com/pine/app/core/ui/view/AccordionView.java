@@ -5,9 +5,8 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class AccordionView extends AbstractView {
-
-    public AccordionView(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
+    public AccordionView(View parent, String id) {
+        super(parent, id);
     }
 
     @Override

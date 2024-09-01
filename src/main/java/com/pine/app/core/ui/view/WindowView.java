@@ -12,8 +12,8 @@ public class WindowView extends AbstractView {
     private int[] dimensions = new int[2];
     private int[] position = new int[2];
 
-    public WindowView(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
+    public WindowView(View parent, String id) {
+        super(parent, id);
     }
 
     @Override

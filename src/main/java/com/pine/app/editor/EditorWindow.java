@@ -1,7 +1,7 @@
 package com.pine.app.editor;
 
 import com.pine.app.ProjectService;
-import com.pine.app.core.RuntimeWindow;
+import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.editor.panels.files.FilesPanel;
 import com.pine.common.Inject;
 import imgui.ImGui;
@@ -9,7 +9,7 @@ import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 
 
-public class EditorWindow extends RuntimeWindow {
+public class EditorWindow extends AbstractWindow {
     @Inject
     public ProjectService projectService;
 

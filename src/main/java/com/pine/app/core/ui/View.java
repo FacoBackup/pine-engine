@@ -1,6 +1,8 @@
 package com.pine.app.core.ui;
 
 
+import java.util.List;
+
 public interface View extends Renderable {
 
     String getInnerText();
@@ -9,15 +11,15 @@ public interface View extends Renderable {
 
     void setVisible(boolean visible);
 
-    String getId();
+    List<View> getChildren();
 
-    View getElementById(String id);
+    String getId();
 
     View getParent();
 
-    View getPanel();
-
-    int[] getWindowDimensions();
-
     void appendChild(View child);
+
+    ViewDocument getDocument();
+
+    void setDocument(ViewDocument document);
 }

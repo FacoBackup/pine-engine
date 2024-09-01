@@ -13,7 +13,7 @@ public class FilesPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        View filesRoot = getElementById("filesRoot");
+        View filesRoot = getDocument().getElementById("filesRoot");
         setInternalContext(new FilesContext(service.getUserRootPath(), service.readFiles(service.getUserRootPath())));
         filesRoot.appendChild(new FilesHeaderPanel());
         filesRoot.appendChild(new FilesTreePanel());

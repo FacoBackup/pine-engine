@@ -1,35 +1,46 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.panel.AbstractPanel;
-import jakarta.annotation.Nullable;
-import org.springframework.lang.NonNull;
+import com.pine.app.core.ui.ViewDocument;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractView implements View {
+public class AbstractView implements View {
+    private ViewDocument document;
     protected final String internalId;
     protected final String id;
     protected final List<View> children = new ArrayList<>();
     protected View parent;
-    private final AbstractPanel panel;
     protected String innerText;
     protected boolean visible = true;
 
-    public AbstractView(View parent, String id, AbstractPanel panel) {
-        this.panel = panel;
+    public AbstractView(View parent, String id) {
         this.parent = parent;
         this.id = id;
         this.internalId = "##" + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     @Override
-    public AbstractPanel getPanel() {
-        return panel;
+    public ViewDocument getDocument() {
+        return document;
     }
 
+    @Override
+    public void setDocument(ViewDocument document) {
+        if (this.document != null) {
+            throw new RuntimeException("Document already bound to view");
+        }
+
+        this.document = document;
+    }
+
+    @Override
+    public void onInitialize() {
+    }
+
+    @Override
     public List<View> getChildren() {
         return children;
     }
@@ -45,32 +56,8 @@ public abstract class AbstractView implements View {
     }
 
     @Override
-    public void onInitialize() {
-    }
-
-    @Override
     public void appendChild(View child) {
-        panel.appendChild(child, this);
-    }
-
-    @NonNull
-    public <T extends AbstractView> T appendChild(Class<T> child) {
-        var instance = instantiate(child, this, null, panel);
-        if (instance != null) {
-            appendChild(instance);
-        } else {
-            throw new RuntimeException("Cannot instantiate child class " + child);
-        }
-        return instance;
-    }
-
-    @Nullable
-    static public <T extends AbstractView> T instantiate(Class<T> clazz, View parent, String id, AbstractPanel panel) {
-        try {
-            return clazz.getConstructor(View.class, String.class, AbstractPanel.class).newInstance(parent, id, panel);
-        } catch (Exception ex) {
-            return null;
-        }
+        document.appendChild(child, this);
     }
 
     public void setInnerText(String textContent) {
@@ -93,19 +80,14 @@ public abstract class AbstractView implements View {
     }
 
     @Override
-    public View getElementById(String id) {
-        return panel.getElementById(id);
-    }
-
-    @Override
     public void render() {
         for (View child : children) {
             child.render();
         }
     }
 
-    @Override
-    public int[] getWindowDimensions() {
-        return panel.getWindowDimensions();
+    public void setParent(View parent) {
+        this.parent = parent;
     }
 }
+

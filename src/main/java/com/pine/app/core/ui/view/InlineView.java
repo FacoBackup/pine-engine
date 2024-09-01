@@ -5,8 +5,9 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class InlineView extends AbstractView {
-    public InlineView(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
+
+    public InlineView(View parent, String id) {
+        super(parent, id);
     }
 
     @Override

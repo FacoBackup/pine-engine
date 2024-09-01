@@ -15,8 +15,8 @@ public class RepeatingView extends AbstractView {
     private final Map<String, View> containers = new HashMap<>();
     private Function<RepeatingViewItem, View> getView;
 
-    public RepeatingView(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
+    public RepeatingView(View parent, String id) {
+        super(parent, id);
     }
 
     @Override
@@ -27,6 +27,7 @@ public class RepeatingView extends AbstractView {
             View container;
             if (containers.get(key) == null) {
                 container = getView.apply(item);
+                container.setDocument(getDocument());
                 containers.put(key, container);
                 container.onInitialize();
             } else {

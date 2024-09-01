@@ -1,14 +1,10 @@
 package com.pine.app.core.ui.panel;
 
-import com.pine.app.core.repository.WindowRepository;
-import com.pine.app.core.service.WindowService;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewTag;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.WindowRuntimeException;
 import com.pine.common.ContextService;
-import com.pine.common.Inject;
-import jakarta.annotation.Nullable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -18,19 +14,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public abstract class AbstractPanel extends AbstractView {
-    @Inject
-    public WindowRepository windowRepository;
-
-    private final Map<String, View> views = new HashMap<>();
     private IPanelContext internalContext;
 
     public AbstractPanel() {
-        super(null, null, null);
+        super(null, null);
         ContextService.injectDependencies(this);
     }
 
@@ -86,7 +76,7 @@ public abstract class AbstractPanel extends AbstractView {
         final NodeList nodeList = node.getChildNodes();
         AbstractView instance = parent;
         if (isView) {
-            instance = instantiateView(viewTag, node, parent);
+            instance = getDocument().createView(viewTag, node, parent);
         }
 
         for (int i = 0; i < nodeList.getLength(); i++) {
@@ -100,60 +90,7 @@ public abstract class AbstractPanel extends AbstractView {
     }
 
     @Override
-    final public View getElementById(String id) {
-        return views.get(id);
-    }
-
-    private AbstractView instantiateView(ViewTag viewTag, Node node, AbstractView parent) throws WindowRuntimeException {
-        final String id = getId(node);
-        if (viewTag == null) {
-            throw new WindowRuntimeException("Could not find tag with name " + node.getNodeName());
-        }
-        final AbstractView instance = AbstractView.instantiate(viewTag.getClazz(), parent, id, this);
-        if (instance == null) {
-            throw new WindowRuntimeException("Could not instantiate view " + viewTag.getClazz());
-        }
-
-        if (id != null) {
-            views.put(id, instance);
-        }
-        parent.getChildren().add(instance);
-        instance.onInitialize();
-        return instance;
-    }
-
-    @Nullable
-    private static String getId(Node node) {
-        try {
-            return node.getAttributes().getNamedItem("id").getNodeValue();
-        } catch (Exception _) {
-        }
-        return null;
-    }
-
-    final public void appendChild(View child, AbstractView parent) {
-        parent.getChildren().add(child);
-        if (child.getId() != null) {
-            views.put(child.getId(), child);
-        }
-        if (child.getClass().isAssignableFrom(AbstractPanel.class)) {
-            ((AbstractPanel) child).setParent(parent);
-            ((AbstractPanel) child).setInternalContext(getContext());
-        }
-        child.onInitialize();
-    }
-
-    @Override
     public void appendChild(View child) {
-        appendChild(child, this);
-    }
-
-    final protected void setParent(View parent) {
-        this.parent = parent;
-    }
-
-    @Override
-    public int[] getWindowDimensions() {
-        return windowRepository.getCurrentWindow().getWindowDimensions();
+        getDocument().appendChild(child, this);
     }
 }

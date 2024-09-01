@@ -18,6 +18,7 @@ public class ProjectRowPanel extends AbstractPanel {
     private InputView name;
 
     public ProjectRowPanel(ProjectDTO dto, Consumer<ProjectDTO> removeProject) {
+        super();
         this.dto = dto;
         this.removeProject = removeProject;
     }
@@ -25,11 +26,11 @@ public class ProjectRowPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var edit = (ButtonView) getElementById("edit");
-        var remove = (ButtonView) getElementById("delete");
-        var open = (ButtonView) getElementById("open");
+        var edit = (ButtonView) getDocument().getElementById("edit");
+        var remove = (ButtonView) getDocument().getElementById("delete");
+        var open = (ButtonView) getDocument().getElementById("open");
 
-        name = (InputView) getElementById("name");
+        name = (InputView) getDocument().getElementById("name");
         name.setOnChange(dto::setName);
         name.setState(dto.getName());
         name.setEnabled(false);

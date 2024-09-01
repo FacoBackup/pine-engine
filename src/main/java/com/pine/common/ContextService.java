@@ -22,7 +22,7 @@ public class ContextService {
 
     public static void injectDependencies(Object instance) {
         if (context == null) {
-            throw new RuntimeException("Context is not ready");
+            return;
         }
 
         Field[] fields = instance.getClass().getFields();

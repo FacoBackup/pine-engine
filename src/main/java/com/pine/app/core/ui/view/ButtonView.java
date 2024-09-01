@@ -7,8 +7,8 @@ import imgui.ImGui;
 public class ButtonView extends AbstractView {
     private Runnable onClick;
 
-    public ButtonView(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
+    public ButtonView(View parent, String id) {
+        super(parent, id);
     }
 
     @Override

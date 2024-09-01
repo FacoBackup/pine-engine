@@ -14,7 +14,7 @@ public class FilePanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var name = (TextView) getElementById("name");
+        var name = (TextView) getDocument().getElementById("name");
         name.setInnerText(item.fileName());
     }
 }

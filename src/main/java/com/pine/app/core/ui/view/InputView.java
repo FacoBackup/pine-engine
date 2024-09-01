@@ -13,8 +13,8 @@ public class InputView extends AbstractView {
     private boolean enabled = true;
     private final StringState state = new StringState(100);
 
-    public InputView(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
+    public InputView(View parent, String id) {
+        super(parent, id);
     }
 
     @Override

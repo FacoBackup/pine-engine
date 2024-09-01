@@ -3,6 +3,7 @@ package com.pine.app;
 import com.google.gson.Gson;
 import com.pine.app.core.service.WindowService;
 import com.pine.app.editor.EditorWindow;
+import com.pine.app.projects.ProjectsWindow;
 import com.pine.common.Loggable;
 import com.pine.common.fs.FSService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,8 @@ public class ProjectService implements Loggable {
 
     public void openProject(ProjectDTO currentProject) {
         repository.setCurrentProject(currentProject);
-        windowService.closeWindow();
-        windowService.openWindow(new EditorWindow());
+        windowService.closeWindow(ProjectsWindow.class);
+        windowService.openWindow(EditorWindow.class);
     }
 
     public ProjectDTO getCurrentProject() {

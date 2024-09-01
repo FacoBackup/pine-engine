@@ -11,7 +11,7 @@ public class FilesDirectoryPanel extends AbstractPanel {
     public void onInitialize() {
         super.onInitialize();
         var context = (FilesContext) getContext();
-        var list = (RepeatingView) getElementById("list");
+        var list = (RepeatingView) getDocument().getElementById("list");
         list.setData(context.getFiles());
         list.setGetView(this::createListItem);
     }

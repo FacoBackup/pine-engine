@@ -5,8 +5,8 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGui;
 
 public class TextView extends AbstractView{
-    public TextView(View parent, String id, AbstractPanel panel) {
-        super(parent, id, panel);
+    public TextView(View parent, String id) {
+        super(parent, id);
     }
 
     @Override
