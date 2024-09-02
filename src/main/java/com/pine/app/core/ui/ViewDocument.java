@@ -3,13 +3,14 @@ package com.pine.app.core.ui;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.core.window.WindowRuntimeException;
+import com.pine.common.Loggable;
 import jakarta.annotation.Nullable;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ViewDocument {
+public class ViewDocument implements Loggable {
     private final Map<String, View> views = new HashMap<>();
     private final AbstractWindow window;
 
@@ -55,6 +56,9 @@ public class ViewDocument {
         }
 
         if (id != null) {
+            if(views.containsKey(id)) {
+                getLogger().error("Duplicated view ID {}", id);
+            }
             views.put(id, instance);
         }
         parent.getChildren().add(instance);

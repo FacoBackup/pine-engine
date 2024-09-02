@@ -15,7 +15,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Objects;
 
 public abstract class AbstractPanel extends AbstractView {
 
@@ -62,18 +61,13 @@ public abstract class AbstractPanel extends AbstractView {
             return;
         }
 
-        final boolean isView = !Objects.equals(ViewTag.FRAGMENT.getTag(), tag);
         final NodeList nodeList = node.getChildNodes();
-        AbstractView instance = parent;
-        if (isView) {
-            instance = getDocument().createView(viewTag, node, parent);
-        }
-
+        AbstractView instance = document.createView(viewTag, node, parent);
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node currentNode = nodeList.item(i);
             if (currentNode.getNodeType() == Node.ELEMENT_NODE && viewTag.isChildrenSupported()) {
                 processTag(currentNode, instance);
-            } else if (isView && currentNode.getNodeType() == Node.TEXT_NODE) {
+            } else if (currentNode.getNodeType() == Node.TEXT_NODE) {
                 instance.setInnerText(currentNode.getTextContent().trim());
             }
         }

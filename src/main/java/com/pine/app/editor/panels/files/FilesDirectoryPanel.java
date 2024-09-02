@@ -10,8 +10,7 @@ public class FilesDirectoryPanel extends AbstractPanel {
 
     @Override
     protected String getDefinition() {
-        return """
-                <table id="list"/>""";
+        return "<table id='list'/>";
     }
 
     @Override

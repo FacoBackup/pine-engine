@@ -1,5 +1,6 @@
 package com.pine.app.editor.panels.files;
 
+import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.WindowView;
 import com.pine.common.Inject;
@@ -9,8 +10,12 @@ public class FilesPanel extends AbstractPanel {
     @Inject
     public FSService service;
 
+    @Inject
+    public ProjectService projectService;
+
     public FilesPanel() {
-        internalContext = new FilesContext(FSService.getUserRootPath());
+        super();
+        internalContext = new FilesContext(projectService.getCurrentProject().getPath());
     }
 
     @Override
@@ -18,6 +23,10 @@ public class FilesPanel extends AbstractPanel {
         return """
                 <window id="filesRoot">
                     Files
+                    <group>
+                        <fragment id='filesHeader'/>
+                        <inline id='filesContainer'/>
+                    </group>
                 </window>
                 """;
     }
@@ -25,14 +34,20 @@ public class FilesPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var context = (FilesContext) internalContext;
-        context.getFiles().addAll(service.readFiles(context.getDirectory()));
-        var filesRoot = (WindowView) getDocument().getElementById("filesRoot");
-        filesRoot.appendChild(new FilesHeaderPanel());
-        filesRoot.appendChild(new FilesTreePanel());
-        filesRoot.appendChild(new FilesDirectoryPanel());
+        setCurrentDirectory(service, (FilesContext) internalContext);
+        var filesRoot = (WindowView) document.getElementById("filesRoot");
+        var container = document.getElementById("filesContainer");
+        document.getElementById("filesHeader").appendChild(new FilesHeaderPanel());
+        container.appendChild(new FilesTreePanel());
+        container.appendChild(new FilesDirectoryPanel());
         filesRoot.setAutoResize(true);
         filesRoot.setNoMove(false);
         filesRoot.setNoCollapse(true);
+    }
+
+    public static void setCurrentDirectory(FSService service, FilesContext context) {
+        context.setDirectory(context.getDirectory());
+        context.getFiles().clear();
+        service.refreshFiles(context.getDirectory());
     }
 }

@@ -14,6 +14,7 @@ public enum ViewTag {
     INLINE("inline", InlineView.class, true),
     DIV("div", DivView.class, true),
     TABLE("table", TableView.class, true),
+    TREE("tree", TreeView.class, false),
     LIST("list", RepeatingView.class, false);
 
     private final String tag;
