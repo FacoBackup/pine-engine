@@ -4,7 +4,10 @@ import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.RepeatingViewItem;
 import com.pine.app.core.ui.view.TableView;
+import com.pine.app.core.ui.view.table.TableHeader;
 import com.pine.common.fs.FileInfoDTO;
+
+import java.util.List;
 
 public class FilesDirectoryPanel extends AbstractPanel {
 
@@ -17,13 +20,9 @@ public class FilesDirectoryPanel extends AbstractPanel {
     public void onInitialize() {
         super.onInitialize();
         var context = (FilesContext) getContext();
-        var list = (TableView) document.getElementById("list");
-        list.setData(context.getFiles());
-        list.setGetView(this::createListItem);
+        var table = (TableView) document.getElementById("list");
+        table.setData(context.getFiles());
+        table.setGetView(item -> new FilePanel((FileInfoDTO) item));
     }
 
-    private View createListItem(RepeatingViewItem repeatingViewItem) {
-        var item = (FileInfoDTO) repeatingViewItem;
-        return new FilePanel(item);
-    }
 }

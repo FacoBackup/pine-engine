@@ -8,6 +8,7 @@ public enum ViewTag {
     FRAGMENT("fragment", FragmentView.class, true),
     WINDOW("window", WindowView.class, true),
     BUTTON("button", ButtonView.class, false),
+    ICON("icon", IconView.class, false),
     INPUT("input", InputView.class, false),
     ACCORDION("accordion", AccordionView.class, true),
     GROUP("group", GroupView.class, true),

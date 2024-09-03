@@ -7,6 +7,7 @@ import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.RepeatingView;
 import com.pine.app.core.ui.view.WindowView;
 import com.pine.common.Inject;
+import imgui.flag.ImGuiWindowFlags;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class ProjectsPanel extends AbstractPanel {
     public ProjectService projectService;
 
     private final List<ProjectDTO> data;
+    private WindowView window;
 
     public ProjectsPanel(List<ProjectDTO> data) {
         super();
@@ -26,10 +28,11 @@ public class ProjectsPanel extends AbstractPanel {
     public void onInitialize() {
         super.onInitialize();
         var list = (RepeatingView) getDocument().getElementById("list");
-        var window = (WindowView) getDocument().getElementById("projectWindow");
-        window.setDimensions(getDocument().getWindowDimensions());
+        window = (WindowView) getDocument().getElementById("projectWindow");
         window.setNoMove(true);
+        window.setAutoResize(false);
         window.setNoCollapse(true);
+        window.setNoDecoration(true);
 
         var create = (ButtonView) getDocument().getElementById("newProject");
         create.setOnClick(() -> {
@@ -37,6 +40,11 @@ public class ProjectsPanel extends AbstractPanel {
         });
         list.setGetView((item) -> new ProjectRowPanel((ProjectDTO) item, this::removeProject));
         list.setData(data);
+    }
+
+    @Override
+    public void beforeRender() {
+        window.setDimensions(getDocument().getWindowDimensions());
     }
 
     private void removeProject(ProjectDTO projectDTO) {

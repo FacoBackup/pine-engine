@@ -9,6 +9,7 @@ public class FilePanel extends AbstractPanel {
     private final FileInfoDTO item;
 
     public FilePanel(FileInfoDTO item) {
+        super();
         this.item = item;
     }
 
@@ -16,9 +17,10 @@ public class FilePanel extends AbstractPanel {
     protected String getDefinition() {
         return """
             <inline>
-                <div>
+                 <icon>folder</icon>
+                <button>
                     <text id="name"/>
-                </div>
+                </button>
             </inline>
             """;
     }
@@ -26,7 +28,7 @@ public class FilePanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var name = (TextView) getDocument().getElementById("name");
+        var name = (TextView) document.getElementById("name");
         name.setInnerText(item.fileName());
         var div = (DivView) name.getParent();
         div.setHeight(50);

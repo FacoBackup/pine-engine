@@ -22,11 +22,11 @@ public class FilesPanel extends AbstractPanel {
     protected String getDefinition() {
         return """
                 <window id="filesRoot">
-                    Files
                     <group>
                         <fragment id='filesHeader'/>
                         <inline id='filesContainer'/>
                     </group>
+                    Files
                 </window>
                 """;
     }

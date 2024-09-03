@@ -1,9 +1,14 @@
 package com.pine.app.editor.panels.files;
 
 import com.pine.app.core.ui.panel.AbstractPanel;
+import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.InputView;
 import com.pine.common.Inject;
 import com.pine.common.fs.FSService;
+
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FilesHeaderPanel extends AbstractPanel {
     @Inject
@@ -13,7 +18,9 @@ public class FilesHeaderPanel extends AbstractPanel {
     protected String getDefinition() {
         return """
                 <inline>
-                    <input id="path"/>
+                    <button id='addDir'>[create_new_folder]</button>
+                    <button id='goUp'>[arrow_upward]</button>
+                    <input id='path'/>
                 </inline>
                 """;
     }
@@ -21,12 +28,16 @@ public class FilesHeaderPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var context = (FilesContext) getContext();
-        var path = (InputView) getDocument().getElementById("path");
-        path.setState(context.getDirectory());
+        FilesContext filesContext = (FilesContext) getContext();
+        var addDir = (ButtonView) document.getElementById("addDir");
+        var goUp = (ButtonView) document.getElementById("goUp");
+        var path = (InputView) document.getElementById("path");
+        path.setState(filesContext.getDirectory());
         path.setOnChange(this::pathChange);
-        // FORWARD
-        // BACKWARD
+        goUp.initializeIcons();
+        addDir.initializeIcons();
+        addDir.setOnClick(() -> fsService.createDirectory(filesContext.getDirectory() + File.separator + "New folder"));
+        goUp.setOnClick(() -> filesContext.setDirectory(fsService.getParentDir(filesContext.getDirectory())));
     }
 
     private void pathChange(String path) {

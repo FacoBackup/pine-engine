@@ -5,13 +5,13 @@ import com.pine.app.core.ui.Renderable;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewDocument;
 import com.pine.app.core.ui.panel.AbstractPanel;
-import com.pine.app.core.window.gl3.ImGuiImplGl3;
-import com.pine.app.core.window.glfw.ImGuiImplGlfw;
 import com.pine.common.ContextService;
 import com.pine.common.Inject;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import imgui.internal.ImGuiContext;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -53,11 +53,6 @@ public abstract class AbstractWindow implements Renderable {
     public void onInitialize() {
         createGLFWContext();
         context = ImGui.createContext();
-        try {
-            initFonts();
-        } catch (Exception e) {
-            getLogger().warn(e.getMessage(), e);
-        }
         imGuiGlfw.init(handle, true);
         imGuiGl3.init(GLSL_VERSION);
 
@@ -67,6 +62,7 @@ public abstract class AbstractWindow implements Renderable {
         io.setConfigViewportsNoTaskBarIcon(true);
         io.setConfigDockingAlwaysTabBar(true);
         io.setConfigWindowsResizeFromEdges(true);
+        viewDocument.initialize();
     }
 
     protected void createGLFWContext() {
@@ -115,7 +111,6 @@ public abstract class AbstractWindow implements Renderable {
         GLFW.glfwSetWindowSizeCallback(handle, new GLFWWindowSizeCallback() {
             @Override
             public void invoke(final long window, final int width, final int height) {
-                render();
                 dimensions[0] = width;
                 dimensions[1] = height;
             }
@@ -127,22 +122,6 @@ public abstract class AbstractWindow implements Renderable {
                 windowService.closeWindow(AbstractWindow.this);
             }
         });
-    }
-
-    private void initFonts() throws RuntimeException {
-//        final ImGuiIO io = ImGui.getIO();
-//        io.getFonts().addFontDefault();
-//        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
-//        rangesBuilder.addRanges(io.getFonts().getGlyphRangesDefault());
-//        rangesBuilder.addRanges(new short[]{(short) 0xe005, (short) 0xf8ff, 0});
-//
-//        final ImFontConfig fontConfig = new ImFontConfig();
-//        fontConfig.setMergeMode(true);
-//
-//        final short[] glyphRanges = rangesBuilder.buildRanges();
-//        material = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("icons/MaterialIcons-Regular.ttf"), 14, fontConfig, glyphRanges);
-//        roboto = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Regular.ttf"), 14, fontConfig, glyphRanges);
-//        io.getFonts().build();
     }
 
     public void dispose() {
@@ -157,7 +136,7 @@ public abstract class AbstractWindow implements Renderable {
 
     @Override
     public void render() {
-        if (ImGui.getCurrentContext() != context) {
+        if (!ImGui.getCurrentContext().equals(context)) {
             return;
         }
         clearBuffer();

@@ -123,4 +123,14 @@ public class FSService implements Loggable {
     public boolean exists(String path) {
         return new File(path).exists();
     }
+
+    public String getParentDir(String directory) {
+        Path path = Paths.get(directory);
+        Path parentPath = path.getParent();
+
+        if (parentPath != null) {
+            return parentPath.toString();
+        }
+        return null;
+    }
 }

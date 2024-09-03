@@ -4,6 +4,9 @@ import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.core.window.WindowRuntimeException;
 import com.pine.common.Loggable;
+import com.pine.common.fs.FSUtil;
+import imgui.*;
+import imgui.flag.ImFontAtlasFlags;
 import jakarta.annotation.Nullable;
 import org.w3c.dom.Node;
 
@@ -16,6 +19,27 @@ public class ViewDocument implements Loggable {
 
     public ViewDocument(AbstractWindow window) {
         this.window = window;
+    }
+
+    public void initialize() {
+        final var io = ImGui.getIO();
+        ImFontAtlas atlas = io.getFonts();
+        atlas.addFontDefault();
+
+        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
+        rangesBuilder.addRanges(atlas.getGlyphRangesDefault());
+        rangesBuilder.addRanges(new short[]{(short) 0xE037, (short) 0xF08B9, 0});
+
+        final var fontConfig = new ImFontConfig();
+        fontConfig.setMergeMode(true);
+        fontConfig.setGlyphMinAdvanceX(13);
+
+        final short[] glyphRanges = rangesBuilder.buildRanges();
+        atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/MaterialIcons-Regular.ttf"), 14, fontConfig, glyphRanges);
+        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Medium.ttf"), 14, fontConfig, glyphRanges);
+        atlas.build();
+        fontConfig.destroy();
+
     }
 
     public AbstractWindow getWindow() {
@@ -35,7 +59,7 @@ public class ViewDocument implements Loggable {
         if (child.getId() != null) {
             views.put(child.getId(), child);
         }
-        if(child.getContext() == null || parent.getContext() != null) {
+        if (child.getContext() == null || parent.getContext() != null) {
             child.setInternalContext(parent.getContext());
         }
         child.setParent(parent);
@@ -56,13 +80,13 @@ public class ViewDocument implements Loggable {
         }
 
         if (id != null) {
-            if(views.containsKey(id)) {
+            if (views.containsKey(id)) {
                 getLogger().error("Duplicated view ID {}", id);
             }
             views.put(id, instance);
         }
         parent.getChildren().add(instance);
-        if(instance.getContext() == null || parent.getContext() != null) {
+        if (instance.getContext() == null || parent.getContext() != null) {
             instance.setInternalContext(parent.getContext());
         }
         instance.setParent(parent);

@@ -2,12 +2,14 @@ package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
 import imgui.ImGui;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 
 public class WindowView extends AbstractView {
-    private boolean autoResize = false;
+    private boolean autoResize = true;
     private boolean noMove = true;
     private boolean noCollapse = false;
+    private boolean noDecoration = false;
     private int[] dimensions = new int[2];
     private int[] position = new int[2];
 
@@ -17,11 +19,6 @@ public class WindowView extends AbstractView {
 
     @Override
     protected void renderInternal() {
-        ImGui.setNextWindowPos(position[0], position[1]);
-        if (dimensions[0] > 0 && dimensions[1] > 0) {
-            ImGui.setNextWindowSize(dimensions[0], dimensions[1]);
-        }
-
         final String tempLabel = innerText + internalId;
         int flags = ImGuiWindowFlags.None;
 
@@ -37,6 +34,15 @@ public class WindowView extends AbstractView {
             flags |= ImGuiWindowFlags.NoCollapse;
         }
 
+        if (noDecoration) {
+            flags |= ImGuiWindowFlags.NoDecoration;
+        }
+
+        ImGui.setNextWindowPos(position[0], position[1]);
+        if (!autoResize) {
+            flags |= ImGuiWindowFlags.NoResize;
+            ImGui.setNextWindowSize(dimensions[0], dimensions[1], ImGuiCond.Always);
+        }
         if (ImGui.begin(tempLabel, flags)) {
             super.renderInternal();
         }
@@ -45,6 +51,10 @@ public class WindowView extends AbstractView {
 
     public void setAutoResize(boolean autoResize) {
         this.autoResize = autoResize;
+    }
+
+    public void setNoDecoration(boolean noDecoration) {
+        this.noDecoration = noDecoration;
     }
 
     public void setWidth(int width) {
