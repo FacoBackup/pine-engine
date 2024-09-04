@@ -24,22 +24,22 @@ public class ViewDocument implements Loggable {
     public void initialize() {
         final var io = ImGui.getIO();
         ImFontAtlas atlas = io.getFonts();
+
+        atlas.setFreeTypeRenderer(true);
         atlas.addFontDefault();
 
-        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
+        final var rangesBuilder = new ImFontGlyphRangesBuilder();
         rangesBuilder.addRanges(atlas.getGlyphRangesDefault());
-        rangesBuilder.addRanges(new short[]{(short) 0xE037, (short) 0xF08B9, 0});
+        rangesBuilder.addRanges(new short[]{(short) 0xe005, (short) 0xf8ff, 0});
 
         final var fontConfig = new ImFontConfig();
         fontConfig.setMergeMode(true);
-        fontConfig.setGlyphMinAdvanceX(13);
 
         final short[] glyphRanges = rangesBuilder.buildRanges();
-        atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/MaterialIcons-Regular.ttf"), 14, fontConfig, glyphRanges);
-        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Medium.ttf"), 14, fontConfig, glyphRanges);
+        atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/fa-regular-400.ttf"), 14, fontConfig, glyphRanges);
+        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Regular.ttf"), 14, fontConfig, glyphRanges);
         atlas.build();
         fontConfig.destroy();
-
     }
 
     public AbstractWindow getWindow() {

@@ -30,7 +30,6 @@ public abstract class AbstractWindow implements Renderable {
     protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
     private final int[] dimensions = new int[2];
     private final ViewDocument viewDocument = new ViewDocument(this);
-    private ImGuiContext context;
     private final AbstractPanel root = new AbstractPanel() {
         @Override
         public void onInitialize() {
@@ -51,8 +50,9 @@ public abstract class AbstractWindow implements Renderable {
 
     @Override
     public void onInitialize() {
-        createGLFWContext();
-        context = ImGui.createContext();
+        createGlfwContext();
+        ImGui.createContext();
+
         imGuiGlfw.init(handle, true);
         imGuiGl3.init(GLSL_VERSION);
 
@@ -62,10 +62,11 @@ public abstract class AbstractWindow implements Renderable {
         io.setConfigViewportsNoTaskBarIcon(true);
         io.setConfigDockingAlwaysTabBar(true);
         io.setConfigWindowsResizeFromEdges(true);
+
         viewDocument.initialize();
     }
 
-    protected void createGLFWContext() {
+    protected void createGlfwContext() {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!GLFW.glfwInit()) {
@@ -94,11 +95,8 @@ public abstract class AbstractWindow implements Renderable {
         }
 
         GLFW.glfwMakeContextCurrent(handle);
-
         GL.createCapabilities();
-
         GLFW.glfwSwapInterval(GLFW.GLFW_TRUE);
-
         if (isFullScreen()) {
             GLFW.glfwMaximizeWindow(handle);
         } else {
@@ -108,6 +106,10 @@ public abstract class AbstractWindow implements Renderable {
         clearBuffer();
         renderBuffer();
 
+        initGlfwEvents();
+    }
+
+    private void initGlfwEvents() {
         GLFW.glfwSetWindowSizeCallback(handle, new GLFWWindowSizeCallback() {
             @Override
             public void invoke(final long window, final int width, final int height) {
@@ -125,9 +127,18 @@ public abstract class AbstractWindow implements Renderable {
     }
 
     public void dispose() {
-        imGuiGl3.dispose();
-        imGuiGlfw.dispose();
-        ImGui.destroyContext(context);
+        imGuiGl3.shutdown();
+        imGuiGlfw.shutdown();
+        disposeImGui();
+        disposeWindow();
+
+    }
+
+    private void disposeImGui() {
+        ImGui.destroyContext();
+    }
+
+    private void disposeWindow() {
         Callbacks.glfwFreeCallbacks(handle);
         GLFW.glfwDestroyWindow(handle);
         GLFW.glfwTerminate();
@@ -136,24 +147,30 @@ public abstract class AbstractWindow implements Renderable {
 
     @Override
     public void render() {
-        if (!ImGui.getCurrentContext().equals(context)) {
-            return;
-        }
-        clearBuffer();
-        imGuiGlfw.newFrame();
-        ImGui.newFrame();
+        startFrame();
 
         root.render();
 
+        endFrame();
+    }
+
+    private void endFrame() {
         ImGui.render();
         imGuiGl3.renderDrawData(ImGui.getDrawData());
         if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            final long backupWindowPtr = GLFW.glfwGetCurrentContext();
+            final long backupCurrentContext = GLFW.glfwGetCurrentContext();
             ImGui.updatePlatformWindows();
             ImGui.renderPlatformWindowsDefault();
-            GLFW.glfwMakeContextCurrent(backupWindowPtr);
+            GLFW.glfwMakeContextCurrent(backupCurrentContext);
         }
         renderBuffer();
+    }
+
+    private void startFrame() {
+        clearBuffer();
+        imGuiGl3.newFrame();
+        imGuiGlfw.newFrame();
+        ImGui.newFrame();
     }
 
     private void clearBuffer() {

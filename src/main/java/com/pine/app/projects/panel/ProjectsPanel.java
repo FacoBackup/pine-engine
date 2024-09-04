@@ -5,6 +5,7 @@ import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.RepeatingView;
+import com.pine.app.core.ui.view.TextView;
 import com.pine.app.core.ui.view.WindowView;
 import com.pine.common.Inject;
 import imgui.flag.ImGuiWindowFlags;
@@ -18,6 +19,19 @@ public class ProjectsPanel extends AbstractPanel {
 
     private final List<ProjectDTO> data;
     private WindowView window;
+
+    @Override
+    protected String getDefinition() {
+        return """
+                <window id="projectWindow">
+                    <button id="newProject">
+                        New project
+                    </button>
+                    <text id="test"></text>
+                    <list id="list"/>
+                </window>
+                """;
+    }
 
     public ProjectsPanel(List<ProjectDTO> data) {
         super();
