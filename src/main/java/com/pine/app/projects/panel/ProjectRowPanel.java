@@ -50,7 +50,7 @@ public class ProjectRowPanel extends AbstractPanel {
 
         name = (InputView) getDocument().getElementById("name");
         name.setOnChange(dto::setName);
-        name.setState(dto.getName());
+        name.setValue(dto.getName());
         name.setEnabled(false);
 
         edit.setOnClick(() -> {

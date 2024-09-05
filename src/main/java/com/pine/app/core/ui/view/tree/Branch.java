@@ -8,7 +8,6 @@ import java.util.UUID;
 
 public class Branch {
     private final List<Branch> branches = new ArrayList<>();
-    private String label;
     private String name;
     private final String id;
     private final String key;
@@ -16,8 +15,7 @@ public class Branch {
     public Branch(String name, String id) {
         this.name = name;
         this.id = id;
-        this.key = "##" + DigestUtils.sha1Hex(UUID.randomUUID().toString());
-        this.label = name + key;
+        this.key = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 5);
     }
 
     public String getName() {
@@ -26,7 +24,6 @@ public class Branch {
 
     public void setName(String name) {
         this.name = name;
-        this.label = name + key;
     }
 
     public String getId() {
@@ -41,7 +38,7 @@ public class Branch {
         branches.add(child);
     }
 
-    public String getLabel() {
-        return label;
+    public String getKey() {
+        return key;
     }
 }

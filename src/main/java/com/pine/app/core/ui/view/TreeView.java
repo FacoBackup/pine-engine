@@ -9,12 +9,13 @@ import imgui.flag.ImGuiTreeNodeFlags;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class TreeView extends AbstractView {
     private static final int FLAGS = ImGuiTreeNodeFlags.Bullet | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.SpanFullWidth;
     private Map<String, Boolean> selected = Collections.emptyMap();
-    private Consumer<Branch> onClick;
+    private BiConsumer<Branch, Boolean> onClick;
     private Tree tree;
 
     public TreeView(View parent, String id) {
@@ -26,8 +27,11 @@ public class TreeView extends AbstractView {
         if (tree == null) {
             return;
         }
+
         renderNode(tree);
     }
+
+
 
     private void renderNode(Branch branch) {
         int flags = FLAGS;
@@ -42,9 +46,9 @@ public class TreeView extends AbstractView {
             flags |= ImGuiTreeNodeFlags.Leaf;
         }
 
-        boolean isOpen = ImGui.treeNodeEx(branch.getLabel(), flags);
+        boolean isOpen = ImGui.treeNodeEx(branch.getKey(), 0, branch.getName());
         if (ImGui.isItemClicked() && onClick != null) {
-            onClick.accept(branch);
+            onClick.accept(branch, ImGui.isMouseDoubleClicked(0));
         }
 
         if (isOpen) {
@@ -64,7 +68,7 @@ public class TreeView extends AbstractView {
         return selected;
     }
 
-    public void setOnClick(Consumer<Branch> onClick) {
+    public void setOnClick(BiConsumer<Branch, Boolean> onClick) {
         this.onClick = onClick;
     }
 

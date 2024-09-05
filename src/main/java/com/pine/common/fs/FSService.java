@@ -3,8 +3,7 @@ package com.pine.common.fs;
 import com.pine.app.core.ui.view.tree.Branch;
 import com.pine.app.core.ui.view.tree.Tree;
 import com.pine.common.Loggable;
-import jakarta.annotation.Nullable;
-import org.apache.commons.codec.digest.DigestUtils;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -22,28 +21,32 @@ public class FSService implements Loggable {
     @Autowired
     private FSRepository repository;
 
+    @PostConstruct
+    public void init() {
+        repository.createDirectoryTree();
+    }
 
     public List<FileInfoDTO> readFiles(final String path) {
         return repository.readFiles(path);
     }
 
     @Async
-    public void refreshFiles(String directory) {
-        final Tree directories = repository.getDirectories();
-        directories.getBranches().clear();
-        getDirectories(new File(directory), directories);
+    public void refreshFiles(String directory, Runnable afterProcessing) {
+        final Tree directories = repository.createDirectoryTree();
+        getDirectoriesTree(new File(directory), directories);
         repository.getFilesByDirectory().clear();
         repository.readFilesForcefully(directory);
+        afterProcessing.run();
     }
 
-    private static void getDirectories(File folder, Branch parent) {
+    private static void getDirectoriesTree(File folder, Branch parent) {
         File[] files = folder.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
                     var newBranch = new Branch(file.getName(), file.getAbsolutePath());
                     parent.addBranch(newBranch);
-                    getDirectories(file, newBranch);
+                    getDirectoriesTree(file, newBranch);
                 }
             }
         }
@@ -53,8 +56,8 @@ public class FSService implements Loggable {
         return System.getProperty("user.home");
     }
 
-    public Tree getDirectories() {
-        return repository.getDirectories();
+    public Tree getDirectoriesTree() {
+        return repository.getDirectoryTree();
     }
 
     public void write(String file, String filePath) {

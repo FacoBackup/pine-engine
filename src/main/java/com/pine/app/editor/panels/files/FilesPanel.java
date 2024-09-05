@@ -6,6 +6,8 @@ import com.pine.app.core.ui.view.WindowView;
 import com.pine.common.Inject;
 import com.pine.common.fs.FSService;
 
+import java.nio.file.Files;
+
 public class FilesPanel extends AbstractPanel {
     @Inject
     public FSService service;
@@ -15,7 +17,7 @@ public class FilesPanel extends AbstractPanel {
 
     public FilesPanel() {
         super();
-        internalContext = new FilesContext(projectService.getCurrentProject().getPath());
+        setContext(new FilesContext(projectService.getCurrentProject().getPath()));
     }
 
     @Override
@@ -34,7 +36,9 @@ public class FilesPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        setCurrentDirectory(service, (FilesContext) internalContext);
+
+        getContext().subscribe(this::refreshFiles);
+
         var filesRoot = (WindowView) document.getElementById("filesRoot");
         var container = document.getElementById("filesContainer");
         document.getElementById("filesHeader").appendChild(new FilesHeaderPanel());
@@ -45,9 +49,11 @@ public class FilesPanel extends AbstractPanel {
         filesRoot.setNoCollapse(true);
     }
 
-    public static void setCurrentDirectory(FSService service, FilesContext context) {
-        context.setDirectory(context.getDirectory());
-        context.getFiles().clear();
-        service.refreshFiles(context.getDirectory());
+    private void refreshFiles() {
+        final FilesContext context = (FilesContext) getContext();
+        final String directory = (context).getDirectory();
+        service.refreshFiles(directory, () -> {
+            context.setFiles(service.readFiles(directory));
+        });
     }
 }

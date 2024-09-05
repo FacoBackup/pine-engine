@@ -5,10 +5,8 @@ import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.RepeatingView;
-import com.pine.app.core.ui.view.TextView;
 import com.pine.app.core.ui.view.WindowView;
 import com.pine.common.Inject;
-import imgui.flag.ImGuiWindowFlags;
 
 import java.util.List;
 
@@ -57,7 +55,7 @@ public class ProjectsPanel extends AbstractPanel {
 
     @Override
     public void beforeRender() {
-        window.setDimensions(getDocument().getWindowDimensions());
+        window.setDimensions(getDocument().getViewportDimensions());
     }
 
     private void removeProject(ProjectDTO projectDTO) {

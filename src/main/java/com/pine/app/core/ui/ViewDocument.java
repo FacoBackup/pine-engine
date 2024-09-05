@@ -6,7 +6,6 @@ import com.pine.app.core.window.WindowRuntimeException;
 import com.pine.common.Loggable;
 import com.pine.common.fs.FSUtil;
 import imgui.*;
-import imgui.flag.ImFontAtlasFlags;
 import jakarta.annotation.Nullable;
 import org.w3c.dom.Node;
 
@@ -36,8 +35,8 @@ public class ViewDocument implements Loggable {
         fontConfig.setMergeMode(true);
 
         final short[] glyphRanges = rangesBuilder.buildRanges();
-        atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/fa-regular-400.ttf"), 14, fontConfig, glyphRanges);
         atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Medium.ttf"), 14, fontConfig, glyphRanges);
+        atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/fa-regular-400.ttf"), 14, fontConfig, glyphRanges);
         atlas.build();
         fontConfig.destroy();
     }
@@ -46,8 +45,8 @@ public class ViewDocument implements Loggable {
         return window;
     }
 
-    public int[] getWindowDimensions() {
-        return window.getWindowDimensions();
+    public ImVec2 getViewportDimensions() {
+        return ImGui.getMainViewport().getSize();
     }
 
     public View getElementById(String id) {
@@ -60,7 +59,7 @@ public class ViewDocument implements Loggable {
             views.put(child.getId(), child);
         }
         if (child.getContext() == null || parent.getContext() != null) {
-            child.setInternalContext(parent.getContext());
+            child.setContext(parent.getContext());
         }
         child.setParent(parent);
         child.setDocument(this);
@@ -87,7 +86,7 @@ public class ViewDocument implements Loggable {
         }
         parent.getChildren().add(instance);
         if (instance.getContext() == null || parent.getContext() != null) {
-            instance.setInternalContext(parent.getContext());
+            instance.setContext(parent.getContext());
         }
         instance.setParent(parent);
         instance.setDocument(this);

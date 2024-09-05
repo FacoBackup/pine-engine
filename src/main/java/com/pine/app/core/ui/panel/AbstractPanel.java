@@ -38,7 +38,7 @@ public abstract class AbstractPanel extends AbstractView {
             Document document = docBuilder.parse(new ByteArrayInputStream(xml));
             processTag(document.getDocumentElement(), this);
         } catch (Exception e) {
-            getLogger().warn("Unable to parse XML", e);
+            getLogger().warn("Unable to parse XML");
         }
     }
 

@@ -1,8 +1,10 @@
 package com.pine.app.editor;
 
+import com.badlogic.gdx.Files;
 import com.pine.app.ProjectService;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.editor.panels.files.FilesPanel;
+import com.pine.app.editor.panels.zone.ZonePanel;
 import com.pine.common.Inject;
 
 
@@ -13,7 +15,9 @@ public class EditorWindow extends AbstractWindow {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        appendChild(new FilesPanel());
+        ZonePanel panel = new ZonePanel();
+        appendChild(panel);
+        panel.appendChild(new FilesPanel());
     }
 
     public int getWindowWidth() {

@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 public class InputView extends AbstractView {
     private Consumer<String> onChange;
     private boolean enabled = true;
-    private final ImString state = new ImString(100);
+    private final ImString value = new ImString(100);
 
     public InputView(View parent, String id) {
         super(parent, id);
@@ -25,10 +25,10 @@ public class InputView extends AbstractView {
             flags = ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.CallbackEdit;
         }
 
-        if (ImGui.inputText(internalId, state, flags)) {
+        if (ImGui.inputText(internalId, value, flags)) {
             enabled = false;
             if (onChange != null) {
-                onChange.accept(state.get());
+                onChange.accept(value.get());
             }
         }
     }
@@ -41,8 +41,8 @@ public class InputView extends AbstractView {
         return enabled;
     }
 
-    public void setState(String state) {
-        this.state.set(state);
+    public void setValue(String state) {
+        this.value.set(state);
     }
 
     public void setEnabled(boolean enabled) {
@@ -50,6 +50,6 @@ public class InputView extends AbstractView {
     }
 
     public String getValue() {
-        return state.get();
+        return value.get();
     }
 }

@@ -7,8 +7,6 @@ import com.pine.common.Inject;
 import com.pine.common.fs.FSService;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class FilesHeaderPanel extends AbstractPanel {
     @Inject
@@ -18,8 +16,8 @@ public class FilesHeaderPanel extends AbstractPanel {
     protected String getDefinition() {
         return """
                 <inline>
-                    <button id='addDir'>[create_new_folder]</button>
-                    <button id='goUp'>[arrow_upward]</button>
+                    <button id='addDir'>[FolderPlus]</button>
+                    <button id='goUp'>[ArrowUp]</button>
                     <input id='path'/>
                 </inline>
                 """;
@@ -32,19 +30,22 @@ public class FilesHeaderPanel extends AbstractPanel {
         var addDir = (ButtonView) document.getElementById("addDir");
         var goUp = (ButtonView) document.getElementById("goUp");
         var path = (InputView) document.getElementById("path");
-        path.setState(filesContext.getDirectory());
+
+        path.setValue(filesContext.getDirectory());
         path.setOnChange(this::pathChange);
-        goUp.initializeIcons();
-        addDir.initializeIcons();
+
         addDir.setOnClick(() -> fsService.createDirectory(filesContext.getDirectory() + File.separator + "New folder"));
         goUp.setOnClick(() -> filesContext.setDirectory(fsService.getParentDir(filesContext.getDirectory())));
+
+        filesContext.subscribe(() -> {
+            path.setValue(filesContext.getDirectory());
+        });
     }
 
     private void pathChange(String path) {
         if (fsService.exists(path)) {
             var context = ((FilesContext) getContext());
             context.setDirectory(path);
-            FilesPanel.setCurrentDirectory(fsService, context);
         }
     }
 }

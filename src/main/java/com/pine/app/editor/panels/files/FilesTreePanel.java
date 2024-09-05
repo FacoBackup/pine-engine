@@ -15,6 +15,7 @@ public class FilesTreePanel extends AbstractPanel {
 
     @Inject
     public FSService fsService;
+    private TreeView tree;
 
     @Override
     protected String getDefinition() {
@@ -24,18 +25,21 @@ public class FilesTreePanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var tree = (TreeView) document.getElementById("filesTree");
-        tree.setTree(fsService.getDirectories());
+        tree = (TreeView) document.getElementById("filesTree");
         tree.setSelected(selected);
         tree.setOnClick(this::onClick);
     }
 
-    private void onClick(Branch branch) {
-        if (branch instanceof Tree) {
+    @Override
+    public void beforeRender() {
+        tree.setTree(fsService.getDirectoriesTree());
+    }
+
+    private void onClick(Branch branch, Boolean isDoubleClick) {
+        if (branch instanceof Tree || !isDoubleClick) {
             return;
         }
         var context = (FilesContext) getContext();
         context.setDirectory(branch.getId());
-        FilesPanel.setCurrentDirectory(fsService, context);
     }
 }

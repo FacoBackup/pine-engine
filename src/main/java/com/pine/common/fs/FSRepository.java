@@ -10,23 +10,23 @@ import java.util.*;
 @Repository
 public class FSRepository {
     private final Map<String, List<FileInfoDTO>> filesByDirectory = new HashMap<>();
-    private final Tree directories = new Tree("Directories", UUID.randomUUID().toString());
+    private Tree directoryTree;
 
     public List<FileInfoDTO> readFiles(final String directory) {
         return filesByDirectory.computeIfAbsent(DigestUtils.sha1Hex(directory), this::readFilesInternal);
     }
 
-    public List<FileInfoDTO> readFilesForcefully(final String directory) {
+    public void readFilesForcefully(final String directory) {
         final String key = DigestUtils.sha1Hex(directory);
-        return filesByDirectory.put(key, readFilesInternal(key));
+        filesByDirectory.put(key, readFilesInternal(key));
     }
 
     public Map<String, List<FileInfoDTO>> getFilesByDirectory() {
         return filesByDirectory;
     }
 
-    public Tree getDirectories() {
-        return directories;
+    public Tree getDirectoryTree() {
+        return directoryTree;
     }
 
     private List<FileInfoDTO> readFilesInternal(String path) {
@@ -51,5 +51,9 @@ public class FSRepository {
             System.out.println("The specified path is not a directory or does not exist.");
         }
         return data;
+    }
+
+    public Tree createDirectoryTree() {
+        return this.directoryTree = new Tree("Directories", UUID.randomUUID().toString());
     }
 }

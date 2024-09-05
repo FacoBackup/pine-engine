@@ -2,6 +2,7 @@ package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
 import imgui.ImGui;
+import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 
@@ -10,7 +11,7 @@ public class WindowView extends AbstractView {
     private boolean noMove = true;
     private boolean noCollapse = false;
     private boolean noDecoration = false;
-    private int[] dimensions = new int[2];
+    private ImVec2 dimensions = new ImVec2();
     private int[] position = new int[2];
 
     public WindowView(View parent, String id) {
@@ -41,7 +42,7 @@ public class WindowView extends AbstractView {
         ImGui.setNextWindowPos(position[0], position[1]);
         if (!autoResize) {
             flags |= ImGuiWindowFlags.NoResize;
-            ImGui.setNextWindowSize(dimensions[0], dimensions[1], ImGuiCond.Always);
+            ImGui.setNextWindowSize(dimensions, ImGuiCond.Always);
         }
         if (ImGui.begin(tempLabel, flags)) {
             super.renderInternal();
@@ -58,11 +59,11 @@ public class WindowView extends AbstractView {
     }
 
     public void setWidth(int width) {
-        this.dimensions[0] = width;
+        this.dimensions.x = width;
     }
 
     public void setHeight(int height) {
-        this.dimensions[1] = height;
+        this.dimensions.y = height;
     }
 
     public void setLeft(int left) {
@@ -73,7 +74,7 @@ public class WindowView extends AbstractView {
         this.position[1] = top;
     }
 
-    public void setDimensions(int[] dimensions) {
+    public void setDimensions(ImVec2 dimensions) {
         this.dimensions = dimensions;
     }
 
