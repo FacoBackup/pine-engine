@@ -29,7 +29,7 @@ public class TreeView extends AbstractView {
         renderNode(tree);
     }
 
-    private boolean renderNode(Branch branch) {
+    private void renderNode(Branch branch) {
         int flags = FLAGS;
         Boolean isSelected = selected.get(branch.getId());
         if (isSelected != null && isSelected) {
@@ -49,15 +49,11 @@ public class TreeView extends AbstractView {
 
         if (isOpen) {
             List<Branch> branches = branch.getBranches();
-            boolean hasAnyChild = false;
             for (var childBranch : branches) {
-                hasAnyChild = renderNode(childBranch) || hasAnyChild;
+                renderNode(childBranch);
             }
-            if (hasAnyChild) {
-                ImGui.treePop();
-            }
+            ImGui.treePop();
         }
-        return isOpen;
     }
 
     public void setSelected(Map<String, Boolean> selected) {

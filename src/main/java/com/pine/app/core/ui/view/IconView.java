@@ -1,11 +1,11 @@
 package com.pine.app.core.ui.view;
 
-import com.pine.app.core.ui.MaterialIcon;
+import com.pine.app.core.ui.Icon;
 import com.pine.app.core.ui.View;
 import imgui.ImGui;
 
 public class IconView extends AbstractView {
-    private MaterialIcon icon;
+    private Icon icon;
 
     public IconView(View parent, String id) {
         super(parent, id);
@@ -14,7 +14,7 @@ public class IconView extends AbstractView {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        icon = MaterialIcon.iconOfName(innerText);
+        icon = Icon.iconOfName(innerText);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class IconView extends AbstractView {
         ImGui.text(icon.getCodePoint());
     }
 
-    public void setIcon(MaterialIcon icon) {
+    public void setIcon(Icon icon) {
         this.icon = icon;
     }
 }

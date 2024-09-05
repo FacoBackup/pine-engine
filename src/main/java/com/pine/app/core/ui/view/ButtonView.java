@@ -1,6 +1,6 @@
 package com.pine.app.core.ui.view;
 
-import com.pine.app.core.ui.MaterialIcon;
+import com.pine.app.core.ui.Icon;
 import com.pine.app.core.ui.View;
 import imgui.ImGui;
 
@@ -23,7 +23,7 @@ public class ButtonView extends AbstractView {
     }
 
     public void initializeIcons() {
-        for (var icon : MaterialIcon.values()) {
+        for (var icon : Icon.values()) {
             innerText = innerText.replace("[" + icon.getIconName() + "]", icon.getCodePoint());
         }
     }

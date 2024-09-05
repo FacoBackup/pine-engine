@@ -4,6 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Branch {
     private final List<Branch> branches = new ArrayList<>();
@@ -15,7 +16,7 @@ public class Branch {
     public Branch(String name, String id) {
         this.name = name;
         this.id = id;
-        this.key = "##" + DigestUtils.sha1Hex(id);
+        this.key = "##" + DigestUtils.sha1Hex(UUID.randomUUID().toString());
         this.label = name + key;
     }
 

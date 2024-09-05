@@ -27,7 +27,6 @@ public class ProjectsPanel extends AbstractPanel {
                     <button id="newProject">
                         New project
                     </button>
-                    <text id="test"></text>
                     <list id="list"/>
                 </window>
                 """;

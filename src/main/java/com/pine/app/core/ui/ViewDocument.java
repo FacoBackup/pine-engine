@@ -37,7 +37,7 @@ public class ViewDocument implements Loggable {
 
         final short[] glyphRanges = rangesBuilder.buildRanges();
         atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/fa-regular-400.ttf"), 14, fontConfig, glyphRanges);
-        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Regular.ttf"), 14, fontConfig, glyphRanges);
+        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Medium.ttf"), 14, fontConfig, glyphRanges);
         atlas.build();
         fontConfig.destroy();
     }
