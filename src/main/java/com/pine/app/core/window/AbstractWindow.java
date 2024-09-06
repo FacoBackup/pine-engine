@@ -4,7 +4,6 @@ import com.pine.app.core.service.WindowService;
 import com.pine.app.core.ui.Renderable;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewDocument;
-import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.common.ContextService;
 import com.pine.common.Inject;
 import imgui.ImGui;
@@ -12,7 +11,6 @@ import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
-import imgui.internal.ImGuiContext;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
@@ -20,6 +18,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractWindow implements Renderable {
@@ -30,16 +29,7 @@ public abstract class AbstractWindow implements Renderable {
     protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
     private final int[] dimensions = new int[2];
     private final ViewDocument viewDocument = new ViewDocument(this);
-    private final AbstractPanel root = new AbstractPanel() {
-        @Override
-        public void onInitialize() {
-        }
-
-        @Override
-        public ViewDocument getDocument() {
-            return viewDocument;
-        }
-    };
+    private final DockPanel root = new DockPanel();
 
     @Inject
     public WindowService windowService;
@@ -64,7 +54,13 @@ public abstract class AbstractWindow implements Renderable {
         io.setConfigWindowsResizeFromEdges(true);
 
         viewDocument.initialize();
+
+        root.setDocument(viewDocument);
+        root.createDockSpaces(getDockSpaces());
+        root.onInitialize();
     }
+
+    protected abstract List<DockDTO> getDockSpaces();
 
     protected void createGlfwContext() {
         GLFWErrorCallback.createPrint(System.err).set();

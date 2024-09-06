@@ -23,13 +23,10 @@ public class FilesPanel extends AbstractPanel {
     @Override
     protected String getDefinition() {
         return """
-                <window id="filesRoot">
-                    <group>
-                        <fragment id='filesHeader'/>
-                        <inline id='filesContainer'/>
-                    </group>
-                    Files
-                </window>
+                <group>
+                    <fragment id='filesHeader'/>
+                    <inline id='filesContainer'/>
+                </group>
                 """;
     }
 
@@ -39,14 +36,10 @@ public class FilesPanel extends AbstractPanel {
 
         getContext().subscribe(this::refreshFiles);
 
-        var filesRoot = (WindowView) document.getElementById("filesRoot");
         var container = document.getElementById("filesContainer");
         document.getElementById("filesHeader").appendChild(new FilesHeaderPanel());
         container.appendChild(new FilesTreePanel());
         container.appendChild(new FilesDirectoryPanel());
-        filesRoot.setAutoResize(true);
-        filesRoot.setNoMove(false);
-        filesRoot.setNoCollapse(true);
     }
 
     private void refreshFiles() {

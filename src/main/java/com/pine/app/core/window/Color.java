@@ -2,9 +2,6 @@ package com.pine.app.core.window;
 
 import java.util.Arrays;
 
-/**
- * Object for color data.
- */
 public class Color implements Cloneable {
     public final float[] data = new float[4];
 
@@ -73,11 +70,6 @@ public class Color implements Cloneable {
             + '}';
     }
 
-    /**
-     * Method to clone Color instance.
-     *
-     * @return cloned Color instance
-     */
     @Override
     @SuppressWarnings("MethodDoesntCallSuperMethod")
     public Color clone() {

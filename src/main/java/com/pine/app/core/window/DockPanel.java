@@ -1,4 +1,4 @@
-package com.pine.app.editor.panels.zone;
+package com.pine.app.core.window;
 
 import com.pine.app.core.ui.panel.AbstractPanel;
 import imgui.ImGuiStyle;
@@ -9,7 +9,10 @@ import imgui.flag.*;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 
-public class ZonePanel extends AbstractPanel {
+import java.util.Collections;
+import java.util.List;
+
+public class DockPanel extends AbstractPanel {
     private static final ImBoolean OPEN = new ImBoolean(true);
     private static final int FLAGS = ImGuiWindowFlags.MenuBar |
             ImGuiWindowFlags.NoDocking |
@@ -27,6 +30,7 @@ public class ZonePanel extends AbstractPanel {
     private final ImInt dockDownId = new ImInt();
     private final ImInt dockDownRightId = new ImInt();
     private boolean isInitialized = false;
+    private List<DockDTO> dockSpaces = Collections.emptyList();
 
     @Override
     public void renderInternal() {
@@ -59,7 +63,6 @@ public class ZonePanel extends AbstractPanel {
         ImGui.end();
     }
 
-
     private void buildViews(int windowId) {
 
         if (!isInitialized) {
@@ -71,20 +74,30 @@ public class ZonePanel extends AbstractPanel {
             imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), ImGuiDockNodeFlags.None);
             imgui.internal.ImGui.dockBuilderSetNodeSize(dockMainId.get(), document.getViewportDimensions());
 
-            dockRightId.set(imgui.internal.ImGui.dockBuilderSplitNode(dockMainId.get(), ImGuiDir.Right, 0.17f, null, dockMainId));
-            dockRightDownId.set(imgui.internal.ImGui.dockBuilderSplitNode(dockRightId.get(), ImGuiDir.Down, 0.6f, null, dockRightId));
-            dockDownId.set(imgui.internal.ImGui.dockBuilderSplitNode(dockMainId.get(), ImGuiDir.Down, 0.22f, null, dockMainId));
-            dockDownRightId.set(imgui.internal.ImGui.dockBuilderSplitNode(dockDownId.get(), ImGuiDir.Right, 0.5f, null, dockDownId));
+            dockSpaces.forEach(d -> {
+                int origin = dockMainId.get();
+                if (d.getOrigin() != null) {
+                    origin = d.getOrigin().getNodeId().get();
+                }
+                ImInt target = dockMainId;
+                if (d.getOutAtOppositeDir() != null) {
+                    target = d.getOutAtOppositeDir().getNodeId();
+                }
 
-            // dock windows
-            imgui.internal.ImGui.dockBuilderDockWindow("World", dockRightId.get());
-            imgui.internal.ImGui.dockBuilderDockWindow("Properties", dockRightDownId.get());
-            imgui.internal.ImGui.dockBuilderDockWindow("Console", dockDownId.get());
-            imgui.internal.ImGui.dockBuilderDockWindow("Assets", dockDownRightId.get());
+                d.getNodeId().set(imgui.internal.ImGui.dockBuilderSplitNode(origin, d.getSplitDir(), d.getSizeRatioForNodeAtDir(), null, target));
+            });
+
+            dockSpaces.forEach(d -> {
+                imgui.internal.ImGui.dockBuilderDockWindow(d.getName(), d.getNodeId().get());
+            });
+
             imgui.internal.ImGui.dockBuilderDockWindow("Viewport", dockMainId.get());
-
             imgui.internal.ImGui.dockBuilderFinish(dockMainId.get());
         }
 
+    }
+
+    public void createDockSpaces(List<DockDTO> dockSpaces) {
+        this.dockSpaces = dockSpaces;
     }
 }
