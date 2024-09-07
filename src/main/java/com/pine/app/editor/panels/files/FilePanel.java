@@ -17,7 +17,7 @@ public class FilePanel extends AbstractPanel {
     protected String getDefinition() {
         return """
             <inline>
-                 <icon>folder</icon>
+                 <text>[Folder]</icon>
                 <button>
                     <text id="name"/>
                 </button>

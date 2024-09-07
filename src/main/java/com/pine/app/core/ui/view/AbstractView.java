@@ -1,5 +1,6 @@
 package com.pine.app.core.ui.view;
 
+import com.pine.app.core.Icon;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewDocument;
 import com.pine.app.core.ui.panel.AbstractPanelContext;
@@ -48,10 +49,6 @@ public class AbstractView implements View {
     }
 
     @Override
-    public void onInitialize() {
-    }
-
-    @Override
     public List<View> getChildren() {
         return children;
     }
@@ -71,9 +68,6 @@ public class AbstractView implements View {
         document.appendChild(child, this);
     }
 
-    public void setInnerText(String textContent) {
-        innerText = textContent;
-    }
 
     @Override
     public String getInnerText() {
@@ -113,6 +107,24 @@ public class AbstractView implements View {
 
         beforeRender();
         renderInternal();
+    }
+
+    @Override
+    public void onInitialize() {
+        setInnerText(innerText);
+    }
+
+    public void setInnerText(String textContent) {
+        innerText = textContent;
+        processIcons();
+    }
+
+    private void processIcons() {
+        if (innerText != null) {
+            for (var icon : Icon.values()) {
+                innerText = innerText.replace("[" + icon.getIconName() + "]", icon.codePoint);
+            }
+        }
     }
 }
 

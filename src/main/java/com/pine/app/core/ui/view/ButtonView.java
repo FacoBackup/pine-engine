@@ -24,23 +24,8 @@ public class ButtonView extends AbstractView {
     }
 
     @Override
-    public void onInitialize() {
-        super.onInitialize();
-        setInnerText(innerText);
-    }
-
-    @Override
     public void setInnerText(String textContent) {
         super.setInnerText(textContent);
-        processIcons();
         labelWithId = innerText + internalId;
-    }
-
-    private void processIcons() {
-        if (innerText != null) {
-            for (var icon : Icon.values()) {
-                innerText = innerText.replace("[" + icon.getIconName() + "]", icon.getCodePoint());
-            }
-        }
     }
 }

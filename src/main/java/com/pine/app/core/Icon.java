@@ -1004,16 +1004,12 @@ public enum Icon {
     YENSIGN("\uf157", "YenSign"),
     YINYANG("\uf6ad", "YinYang");
 
-    private final String codePoint;
+    public final String codePoint;
     private final String iconName;
 
     Icon(String codePoint, String iconName) {
         this.codePoint = codePoint;
         this.iconName = iconName;
-    }
-
-    public String getCodePoint() {
-        return codePoint;
     }
 
     public String getIconName() {
@@ -1027,5 +1023,9 @@ public enum Icon {
             }
         }
         return null;
+    }
+
+    public static short[] getRange(){
+        return new short[]{(short) 0xe005, (short) 0xf8ff, 0};
     }
 }

@@ -60,6 +60,13 @@ public class DockPanel extends AbstractPanel {
                 if (ImGui.menuItem("Redo")) { /* Action for Redo */ }
                 ImGui.endMenu();
             }
+
+            if (ImGui.beginMenu("Window")) {
+                if (ImGui.menuItem(document.isDarkMode() ? "Theme: Dark" : "Theme: Light" )) {
+                    document.setDarkMode(!document.isDarkMode());
+                }
+                ImGui.endMenu();
+            }
             ImGui.endMenuBar();
         }
 

@@ -17,32 +17,16 @@ public class ViewDocument implements Loggable {
     private final Map<String, View> views = new HashMap<>();
     private final AbstractWindow window;
     private boolean darkMode = true;
-    private float[] backgroundColor = new float[] { .0f, .0f, .0f};
+    private final float[] backgroundColor = new float[] { .0f, .0f, .0f};
 
     public ViewDocument(AbstractWindow window) {
         this.window = window;
     }
 
     public void initialize() {
-        final var io = ImGui.getIO();
-        ImFontAtlas atlas = io.getFonts();
-
-        atlas.setFreeTypeRenderer(true);
-        atlas.addFontDefault();
-
-        final var rangesBuilder = new ImFontGlyphRangesBuilder();
-        rangesBuilder.addRanges(atlas.getGlyphRangesDefault());
-        rangesBuilder.addRanges(new short[]{(short) 0xe005, (short) 0xf8ff, 0});
-
-        final var fontConfig = new ImFontConfig();
-        fontConfig.setMergeMode(true);
-
-        final short[] glyphRanges = rangesBuilder.buildRanges();
-        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Medium.ttf"), 18, fontConfig, glyphRanges);
-        atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/fa-regular-400.ttf"), 14, fontConfig, glyphRanges);
-        atlas.build();
-        fontConfig.destroy();
-        setDarkMode(true);
+        ThemeUtil.applySpacing();
+        ThemeUtil.applyTheme(darkMode, backgroundColor);
+        ThemeUtil.applyFonts();
     }
 
     public AbstractWindow getWindow() {
@@ -117,6 +101,6 @@ public class ViewDocument implements Loggable {
 
     public void setDarkMode(boolean darkMode) {
         this.darkMode = darkMode;
-        ThemeUtil.setTheme(darkMode, backgroundColor);
+        ThemeUtil.applyTheme(darkMode, backgroundColor);
     }
 }
