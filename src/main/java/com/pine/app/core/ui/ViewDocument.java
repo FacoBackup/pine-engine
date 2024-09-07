@@ -1,28 +1,40 @@
 package com.pine.app.core.ui;
 
+import com.pine.app.core.ui.theme.ThemeUtil;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.core.window.WindowRuntimeException;
+import com.pine.common.Loggable;
+import com.pine.common.fs.FSUtil;
+import imgui.*;
 import jakarta.annotation.Nullable;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ViewDocument {
+public class ViewDocument implements Loggable {
     private final Map<String, View> views = new HashMap<>();
     private final AbstractWindow window;
+    private boolean darkMode = true;
+    private final float[] backgroundColor = new float[] { .0f, .0f, .0f};
 
     public ViewDocument(AbstractWindow window) {
         this.window = window;
+    }
+
+    public void initialize() {
+        ThemeUtil.applySpacing();
+        ThemeUtil.applyTheme(darkMode, backgroundColor);
+        ThemeUtil.applyFonts();
     }
 
     public AbstractWindow getWindow() {
         return window;
     }
 
-    public int[] getWindowDimensions() {
-        return window.getWindowDimensions();
+    public ImVec2 getViewportDimensions() {
+        return ImGui.getMainViewport().getSize();
     }
 
     public View getElementById(String id) {
@@ -34,8 +46,8 @@ public class ViewDocument {
         if (child.getId() != null) {
             views.put(child.getId(), child);
         }
-        if(child.getContext() == null || parent.getContext() != null) {
-            child.setInternalContext(parent.getContext());
+        if (child.getContext() == null || parent.getContext() != null) {
+            child.setContext(parent.getContext());
         }
         child.setParent(parent);
         child.setDocument(this);
@@ -55,11 +67,14 @@ public class ViewDocument {
         }
 
         if (id != null) {
+            if (views.containsKey(id)) {
+                getLogger().error("Duplicated view ID {}", id);
+            }
             views.put(id, instance);
         }
         parent.getChildren().add(instance);
-        if(instance.getContext() == null || parent.getContext() != null) {
-            instance.setInternalContext(parent.getContext());
+        if (instance.getContext() == null || parent.getContext() != null) {
+            instance.setContext(parent.getContext());
         }
         instance.setParent(parent);
         instance.setDocument(this);
@@ -74,5 +89,18 @@ public class ViewDocument {
         } catch (Exception _) {
             return null;
         }
+    }
+
+    public float[] getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public boolean isDarkMode() {
+        return darkMode;
+    }
+
+    public void setDarkMode(boolean darkMode) {
+        this.darkMode = darkMode;
+        ThemeUtil.applyTheme(darkMode, backgroundColor);
     }
 }

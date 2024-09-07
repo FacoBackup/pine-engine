@@ -1,7 +1,11 @@
 package com.pine.common.fs;
 
+import com.pine.app.core.ui.view.tree.Branch;
+import com.pine.app.core.ui.view.tree.Tree;
 import com.pine.common.Loggable;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -19,6 +23,13 @@ public class FSService implements Loggable {
 
     public List<FileInfoDTO> readFiles(final String path) {
         return repository.readFiles(path);
+    }
+
+    @Async
+    public void refreshFiles(String directory, Runnable afterProcessing) {
+        repository.getFilesByDirectory().clear();
+        repository.readFilesForcefully(directory);
+        afterProcessing.run();
     }
 
     public static String getUserRootPath() {
@@ -57,10 +68,10 @@ public class FSService implements Loggable {
     public void createDirectory(String dirPath) {
         try {
             Path path = Paths.get(dirPath);
-            if(!Files.exists(path)) {
+            if (!Files.exists(path)) {
                 Files.createDirectories(path);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             getLogger().error("Error creating directory: {}", e.getMessage(), e);
         }
     }
@@ -83,8 +94,22 @@ public class FSService implements Loggable {
     public void deleteDirectory(String path) {
         try {
             new File(path).delete();
-        }catch (Exception e){
+        } catch (Exception e) {
             getLogger().error("Error deleting directory: {}", e.getMessage(), e);
         }
+    }
+
+    public boolean exists(String path) {
+        return new File(path).exists();
+    }
+
+    public String getParentDir(String directory) {
+        Path path = Paths.get(directory);
+        Path parentPath = path.getParent();
+
+        if (parentPath != null) {
+            return parentPath.toString();
+        }
+        return null;
     }
 }

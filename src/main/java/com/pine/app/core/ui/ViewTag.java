@@ -14,7 +14,8 @@ public enum ViewTag {
     INLINE("inline", InlineView.class, true),
     DIV("div", DivView.class, true),
     TABLE("table", TableView.class, true),
-    LIST("list", RepeatingView.class, false);
+    TREE("tree", TreeView.class, false),
+    LIST("list", ListView.class, false);
 
     private final String tag;
     private final Class<? extends AbstractView> clazz;

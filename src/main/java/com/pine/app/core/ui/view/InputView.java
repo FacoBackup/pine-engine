@@ -1,16 +1,16 @@
 package com.pine.app.core.ui.view;
 
-import com.pine.app.core.state.StringState;
 import com.pine.app.core.ui.View;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
+import imgui.type.ImString;
 
 import java.util.function.Consumer;
 
 public class InputView extends AbstractView {
     private Consumer<String> onChange;
     private boolean enabled = true;
-    private final StringState state = new StringState(100);
+    private final ImString value = new ImString(100);
 
     public InputView(View parent, String id) {
         super(parent, id);
@@ -25,10 +25,10 @@ public class InputView extends AbstractView {
             flags = ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.CallbackEdit;
         }
 
-        if (ImGui.inputText(internalId, state.getState(), flags)) {
+        if (ImGui.inputText(internalId, value, flags)) {
             enabled = false;
             if (onChange != null) {
-                onChange.accept(state.get());
+                onChange.accept(value.get());
             }
         }
     }
@@ -41,12 +41,8 @@ public class InputView extends AbstractView {
         return enabled;
     }
 
-    public StringState getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state.setState(state);
+    public void setValue(String state) {
+        this.value.set(state);
     }
 
     public void setEnabled(boolean enabled) {
@@ -54,6 +50,6 @@ public class InputView extends AbstractView {
     }
 
     public String getValue() {
-        return state.get();
+        return value.get();
     }
 }

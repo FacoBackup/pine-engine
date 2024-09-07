@@ -1,30 +1,38 @@
 package com.pine.app.editor.panels.files;
 
-import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.panel.AbstractPanel;
-import com.pine.app.core.ui.view.RepeatingViewItem;
 import com.pine.app.core.ui.view.TableView;
+import com.pine.app.core.ui.view.table.TableHeader;
 import com.pine.common.fs.FileInfoDTO;
+import imgui.ImGui;
+
+import java.util.List;
 
 public class FilesDirectoryPanel extends AbstractPanel {
 
+    private TableView table;
+
     @Override
     protected String getDefinition() {
-        return """
-                <table id="list"/>""";
+        return "<table id='list'/>";
     }
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var context = (FilesContext) getContext();
-        var list = (TableView) getDocument().getElementById("list");
-        list.setData(context.getFiles());
-        list.setGetView(this::createListItem);
+        table = (TableView) document.getElementById("list");
+        table.setGetView(item -> new FilePanel((FileInfoDTO) item));
+        table.setHeaderColumns(List.of(
+                new TableHeader("", 30),
+                new TableHeader("Name"),
+                new TableHeader("Type"),
+                new TableHeader("Size")
+        ));
+        table.setMaxCells(4);
     }
 
-    private View createListItem(RepeatingViewItem repeatingViewItem) {
-        var item = (FileInfoDTO) repeatingViewItem;
-        return new FilePanel(item);
+    @Override
+    public void beforeRender() {
+        table.setData(((FilesContext) getContext()).getFiles());
     }
 }

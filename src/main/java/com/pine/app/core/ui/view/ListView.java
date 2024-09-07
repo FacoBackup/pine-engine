@@ -8,25 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class RepeatingView extends AbstractView {
+public class ListView extends AbstractView {
     protected List<? extends RepeatingViewItem> data = Collections.emptyList();
     protected final Map<String, View> containers = new HashMap<>();
     private Function<RepeatingViewItem, View> getView;
 
-    public RepeatingView(View parent, String id) {
+    public ListView(View parent, String id) {
         super(parent, id);
     }
 
     @Override
     protected void renderInternal() {
-        if(!visible){
-            return;
-        }
         for (RepeatingViewItem item : data) {
-            String key = item.getKey();
-            View container;
-            container = getView(item, key);
-            container.render();
+            getView(item, item.getKey()).render();
         }
     }
 
@@ -35,6 +29,7 @@ public class RepeatingView extends AbstractView {
         if (containers.get(key) == null) {
             container = getView.apply(item);
             container.setDocument(getDocument());
+            container.setContext(getContext());
             containers.put(key, container);
             container.onInitialize();
         } else {

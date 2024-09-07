@@ -1,8 +1,9 @@
 package com.pine.app.core.ui.view;
 
+import com.pine.app.core.Icon;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewDocument;
-import com.pine.app.core.ui.panel.IPanelContext;
+import com.pine.app.core.ui.panel.AbstractPanelContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class AbstractView implements View {
     protected View parent;
     protected String innerText;
     protected boolean visible = true;
-    protected IPanelContext internalContext;
+    private AbstractPanelContext internalContext;
 
     public AbstractView(View parent, String id) {
         this.parent = parent;
@@ -30,12 +31,12 @@ public class AbstractView implements View {
     }
 
     @Override
-    public IPanelContext getContext() {
+    public AbstractPanelContext getContext() {
         return internalContext;
     }
 
     @Override
-    public void setInternalContext(IPanelContext internalContext) {
+    public void setContext(AbstractPanelContext internalContext) {
         this.internalContext = internalContext;
     }
 
@@ -44,12 +45,7 @@ public class AbstractView implements View {
         if (this.document != null) {
             throw new RuntimeException("Document already bound to view");
         }
-
         this.document = document;
-    }
-
-    @Override
-    public void onInitialize() {
     }
 
     @Override
@@ -72,9 +68,6 @@ public class AbstractView implements View {
         document.appendChild(child, this);
     }
 
-    public void setInnerText(String textContent) {
-        innerText = textContent;
-    }
 
     @Override
     public String getInnerText() {
@@ -114,6 +107,25 @@ public class AbstractView implements View {
 
         beforeRender();
         renderInternal();
+    }
+
+    @Override
+    public void onInitialize() {
+        setInnerText(innerText);
+    }
+
+    @Override
+    public void setInnerText(String textContent) {
+        innerText = textContent;
+        processIcons();
+    }
+
+    private void processIcons() {
+        if (innerText != null) {
+            for (var icon : Icon.values()) {
+                innerText = innerText.replace("[" + icon.getIconName() + "]", icon.codePoint);
+            }
+        }
     }
 }
 

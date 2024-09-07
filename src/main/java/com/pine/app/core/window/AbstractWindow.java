@@ -2,17 +2,16 @@ package com.pine.app.core.window;
 
 import com.pine.app.core.service.WindowService;
 import com.pine.app.core.ui.Renderable;
-import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewDocument;
-import com.pine.app.core.ui.panel.AbstractPanel;
-import com.pine.app.core.window.gl3.ImGuiImplGl3;
-import com.pine.app.core.window.glfw.ImGuiImplGlfw;
+import com.pine.app.core.ui.panel.DockDTO;
+import com.pine.app.core.ui.panel.DockPanel;
 import com.pine.common.ContextService;
 import com.pine.common.Inject;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
-import imgui.internal.ImGuiContext;
+import imgui.gl3.ImGuiImplGl3;
+import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
@@ -20,6 +19,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
+import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractWindow implements Renderable {
@@ -27,20 +27,9 @@ public abstract class AbstractWindow implements Renderable {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
-    protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
-    private final int[] dimensions = new int[2];
     private final ViewDocument viewDocument = new ViewDocument(this);
-    private ImGuiContext context;
-    private final AbstractPanel root = new AbstractPanel() {
-        @Override
-        public void onInitialize() {
-        }
-
-        @Override
-        public ViewDocument getDocument() {
-            return viewDocument;
-        }
-    };
+    private final DockPanel root = new DockPanel();
+    private boolean isVisible = true;
 
     @Inject
     public WindowService windowService;
@@ -51,13 +40,9 @@ public abstract class AbstractWindow implements Renderable {
 
     @Override
     public void onInitialize() {
-        createGLFWContext();
-        context = ImGui.createContext();
-        try {
-            initFonts();
-        } catch (Exception e) {
-            getLogger().warn(e.getMessage(), e);
-        }
+        createGlfwContext();
+        ImGui.createContext();
+
         imGuiGlfw.init(handle, true);
         imGuiGl3.init(GLSL_VERSION);
 
@@ -67,9 +52,17 @@ public abstract class AbstractWindow implements Renderable {
         io.setConfigViewportsNoTaskBarIcon(true);
         io.setConfigDockingAlwaysTabBar(true);
         io.setConfigWindowsResizeFromEdges(true);
+
+        viewDocument.initialize();
+
+        root.setDocument(viewDocument);
+        root.initializeDockSpaces(getDockSpaces());
+        root.onInitialize();
     }
 
-    protected void createGLFWContext() {
+    protected abstract List<DockDTO> getDockSpaces();
+
+    protected void createGlfwContext() {
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!GLFW.glfwInit()) {
@@ -81,8 +74,6 @@ public abstract class AbstractWindow implements Renderable {
 
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         handle = GLFW.glfwCreateWindow(getWindowWidth(), getWindowHeight(), getWindowName(), MemoryUtil.NULL, MemoryUtil.NULL);
-        dimensions[0] = getWindowWidth();
-        dimensions[1] = getWindowHeight();
 
         if (handle == MemoryUtil.NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -98,11 +89,8 @@ public abstract class AbstractWindow implements Renderable {
         }
 
         GLFW.glfwMakeContextCurrent(handle);
-
         GL.createCapabilities();
-
         GLFW.glfwSwapInterval(GLFW.GLFW_TRUE);
-
         if (isFullScreen()) {
             GLFW.glfwMaximizeWindow(handle);
         } else {
@@ -112,73 +100,79 @@ public abstract class AbstractWindow implements Renderable {
         clearBuffer();
         renderBuffer();
 
-        GLFW.glfwSetWindowSizeCallback(handle, new GLFWWindowSizeCallback() {
-            @Override
-            public void invoke(final long window, final int width, final int height) {
-                render();
-                dimensions[0] = width;
-                dimensions[1] = height;
-            }
-        });
+        initGlfwEvents();
+    }
 
+    private void initGlfwEvents() {
         GLFW.glfwSetWindowCloseCallback(handle, new GLFWWindowCloseCallback() {
             @Override
             public void invoke(long l) {
                 windowService.closeWindow(AbstractWindow.this);
             }
         });
-    }
-
-    private void initFonts() throws RuntimeException {
-//        final ImGuiIO io = ImGui.getIO();
-//        io.getFonts().addFontDefault();
-//        final ImFontGlyphRangesBuilder rangesBuilder = new ImFontGlyphRangesBuilder();
-//        rangesBuilder.addRanges(io.getFonts().getGlyphRangesDefault());
-//        rangesBuilder.addRanges(new short[]{(short) 0xe005, (short) 0xf8ff, 0});
-//
-//        final ImFontConfig fontConfig = new ImFontConfig();
-//        fontConfig.setMergeMode(true);
-//
-//        final short[] glyphRanges = rangesBuilder.buildRanges();
-//        material = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("icons/MaterialIcons-Regular.ttf"), 14, fontConfig, glyphRanges);
-//        roboto = io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Regular.ttf"), 14, fontConfig, glyphRanges);
-//        io.getFonts().build();
+        GLFW.glfwSetWindowIconifyCallback(handle, new GLFWWindowIconifyCallback() {
+            @Override
+            public void invoke(long window, boolean iconified) {
+                isVisible = !iconified;
+            }
+        });
     }
 
     public void dispose() {
-        imGuiGl3.dispose();
-        imGuiGlfw.dispose();
-        ImGui.destroyContext(context);
+        imGuiGl3.shutdown();
+        imGuiGlfw.shutdown();
+        disposeImGui();
+        disposeWindow();
+
+    }
+
+    private void disposeImGui() {
+        ImGui.destroyContext();
+    }
+
+    private void disposeWindow() {
         Callbacks.glfwFreeCallbacks(handle);
         GLFW.glfwDestroyWindow(handle);
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
 
+    protected abstract void onBeforeRender();
+
     @Override
     public void render() {
-        if (ImGui.getCurrentContext() != context) {
-            return;
+        onBeforeRender();
+
+        startFrame();
+        if (isVisible) {
+            root.render();
         }
-        clearBuffer();
-        imGuiGlfw.newFrame();
-        ImGui.newFrame();
+        endFrame();
 
-        root.render();
+    }
 
+    private void endFrame() {
         ImGui.render();
         imGuiGl3.renderDrawData(ImGui.getDrawData());
         if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            final long backupWindowPtr = GLFW.glfwGetCurrentContext();
+            final long backupCurrentContext = GLFW.glfwGetCurrentContext();
             ImGui.updatePlatformWindows();
             ImGui.renderPlatformWindowsDefault();
-            GLFW.glfwMakeContextCurrent(backupWindowPtr);
+            GLFW.glfwMakeContextCurrent(backupCurrentContext);
         }
         renderBuffer();
     }
 
+    private void startFrame() {
+        clearBuffer();
+        imGuiGl3.newFrame();
+        imGuiGlfw.newFrame();
+        ImGui.newFrame();
+    }
+
     private void clearBuffer() {
-        GL46.glClearColor(colorBg.getRed(), colorBg.getGreen(), colorBg.getBlue(), colorBg.getAlpha());
+        float[] theme = viewDocument.getBackgroundColor();
+        GL46.glClearColor(theme[0], theme[1], theme[2], 1);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }
 
@@ -188,16 +182,8 @@ public abstract class AbstractWindow implements Renderable {
         GLFW.glfwPollEvents();
     }
 
-    protected void appendChild(View view) {
-        root.appendChild(view);
-    }
-
     public final long getHandle() {
         return handle;
-    }
-
-    public final Color getColorBg() {
-        return colorBg;
     }
 
     public abstract int getWindowWidth();
@@ -207,8 +193,4 @@ public abstract class AbstractWindow implements Renderable {
     public abstract int getWindowHeight();
 
     public abstract boolean isFullScreen();
-
-    public int[] getWindowDimensions() {
-        return dimensions;
-    }
 }

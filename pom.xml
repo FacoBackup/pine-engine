@@ -115,14 +115,21 @@
         <dependency>
             <groupId>io.github.spair</groupId>
             <artifactId>imgui-java-binding</artifactId>
-            <version>1.86.11</version>
+            <version>1.87.3</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.github.spair/imgui-java-natives-windows -->
         <dependency>
             <groupId>io.github.spair</groupId>
             <artifactId>imgui-java-natives-windows</artifactId>
-            <version>1.86.11</version>
+            <version>1.87.3</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.github.spair/imgui-java-lwjgl3 -->
+        <dependency>
+            <groupId>io.github.spair</groupId>
+            <artifactId>imgui-java-lwjgl3</artifactId>
+            <version>1.87.3</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/net.onedaybeard.artemis/artemis-odb -->
