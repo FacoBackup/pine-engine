@@ -1,34 +1,27 @@
 package com.pine.app.editor;
 
 import com.pine.app.ProjectService;
+import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.window.AbstractWindow;
-import com.pine.app.core.window.DockDTO;
+import com.pine.app.editor.panels.console.ConsolePanel;
 import com.pine.app.editor.panels.files.FilesPanel;
-import com.pine.app.core.window.DockPanel;
+import com.pine.app.editor.panels.inspector.InspectorPanel;
+import com.pine.app.editor.panels.viewport.ViewportPanel;
 import com.pine.common.Inject;
 import imgui.flag.ImGuiDir;
 
 import java.util.List;
-
 
 public class EditorWindow extends AbstractWindow {
     @Inject
     public ProjectService projectService;
 
     @Override
-    public void onInitialize() {
-        super.onInitialize();
-        DockPanel panel = new DockPanel();
-        appendChild(panel);
-        panel.appendChild(new FilesPanel());
-    }
-
-    @Override
     protected List<DockDTO> getDockSpaces() {
-        DockDTO dockRight = new DockDTO("World");
-        DockDTO dockRightDown = new DockDTO("Inspector");
-        DockDTO dockDown = new DockDTO("Console");
-        DockDTO dockDownRight = new DockDTO("Files");
+        DockDTO dockRight = new DockDTO("Viewport", ViewportPanel.class);
+        DockDTO dockRightDown = new DockDTO("Inspector", InspectorPanel.class);
+        DockDTO dockDown = new DockDTO("Console", ConsolePanel.class);
+        DockDTO dockDownRight = new DockDTO("Files", FilesPanel.class);
 
         dockRight.setOrigin(null);
         dockRight.setSplitDir(ImGuiDir.Right);

@@ -1,6 +1,5 @@
 package com.pine.app.core.ui.panel;
 
-import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewTag;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.WindowRuntimeException;
@@ -71,11 +70,6 @@ public abstract class AbstractPanel extends AbstractView {
                 instance.setInnerText(currentNode.getTextContent().trim());
             }
         }
-    }
-
-    @Override
-    public void appendChild(View child) {
-        getDocument().appendChild(child, this);
     }
 
     @Language("xml")

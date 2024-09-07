@@ -1,13 +1,8 @@
 package com.pine.app.editor.panels.files;
 
-import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.panel.AbstractPanel;
-import com.pine.app.core.ui.view.RepeatingViewItem;
 import com.pine.app.core.ui.view.TableView;
-import com.pine.app.core.ui.view.table.TableHeader;
 import com.pine.common.fs.FileInfoDTO;
-
-import java.util.List;
 
 public class FilesDirectoryPanel extends AbstractPanel {
 

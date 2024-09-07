@@ -44,7 +44,6 @@ public class AbstractView implements View {
         if (this.document != null) {
             throw new RuntimeException("Document already bound to view");
         }
-
         this.document = document;
     }
 

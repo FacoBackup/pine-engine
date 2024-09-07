@@ -2,8 +2,9 @@ package com.pine.app.core.window;
 
 import com.pine.app.core.service.WindowService;
 import com.pine.app.core.ui.Renderable;
-import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.ViewDocument;
+import com.pine.app.core.ui.panel.DockDTO;
+import com.pine.app.core.ui.panel.DockPanel;
 import com.pine.common.ContextService;
 import com.pine.common.Inject;
 import imgui.ImGui;
@@ -26,8 +27,6 @@ public abstract class AbstractWindow implements Renderable {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
-    protected final Color colorBg = new Color(.5f, .5f, .5f, 1);
-    private final int[] dimensions = new int[2];
     private final ViewDocument viewDocument = new ViewDocument(this);
     private final DockPanel root = new DockPanel();
 
@@ -56,7 +55,7 @@ public abstract class AbstractWindow implements Renderable {
         viewDocument.initialize();
 
         root.setDocument(viewDocument);
-        root.createDockSpaces(getDockSpaces());
+        root.initializeDockSpaces(getDockSpaces());
         root.onInitialize();
     }
 
@@ -74,8 +73,6 @@ public abstract class AbstractWindow implements Renderable {
 
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         handle = GLFW.glfwCreateWindow(getWindowWidth(), getWindowHeight(), getWindowName(), MemoryUtil.NULL, MemoryUtil.NULL);
-        dimensions[0] = getWindowWidth();
-        dimensions[1] = getWindowHeight();
 
         if (handle == MemoryUtil.NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
@@ -106,14 +103,6 @@ public abstract class AbstractWindow implements Renderable {
     }
 
     private void initGlfwEvents() {
-        GLFW.glfwSetWindowSizeCallback(handle, new GLFWWindowSizeCallback() {
-            @Override
-            public void invoke(final long window, final int width, final int height) {
-                dimensions[0] = width;
-                dimensions[1] = height;
-            }
-        });
-
         GLFW.glfwSetWindowCloseCallback(handle, new GLFWWindowCloseCallback() {
             @Override
             public void invoke(long l) {
@@ -170,7 +159,8 @@ public abstract class AbstractWindow implements Renderable {
     }
 
     private void clearBuffer() {
-        GL46.glClearColor(colorBg.getRed(), colorBg.getGreen(), colorBg.getBlue(), colorBg.getAlpha());
+        float[] theme = viewDocument.getBackgroundColor();
+        GL46.glClearColor(theme[0], theme[1], theme[2], 1);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }
 
@@ -180,16 +170,8 @@ public abstract class AbstractWindow implements Renderable {
         GLFW.glfwPollEvents();
     }
 
-    protected void appendChild(View view) {
-        root.appendChild(view);
-    }
-
     public final long getHandle() {
         return handle;
-    }
-
-    public final Color getColorBg() {
-        return colorBg;
     }
 
     public abstract int getWindowWidth();
@@ -199,8 +181,4 @@ public abstract class AbstractWindow implements Renderable {
     public abstract int getWindowHeight();
 
     public abstract boolean isFullScreen();
-
-    public int[] getWindowDimensions() {
-        return dimensions;
-    }
 }

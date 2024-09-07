@@ -1,5 +1,6 @@
 package com.pine.app.core.ui;
 
+import com.pine.app.core.ui.theme.ThemeUtil;
 import com.pine.app.core.ui.view.AbstractView;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.core.window.WindowRuntimeException;
@@ -15,6 +16,8 @@ import java.util.Map;
 public class ViewDocument implements Loggable {
     private final Map<String, View> views = new HashMap<>();
     private final AbstractWindow window;
+    private boolean darkMode = true;
+    private float[] backgroundColor = new float[] { .0f, .0f, .0f};
 
     public ViewDocument(AbstractWindow window) {
         this.window = window;
@@ -35,10 +38,11 @@ public class ViewDocument implements Loggable {
         fontConfig.setMergeMode(true);
 
         final short[] glyphRanges = rangesBuilder.buildRanges();
-        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Medium.ttf"), 14, fontConfig, glyphRanges);
+        atlas.addFontFromMemoryTTF(FSUtil.loadResource("roboto/Roboto-Medium.ttf"), 18, fontConfig, glyphRanges);
         atlas.addFontFromMemoryTTF(FSUtil.loadResource("icons/fa-regular-400.ttf"), 14, fontConfig, glyphRanges);
         atlas.build();
         fontConfig.destroy();
+        setDarkMode(true);
     }
 
     public AbstractWindow getWindow() {
@@ -101,5 +105,18 @@ public class ViewDocument implements Loggable {
         } catch (Exception _) {
             return null;
         }
+    }
+
+    public float[] getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public boolean isDarkMode() {
+        return darkMode;
+    }
+
+    public void setDarkMode(boolean darkMode) {
+        this.darkMode = darkMode;
+        ThemeUtil.setTheme(darkMode, backgroundColor);
     }
 }

@@ -1,14 +1,11 @@
 package com.pine.app.editor.panels.files;
 
 import com.pine.app.ProjectService;
-import com.pine.app.core.ui.panel.AbstractPanel;
-import com.pine.app.core.ui.view.WindowView;
+import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.common.Inject;
 import com.pine.common.fs.FSService;
 
-import java.nio.file.Files;
-
-public class FilesPanel extends AbstractPanel {
+public class FilesPanel extends AbstractWindowPanel {
     @Inject
     public FSService service;
 
@@ -40,6 +37,11 @@ public class FilesPanel extends AbstractPanel {
         document.getElementById("filesHeader").appendChild(new FilesHeaderPanel());
         container.appendChild(new FilesTreePanel());
         container.appendChild(new FilesDirectoryPanel());
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Files";
     }
 
     private void refreshFiles() {

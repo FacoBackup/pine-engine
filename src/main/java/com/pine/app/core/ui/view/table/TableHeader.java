@@ -1,8 +1,6 @@
 package com.pine.app.core.ui.view.table;
 
 import imgui.flag.ImGuiTableColumnFlags;
-import imgui.flag.ImGuiTableFlags;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.UUID;
 

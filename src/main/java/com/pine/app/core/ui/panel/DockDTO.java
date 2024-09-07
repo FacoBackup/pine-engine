@@ -1,10 +1,6 @@
-package com.pine.app.core.window;
+package com.pine.app.core.ui.panel;
 
-import com.badlogic.gdx.utils.Null;
 import imgui.type.ImInt;
-import jakarta.annotation.Nullable;
-
-import java.util.Objects;
 
 public final class DockDTO {
     private final ImInt nodeId =  new ImInt(0);
@@ -13,9 +9,11 @@ public final class DockDTO {
     private DockDTO outAtOppositeDir;
     private DockDTO origin;
     private final String name;
+    private final Class<? extends AbstractWindowPanel> bodyPanelClass;
 
-    public DockDTO(String name){
+    public DockDTO(String name, Class<? extends AbstractWindowPanel> bodyPanelClass){
         this.name = name;
+        this.bodyPanelClass = bodyPanelClass;
     }
 
     public String getName() {
@@ -57,4 +55,9 @@ public final class DockDTO {
     public void setOrigin(DockDTO origin) {
         this.origin = origin;
     }
+
+    public Class<? extends AbstractWindowPanel> getBodyPanelClass() {
+        return bodyPanelClass;
+    }
+
 }

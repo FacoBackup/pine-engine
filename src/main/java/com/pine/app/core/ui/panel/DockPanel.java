@@ -1,11 +1,12 @@
-package com.pine.app.core.window;
+package com.pine.app.core.ui.panel;
 
-import com.pine.app.core.ui.panel.AbstractPanel;
+import imgui.ImGui;
 import imgui.ImGuiStyle;
 import imgui.ImGuiViewport;
-import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.flag.*;
+import imgui.flag.ImGuiDockNodeFlags;
+import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 
@@ -25,17 +26,11 @@ public class DockPanel extends AbstractPanel {
     private static final String NAME = "##main_window";
     private static final ImVec2 CENTER = new ImVec2(0.0f, 0.0f);
     private final ImInt dockMainId = new ImInt();
-    private final ImInt dockRightId = new ImInt();
-    private final ImInt dockRightDownId = new ImInt();
-    private final ImInt dockDownId = new ImInt();
-    private final ImInt dockDownRightId = new ImInt();
     private boolean isInitialized = false;
     private List<DockDTO> dockSpaces = Collections.emptyList();
 
     @Override
     public void renderInternal() {
-        ImGuiStyle style = ImGui.getStyle();
-
         final ImGuiViewport viewport = ImGui.getMainViewport();
         final float offset_y = 0;
 
@@ -50,6 +45,29 @@ public class DockPanel extends AbstractPanel {
 
         ImGui.begin(NAME, OPEN, FLAGS);
 
+        // TODO configurable values
+        if (ImGui.beginMenuBar()) {
+            if (ImGui.beginMenu("File")) {
+                if (ImGui.menuItem("New")) { /* Action for New */ }
+                if (ImGui.menuItem("Open")) { /* Action for Open */ }
+                if (ImGui.menuItem("Save")) { /* Action for Save */ }
+                if (ImGui.menuItem("Exit")) { /* Action for Exit */ }
+                ImGui.endMenu();
+            }
+
+            if (ImGui.beginMenu("Edit")) {
+                if (ImGui.menuItem("Undo")) { /* Action for Undo */ }
+                if (ImGui.menuItem("Redo")) { /* Action for Redo */ }
+                ImGui.endMenu();
+            }
+            ImGui.endMenuBar();
+        }
+
+        renderView();
+        ImGui.end();
+    }
+
+    private void renderView() {
         ImGui.popStyleVar(3);
         int windowId = ImGui.getID(NAME);
         buildViews(windowId);
@@ -59,14 +77,14 @@ public class DockPanel extends AbstractPanel {
         ImGui.popStyleVar();
 
         super.renderInternal();
-
-        ImGui.end();
     }
+
 
     private void buildViews(int windowId) {
 
         if (!isInitialized) {
             isInitialized = true;
+
             dockMainId.set(windowId);
 
             // reset current docking state
@@ -88,7 +106,15 @@ public class DockPanel extends AbstractPanel {
             });
 
             dockSpaces.forEach(d -> {
-                imgui.internal.ImGui.dockBuilderDockWindow(d.getName(), d.getNodeId().get());
+                try {
+                    imgui.internal.ImGui.dockBuilderDockWindow(d.getName(), d.getNodeId().get());
+                    if (d.getBodyPanelClass() != null) {
+                        AbstractWindowPanel child = d.getBodyPanelClass().getConstructor().newInstance();
+                        appendChild(child);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             });
 
             imgui.internal.ImGui.dockBuilderDockWindow("Viewport", dockMainId.get());
@@ -97,7 +123,11 @@ public class DockPanel extends AbstractPanel {
 
     }
 
-    public void createDockSpaces(List<DockDTO> dockSpaces) {
+    public void initializeDockSpaces(List<DockDTO> dockSpaces) {
+        if (isInitialized) {
+            getLogger().warn("Dock spaces already initialized");
+            return;
+        }
         this.dockSpaces = dockSpaces;
     }
 }

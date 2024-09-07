@@ -1,7 +1,5 @@
 package com.pine.app.core.ui.view.tree;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

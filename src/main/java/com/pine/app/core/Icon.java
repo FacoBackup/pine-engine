@@ -1,4 +1,4 @@
-package com.pine.app.core.ui;
+package com.pine.app.core;
 
 public enum Icon {
     AD("\uf641", "Ad"),

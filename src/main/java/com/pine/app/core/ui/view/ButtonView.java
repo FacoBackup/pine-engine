@@ -1,6 +1,6 @@
 package com.pine.app.core.ui.view;
 
-import com.pine.app.core.ui.Icon;
+import com.pine.app.core.Icon;
 import com.pine.app.core.ui.View;
 import imgui.ImGui;
 
