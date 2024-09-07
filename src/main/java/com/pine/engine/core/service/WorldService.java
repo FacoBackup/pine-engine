@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 public class WorldService extends SerializableRepository {
     private static final String ENTITY_KEY = "entity";
     private static final String COMPONENTS_KEY = "components";
