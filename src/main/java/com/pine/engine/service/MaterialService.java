@@ -1,21 +1,20 @@
 package com.pine.engine.service;
 
-import com.pine.common.resource.IResource;
-import com.pine.common.resource.ResourceService;
+import com.pine.engine.resource.AbstractResourceService;
+import com.pine.engine.resource.IResource;
+import com.pine.engine.resource.ResourceType;
 import com.pine.engine.service.primitives.material.Material;
 import com.pine.engine.service.primitives.material.MaterialDTO;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public class MaterialService implements ResourceService<Material, MaterialDTO, MaterialDTO> {
+public class MaterialService extends AbstractResourceService<Material, MaterialDTO, MaterialDTO> {
 
     @Override
-    public void bind(Material instance, MaterialDTO data) {
+    protected void bindInternal(Material instance, MaterialDTO data) {
 
     }
 
     @Override
-    public void bind(Material instance) {
+    protected void bindInternal(Material instance) {
 
     }
 
@@ -25,12 +24,17 @@ public class MaterialService implements ResourceService<Material, MaterialDTO, M
     }
 
     @Override
-    public IResource add(MaterialDTO data) {
+    protected IResource addInternal(MaterialDTO data) {
         return null;
     }
 
     @Override
-    public void remove(Material id) {
+    protected void removeInternal(Material id) {
         // TODO - Remove shader, textures will be GCed dynamically
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.MATERIAL;
     }
 }

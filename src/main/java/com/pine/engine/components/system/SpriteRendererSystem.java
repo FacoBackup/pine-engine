@@ -6,7 +6,7 @@ import com.pine.engine.Engine;
 
 
 @All
-public class PreLoopSystem extends IteratingSystem implements ISystem {
+public class SpriteRendererSystem extends IteratingSystem implements ISystem {
     private Engine engine;
 
     @Override

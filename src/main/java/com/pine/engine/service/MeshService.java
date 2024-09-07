@@ -1,32 +1,33 @@
 package com.pine.engine.service;
 
-import com.pine.common.resource.IResource;
-import com.pine.common.resource.ResourceService;
+import com.pine.engine.resource.AbstractResourceService;
+import com.pine.engine.resource.IResource;
+import com.pine.engine.resource.ResourceType;
 import com.pine.engine.service.primitives.mesh.Mesh;
 import com.pine.engine.service.primitives.mesh.MeshDTO;
 import com.pine.engine.service.primitives.mesh.MeshRenderingMode;
 import com.pine.engine.service.primitives.mesh.MeshRuntimeData;
+import io.micrometer.common.lang.NonNull;
 import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public class MeshService implements ResourceService<Mesh, MeshRuntimeData, MeshDTO> {
+public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, MeshDTO> {
     private Mesh currentMesh;
     private boolean isInWireframeMode = false;
 
     @Override
-    public void bind(@NonNull Mesh instance, MeshRuntimeData data) {
+    protected void bindInternal(Mesh instance, MeshRuntimeData data) {
         currentMesh = instance;
+        draw(data);
     }
 
     @Override
-    public void bind(@NonNull Mesh instance) {
+    protected void bindInternal(Mesh instance) {
         currentMesh = instance;
+        draw(null);
     }
 
-    private void bindInternal(@Nullable MeshRuntimeData data) {
+    public void draw(@Nullable MeshRuntimeData data) {
         if (isInWireframeMode && (data == null || data.mode() != MeshRenderingMode.WIREFRAME)) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
             isInWireframeMode = false;
@@ -53,13 +54,18 @@ public class MeshService implements ResourceService<Mesh, MeshRuntimeData, MeshD
     }
 
     @Override
-    public IResource add(MeshDTO data) {
+    public IResource addInternal(MeshDTO data) {
         return null;
     }
 
     @Override
-    public void remove(Mesh id) {
+    public void removeInternal(Mesh id) {
         // TODO - remove last used and unbind if is bound for some reason (probably will never happen)
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.MESH;
     }
 
     public void bindResources() {
@@ -81,7 +87,7 @@ public class MeshService implements ResourceService<Mesh, MeshRuntimeData, MeshD
         GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, currentMesh.getIndexVboId());
     }
 
-    public void unbindResources() {
+    private void unbindResources() {
         GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, 0);
 
         GL46.glDisableVertexAttribArray(0);
@@ -92,13 +98,13 @@ public class MeshService implements ResourceService<Mesh, MeshRuntimeData, MeshD
         GL46.glBindVertexArray(0);
     }
 
-    public void drawWireframe() {
+    private void drawWireframe() {
         GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         isInWireframeMode = true;
         draw();
     }
 
-    public void draw() {
+    private void draw() {
         bindResources();
         GL46.glDrawElements(GL46.GL_TRIANGLES, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
         GL46.glBindVertexArray(0);
@@ -107,26 +113,25 @@ public class MeshService implements ResourceService<Mesh, MeshRuntimeData, MeshD
     /**
      * Draws the mesh as a line loop.
      */
-    public void drawLineLoop() {
+    private void drawLineLoop() {
         bindResources();
         GL46.glDrawElements(GL46.GL_LINE_LOOP, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
         GL46.glBindVertexArray(0);
     }
 
-    public void drawTriangleStrip() {
+    private void drawTriangleStrip() {
         bindResources();
         GL46.glDrawElements(GL46.GL_TRIANGLE_STRIP, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
         GL46.glBindVertexArray(0);
     }
 
-    public void drawTriangleFan() {
+    private void drawTriangleFan() {
         bindResources();
         GL46.glDrawElements(GL46.GL_TRIANGLE_FAN, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
         GL46.glBindVertexArray(0);
     }
 
-
-    public void drawLines() {
+    private void drawLines() {
         bindResources();
         GL46.glDrawElements(GL46.GL_LINES, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
         GL46.glBindVertexArray(0);

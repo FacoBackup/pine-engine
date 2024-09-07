@@ -1,7 +1,7 @@
 package com.pine.engine.service.primitives.mesh;
 
-import com.pine.common.resource.AbstractResource;
-import com.pine.common.resource.ResourceType;
+import com.pine.engine.resource.AbstractResource;
+import com.pine.engine.resource.ResourceType;
 import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;

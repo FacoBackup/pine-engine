@@ -8,7 +8,6 @@ import com.pine.app.core.service.WindowService;
 import com.pine.common.serialization.SerializationService;
 import com.pine.engine.components.component.MeshComponent;
 import com.pine.engine.components.component.TransformationComponent;
-import com.pine.engine.WorldRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -35,7 +34,7 @@ class SerializationServiceTest {
     SerializationService serializationService;
 
     @Autowired
-    WorldRepository worldRepository;
+    WorldService worldService;
 
     @Autowired
     WindowService windowService;
@@ -47,11 +46,11 @@ class SerializationServiceTest {
 
     @BeforeEach
     void setUpBefore() {
-        int entity = worldRepository.addEntity();
-        worldRepository.addComponent(entity, MeshComponent.class);
+        int entity = worldService.addEntity();
+        worldService.addComponent(entity, MeshComponent.class);
 
-        int entity2 = worldRepository.addEntity();
-        worldRepository.addComponent(entity2, TransformationComponent.class);
+        int entity2 = worldService.addEntity();
+        worldService.addComponent(entity2, TransformationComponent.class);
 
         serialized = serializationService.serializeAll();
     }
@@ -68,7 +67,7 @@ class SerializationServiceTest {
         assertFalse(data.isEmpty());
         for (JsonElement element : data) {
             JsonObject serviceData = element.getAsJsonObject();
-            if (Objects.equals(serviceData.get(CLASS_KEY).getAsString(), WorldRepository.class.getName())) {
+            if (Objects.equals(serviceData.get(CLASS_KEY).getAsString(), WorldService.class.getName())) {
                 JsonArray entitiesArray = serviceData.get(DATA_KEY).getAsJsonArray();
                 assertEquals(expectedSize, entitiesArray.size());
             }
@@ -78,9 +77,9 @@ class SerializationServiceTest {
     @Test
     @Order(2)
     void parseAll() {
-        worldRepository.getWorld().delete(0);
-        worldRepository.getWorld().delete(1);
-        worldRepository.getWorld().process();
+        worldService.getWorld().delete(0);
+        worldService.getWorld().delete(1);
+        worldService.getWorld().process();
         testDump(0, serializationService.serializeAll());
         serializationService.parseAll(serialized);
         testDump(2, serializationService.serializeAll());

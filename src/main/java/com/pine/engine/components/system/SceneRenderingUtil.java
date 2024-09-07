@@ -4,8 +4,5 @@ import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
 
 
-@All
-public class SceneRenderingUtil extends IteratingSystem {    @Override
-    protected void process(int id) {
-    }
+public class SceneRenderingUtil {
 }

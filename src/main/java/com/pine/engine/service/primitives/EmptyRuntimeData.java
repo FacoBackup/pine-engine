@@ -1,6 +1,6 @@
 package com.pine.engine.service.primitives;
 
-import com.pine.common.resource.IResourceRuntimeData;
+import com.pine.engine.resource.IResourceRuntimeData;
 
 public class EmptyRuntimeData implements IResourceRuntimeData {
 }

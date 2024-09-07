@@ -1,28 +1,27 @@
 package com.pine.engine.service;
 
-import com.pine.common.resource.IResource;
-import com.pine.common.resource.ResourceService;
+import com.pine.engine.resource.AbstractResourceService;
+import com.pine.engine.resource.IResource;
+import com.pine.engine.resource.ResourceType;
 import com.pine.engine.service.primitives.ubo.UBO;
 import com.pine.engine.service.primitives.ubo.UBOCreationData;
 import com.pine.engine.service.primitives.ubo.UBORuntimeData;
 import org.lwjgl.opengl.GL46;
-import org.springframework.stereotype.Repository;
 
 import java.nio.ByteBuffer;
 
 // TODO - Runtime data should be object containing new values for UBO
-@Repository
-public class UBOService implements ResourceService<UBO, UBORuntimeData, UBOCreationData> {
+public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBOCreationData> {
     private UBO currentUBO;
 
     @Override
-    public void bind(UBO instance, UBORuntimeData data) {
-        bind(instance);
+    protected void bindInternal(UBO instance, UBORuntimeData data) {
+        bindInternal(instance);
         updateData(data);
     }
 
     @Override
-    public void bind(UBO instance) {
+    protected void bindInternal(UBO instance) {
         currentUBO = instance;
         bindInternal();
     }
@@ -33,13 +32,18 @@ public class UBOService implements ResourceService<UBO, UBORuntimeData, UBOCreat
     }
 
     @Override
-    public IResource add(UBOCreationData data) {
+    protected IResource addInternal(UBOCreationData data) {
         return null;
     }
 
     @Override
-    public void remove(UBO data) {
+    protected void removeInternal(UBO data) {
         GL46.glDeleteBuffers(data.getBuffer());
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.UBO;
     }
 
     public void bindWithShader(int shaderProgram) {

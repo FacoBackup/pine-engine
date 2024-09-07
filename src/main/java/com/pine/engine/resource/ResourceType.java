@@ -1,4 +1,4 @@
-package com.pine.common.resource;
+package com.pine.engine.resource;
 
 public enum ResourceType {
     MESH,

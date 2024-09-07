@@ -1,6 +1,6 @@
 package com.pine.engine.service.primitives.ubo;
 
-import com.pine.common.resource.IResourceRuntimeData;
+import com.pine.engine.resource.IResourceRuntimeData;
 
 import java.nio.ByteBuffer;
 

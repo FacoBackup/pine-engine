@@ -2,11 +2,20 @@ package com.pine.engine.components.system;
 
 import com.artemis.annotations.All;
 import com.artemis.systems.IteratingSystem;
+import com.pine.engine.Engine;
 
 
 @All
-public class ScriptExecutorSystem extends IteratingSystem {
+public class ScriptExecutorSystem extends IteratingSystem implements ISystem {
+    private Engine engine;
+
     @Override
-    protected void process(int id) {
+    public void setEngine (Engine engine){
+        this.engine = engine;
+    }
+
+    @Override
+    protected void process(int i) {
+
     }
 }

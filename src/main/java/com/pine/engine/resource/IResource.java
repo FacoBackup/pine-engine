@@ -1,4 +1,4 @@
-package com.pine.common.resource;
+package com.pine.engine.resource;
 
 import com.pine.common.Loggable;
 

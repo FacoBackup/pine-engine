@@ -1,21 +1,20 @@
 package com.pine.engine.service;
 
-import com.pine.common.resource.IResource;
-import com.pine.common.resource.ResourceService;
+import com.pine.engine.resource.AbstractResourceService;
+import com.pine.engine.resource.IResource;
+import com.pine.engine.resource.ResourceType;
 import com.pine.engine.service.primitives.audio.Audio;
 import com.pine.engine.service.primitives.audio.AudioDTO;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public class AudioService implements ResourceService<Audio, AudioDTO, AudioDTO> {
+public class AudioService extends AbstractResourceService<Audio, AudioDTO, AudioDTO> {
 
     @Override
-    public void bind(Audio instance, AudioDTO data) {
+    public void bindInternal(Audio instance, AudioDTO data) {
 
     }
 
     @Override
-    public void bind(Audio instance) {
+    public void bindInternal(Audio instance) {
 
     }
 
@@ -25,12 +24,17 @@ public class AudioService implements ResourceService<Audio, AudioDTO, AudioDTO> 
     }
 
     @Override
-    public IResource add(AudioDTO data) {
+    public IResource addInternal(AudioDTO data) {
         return null;
     }
 
     @Override
-    public void remove(Audio id) {
+    public void removeInternal(Audio id) {
 
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.AUDIO;
     }
 }

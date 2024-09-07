@@ -1,22 +1,21 @@
 package com.pine.engine.service;
 
-import com.pine.common.resource.IResource;
-import com.pine.common.resource.ResourceService;
+import com.pine.engine.resource.AbstractResourceService;
+import com.pine.engine.resource.IResource;
+import com.pine.engine.resource.ResourceType;
 import com.pine.engine.service.primitives.EmptyRuntimeData;
 import com.pine.engine.service.primitives.texture.Texture;
 import com.pine.engine.service.primitives.texture.TextureCreationDTO;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public class TextureService implements ResourceService<Texture, EmptyRuntimeData, TextureCreationDTO> {
+public class TextureService extends AbstractResourceService<Texture, EmptyRuntimeData, TextureCreationDTO> {
 
     @Override
-    public void bind(Texture instance, EmptyRuntimeData data) {
+    protected void bindInternal(Texture instance, EmptyRuntimeData data) {
 
     }
 
     @Override
-    public void bind(Texture instance) {
+    protected void bindInternal(Texture instance) {
 
     }
 
@@ -26,12 +25,17 @@ public class TextureService implements ResourceService<Texture, EmptyRuntimeData
     }
 
     @Override
-    public IResource add(TextureCreationDTO data) {
+    protected IResource addInternal(TextureCreationDTO data) {
         return null;
     }
 
     @Override
-    public void remove(Texture id) {
+    public void removeInternal(Texture id) {
 
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.TEXTURE;
     }
 }

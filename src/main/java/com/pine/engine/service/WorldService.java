@@ -1,4 +1,4 @@
-package com.pine.engine;
+package com.pine.engine.service;
 
 import com.artemis.*;
 import com.artemis.io.JsonArtemisSerializer;
@@ -11,9 +11,7 @@ import com.pine.common.serialization.SerializableRepository;
 import com.pine.common.serialization.SerializableResource;
 import com.pine.engine.components.component.AbstractComponent;
 import com.pine.engine.components.system.*;
-import jakarta.annotation.PostConstruct;
 import org.reflections.Reflections;
-import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,38 +20,35 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Repository
-public class WorldRepository extends SerializableRepository {
-
+public class WorldService extends SerializableRepository {
     private static final String ENTITY_KEY = "entity";
     private static final String COMPONENTS_KEY = "components";
-    private final WorldSerializationManager manager = new WorldSerializationManager();
-    private World world;
+    private final World world;
 
-    @PostConstruct
-    public void init() {
+    public WorldService() {
+        WorldSerializationManager manager = new WorldSerializationManager();
         world = new World(new WorldConfigurationBuilder()
                 .with(new PreLoopSystem())
-                .with(new GarbageCollectorSystem())
                 .with(new ScriptExecutorSystem())
+
                 .with(new DirectionalShadowSystem())
                 .with(new OmniShadowSystem())
                 .with(new VisibilityRendererSystem())
-                .with(new AmbientOcclusionSystem())
                 .with(new PreRendererSystem())
+
                 .with(new AtmosphereRendererSystem())
+
                 .with(new TerrainRendererSystem())
                 .with(new OpaqueRendererSystem())
                 .with(new DecalRendererSystem())
-                .with(new SpriteRenderer())
+                .with(new SpriteRendererSystem())
+
                 .with(new PostRendererSystem())
                 .with(new TransparencyRendererSystem())
+
                 .with(new GlobalIlluminationSystem())
-                .with(new BokehDOFSystem())
-                .with(new MotionBlurSystem())
-                .with(new BloomSystem())
                 .with(new PostProcessingSystem())
-                .with(new CompositionSystem())
+                .with(new FrameCompositionSystem())
                 .build()
                 .setSystem(manager));
         manager.setSerializer(new JsonArtemisSerializer(world));
@@ -61,10 +56,6 @@ public class WorldRepository extends SerializableRepository {
 
     public World getWorld() {
         return world;
-    }
-
-    public void process(){
-        world.process();
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.pine.app.editor.panels.files.FilesPanel;
 import com.pine.app.editor.panels.inspector.InspectorPanel;
 import com.pine.app.editor.panels.viewport.ViewportPanel;
 import com.pine.common.Inject;
+import com.pine.engine.Engine;
 import imgui.flag.ImGuiDir;
 
 import java.util.List;
@@ -15,6 +16,8 @@ import java.util.List;
 public class EditorWindow extends AbstractWindow {
     @Inject
     public ProjectService projectService;
+
+    public final Engine engine = new Engine();
 
     @Override
     protected List<DockDTO> getDockSpaces() {
@@ -52,8 +55,19 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    protected void onBeforeRender() {
-        // Engine logic tick
+    public void onInitialize() {
+        super.onInitialize();
+        engine.onInitialize();
+    }
+
+    @Override
+    protected void tick() {
+        engine.tick();
+    }
+
+    @Override
+    protected void renderInternal() {
+        engine.render();
     }
 
     public int getWindowWidth() {

@@ -1,6 +1,6 @@
 package com.pine.engine.service.primitives.shader;
 
-import com.pine.common.resource.IResourceRuntimeData;
+import com.pine.engine.resource.IResourceRuntimeData;
 
 import java.util.HashMap;
 import java.util.Map;
