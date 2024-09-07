@@ -31,10 +31,6 @@ public class ProjectsWindow extends AbstractWindow {
         return List.of(center);
     }
 
-    @Override
-    protected void onBeforeRender() {
-    }
-
     public int getWindowWidth() {
         return 960;
     }

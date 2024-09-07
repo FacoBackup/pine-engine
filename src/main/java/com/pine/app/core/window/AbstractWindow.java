@@ -137,19 +137,21 @@ public abstract class AbstractWindow implements Renderable {
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
 
-    protected abstract void onBeforeRender();
+    protected void tick(){}
 
     @Override
-    public void render() {
-        onBeforeRender();
+    final public void render() {
+        tick();
 
         startFrame();
         if (isVisible) {
             root.render();
+            renderInternal();
         }
         endFrame();
-
     }
+
+    protected void renderInternal(){}
 
     private void endFrame() {
         ImGui.render();

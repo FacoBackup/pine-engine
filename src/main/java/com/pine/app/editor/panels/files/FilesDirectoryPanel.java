@@ -4,7 +4,6 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.TableView;
 import com.pine.app.core.ui.view.table.TableHeader;
 import com.pine.common.fs.FileInfoDTO;
-import imgui.ImGui;
 
 import java.util.List;
 

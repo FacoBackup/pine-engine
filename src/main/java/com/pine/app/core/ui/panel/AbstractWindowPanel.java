@@ -18,8 +18,8 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
     private final ImVec2 minSize = DEFAULT.clone();
     private final ImVec2 maxSize = DEFAULT_MAX.clone();
     private final ImVec2 padding = DEFAULT.clone();
-    private final ImVec2 position = DEFAULT.clone();
-    private final ImVec2 size = DEFAULT.clone();
+    protected final ImVec2 position = DEFAULT.clone();
+    protected final ImVec2 size = DEFAULT.clone();
     private int stylePushCount;
     private AbstractWindowPanel mainWindow;
 
@@ -51,6 +51,7 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
 
         beforeWindow();
         if (ImGui.begin(getTitle(), ImGuiWindowFlags.NoCollapse)) {
+            afterWindow();
             window = imgui.internal.ImGui.getCurrentWindow();
             ImGui.getWindowSize(size);
             ImGui.getWindowPos(position);
@@ -64,6 +65,11 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
         ImGui.popStyleVar(stylePushCount);
         stylePushCount = 0;
     }
+
+    /**
+     * is executed immediately after window is opened
+     */
+    protected void afterWindow(){}
 
     private void beforeWindow() {
         if (mainWindow != null && mainWindow != this) {

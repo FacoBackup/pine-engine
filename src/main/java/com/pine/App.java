@@ -13,16 +13,8 @@ public class App implements SmartInitializingSingleton {
     @Autowired
     private WindowService windowService;
 
-    @Autowired
-    private Engine engine;
-
     @Override
     public void afterSingletonsInstantiated() {
         windowService.openWindow(ProjectsWindow.class);
-        try {
-            engine.init();
-        } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
     }
 }
