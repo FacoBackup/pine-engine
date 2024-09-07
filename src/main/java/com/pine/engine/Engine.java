@@ -1,18 +1,22 @@
 package com.pine.engine;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.pine.common.Loggable;
+import com.pine.engine.core.EnvRepository;
 import com.pine.engine.core.components.system.ISystem;
 import com.pine.engine.core.service.*;
 
 import java.util.List;
 
 
-public class Engine {
+public class Engine implements Loggable {
     private final long startupTime = System.currentTimeMillis();
     private long since = 0;
     private long elapsedTime = 0;
     private long totalTime = 0;
-    private boolean inputFocused = false;
 
+    private final EnvRepository envRepository = new EnvRepository();
     private final CameraService camera = new CameraService(this);
     private final WorldService world = new WorldService();
     private final AudioService audioService = new AudioService();
@@ -32,6 +36,7 @@ public class Engine {
 
     public void onInitialize() {
         resources.onInitialize();
+        camera.onInitialize();
         for (var sys : world.getWorld().getSystems()) {
             ((ISystem) sys).setEngine(this);
         }
@@ -70,15 +75,27 @@ public class Engine {
         return world;
     }
 
-    public boolean isInputFocused() {
-        return inputFocused;
-    }
-
-    public void setInputFocused(boolean inputFocused) {
-        this.inputFocused = inputFocused;
-    }
-
     public float getTotalTime() {
         return totalTime;
+    }
+
+    public void parse(String serialized) {
+        try {
+            world.parse(new Gson().fromJson(serialized, JsonObject.class));
+        } catch (Exception e) {
+            getLogger().error("Failed to parse world", e);
+        }
+    }
+
+    public String serialize() {
+        return world.serialize().toString();
+    }
+
+    public CameraService getCameraService() {
+        return camera;
+    }
+
+    public EnvRepository getInputRepository() {
+        return envRepository;
     }
 }

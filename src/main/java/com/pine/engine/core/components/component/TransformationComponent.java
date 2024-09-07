@@ -1,30 +1,27 @@
 package com.pine.engine.core.components.component;
 
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.Vector4;
 import com.pine.engine.core.components.RotationType;
 
+import org.joml.*;
 import java.util.List;
 
 public class TransformationComponent extends AbstractComponent {
     private boolean underChange = false;
     private boolean changed = false;
-    private Vector4 rotationQuaternion = new Vector4();
-    private Vector4 rotationQuaternionFinal = new Vector4();
-    private Vector3 translation = new Vector3();
-    private Vector3 scaling = new Vector3();
-    private Quaternion rotationEuler = new Quaternion();
+    private Vector4f rotationQuaternion = new Vector4f();
+    private Vector4f rotationQuaternionFinal = new Vector4f();
+    private Vector3f translation = new Vector3f();
+    private Vector3f scaling = new Vector3f();
+    private Quaternionf rotationEuler = new Quaternionf();
     private RotationType rotationType = RotationType.QUATERNION;
-    private Vector3 pivotPoint = new Vector3();
-    private Matrix4 matrix = new Matrix4();
-    private Matrix4 baseTransformationMatrix = new Matrix4();
-    private Matrix4 previousModelMatrix = new Matrix4();
+    private Vector3f pivotPoint = new Vector3f();
+    private Matrix4f matrix = new Matrix4f();
+    private Matrix4f baseTransformationMatrix = new Matrix4f();
+    private Matrix4f previousModelMatrix = new Matrix4f();
     private boolean lockedRotation = false;
     private boolean lockedTranslation = false;
     private boolean lockedScaling = false;
-    private Vector3 absoluteTranslation = new Vector3();
+    private Vector3f absoluteTranslation = new Vector3f();
 
     @Override
     public List<Class<? extends AbstractComponent>> getDependencies() {
@@ -47,43 +44,43 @@ public class TransformationComponent extends AbstractComponent {
         this.changed = changed;
     }
 
-    public Vector4 getRotationQuaternion() {
+    public Vector4f getRotationQuaternion() {
         return rotationQuaternion;
     }
 
-    public void setRotationQuaternion(Vector4 rotationQuaternion) {
+    public void setRotationQuaternion(Vector4f rotationQuaternion) {
         this.rotationQuaternion = rotationQuaternion;
     }
 
-    public Vector4 getRotationQuaternionFinal() {
+    public Vector4f getRotationQuaternionFinal() {
         return rotationQuaternionFinal;
     }
 
-    public void setRotationQuaternionFinal(Vector4 rotationQuaternionFinal) {
+    public void setRotationQuaternionFinal(Vector4f rotationQuaternionFinal) {
         this.rotationQuaternionFinal = rotationQuaternionFinal;
     }
 
-    public Vector3 getTranslation() {
+    public Vector3f getTranslation() {
         return translation;
     }
 
-    public void setTranslation(Vector3 translation) {
+    public void setTranslation(Vector3f translation) {
         this.translation = translation;
     }
 
-    public Vector3 getScaling() {
+    public Vector3f getScaling() {
         return scaling;
     }
 
-    public void setScaling(Vector3 scaling) {
+    public void setScaling(Vector3f scaling) {
         this.scaling = scaling;
     }
 
-    public Quaternion getRotationEuler() {
+    public Quaternionf getRotationEuler() {
         return rotationEuler;
     }
 
-    public void setRotationEuler(Quaternion rotationEuler) {
+    public void setRotationEuler(Quaternionf rotationEuler) {
         this.rotationEuler = rotationEuler;
     }
 
@@ -95,35 +92,35 @@ public class TransformationComponent extends AbstractComponent {
         this.rotationType = rotationType;
     }
 
-    public Vector3 getPivotPoint() {
+    public Vector3f getPivotPoint() {
         return pivotPoint;
     }
 
-    public void setPivotPoint(Vector3 pivotPoint) {
+    public void setPivotPoint(Vector3f pivotPoint) {
         this.pivotPoint = pivotPoint;
     }
 
-    public Matrix4 getMatrix() {
+    public Matrix4f getMatrix() {
         return matrix;
     }
 
-    public void setMatrix(Matrix4 matrix) {
+    public void setMatrix(Matrix4f matrix) {
         this.matrix = matrix;
     }
 
-    public Matrix4 getBaseTransformationMatrix() {
+    public Matrix4f getBaseTransformationMatrix() {
         return baseTransformationMatrix;
     }
 
-    public void setBaseTransformationMatrix(Matrix4 baseTransformationMatrix) {
+    public void setBaseTransformationMatrix(Matrix4f baseTransformationMatrix) {
         this.baseTransformationMatrix = baseTransformationMatrix;
     }
 
-    public Matrix4 getPreviousModelMatrix() {
+    public Matrix4f getPreviousModelMatrix() {
         return previousModelMatrix;
     }
 
-    public void setPreviousModelMatrix(Matrix4 previousModelMatrix) {
+    public void setPreviousModelMatrix(Matrix4f previousModelMatrix) {
         this.previousModelMatrix = previousModelMatrix;
     }
 
@@ -151,11 +148,11 @@ public class TransformationComponent extends AbstractComponent {
         this.lockedScaling = lockedScaling;
     }
 
-    public Vector3 getAbsoluteTranslation() {
+    public Vector3f getAbsoluteTranslation() {
         return absoluteTranslation;
     }
 
-    public void setAbsoluteTranslation(Vector3 absoluteTranslation) {
+    public void setAbsoluteTranslation(Vector3f absoluteTranslation) {
         this.absoluteTranslation = absoluteTranslation;
     }
 }

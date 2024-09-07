@@ -1,9 +1,10 @@
 package com.pine.engine.core.components.component;
 
-import com.badlogic.gdx.math.Matrix4;
 import com.pine.engine.core.components.LightType;
 
 import java.util.List;
+
+import org.joml.*;
 
 public class LightComponent extends AbstractComponent {
     private boolean needsRepackaging = false;
@@ -27,8 +28,8 @@ public class LightComponent extends AbstractComponent {
     private double[] fixedColor = {1, 1, 1};
     private boolean shadowMap = true;
     private int[] atlasFace = {0, 0};
-    private final Matrix4 lightView = new Matrix4();
-    private final Matrix4 lightProjection = new Matrix4();
+    private final Matrix4f lightView = new Matrix4f();
+    private final Matrix4f lightProjection = new Matrix4f();
 
     @Override
     public List<Class<? extends AbstractComponent>> getDependencies() {
@@ -71,11 +72,11 @@ public class LightComponent extends AbstractComponent {
         this.atlasFace = atlasFace;
     }
 
-    public Matrix4 getLightView() {
+    public Matrix4f getLightView() {
         return lightView;
     }
 
-    public Matrix4 getLightProjection() {
+    public Matrix4f getLightProjection() {
         return lightProjection;
     }
 

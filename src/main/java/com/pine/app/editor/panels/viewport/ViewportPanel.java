@@ -2,16 +2,17 @@ package com.pine.app.editor.panels.viewport;
 
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.editor.EditorWindow;
-import com.pine.engine.Engine;
+import com.pine.engine.core.EnvRepository;
 import imgui.ImGui;
+import imgui.flag.ImGuiKey;
 
 public class ViewportPanel extends AbstractWindowPanel {
-    private Engine engine;
+    private EnvRepository repo;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        engine = ((EditorWindow) document.getWindow()).getEngine();
+        repo = ((EditorWindow) document.getWindow()).getEngine().getInputRepository();
     }
 
     @Override
@@ -21,6 +22,16 @@ public class ViewportPanel extends AbstractWindowPanel {
 
     @Override
     protected void afterWindow() {
-        engine.setInputFocused(ImGui.isWindowFocused());
+        repo.setInputFocused(ImGui.isWindowFocused() && ImGui.isMouseClicked(0));
+        repo.setForwardPressed(ImGui.isKeyPressed(ImGuiKey.W));
+        repo.setBackwardPressed(ImGui.isKeyPressed(ImGuiKey.S));
+        repo.setLeftPressed(ImGui.isKeyPressed(ImGuiKey.A));
+        repo.setRightPressed(ImGui.isKeyPressed(ImGuiKey.D));
+        repo.setUpPressed(ImGui.isKeyPressed(ImGuiKey.Space));
+        repo.setDownPressed(ImGui.isKeyPressed(ImGuiKey.LeftShift));
+        repo.setMouseX(ImGui.getMousePosX());
+        repo.setMouseY(ImGui.getMousePosY());
+        repo.setViewportH(size.y);
+        repo.setViewportW(size.x);
     }
 }

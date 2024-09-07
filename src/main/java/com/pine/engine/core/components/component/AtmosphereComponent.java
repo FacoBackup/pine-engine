@@ -1,14 +1,15 @@
 package com.pine.engine.core.components.component;
 
-import com.badlogic.gdx.math.Vector3;
 import com.pine.engine.core.components.AtmosphereType;
+import org.joml.*;
 
+import java.lang.Math;
 import java.util.List;
 
 public class AtmosphereComponent extends AbstractComponent {
     private boolean needsRepackaging = false;
     private float elapsedTime = 0;
-    private Vector3 sunDirection = new Vector3(0, 1, 1);
+    private Vector3f sunDirection = new Vector3f(0, 1, 1);
     private int maxSamples = 10;
     private int mieHeight = 1000;
     private int rayleighHeight = 8000;
@@ -25,13 +26,13 @@ public class AtmosphereComponent extends AbstractComponent {
         return List.of(TransformationComponent.class);
     }
 
-    public Vector3 getSunDirection() {
+    public Vector3f getSunDirection() {
         return sunDirection;
     }
 
     public void setElapsedTime(float elapsedTime) {
         this.elapsedTime = elapsedTime;
-        sunDirection = (new Vector3((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 1.0f)).nor();
+        sunDirection = (new Vector3f((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 1.0f)).normalize();
         needsRepackaging = true;
     }
 
@@ -47,7 +48,7 @@ public class AtmosphereComponent extends AbstractComponent {
         this.needsRepackaging = needsRepackaging;
     }
 
-    public void setSunDirection(Vector3 sunDirection) {
+    public void setSunDirection(Vector3f sunDirection) {
         this.sunDirection = sunDirection;
     }
 

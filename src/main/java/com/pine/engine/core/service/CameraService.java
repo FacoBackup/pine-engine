@@ -1,64 +1,67 @@
 package com.pine.engine.core.service;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.Vector3;
 import com.pine.engine.Engine;
-import com.pine.engine.core.service.camera.ICamera;
-import com.pine.engine.core.service.camera.OCamera;
-import com.pine.engine.core.service.camera.PCamera;
+import com.pine.engine.core.EnvRepository;
+import com.pine.engine.core.service.camera.AbstractCamera;
+import com.pine.engine.core.service.camera.OrthographicCamera;
+import com.pine.engine.core.service.camera.PerspectiveCamera;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CameraService {
     private final Engine engine;
+    private final EnvRepository envRepository;
     private float pitch = 0.0f;
     private float yaw = -90.0f;
     private float sensitivity = 0.1f;
     private float lastMouseX, lastMouseY;
     private boolean firstMouseMove = true;
-    private final String defaultPerspectiveCamera;
-    private final String defaultOrthographicCamera;
-    private final Map<String, ICamera> cameras = new HashMap<>();
+    private String defaultPerspectiveCamera;
+    private String defaultOrthographicCamera;
+    private final Map<String, AbstractCamera> cameras = new HashMap<>();
     private float movementSpeed = 5.0f;
-    private Camera currentCamera = null;
+    private AbstractCamera currentCamera = null;
 
     public CameraService(Engine engine) {
         this.engine = engine;
-        defaultOrthographicCamera = createNewCamera(true);
-        defaultPerspectiveCamera = createNewCamera(false);
-        currentCamera = (Camera) getCamera(defaultPerspectiveCamera);
+        this.envRepository = engine.getInputRepository();
     }
 
-    public ICamera getCamera(String id) {
+    public void onInitialize() {
+        defaultOrthographicCamera = createNewCamera(true);
+        defaultPerspectiveCamera = createNewCamera(false);
+        currentCamera = getCamera(defaultPerspectiveCamera);
+    }
+
+    public AbstractCamera getCamera(String id) {
         return cameras.get(id);
     }
 
     public String createNewCamera(boolean isOrthographic) {
-        ICamera newCamera;
+        AbstractCamera newCamera;
         if (isOrthographic) {
-            newCamera = new OCamera();
+            newCamera = new OrthographicCamera();
         } else {
-            newCamera = new PCamera();
+            newCamera = new PerspectiveCamera();
         }
         cameras.put(newCamera.getId(), newCamera);
-        ((Camera) newCamera).position.set(0.0f, 0.0f, 5.0f);
-        ((Camera) newCamera).lookAt(0.0f, 0.0f, 0.0f);
-        ((Camera) newCamera).near = 0.1f;
-        ((Camera) newCamera).far = 300.0f;
-        ((Camera) newCamera).update();
+        newCamera.getPosition().set(0.0f, 0.0f, 5.0f);
+        newCamera.lookAt(0.0f, 0.0f, 0.0f);
+        newCamera.setNear(0.1f);
+        newCamera.setFar(300.0f);
+        newCamera.tick();
         return newCamera.getId();
     }
 
     public void setCurrentCamera(String id) {
         if (cameras.containsKey(id)) {
-            currentCamera = (Camera) cameras.get(id);
+            currentCamera = cameras.get(id);
         }
     }
 
-    public Map<String, ICamera> getCameras() {
+    public Map<String, AbstractCamera> getCameras() {
         return cameras;
     }
 
@@ -94,18 +97,20 @@ public class CameraService {
     }
 
     public void tick() {
-        if (Gdx.input.isTouched() && engine.isInputFocused()) {
+        currentCamera.setViewportWidth(envRepository.getViewportW());
+        currentCamera.setViewportHeight(envRepository.getViewportH());
+        if (envRepository.isInputFocused()) {
             handleMouseInput();
             handleKeyboardInput();
-            currentCamera.update(true);
+            currentCamera.tick();
         } else {
             firstMouseMove = true;
         }
     }
 
     private void handleMouseInput() {
-        float mouseX = Gdx.input.getX();
-        float mouseY = Gdx.input.getY();
+        float mouseX = envRepository.getMouseX();
+        float mouseY = envRepository.getMouseY();
 
         if (firstMouseMove) {
             lastMouseX = mouseX;
@@ -128,35 +133,37 @@ public class CameraService {
 
     private void handleKeyboardInput() {
         float deltaTime = engine.getTotalTime();
-        var forward = new Vector3(currentCamera.direction).nor();
-        var right = new Vector3(currentCamera.direction).crs(currentCamera.up).nor(); // Right vector
+        Vector3f direction = currentCamera.getDirection();
+        var forward = new Vector3f(direction).normalize();
+        var right = direction.cross(currentCamera.getUp()).normalize(); // Right vector
+        Vector3f position = currentCamera.getPosition();
+        if (envRepository.isForwardPressed()) {
+            position.add(forward.mul(movementSpeed * deltaTime)); // Move forward
+        }
+        if (envRepository.isBackwardPressed()) {
+            position.sub(forward.mul(movementSpeed * deltaTime)); // Move backward
+        }
+        if (envRepository.isLeftPressed()) {
+            position.sub(right.mul(movementSpeed * deltaTime)); // Move left
+        }
+        if (envRepository.isRightPressed()) {
+            position.add(right.mul(movementSpeed * deltaTime)); // Move right
+        }
+        if (envRepository.isUpPressed()) {
+            position.add(currentCamera.getUp().mul(movementSpeed * deltaTime)); // Move up
+        }
+        if (envRepository.isDownPressed()) {
+            position.sub(currentCamera.getUp().mul(movementSpeed * deltaTime)); // Move down
+        }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            currentCamera.position.add(forward.scl(movementSpeed * deltaTime)); // Move forward
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            currentCamera.position.sub(forward.scl(movementSpeed * deltaTime)); // Move backward
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            currentCamera.position.sub(right.scl(movementSpeed * deltaTime)); // Move left
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            currentCamera.position.add(right.scl(movementSpeed * deltaTime)); // Move right
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            currentCamera.position.add(currentCamera.up.scl(movementSpeed * deltaTime)); // Move up
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) {
-            currentCamera.position.sub(currentCamera.up.scl(movementSpeed * deltaTime)); // Move down
-        }
-
-        currentCamera.update();
+        currentCamera.tick();
     }
 
     private void updateCameraDirection() {
-        currentCamera.direction.x = (float) Math.cos(Math.toRadians(yaw)) * (float) Math.cos(Math.toRadians(pitch));
-        currentCamera.direction.y = (float) Math.sin(Math.toRadians(pitch));
-        currentCamera.direction.z = (float) Math.sin(Math.toRadians(yaw)) * (float) Math.cos(Math.toRadians(pitch));
-        currentCamera.direction.nor();
+        Vector3f direction = currentCamera.getDirection();
+        direction.x = (float) Math.cos(Math.toRadians(yaw)) * (float) Math.cos(Math.toRadians(pitch));
+        direction.y = (float) Math.sin(Math.toRadians(pitch));
+        direction.z = (float) Math.sin(Math.toRadians(yaw)) * (float) Math.cos(Math.toRadians(pitch));
+        direction.normalize(direction);
     }
 }
