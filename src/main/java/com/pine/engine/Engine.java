@@ -1,7 +1,7 @@
 package com.pine.engine;
 
-import com.pine.engine.components.system.ISystem;
-import com.pine.engine.service.*;
+import com.pine.engine.core.components.system.ISystem;
+import com.pine.engine.core.service.*;
 
 import java.util.List;
 

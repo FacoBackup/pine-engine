@@ -2,8 +2,6 @@ package com.pine.app.core.ui.view.table;
 
 import imgui.flag.ImGuiTableColumnFlags;
 
-import java.util.UUID;
-
 public class TableHeader {
     private int flags;
     private final String title;

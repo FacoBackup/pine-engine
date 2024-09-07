@@ -1,9 +1,7 @@
 package com.pine.app.editor.panels.files;
 
 import com.pine.app.core.Icon;
-import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.panel.AbstractPanel;
-import com.pine.app.core.ui.view.DivView;
 import com.pine.common.fs.FileInfoDTO;
 import imgui.ImGui;
 import imgui.ImVec4;

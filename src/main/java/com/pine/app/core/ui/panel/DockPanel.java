@@ -1,7 +1,6 @@
 package com.pine.app.core.ui.panel;
 
 import imgui.ImGui;
-import imgui.ImGuiStyle;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
 import imgui.flag.ImGuiDockNodeFlags;
