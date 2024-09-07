@@ -5,7 +5,7 @@ import imgui.flag.ImGuiTableColumnFlags;
 import java.util.UUID;
 
 public class TableHeader {
-    private final int flags;
+    private int flags;
     private final String title;
     private final int columnWidth;
 
@@ -14,12 +14,15 @@ public class TableHeader {
     }
 
     public TableHeader(String title) {
-        this(title, 0, ImGuiTableColumnFlags.None);
+        this(title, 0, ImGuiTableColumnFlags.WidthStretch);
     }
 
     private TableHeader(String title, int columnWidth, int flags) {
         this.title = title;
-        this.flags = flags;
+        this.flags = flags | ImGuiTableColumnFlags.NoSort;
+        if (title.isEmpty()) {
+            this.flags |= ImGuiTableColumnFlags.NoHeaderLabel;
+        }
         this.columnWidth = columnWidth;
     }
 

@@ -33,14 +33,38 @@ public class FSRepository implements Loggable {
             File[] files = directory.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    data.add(new FileInfoDTO(
-                            file.getName(),
-                            file.getTotalSpace(),
-                            FileType.valueOfEnum(file.getName()),
-                            file.getAbsolutePath(),
-                            DigestUtils.sha1Hex(file.getAbsolutePath()),
-                            !file.isFile()
-                    ));
+                    String key = DigestUtils.sha1Hex(file.getAbsolutePath());
+                    if (file.isDirectory()) {
+                        data.add(new FileInfoDTO(
+                                file.getName(),
+                                "",
+                                "",
+                                file.getAbsolutePath(),
+                                key,
+                                true
+                        ));
+                    } else {
+                        long fileSizeInBytes = file.length();
+                        String sizeUnit = "mb";
+                        double fileSize = (double) fileSizeInBytes / (1024 * 1024);
+                        if (fileSize > 1000) {
+                            fileSize = fileSize / 1024;
+                            sizeUnit = "gb";
+                        }
+                        if (fileSize < 1) {
+                            fileSize = (double) fileSizeInBytes / 1024;
+                            sizeUnit = "kb";
+                        }
+                        String[] split = file.getName().split("\\.");
+                        data.add(new FileInfoDTO(
+                                split[0],
+                                String.format("%.2f", fileSize) + sizeUnit,
+                                split[1],
+                                file.getAbsolutePath(),
+                                key,
+                                false
+                        ));
+                    }
                 }
             }
         } else {

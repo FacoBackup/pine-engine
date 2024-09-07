@@ -6,12 +6,13 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.DivView;
 import com.pine.common.fs.FileInfoDTO;
 import imgui.ImGui;
+import imgui.ImVec4;
 
 public class FilePanel extends AbstractPanel {
-    public static final int SIZE = 75;
     private final FileInfoDTO item;
-    private View name;
-    private View icon;
+    private final ImVec4 color = new ImVec4();
+    private String iconCodepoint;
+    private String label;
 
     public FilePanel(FileInfoDTO item) {
         super();
@@ -19,29 +20,37 @@ public class FilePanel extends AbstractPanel {
     }
 
     @Override
-    protected String getDefinition() {
-        return """
-                <fragment>
-                    <text id='icon'/>
-                    <text id='name'/>
-                </fragment>
-                """;
-    }
-
-    @Override
     public void onInitialize() {
         super.onInitialize();
-        icon = document.getElementById("icon");
-        icon.setInnerText(item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint);
-        name = document.getElementById("name");
-        name.setInnerText(item.fileName());
+        iconCodepoint = item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint;
+        if (item.isDirectory()) {
+            color.x = 1;
+            color.y = 0.8352941f;
+            color.z = 0.38039216f;
+        } else {
+            color.x = color.y = color.z = 1;
+        }
+
+        color.w = 1;
+        label = item.fileName() + "##" + item.getKey();
+
     }
 
     @Override
     protected void renderInternal() {
-        icon.render();
         ImGui.tableNextColumn();
-        name.render();
+        ImGui.textColored(color, iconCodepoint);
         ImGui.tableNextColumn();
+        ImGui.text(item.fileName());
+
+        if (item.isDirectory()) {
+            if (ImGui.isItemClicked() && ImGui.isMouseDoubleClicked(0)) {
+                ((FilesContext) getContext()).setDirectory(item.absolutePath());
+            }
+        }
+        ImGui.tableNextColumn();
+        ImGui.text(item.fileType());
+        ImGui.tableNextColumn();
+        ImGui.text(item.fileSize());
     }
 }

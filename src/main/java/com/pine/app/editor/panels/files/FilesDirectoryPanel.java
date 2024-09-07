@@ -24,9 +24,11 @@ public class FilesDirectoryPanel extends AbstractPanel {
         table.setGetView(item -> new FilePanel((FileInfoDTO) item));
         table.setHeaderColumns(List.of(
                 new TableHeader("", 30),
-                new TableHeader("Name")
+                new TableHeader("Name"),
+                new TableHeader("Type"),
+                new TableHeader("Size")
         ));
-        table.setMaxCells(2);
+        table.setMaxCells(4);
     }
 
     @Override

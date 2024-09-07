@@ -29,6 +29,7 @@ public class ListView extends AbstractView {
         if (containers.get(key) == null) {
             container = getView.apply(item);
             container.setDocument(getDocument());
+            container.setContext(getContext());
             containers.put(key, container);
             container.onInitialize();
         } else {

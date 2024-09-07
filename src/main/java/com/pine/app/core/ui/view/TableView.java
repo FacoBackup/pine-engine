@@ -3,6 +3,7 @@ package com.pine.app.core.ui.view;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.view.table.TableHeader;
 import imgui.ImGui;
+import imgui.flag.ImGuiTableFlags;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +18,7 @@ public class TableView extends ListView {
 
     @Override
     protected void renderInternal() {
-        ImGui.beginTable(innerText + internalId, maxCells);
+        ImGui.beginTable(innerText + internalId, maxCells, ImGuiTableFlags.ScrollY);
         for (var column : headerColumns) {
             if (column.getColumnWidth() > 0) {
                 ImGui.tableSetupColumn(column.getTitle(), column.getFlags(), column.getColumnWidth());

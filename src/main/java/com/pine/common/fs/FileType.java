@@ -16,7 +16,6 @@ public enum FileType {
     private final String extension;
 
     FileType(String name, String extension) {
-
         this.name = name;
         this.extension = extension;
     }
