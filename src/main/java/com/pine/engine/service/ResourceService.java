@@ -4,13 +4,16 @@ import com.pine.common.Loggable;
 import com.pine.engine.resource.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.pine.engine.resource.ResourceRepository.MAX_TIMEOUT;
-
+ 
 public class ResourceService implements Loggable {
-    private final ResourceRepository repository = new ResourceRepository();
+    public static final long MAX_TIMEOUT = 5 * 60 * 1000;
+    private final Map<String, IResource> resources = new HashMap<>();
+    private final Map<String, Long> sinceLastUse = new HashMap<>();
+    private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
     private final List<AbstractResourceService<? extends IResource, ? extends IResourceRuntimeData, ? extends IResourceCreationData>> implementations;
     private long sinceLastCleanup = 0;
 
@@ -29,13 +32,13 @@ public class ResourceService implements Loggable {
             getLogger().warn("Resource could not be initialized correctly: {}", data.getResourceType());
             return null;
         }
-        repository.getResources().put(instance.getId(), instance);
-        repository.getSinceLastUse().put(instance.getId(), System.currentTimeMillis());
+        resources.put(instance.getId(), instance);
+        sinceLastUse.put(instance.getId(), System.currentTimeMillis());
         return instance;
     }
 
     public void removeResource(String id) {
-        IResource resource = repository.getResources().get(id);
+        IResource resource = resources.get(id);
         if (resource == null) {
             getLogger().warn("Resource not found: {}", id);
             return;
@@ -64,7 +67,7 @@ public class ResourceService implements Loggable {
     }
 
     public List<IResource> getAllByType(ResourceType type) {
-        return repository.getResources().values().stream().filter(r -> r.getResourceType().equals(type)).collect(Collectors.toList());
+        return resources.values().stream().filter(r -> r.getResourceType().equals(type)).collect(Collectors.toList());
     }
 
     public void shutdown() {
@@ -75,17 +78,17 @@ public class ResourceService implements Loggable {
         if((totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
             sinceLastCleanup = totalTime;
             int removed = 0;
-            for (var entry : repository.getSinceLastUse().entrySet()) {
+            for (var entry : sinceLastUse.entrySet()) {
                 if (System.currentTimeMillis() - entry.getValue() > MAX_TIMEOUT) {
                     removeResource(entry.getKey());
                     removed++;
                 }
             }
             getLogger().warn("Removed {} unused resources", removed);
-            repository.getUsedResources().clear();
-            repository.getResources().values().forEach(resource -> {
-                repository.getUsedResources().putIfAbsent(resource.getResourceType(), new ArrayList<>());
-                repository.getUsedResources().get(resource.getResourceType()).add(resource.getId());
+            usedResources.clear();
+            resources.values().forEach(resource -> {
+                usedResources.putIfAbsent(resource.getResourceType(), new ArrayList<>());
+                usedResources.get(resource.getResourceType()).add(resource.getId());
             });
         }
     }

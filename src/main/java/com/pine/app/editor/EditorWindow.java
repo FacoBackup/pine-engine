@@ -85,4 +85,8 @@ public class EditorWindow extends AbstractWindow {
     public boolean isFullScreen() {
         return false;
     }
+
+    public Engine getEngine() {
+        return engine;
+    }
 }

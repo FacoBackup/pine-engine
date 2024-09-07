@@ -11,7 +11,9 @@ public class Engine {
     private long since = 0;
     private long elapsedTime = 0;
     private long totalTime = 0;
+    private boolean inputFocused = false;
 
+    private final CameraService camera = new CameraService(this);
     private final WorldService world = new WorldService();
     private final AudioService audioService = new AudioService();
     private final MaterialService materialService = new MaterialService();
@@ -36,6 +38,7 @@ public class Engine {
     }
 
     public void tick() {
+        camera.tick();
         resources.removeUnused(totalTime);
         for (var sys : world.getWorld().getSystems()) {
             ((ISystem) sys).tick();
@@ -65,5 +68,17 @@ public class Engine {
 
     public WorldService getWorld() {
         return world;
+    }
+
+    public boolean isInputFocused() {
+        return inputFocused;
+    }
+
+    public void setInputFocused(boolean inputFocused) {
+        this.inputFocused = inputFocused;
+    }
+
+    public float getTotalTime() {
+        return totalTime;
     }
 }
