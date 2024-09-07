@@ -1,5 +1,6 @@
 package com.pine.engine.core.service;
 
+import com.pine.common.Updatable;
 import com.pine.engine.Engine;
 import com.pine.engine.core.EnvRepository;
 import com.pine.engine.core.service.camera.AbstractCamera;
@@ -10,7 +11,7 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CameraService {
+public class CameraService implements Updatable {
     private final Engine engine;
     private final EnvRepository envRepository;
     private float pitch = 0.0f;
@@ -29,6 +30,7 @@ public class CameraService {
         this.envRepository = engine.getInputRepository();
     }
 
+    @Override
     public void onInitialize() {
         defaultOrthographicCamera = createNewCamera(true);
         defaultPerspectiveCamera = createNewCamera(false);
@@ -96,6 +98,7 @@ public class CameraService {
         return movementSpeed;
     }
 
+    @Override
     public void tick() {
         currentCamera.setViewportWidth(envRepository.getViewportW());
         currentCamera.setViewportHeight(envRepository.getViewportH());
@@ -132,7 +135,7 @@ public class CameraService {
     }
 
     private void handleKeyboardInput() {
-        float deltaTime = engine.getTotalTime();
+        float deltaTime = engine.getClock().totalTime;
         Vector3f direction = currentCamera.getDirection();
         var forward = new Vector3f(direction).normalize();
         var right = direction.cross(currentCamera.getUp()).normalize(); // Right vector

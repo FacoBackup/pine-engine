@@ -1,7 +1,7 @@
 package com.pine.app.core.window;
 
 import com.pine.app.core.service.WindowService;
-import com.pine.app.core.ui.Renderable;
+import com.pine.common.Renderable;
 import com.pine.app.core.ui.ViewDocument;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.ui.panel.DockPanel;
@@ -137,7 +137,8 @@ public abstract class AbstractWindow implements Renderable {
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
 
-    protected void tick(){}
+    @Override
+    public void tick(){}
 
     @Override
     final public void render() {

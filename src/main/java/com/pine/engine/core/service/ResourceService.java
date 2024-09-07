@@ -1,6 +1,8 @@
 package com.pine.engine.core.service;
 
 import com.pine.common.Loggable;
+import com.pine.common.Updatable;
+import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.resource.*;
 
 import java.util.ArrayList;
@@ -8,17 +10,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
- 
-public class ResourceService implements Loggable {
+
+public class ResourceService implements Updatable, Loggable {
     public static final long MAX_TIMEOUT = 5 * 60 * 1000;
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();
     private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
     private final List<AbstractResourceService<? extends IResource, ? extends IResourceRuntimeData, ? extends IResourceCreationData>> implementations;
+    private final ClockRepository clock;
     private long sinceLastCleanup = 0;
 
-    public ResourceService(List<AbstractResourceService<? extends IResource, ? extends IResourceRuntimeData, ? extends IResourceCreationData>> impls) {
+    public ResourceService(List<AbstractResourceService<? extends IResource, ? extends IResourceRuntimeData, ? extends IResourceCreationData>> impls, ClockRepository clock) {
         this.implementations = impls;
+        this.clock = clock;
     }
 
     public IResource addResource(IResourceCreationData data) {
@@ -74,9 +78,10 @@ public class ResourceService implements Loggable {
         implementations.forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
     }
 
-    public void removeUnused(long totalTime) {
-        if((totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
-            sinceLastCleanup = totalTime;
+    @Override
+    public void tick() {
+        if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
+            sinceLastCleanup = clock.totalTime;
             int removed = 0;
             for (var entry : sinceLastUse.entrySet()) {
                 if (System.currentTimeMillis() - entry.getValue() > MAX_TIMEOUT) {
@@ -93,6 +98,7 @@ public class ResourceService implements Loggable {
         }
     }
 
+    @Override
     public void onInitialize() {
         implementations.forEach(AbstractResourceService::onInitialize);
     }

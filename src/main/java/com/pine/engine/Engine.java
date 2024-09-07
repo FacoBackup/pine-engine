@@ -2,7 +2,8 @@ package com.pine.engine;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.pine.common.Loggable;
+import com.pine.common.Renderable;
+import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.EnvRepository;
 import com.pine.engine.core.components.system.ISystem;
 import com.pine.engine.core.service.*;
@@ -10,12 +11,8 @@ import com.pine.engine.core.service.*;
 import java.util.List;
 
 
-public class Engine implements Loggable {
-    private final long startupTime = System.currentTimeMillis();
-    private long since = 0;
-    private long elapsedTime = 0;
-    private long totalTime = 0;
-
+public class Engine implements Renderable {
+    private final ClockRepository clock = new ClockRepository();
     private final EnvRepository envRepository = new EnvRepository();
     private final CameraService camera = new CameraService(this);
     private final WorldService world = new WorldService();
@@ -25,58 +22,42 @@ public class Engine implements Loggable {
     private final ShaderService shaderService = new ShaderService();
     private final TextureService textureService = new TextureService();
     private final UBOService uboService = new UBOService();
-    private final ResourceService resources = new ResourceService(List.of(
-            audioService,
-            materialService,
-            meshService,
-            shaderService,
-            textureService,
-            uboService
-    ));
+    private final ResourceService resources = new ResourceService(
+            List.of(
+                    audioService,
+                    materialService,
+                    meshService,
+                    shaderService,
+                    textureService,
+                    uboService
+            ), clock
+    );
 
+    @Override
     public void onInitialize() {
         resources.onInitialize();
         camera.onInitialize();
-        for (var sys : world.getWorld().getSystems()) {
-            ((ISystem) sys).setEngine(this);
+        for (var sys : world.getSystems()) {
+            sys.setEngine(this);
         }
     }
 
+    @Override
     public void tick() {
+        clock.tick();
         camera.tick();
-        resources.removeUnused(totalTime);
-        for (var sys : world.getWorld().getSystems()) {
-            ((ISystem) sys).tick();
-        }
+        resources.tick();
+        world.getSystems().forEach(ISystem::tick);
     }
 
+    @Override
     public void render() {
-        long newSince = System.currentTimeMillis();
-        totalTime = newSince - startupTime;
-        elapsedTime += newSince - since;
-        since = newSince;
         world.getWorld().process();
-    }
-
-    public long getElapsedTime() {
-        return elapsedTime;
     }
 
     public void shutdown() {
         resources.shutdown();
         world.getWorld().dispose();
-    }
-
-    public ResourceService getResources() {
-        return resources;
-    }
-
-    public WorldService getWorld() {
-        return world;
-    }
-
-    public float getTotalTime() {
-        return totalTime;
     }
 
     public void parse(String serialized) {
@@ -97,5 +78,17 @@ public class Engine implements Loggable {
 
     public EnvRepository getInputRepository() {
         return envRepository;
+    }
+
+    public ResourceService getResources() {
+        return resources;
+    }
+
+    public WorldService getWorld() {
+        return world;
+    }
+
+    public ClockRepository getClock() {
+        return clock;
     }
 }

@@ -23,31 +23,42 @@ public class WorldService extends SerializableRepository {
     private static final String ENTITY_KEY = "entity";
     private static final String COMPONENTS_KEY = "components";
     private final World world;
+    private final PreLoopSystem insPreLoopSystem = new PreLoopSystem();
+    private final ScriptExecutorSystem insScriptExecutorSystem = new ScriptExecutorSystem();
+    private final DirectionalShadowSystem insDirectionalShadowSystem = new DirectionalShadowSystem();
+    private final OmniShadowSystem insOmniShadowSystem = new OmniShadowSystem();
+    private final VisibilityRendererSystem insVisibilityRendererSystem = new VisibilityRendererSystem();
+    private final PreRendererSystem insPreRendererSystem = new PreRendererSystem();
+    private final AtmosphereRendererSystem insAtmosphereRendererSystem = new AtmosphereRendererSystem();
+    private final TerrainRendererSystem insTerrainRendererSystem = new TerrainRendererSystem();
+    private final OpaqueRendererSystem insOpaqueRendererSystem = new OpaqueRendererSystem();
+    private final DecalRendererSystem insDecalRendererSystem = new DecalRendererSystem();
+    private final SpriteRendererSystem insSpriteRendererSystem = new SpriteRendererSystem();
+    private final PostRendererSystem insPostRendererSystem = new PostRendererSystem();
+    private final TransparencyRendererSystem insTransparencyRendererSystem = new TransparencyRendererSystem();
+    private final GlobalIlluminationSystem insGlobalIlluminationSystem = new GlobalIlluminationSystem();
+    private final PostProcessingSystem insPostProcessingSystem = new PostProcessingSystem();
+    private final FrameCompositionSystem insFrameCompositionSystem = new FrameCompositionSystem();
 
     public WorldService() {
         WorldSerializationManager manager = new WorldSerializationManager();
         world = new World(new WorldConfigurationBuilder()
-                .with(new PreLoopSystem())
-                .with(new ScriptExecutorSystem())
-
-                .with(new DirectionalShadowSystem())
-                .with(new OmniShadowSystem())
-                .with(new VisibilityRendererSystem())
-                .with(new PreRendererSystem())
-
-                .with(new AtmosphereRendererSystem())
-
-                .with(new TerrainRendererSystem())
-                .with(new OpaqueRendererSystem())
-                .with(new DecalRendererSystem())
-                .with(new SpriteRendererSystem())
-
-                .with(new PostRendererSystem())
-                .with(new TransparencyRendererSystem())
-
-                .with(new GlobalIlluminationSystem())
-                .with(new PostProcessingSystem())
-                .with(new FrameCompositionSystem())
+                .with(insPreLoopSystem)
+                .with(insScriptExecutorSystem)
+                .with(insDirectionalShadowSystem)
+                .with(insOmniShadowSystem)
+                .with(insVisibilityRendererSystem)
+                .with(insPreRendererSystem)
+                .with(insAtmosphereRendererSystem)
+                .with(insTerrainRendererSystem)
+                .with(insOpaqueRendererSystem)
+                .with(insDecalRendererSystem)
+                .with(insSpriteRendererSystem)
+                .with(insPostRendererSystem)
+                .with(insTransparencyRendererSystem)
+                .with(insGlobalIlluminationSystem)
+                .with(insPostProcessingSystem)
+                .with(insFrameCompositionSystem)
                 .build()
                 .setSystem(manager));
         manager.setSerializer(new JsonArtemisSerializer(world));
@@ -127,4 +138,24 @@ public class WorldService extends SerializableRepository {
         return world.create();
     }
 
+    public List<ISystem> getSystems() {
+        return List.of(
+                insPreLoopSystem,
+                insScriptExecutorSystem,
+                insDirectionalShadowSystem,
+                insOmniShadowSystem,
+                insVisibilityRendererSystem,
+                insPreRendererSystem,
+                insAtmosphereRendererSystem,
+                insTerrainRendererSystem,
+                insOpaqueRendererSystem,
+                insDecalRendererSystem,
+                insSpriteRendererSystem,
+                insPostRendererSystem,
+                insTransparencyRendererSystem,
+                insGlobalIlluminationSystem,
+                insPostProcessingSystem,
+                insFrameCompositionSystem
+        );
+    }
 }

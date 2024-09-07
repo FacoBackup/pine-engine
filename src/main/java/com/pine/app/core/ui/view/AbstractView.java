@@ -96,7 +96,7 @@ public class AbstractView implements View {
     }
 
     @Override
-    public void beforeRender() {
+    public void tick() {
     }
 
     @Override
@@ -105,7 +105,7 @@ public class AbstractView implements View {
             return;
         }
 
-        beforeRender();
+        tick();
         renderInternal();
     }
 

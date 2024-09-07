@@ -61,7 +61,7 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    protected void tick() {
+    public void tick() {
         engine.tick();
     }
 
