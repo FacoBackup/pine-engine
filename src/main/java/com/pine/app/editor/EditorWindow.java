@@ -51,6 +51,11 @@ public class EditorWindow extends AbstractWindow {
         );
     }
 
+    @Override
+    protected void onBeforeRender() {
+        // Engine logic tick
+    }
+
     public int getWindowWidth() {
         return 960;
     }

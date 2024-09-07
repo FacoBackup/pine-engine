@@ -29,6 +29,7 @@ public abstract class AbstractWindow implements Renderable {
     private long handle = -1;
     private final ViewDocument viewDocument = new ViewDocument(this);
     private final DockPanel root = new DockPanel();
+    private boolean isVisible = true;
 
     @Inject
     public WindowService windowService;
@@ -109,6 +110,12 @@ public abstract class AbstractWindow implements Renderable {
                 windowService.closeWindow(AbstractWindow.this);
             }
         });
+        GLFW.glfwSetWindowIconifyCallback(handle, new GLFWWindowIconifyCallback() {
+            @Override
+            public void invoke(long window, boolean iconified) {
+                isVisible = !iconified;
+            }
+        });
     }
 
     public void dispose() {
@@ -130,13 +137,18 @@ public abstract class AbstractWindow implements Renderable {
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
 
+    protected abstract void onBeforeRender();
+
     @Override
     public void render() {
+        onBeforeRender();
+
         startFrame();
-
-        root.render();
-
+        if (isVisible) {
+            root.render();
+        }
         endFrame();
+
     }
 
     private void endFrame() {

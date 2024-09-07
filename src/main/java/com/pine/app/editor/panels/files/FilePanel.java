@@ -1,12 +1,17 @@
 package com.pine.app.editor.panels.files;
 
+import com.pine.app.core.Icon;
+import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.DivView;
-import com.pine.app.core.ui.view.TextView;
 import com.pine.common.fs.FileInfoDTO;
+import imgui.ImGui;
 
 public class FilePanel extends AbstractPanel {
+    public static final int SIZE = 75;
     private final FileInfoDTO item;
+    private View name;
+    private View icon;
 
     public FilePanel(FileInfoDTO item) {
         super();
@@ -16,22 +21,27 @@ public class FilePanel extends AbstractPanel {
     @Override
     protected String getDefinition() {
         return """
-            <inline>
-                 <text>[Folder]</icon>
-                <button>
-                    <text id="name"/>
-                </button>
-            </inline>
-            """;
+                <fragment>
+                    <text id='icon'/>
+                    <text id='name'/>
+                </fragment>
+                """;
     }
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        var name = (TextView) document.getElementById("name");
+        icon = document.getElementById("icon");
+        icon.setInnerText(item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint);
+        name = document.getElementById("name");
         name.setInnerText(item.fileName());
-        var div = (DivView) name.getParent();
-        div.setHeight(50);
-        div.setWidth(75);
+    }
+
+    @Override
+    protected void renderInternal() {
+        icon.render();
+        ImGui.tableNextColumn();
+        name.render();
+        ImGui.tableNextColumn();
     }
 }

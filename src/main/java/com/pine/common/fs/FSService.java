@@ -21,43 +21,19 @@ public class FSService implements Loggable {
     @Autowired
     private FSRepository repository;
 
-    @PostConstruct
-    public void init() {
-        repository.createDirectoryTree();
-    }
-
     public List<FileInfoDTO> readFiles(final String path) {
         return repository.readFiles(path);
     }
 
     @Async
     public void refreshFiles(String directory, Runnable afterProcessing) {
-        final Tree directories = repository.createDirectoryTree();
-        getDirectoriesTree(new File(directory), directories);
         repository.getFilesByDirectory().clear();
         repository.readFilesForcefully(directory);
         afterProcessing.run();
     }
 
-    private static void getDirectoriesTree(File folder, Branch parent) {
-        File[] files = folder.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    var newBranch = new Branch(file.getName(), file.getAbsolutePath());
-                    parent.addBranch(newBranch);
-                    getDirectoriesTree(file, newBranch);
-                }
-            }
-        }
-    }
-
     public static String getUserRootPath() {
         return System.getProperty("user.home");
-    }
-
-    public Tree getDirectoriesTree() {
-        return repository.getDirectoryTree();
     }
 
     public void write(String file, String filePath) {

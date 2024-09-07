@@ -56,7 +56,7 @@ class AbstractPanelTest {
         var list = spy.getDocument().getElementById("list");
 
         Assertions.assertInstanceOf(ButtonView.class, newProject);
-        Assertions.assertInstanceOf(RepeatingView.class, list);
+        Assertions.assertInstanceOf(ListView.class, list);
 
         Assertions.assertInstanceOf(WindowView.class, newProject.getParent());
         Assertions.assertInstanceOf(WindowView.class, list.getParent());

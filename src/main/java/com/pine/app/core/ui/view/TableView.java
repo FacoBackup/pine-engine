@@ -7,7 +7,7 @@ import imgui.ImGui;
 import java.util.Collections;
 import java.util.List;
 
-public class TableView extends RepeatingView {
+public class TableView extends ListView {
     private int maxCells = 3;
     private List<TableHeader> headerColumns = Collections.emptyList();
 
@@ -19,7 +19,11 @@ public class TableView extends RepeatingView {
     protected void renderInternal() {
         ImGui.beginTable(innerText + internalId, maxCells);
         for (var column : headerColumns) {
-            ImGui.tableSetupColumn(column.getTitle(), column.getFlags(), column.getColumnWidth());
+            if (column.getColumnWidth() > 0) {
+                ImGui.tableSetupColumn(column.getTitle(), column.getFlags(), column.getColumnWidth());
+            } else {
+                ImGui.tableSetupColumn(column.getTitle(), column.getFlags());
+            }
         }
         if (!headerColumns.isEmpty()) {
             ImGui.tableHeadersRow();
@@ -28,9 +32,7 @@ public class TableView extends RepeatingView {
         for (RepeatingViewItem item : data) {
             String key = item.getKey();
             var child = getView(item, key);
-            if (child.isVisible()) {
-                ImGui.tableNextColumn();
-            }
+            ImGui.tableNextRow();
             child.render();
         }
         ImGui.endTable();
@@ -41,6 +43,8 @@ public class TableView extends RepeatingView {
     }
 
     public void setMaxCells(int maxCells) {
-        this.maxCells = maxCells;
+        if (maxCells >= 1 && maxCells <= 64) {
+            this.maxCells = maxCells;
+        }
     }
 }

@@ -4,7 +4,7 @@ import com.pine.app.ProjectDTO;
 import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.core.ui.view.ButtonView;
-import com.pine.app.core.ui.view.RepeatingView;
+import com.pine.app.core.ui.view.ListView;
 import com.pine.common.Inject;
 
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class ProjectsPanel extends AbstractWindowPanel {
 
         data.addAll(projectService.listAll());
 
-        var list = (RepeatingView) getDocument().getElementById("list");
+        var list = (ListView) getDocument().getElementById("list");
         var create = (ButtonView) getDocument().getElementById("newProject");
         create.setOnClick(() -> data.add(projectService.createNewProject()));
         list.setGetView((item) -> new ProjectRowPanel((ProjectDTO) item, this::removeProject));

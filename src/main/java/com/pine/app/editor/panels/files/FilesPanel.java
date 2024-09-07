@@ -35,7 +35,6 @@ public class FilesPanel extends AbstractWindowPanel {
 
         var container = document.getElementById("filesContainer");
         document.getElementById("filesHeader").appendChild(new FilesHeaderPanel());
-        container.appendChild(new FilesTreePanel());
         container.appendChild(new FilesDirectoryPanel());
     }
 

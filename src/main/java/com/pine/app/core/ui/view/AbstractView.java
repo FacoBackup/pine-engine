@@ -114,6 +114,7 @@ public class AbstractView implements View {
         setInnerText(innerText);
     }
 
+    @Override
     public void setInnerText(String textContent) {
         innerText = textContent;
         processIcons();

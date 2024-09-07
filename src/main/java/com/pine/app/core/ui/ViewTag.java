@@ -15,7 +15,7 @@ public enum ViewTag {
     DIV("div", DivView.class, true),
     TABLE("table", TableView.class, true),
     TREE("tree", TreeView.class, false),
-    LIST("list", RepeatingView.class, false);
+    LIST("list", ListView.class, false);
 
     private final String tag;
     private final Class<? extends AbstractView> clazz;

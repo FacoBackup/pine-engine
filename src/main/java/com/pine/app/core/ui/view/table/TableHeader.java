@@ -18,7 +18,7 @@ public class TableHeader {
     }
 
     private TableHeader(String title, int columnWidth, int flags) {
-        this.title = title + UUID.randomUUID().toString().replaceAll("-", "");
+        this.title = title;
         this.flags = flags;
         this.columnWidth = columnWidth;
     }
