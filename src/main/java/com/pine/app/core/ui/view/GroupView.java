@@ -10,7 +10,7 @@ public class GroupView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         ImGui.beginGroup();
         super.renderInternal();
         ImGui.endGroup();

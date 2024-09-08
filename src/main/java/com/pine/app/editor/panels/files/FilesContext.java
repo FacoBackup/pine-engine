@@ -9,8 +9,7 @@ import java.util.List;
 public class FilesContext extends AbstractPanelContext {
     private String directory;
     private List<FileInfoDTO> files = new ArrayList<>();
-    // TODO - UNDO REDO CLASS
-    private final List<String> pathsHistory = new ArrayList<String>();
+    private FileInfoDTO selectedFile;
 
     public FilesContext(String directory) {
         this.directory = directory;
@@ -31,5 +30,13 @@ public class FilesContext extends AbstractPanelContext {
     public void setDirectory(String directory) {
         this.directory = directory;
         onChange();
+    }
+
+    public FileInfoDTO getSelectedFile() {
+        return selectedFile;
+    }
+
+    public void setSelectedFile(FileInfoDTO selectedFile) {
+        this.selectedFile = selectedFile;
     }
 }

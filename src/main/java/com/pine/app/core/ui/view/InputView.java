@@ -17,7 +17,7 @@ public class InputView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         int flags;
         if (!enabled) {
             flags = ImGuiInputTextFlags.ReadOnly;

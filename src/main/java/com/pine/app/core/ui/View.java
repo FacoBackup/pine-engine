@@ -33,4 +33,6 @@ public interface View extends Renderable {
     void setContext(AbstractPanelContext internalContext);
 
     void setParent(View parent);
+
+    void renderInternal();
 }

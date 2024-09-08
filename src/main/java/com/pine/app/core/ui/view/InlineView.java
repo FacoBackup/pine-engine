@@ -10,12 +10,12 @@ public class InlineView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         int qtt = children.size() - 1;
         for (int i = 0; i <= qtt; i++) {
             View child = children.get(i);
             child.render();
-            if (i < qtt && child.isVisible()) {
+            if (i < qtt && children.get(i + 1).isVisible()) {
                 ImGui.sameLine();
             }
         }

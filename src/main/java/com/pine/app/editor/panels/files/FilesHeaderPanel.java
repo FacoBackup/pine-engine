@@ -3,14 +3,21 @@ package com.pine.app.editor.panels.files;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.InputView;
+import com.pine.app.editor.EditorWindow;
 import com.pine.common.Inject;
 import com.pine.common.fs.FSService;
+import com.pine.common.fs.FileInfoDTO;
+import com.pine.engine.Engine;
+import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 
 import java.io.File;
 
 public class FilesHeaderPanel extends AbstractPanel {
     @Inject
     public FSService fsService;
+    private Engine engine;
+    private ButtonView importFile;
+    private FilesContext filesContext;
 
     @Override
     protected String getDefinition() {
@@ -19,6 +26,7 @@ public class FilesHeaderPanel extends AbstractPanel {
                     <button id='addDir'>[FolderPlus]</button>
                     <button id='goUp'>[ArrowUp]</button>
                     <input id='path'/>
+                    <button id='import'>[File] Import File</button>
                 </inline>
                 """;
     }
@@ -26,7 +34,9 @@ public class FilesHeaderPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        FilesContext filesContext = (FilesContext) getContext();
+        filesContext = (FilesContext) getContext();
+        engine = ((EditorWindow) document.getWindow()).getEngine();
+        importFile = (ButtonView) document.getElementById("import");
         var addDir = (ButtonView) document.getElementById("addDir");
         var goUp = (ButtonView) document.getElementById("goUp");
         var path = (InputView) document.getElementById("path");
@@ -34,12 +44,25 @@ public class FilesHeaderPanel extends AbstractPanel {
         path.setValue(filesContext.getDirectory());
         path.setOnChange(this::pathChange);
 
+        importFile.setOnClick(this::importFile);
         addDir.setOnClick(() -> fsService.createDirectory(filesContext.getDirectory() + File.separator + "New folder"));
         goUp.setOnClick(() -> filesContext.setDirectory(fsService.getParentDir(filesContext.getDirectory())));
 
         filesContext.subscribe(() -> {
             path.setValue(filesContext.getDirectory());
         });
+    }
+
+    @Override
+    public void tick() {
+        importFile.setVisible(filesContext.getSelectedFile() != null);
+    }
+
+    private void importFile() {
+        FileInfoDTO file = filesContext.getSelectedFile();
+        if (file != null && !file.isDirectory()) {
+            engine.getLoader().load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+        }
     }
 
     private void pathChange(String path) {

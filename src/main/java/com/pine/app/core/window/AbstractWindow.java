@@ -152,7 +152,7 @@ public abstract class AbstractWindow implements Renderable {
         endFrame();
     }
 
-    protected void renderInternal(){}
+    public void renderInternal(){}
 
     private void endFrame() {
         ImGui.render();

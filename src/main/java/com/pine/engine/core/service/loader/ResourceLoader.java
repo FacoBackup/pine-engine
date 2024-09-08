@@ -42,7 +42,12 @@ public class ResourceLoader extends SerializableRepository implements Updatable 
         AbstractLoaderResponse metadata = null;
         for (AbstractResourceLoader i : resourceLoaders) {
             if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
-                metadata = i.load(dto, extraInfo);
+                if (extraInfo != null && extraInfo.getResourceType() == i.getResourceType()) {
+                    metadata = i.load(dto, extraInfo);
+                } else {
+                    metadata = i.load(dto, null);
+                }
+
                 if (metadata.isLoaded()) {
                     loadedResources.add(metadata);
                 }
@@ -113,5 +118,10 @@ public class ResourceLoader extends SerializableRepository implements Updatable 
                 }
             });
         }
+    }
+
+    @Override
+    public void onInitialize() {
+        load("plane.glb", true, null);
     }
 }

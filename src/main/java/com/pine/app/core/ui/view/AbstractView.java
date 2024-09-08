@@ -84,7 +84,8 @@ public class AbstractView implements View {
         this.visible = visible;
     }
 
-    protected void renderInternal() {
+    @Override
+    public void renderInternal() {
         for (View child : children) {
             child.render();
         }
@@ -101,11 +102,10 @@ public class AbstractView implements View {
 
     @Override
     final public void render() {
+        tick();
         if (!visible) {
             return;
         }
-
-        tick();
         renderInternal();
     }
 

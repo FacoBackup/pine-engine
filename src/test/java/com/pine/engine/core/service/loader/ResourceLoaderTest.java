@@ -2,9 +2,11 @@ package com.pine.engine.core.service.loader;
 
 import com.pine.engine.Engine;
 import com.pine.engine.core.ClockRepository;
+import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.resource.resource.AbstractResource;
+import com.pine.engine.core.service.world.WorldService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,9 @@ class ResourceLoaderTest {
         ResourceService resourceServiceMock = Mockito.mock(ResourceService.class);
         Mockito.doReturn(resourceServiceMock).when(engine).getResources();
 
+        WorldService worldService = Mockito.spy(new WorldService());
+        Mockito.doReturn(worldService).when(engine).getWorld();
+
         AbstractResource resourceMock = Mockito.mock(AbstractResource.class);
         Mockito.doReturn(resourceMock).when(resourceServiceMock).addResource(Mockito.any());
         Mockito.doReturn("id").when(resourceMock).getId();
@@ -39,10 +44,12 @@ class ResourceLoaderTest {
         AbstractLoaderResponse load = loader.load("something.nothing", false, null);
         Assertions.assertFalse(load.isLoaded());
 
-        load = loader.load("plane.glb", true, null);
+        load = loader.load("plane.glb", true, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
 
         Assertions.assertTrue(load.isLoaded());
         Assertions.assertEquals("id", ((MeshLoaderResponse) load).getMeshes().getFirst().id());
+
+
 
     }
 }

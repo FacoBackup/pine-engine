@@ -18,7 +18,7 @@ public class ListView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         for (RepeatingViewItem item : data) {
             getView(item, item.getKey()).render();
         }

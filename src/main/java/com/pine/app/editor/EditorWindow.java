@@ -66,7 +66,7 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         engine.render();
     }
 

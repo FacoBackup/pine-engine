@@ -2,15 +2,25 @@ package com.pine.app.editor.panels.files;
 
 import com.pine.app.core.Icon;
 import com.pine.app.core.ui.panel.AbstractPanel;
+import com.pine.app.core.ui.view.TableView;
+import com.pine.app.editor.EditorWindow;
 import com.pine.common.fs.FileInfoDTO;
+import com.pine.engine.core.service.loader.ResourceLoader;
+import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import imgui.ImGui;
 import imgui.ImVec4;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiTableBgTarget;
+import imgui.flag.ImGuiTableRowFlags;
+
+import static com.pine.app.core.ui.theme.ThemeUtil.ACCENT_COLOR;
 
 public class FilePanel extends AbstractPanel {
     private final FileInfoDTO item;
     private final ImVec4 color = new ImVec4();
     private String iconCodepoint;
-    private String label;
+    private FilesContext context;
+    private ResourceLoader loader;
 
     public FilePanel(FileInfoDTO item) {
         super();
@@ -20,6 +30,8 @@ public class FilePanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
+        loader = ((EditorWindow) document.getWindow()).getEngine().getLoader();
+        context = (FilesContext) getContext();
         iconCodepoint = item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint;
         if (item.isDirectory()) {
             color.x = 1;
@@ -30,25 +42,36 @@ public class FilePanel extends AbstractPanel {
         }
 
         color.w = 1;
-        label = item.fileName() + "##" + item.getKey();
-
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
+        if (context.getSelectedFile() == item) {
+            TableView.highlightRow();
+        }
+
         ImGui.tableNextColumn();
         ImGui.textColored(color, iconCodepoint);
         ImGui.tableNextColumn();
         ImGui.text(item.fileName());
-
-        if (item.isDirectory()) {
-            if (ImGui.isItemClicked() && ImGui.isMouseDoubleClicked(0)) {
-                ((FilesContext) getContext()).setDirectory(item.absolutePath());
-            }
+        if (ImGui.isItemClicked()) {
+            onClick();
         }
         ImGui.tableNextColumn();
         ImGui.text(item.fileType());
         ImGui.tableNextColumn();
         ImGui.text(item.fileSize());
     }
+
+    private void onClick() {
+        context.setSelectedFile(context.getSelectedFile() == item ? null : item);
+        if (ImGui.isMouseDoubleClicked(0)) {
+            if (item.isDirectory()) {
+                ((FilesContext) getContext()).setDirectory(item.absolutePath());
+            } else {
+                loader.load(item.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+            }
+        }
+    }
+
 }

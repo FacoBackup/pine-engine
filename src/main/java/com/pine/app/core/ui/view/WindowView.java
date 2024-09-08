@@ -19,7 +19,7 @@ public class WindowView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         final String tempLabel = innerText + internalId;
         int flags = ImGuiWindowFlags.None;
 

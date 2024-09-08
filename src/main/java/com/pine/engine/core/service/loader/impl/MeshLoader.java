@@ -28,11 +28,7 @@ public class MeshLoader extends AbstractResourceLoader {
 
     @Override
     public AbstractLoaderResponse load(LoadRequest resource, @Nullable ILoaderExtraInfo extraInfo) {
-        MeshLoaderExtraInfo extra = null;
-        if (extraInfo instanceof MeshLoaderExtraInfo) {
-            extra = (MeshLoaderExtraInfo) extraInfo;
-        }
-
+        var extra = (MeshLoaderExtraInfo) extraInfo;
         try {
             List<MeshInstanceMetadata> meshes = new ArrayList<>();
             AIScene scene = loadScene(resource);
@@ -49,6 +45,11 @@ public class MeshLoader extends AbstractResourceLoader {
                     meshes.add(processPrimitive(mesh, resource, i, extra));
                 }
             }
+
+            if(extra != null && extra.isInstantiateHierarchy()){
+                // TODO - INSTANTIATE HIERARCHY
+            }
+
             Assimp.aiReleaseImport(scene);
             return new MeshLoaderResponse(true, resource.path(), meshes);
         } catch (Exception e) {
@@ -72,7 +73,7 @@ public class MeshLoader extends AbstractResourceLoader {
 
     private MeshInstanceMetadata processPrimitive(AIMesh mesh, LoadRequest resource, int index, @Nullable MeshLoaderExtraInfo extra) {
         String resourceId = null;
-        if (extra == null || extra.meshIndex() == index) {
+        if (extra == null || extra.getMeshIndex() == null || extra.getMeshIndex() == index) {
             float[] vertices = new float[mesh.mNumVertices() * 3];
             for (int i = 0; i < mesh.mNumVertices(); i++) {
                 AIVector3D vert = mesh.mVertices().get(i);
