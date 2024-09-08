@@ -2,28 +2,21 @@ package com.pine.engine;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.app.core.service.WindowService;
 import com.pine.engine.core.components.component.MeshComponent;
 import com.pine.engine.core.components.component.TransformationComponent;
-import com.pine.engine.core.service.WorldService;
-import org.junit.jupiter.api.BeforeAll;
+import com.pine.engine.core.service.world.WorldService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Objects;
 
-import static com.pine.common.serialization.SerializableRepository.CLASS_KEY;
-import static com.pine.common.serialization.SerializableRepository.DATA_KEY;
+import static com.pine.engine.core.service.serialization.SerializableRepository.CLASS_KEY;
+import static com.pine.engine.core.service.serialization.SerializableRepository.DATA_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +35,7 @@ class EngineTest {
         int entity2 = engine.getWorld().addEntity();
         engine.getWorld().addComponent(entity2, TransformationComponent.class);
 
-        serialized = engine.serialize();
+        serialized = engine.serialize().toString();
     }
 
     @Test
@@ -68,8 +61,8 @@ class EngineTest {
         engine.getWorld().getWorld().delete(0);
         engine.getWorld().getWorld().delete(1);
         engine.getWorld().getWorld().process();
-        testDump(0, engine.serialize());
+        testDump(0, engine.serialize().toString());
         engine.parse(serialized);
-        testDump(2, engine.serialize());
+        testDump(2, engine.serialize().toString());
     }
 }

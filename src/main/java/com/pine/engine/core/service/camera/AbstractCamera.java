@@ -141,5 +141,9 @@ public abstract class AbstractCamera {
     public void setViewportWidth(float viewportWidth) {
         this.viewportWidth = viewportWidth;
     }
+
+    public Vector3f getTmpVec() {
+        return tmpVec;
+    }
 }
 
