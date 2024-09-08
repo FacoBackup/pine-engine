@@ -19,7 +19,7 @@ public class DivView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         if (isHovered) {
             ImGui.pushStyleColor(ImGuiCol.ChildBg, HOVERED_COLOR);
             isStylePushed = true;

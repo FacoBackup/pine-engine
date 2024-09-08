@@ -61,12 +61,12 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    protected void tick() {
+    public void tick() {
         engine.tick();
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         engine.render();
     }
 

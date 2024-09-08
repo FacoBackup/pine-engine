@@ -22,7 +22,7 @@ public class TreeView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         if (tree == null) {
             return;
         }

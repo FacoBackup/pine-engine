@@ -31,7 +31,7 @@ public class FilesDirectoryPanel extends AbstractPanel {
     }
 
     @Override
-    public void beforeRender() {
+    public void tick() {
         table.setData(((FilesContext) getContext()).getFiles());
     }
 }

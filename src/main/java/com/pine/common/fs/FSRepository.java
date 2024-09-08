@@ -59,7 +59,7 @@ public class FSRepository implements Loggable {
                         }
                         String[] split = file.getName().split("\\.");
                         data.add(new FileInfoDTO(
-                                split[0],
+                                split[0].isEmpty() ? file.getName() : split[0],
                                 String.format("%.2f", fileSize) + sizeUnit,
                                 split[1],
                                 file.getAbsolutePath(),

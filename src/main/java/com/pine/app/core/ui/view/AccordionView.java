@@ -9,7 +9,7 @@ public class AccordionView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         if (ImGui.collapsingHeader(innerText + internalId)) {
             super.renderInternal();
         }

@@ -6,6 +6,8 @@ import imgui.*;
 import imgui.flag.ImGuiCol;
 
 public class ThemeUtil {
+    public static final ImVec4 ACCENT_COLOR = new ImVec4(0.26f, 0.59f, 0.98f, 1);
+    
     public static void applyTheme(boolean isDarkMode, float[] backgroundColor) {
         if (!isDarkMode) {
             ImGui.styleColorsLight();
@@ -20,21 +22,20 @@ public class ThemeUtil {
             setLightMode(colors);
         } else {
             setDarkMode(colors);
-        }
-        ImVec4 accentColor = new ImVec4(0.26f, 0.59f, 0.98f, 1);
+        } 
 
-        colors[ImGuiCol.FrameBgHovered] = accentColor;
-        colors[ImGuiCol.FrameBgActive] = accentColor;
-        colors[ImGuiCol.CheckMark] = accentColor;
-        colors[ImGuiCol.SliderGrabActive] = accentColor;
-        colors[ImGuiCol.Button] = accentColor;
-        colors[ImGuiCol.ButtonHovered] = accentColor;
-        colors[ImGuiCol.Header] = accentColor;
-        colors[ImGuiCol.HeaderHovered] = accentColor;
-        colors[ImGuiCol.HeaderActive] = accentColor;
-        colors[ImGuiCol.ResizeGripHovered] = accentColor;
-        colors[ImGuiCol.ResizeGripActive] = accentColor;
-        colors[ImGuiCol.TextSelectedBg] = accentColor;
+        colors[ImGuiCol.FrameBgHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.FrameBgActive] = ACCENT_COLOR;
+        colors[ImGuiCol.CheckMark] = ACCENT_COLOR;
+        colors[ImGuiCol.SliderGrabActive] = ACCENT_COLOR;
+        colors[ImGuiCol.Button] = ACCENT_COLOR;
+        colors[ImGuiCol.ButtonHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.Header] = ACCENT_COLOR;
+        colors[ImGuiCol.HeaderHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.HeaderActive] = ACCENT_COLOR;
+        colors[ImGuiCol.ResizeGripHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.ResizeGripActive] = ACCENT_COLOR;
+        colors[ImGuiCol.TextSelectedBg] = ACCENT_COLOR;
 
         backgroundColor[0] = colors[ImGuiCol.WindowBg].x;
         backgroundColor[1] = colors[ImGuiCol.WindowBg].y;

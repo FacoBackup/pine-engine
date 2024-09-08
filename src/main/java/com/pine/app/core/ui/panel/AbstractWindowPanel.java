@@ -35,7 +35,7 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         if (!initialSize.equals(DEFAULT)) {
             ImGui.setNextWindowSize(initialSize, ImGuiCond.FirstUseEver);
         }

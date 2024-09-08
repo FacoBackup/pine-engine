@@ -2,6 +2,7 @@ package com.pine.app.core.ui;
 
 
 import com.pine.app.core.ui.panel.AbstractPanelContext;
+import com.pine.common.Renderable;
 
 import java.util.List;
 
@@ -33,5 +34,5 @@ public interface View extends Renderable {
 
     void setParent(View parent);
 
-    void beforeRender();
+    void renderInternal();
 }

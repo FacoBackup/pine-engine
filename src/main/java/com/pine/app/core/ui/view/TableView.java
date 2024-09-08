@@ -3,22 +3,28 @@ package com.pine.app.core.ui.view;
 import com.pine.app.core.ui.View;
 import com.pine.app.core.ui.view.table.TableHeader;
 import imgui.ImGui;
+import imgui.flag.ImGuiTableBgTarget;
 import imgui.flag.ImGuiTableFlags;
+import imgui.flag.ImGuiTableRowFlags;
 
 import java.util.Collections;
 import java.util.List;
 
+import static com.pine.app.core.ui.theme.ThemeUtil.ACCENT_COLOR;
+
 public class TableView extends ListView {
+    private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.RowBg;
     private int maxCells = 3;
     private List<TableHeader> headerColumns = Collections.emptyList();
+    private static final int ACCENT = ImGui.getColorU32(ACCENT_COLOR);
 
     public TableView(View parent, String id) {
         super(parent, id);
     }
 
     @Override
-    protected void renderInternal() {
-        ImGui.beginTable(innerText + internalId, maxCells, ImGuiTableFlags.ScrollY);
+    public void renderInternal() {
+        ImGui.beginTable(innerText + internalId, maxCells, FLAGS);
         for (var column : headerColumns) {
             if (column.getColumnWidth() > 0) {
                 ImGui.tableSetupColumn(column.getTitle(), column.getFlags(), column.getColumnWidth());
@@ -33,8 +39,11 @@ public class TableView extends ListView {
         for (RepeatingViewItem item : data) {
             String key = item.getKey();
             var child = getView(item, key);
-            ImGui.tableNextRow();
-            child.render();
+            if (child.isVisible()) {
+                child.tick();
+                ImGui.tableNextRow();
+                child.renderInternal();
+            }
         }
         ImGui.endTable();
     }
@@ -47,5 +56,10 @@ public class TableView extends ListView {
         if (maxCells >= 1 && maxCells <= 64) {
             this.maxCells = maxCells;
         }
+    }
+
+    public static void highlightRow(){
+        ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, ACCENT);
+        ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, ACCENT);
     }
 }

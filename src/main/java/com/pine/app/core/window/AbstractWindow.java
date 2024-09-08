@@ -1,15 +1,21 @@
 package com.pine.app.core.window;
 
 import com.pine.app.core.service.WindowService;
-import com.pine.app.core.ui.Renderable;
+import com.pine.common.Renderable;
 import com.pine.app.core.ui.ViewDocument;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.ui.panel.DockPanel;
 import com.pine.common.ContextService;
 import com.pine.common.Inject;
+import com.pine.common.messages.Message;
+import com.pine.common.messages.MessageCollector;
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import imgui.ImVec2;
+import imgui.ImVec4;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import org.lwjgl.glfw.*;
@@ -21,6 +27,8 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Objects;
+
+import static com.pine.common.messages.MessageCollector.MESSAGE_DURATION;
 
 public abstract class AbstractWindow implements Renderable {
     private static final String GLSL_VERSION = "#version 130";
@@ -137,7 +145,9 @@ public abstract class AbstractWindow implements Renderable {
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
 
-    protected void tick(){}
+    @Override
+    public void tick() {
+    }
 
     @Override
     final public void render() {
@@ -147,11 +157,38 @@ public abstract class AbstractWindow implements Renderable {
         if (isVisible) {
             root.render();
             renderInternal();
+
+            drawToaster();
         }
         endFrame();
     }
 
-    protected void renderInternal(){}
+    private void drawToaster() {
+        Message[] messages = MessageCollector.getMessages();
+        for (int i = 0; i < MessageCollector.MAX_MESSAGES; i++) {
+            var message = messages[i];
+            if (message == null) {
+                continue;
+            }
+            if (System.currentTimeMillis() - message.getDisplayStartTime() > MESSAGE_DURATION) {
+                messages[i] = null;
+                continue;
+            }
+            ImVec2 viewportDimensions = viewDocument.getViewportDimensions();
+            ImGui.setNextWindowPos(5, viewportDimensions.y - 40 * (i + 1));
+            ImGui.setNextWindowSize(viewportDimensions.x * .35F, 35);
+            ImGui.pushStyleColor(ImGuiCol.Border, message.severity().getColor());
+            ImGui.pushStyleColor(ImGuiCol.WindowBg, message.severity().getColor());
+            ImGui.begin("##toaster" + i, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings);
+            ImGui.popStyleColor();
+            ImGui.popStyleColor();
+            ImGui.text(message.message());
+            ImGui.end();
+        }
+    }
+
+    public void renderInternal() {
+    }
 
     private void endFrame() {
         ImGui.render();

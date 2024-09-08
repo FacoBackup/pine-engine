@@ -1,82 +1,55 @@
 package com.pine.engine;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.common.Loggable;
+import com.pine.common.Renderable;
+import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.EnvRepository;
 import com.pine.engine.core.components.system.ISystem;
-import com.pine.engine.core.service.*;
+import com.pine.engine.core.service.camera.CameraService;
+import com.pine.engine.core.service.loader.ResourceLoader;
+import com.pine.engine.core.service.resource.*;
+import com.pine.engine.core.service.serialization.SerializableRepository;
+import com.pine.engine.core.service.world.WorldService;
 
-import java.util.List;
 
-
-public class Engine implements Loggable {
-    private final long startupTime = System.currentTimeMillis();
-    private long since = 0;
-    private long elapsedTime = 0;
-    private long totalTime = 0;
-
+public class Engine extends SerializableRepository implements Renderable {
+    private final ClockRepository clock = new ClockRepository();
     private final EnvRepository envRepository = new EnvRepository();
     private final CameraService camera = new CameraService(this);
     private final WorldService world = new WorldService();
-    private final AudioService audioService = new AudioService();
-    private final MaterialService materialService = new MaterialService();
-    private final MeshService meshService = new MeshService();
-    private final ShaderService shaderService = new ShaderService();
-    private final TextureService textureService = new TextureService();
-    private final UBOService uboService = new UBOService();
-    private final ResourceService resources = new ResourceService(List.of(
-            audioService,
-            materialService,
-            meshService,
-            shaderService,
-            textureService,
-            uboService
-    ));
+    private final ResourceService resources = new ResourceService(clock);
+    private final ResourceLoader loader = new ResourceLoader(this);
 
+    @Override
     public void onInitialize() {
         resources.onInitialize();
         camera.onInitialize();
-        for (var sys : world.getWorld().getSystems()) {
-            ((ISystem) sys).setEngine(this);
+        loader.onInitialize();
+        for (var sys : world.getSystems()) {
+            sys.setEngine(this);
         }
     }
 
+    @Override
     public void tick() {
+        clock.tick();
         camera.tick();
-        resources.removeUnused(totalTime);
-        for (var sys : world.getWorld().getSystems()) {
-            ((ISystem) sys).tick();
-        }
+        resources.tick();
+        loader.tick();
+        world.getSystems().forEach(ISystem::tick);
     }
 
+    @Override
     public void render() {
-        long newSince = System.currentTimeMillis();
-        totalTime = newSince - startupTime;
-        elapsedTime += newSince - since;
-        since = newSince;
         world.getWorld().process();
-    }
-
-    public long getElapsedTime() {
-        return elapsedTime;
     }
 
     public void shutdown() {
         resources.shutdown();
-        world.getWorld().dispose();
-    }
-
-    public ResourceService getResources() {
-        return resources;
-    }
-
-    public WorldService getWorld() {
-        return world;
-    }
-
-    public float getTotalTime() {
-        return totalTime;
+        world.shutdown();
     }
 
     public void parse(String serialized) {
@@ -87,8 +60,30 @@ public class Engine implements Loggable {
         }
     }
 
-    public String serialize() {
-        return world.serialize().toString();
+    @Override
+    public JsonElement serializeData() {
+        JsonArray arr = new JsonArray();
+        arr.add(world.serialize().toString());
+        arr.add(camera.serialize().toString());
+        arr.add(loader.serialize().toString());
+        return arr;
+    }
+
+    @Override
+    protected void parseInternal(JsonElement data) {
+        JsonArray json = data.getAsJsonArray();
+        json.forEach(a -> {
+            JsonObject obj = a.getAsJsonObject();
+            if (world.isCompatible(obj)) {
+                world.parse(obj);
+            }
+            if (loader.isCompatible(obj)) {
+                loader.parse(obj);
+            }
+            if (camera.isCompatible(obj)) {
+                camera.parse(obj);
+            }
+        });
     }
 
     public CameraService getCameraService() {
@@ -97,5 +92,21 @@ public class Engine implements Loggable {
 
     public EnvRepository getInputRepository() {
         return envRepository;
+    }
+
+    public ResourceService getResources() {
+        return resources;
+    }
+
+    public WorldService getWorld() {
+        return world;
+    }
+
+    public ClockRepository getClock() {
+        return clock;
+    }
+
+    public ResourceLoader getLoader() {
+        return loader;
     }
 }

@@ -12,7 +12,7 @@ public class ButtonView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         if (labelWithId != null && onClick != null && ImGui.button(labelWithId)) {
             onClick.run();
         }

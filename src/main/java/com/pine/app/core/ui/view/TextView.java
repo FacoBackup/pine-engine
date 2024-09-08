@@ -9,7 +9,7 @@ public class TextView extends AbstractView {
     }
 
     @Override
-    protected void renderInternal() {
+    public void renderInternal() {
         if (innerText != null) {
             ImGui.text(getInnerText());
         }
