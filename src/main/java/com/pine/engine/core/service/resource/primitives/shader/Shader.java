@@ -44,9 +44,6 @@ public class Shader extends AbstractResource {
         GL46.glLinkProgram(program);
         GL46.glFlush();
 
-        extractUniforms(vertex);
-        extractUniforms(fragment);
-
         getLogger().info("Shader status {}", GL46.glGetError());
     }
 
@@ -65,35 +62,10 @@ public class Shader extends AbstractResource {
         return shader;
     }
 
-    private void extractUniforms(String code) {
-        Pattern uniformPattern = Pattern.compile("uniform(\\s+)(highp|mediump|lowp)?(\\s*)((\\w|_)+)((\\s|\\w|_)*);", Pattern.MULTILINE);
-        Matcher matcher = uniformPattern.matcher(code);
-
-        while (matcher.find()) {
-            String type = matcher.group(4);
-            String name = matcher.group(6).replace(" ", "").trim();
-
-            if (GLSLType.valueOfEnum(type) != null) {
-                uniforms.put(name, new UniformDTO(GLSLType.valueOfEnum(type), name, GL46.glGetUniformLocation(program, name)));
-                continue;
-            }
-
-            Pattern structPattern = Pattern.compile("struct\\s+" + type + "\\s*\\{.*?\\}", Pattern.DOTALL);
-            Matcher structMatcher = structPattern.matcher(code);
-            if (structMatcher.find()) {
-                String structCode = structMatcher.group();
-                String[] structLines = structCode.split("\n");
-                for (String line : structLines) {
-                    for (GLSLType glslType : GLSLType.values()) {
-                        if (line.contains(glslType.name())) {
-                            String[] parts = line.trim().split("\\s+");
-                            String fieldName = parts[parts.length - 1].replace(";", "").trim();
-                            uniforms.put(name, new UniformDTO(glslType, fieldName, name, GL46.glGetUniformLocation(program, name + "." + fieldName)));
-                        }
-                    }
-                }
-            }
-        }
+    public UniformDTO addUniformDeclaration(String name, GLSLType type) {
+        UniformDTO uniformDTO = new UniformDTO(type, name, GL46.glGetUniformLocation(program, name));
+        uniforms.put(name, uniformDTO);
+        return uniformDTO;
     }
 
     public Map<String, UniformDTO> getUniforms() {

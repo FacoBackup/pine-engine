@@ -1,6 +1,8 @@
 package com.pine.engine.core;
 
-public class EnvRepository {
+import com.pine.engine.core.service.loader.AbstractLoaderResponse;
+
+public class RuntimeRepository {
     private boolean forwardPressed = false;
     private boolean backwardPressed = false;
     private boolean leftPressed = false;
@@ -12,6 +14,29 @@ public class EnvRepository {
     private float mouseY = 0;
     private float viewportW = 0;
     private float viewportH = 0;
+
+    public String gridShaderId;
+    public String planeMeshId;
+    public String spriteShaderId;
+    public String visibilityShaderId;
+    public String toScreenShaderId;
+    public String downscaleShaderId;
+    public String bilateralBlurShaderId;
+    public String bokehShaderId;
+    public String irradianceShaderId;
+    public String prefilteredShaderId;
+    public String ssgiShaderId;
+    public String mbShaderId;
+    public String ssaoShaderId;
+    public String boxBlurShaderId;
+    public String directShadowsShaderId;
+    public String omniDirectShadowsShaderId;
+    public String compositionShaderId;
+    public String bloomShaderId;
+    public String lensShaderId;
+    public String gaussianShaderId;
+    public String upSamplingShaderId;
+    public String atmosphereShaderId;
 
     public boolean isForwardPressed() {
         return forwardPressed;

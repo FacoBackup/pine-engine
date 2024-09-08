@@ -2,17 +2,17 @@ package com.pine.app.editor.panels.viewport;
 
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.editor.EditorWindow;
-import com.pine.engine.core.EnvRepository;
+import com.pine.engine.core.RuntimeRepository;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 
 public class ViewportPanel extends AbstractWindowPanel {
-    private EnvRepository repo;
+    private RuntimeRepository repo;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        repo = ((EditorWindow) document.getWindow()).getEngine().getInputRepository();
+        repo = ((EditorWindow) document.getWindow()).getEngine().getRuntimeRepository();
     }
 
     @Override

@@ -14,6 +14,8 @@ import org.lwjgl.opengl.GL46;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
@@ -41,11 +43,26 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     @Override
     protected IResource addInternal(ShaderCreationData data) {
         if (data.absoluteId() != null) {
-            String vertex = new String(FSUtil.loadResource(data.vertex()));
-            String frag = new String(FSUtil.loadResource(data.fragment()));
+            String vertex = processIncludes(new String(FSUtil.loadResource(data.vertex())));
+            String frag = processIncludes(new String(FSUtil.loadResource(data.fragment())));
             return create(data.absoluteId(), new ShaderCreationData(vertex, frag, null));
         }
         return create(getId(), data);
+    }
+
+    private String processIncludes(String input) {
+        String pattern = "#include \"./(\\w+\\.glsl)\"";
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(input);
+
+        var result = new StringBuilder();
+        while (matcher.find()) {
+            String fileName = matcher.group(1);
+            String replacement = new String(FSUtil.loadResource(fileName));
+            matcher.appendReplacement(result, replacement);
+        }
+        matcher.appendTail(result);
+        return result.toString();
     }
 
     private Shader create(String id, ShaderCreationData data) {

@@ -31,10 +31,12 @@ public class ResourceLoader extends SerializableRepository implements Updatable 
     private final List<AbstractLoaderResponse> loadedResources = new ArrayList<>();
     private final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();
     private final ClockRepository clock;
+    private final Engine engine;
     private long sinceLastCleanup = 0;
 
     public ResourceLoader(Engine engine) {
         clock = engine.getClock();
+        this.engine = engine;
         resourceLoaders.add(new AudioLoader(engine));
         resourceLoaders.add(new TextureLoader(engine));
         resourceLoaders.add(new MeshLoader(engine));
@@ -137,6 +139,6 @@ public class ResourceLoader extends SerializableRepository implements Updatable 
 
     @Override
     public void onInitialize() {
-        load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
+        engine.getRuntimeRepository().planeMeshId = (load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true))).getInstanceId();
     }
 }

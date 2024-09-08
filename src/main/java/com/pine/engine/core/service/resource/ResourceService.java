@@ -2,7 +2,9 @@ package com.pine.engine.core.service.resource;
 
 import com.pine.common.Loggable;
 import com.pine.common.Updatable;
+import com.pine.engine.Engine;
 import com.pine.engine.core.ClockRepository;
+import com.pine.engine.core.RuntimeRepository;
 import com.pine.engine.core.service.resource.primitives.shader.ShaderCreationData;
 import com.pine.engine.core.service.resource.resource.*;
 
@@ -25,10 +27,12 @@ public class ResourceService implements Updatable, Loggable {
             new UBOService()
     );
     private final ClockRepository clock;
+    private final RuntimeRepository runtimeRepository;
     private long sinceLastCleanup = 0;
 
-    public ResourceService(ClockRepository clock) {
-        this.clock = clock;
+    public ResourceService(Engine engine) {
+        this.clock = engine.getClock();
+        this.runtimeRepository = engine.getRuntimeRepository();
     }
 
     public IResource addResource(ResourceCreationData data) {
@@ -131,25 +135,31 @@ public class ResourceService implements Updatable, Loggable {
 
     @Override
     public void onInitialize() {
-        addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite"));
-        addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILINEAR_DOWNSCALE.glsl", "downscale"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILATERAL_BLUR.glsl", "bilateralBlur"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOKEH.frag", "bokeh"));
-        addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/IRRADIANCE_MAP.frag", "irradiance"));
-        addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/PREFILTERED_MAP.frag", "prefiltered"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSGI.frag", "ssgi"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/MOTION_BLUR.frag", "mb"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSAO.frag", "ssao"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOX-BLUR.frag", "boxBlur"));
-        addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag", "directShadows"));
-        addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag", "omniDirectShadows"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/FRAME_COMPOSITION.frag", "composition"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BRIGHTNESS_FILTER.frag", "bloom"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/LENS_POST_PROCESSING.frag", "lens"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/GAUSSIAN.frag", "gaussian"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/UPSAMPLE_TENT.glsl", "upSampling"));
-        addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag", "atmosphere"));
+        runtimeRepository.spriteShaderId = addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite")).getId();
+        runtimeRepository.visibilityShaderId = addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility")).getId();
+        runtimeRepository.toScreenShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen")).getId();
+        runtimeRepository.downscaleShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILINEAR_DOWNSCALE.glsl", "downscale")).getId();
+        runtimeRepository.bilateralBlurShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILATERAL_BLUR.glsl", "bilateralBlur")).getId();
+        runtimeRepository.bokehShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOKEH.frag", "bokeh")).getId();
+        runtimeRepository.irradianceShaderId = addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/IRRADIANCE_MAP.frag", "irradiance")).getId();
+        runtimeRepository.prefilteredShaderId = addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/PREFILTERED_MAP.frag", "prefiltered")).getId();
+        runtimeRepository.ssgiShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSGI.frag", "ssgi")).getId();
+        runtimeRepository.mbShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/MOTION_BLUR.frag", "mb")).getId();
+        runtimeRepository.ssaoShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSAO.frag", "ssao")).getId();
+        runtimeRepository.boxBlurShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOX-BLUR.frag", "boxBlur")).getId();
+        runtimeRepository.directShadowsShaderId = addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag", "directShadows")).getId();
+        runtimeRepository.omniDirectShadowsShaderId = addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag", "omniDirectShadows")).getId();
+        runtimeRepository.compositionShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/FRAME_COMPOSITION.frag", "composition")).getId();
+        runtimeRepository.bloomShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BRIGHTNESS_FILTER.frag", "bloom")).getId();
+        runtimeRepository.lensShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/LENS_POST_PROCESSING.frag", "lens")).getId();
+        runtimeRepository.gaussianShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/GAUSSIAN.frag", "gaussian")).getId();
+        runtimeRepository.upSamplingShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/UPSAMPLE_TENT.glsl", "upSampling")).getId();
+        runtimeRepository.atmosphereShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag", "atmosphere")).getId();
+
+        runtimeRepository.gridShaderId = addResource(new ShaderCreationData("shaders/GRID.vert", "shaders/GRID.frag", "grid")).getId();
+    }
+
+    public IResource getById(String id) {
+        return resources.get(id);
     }
 }

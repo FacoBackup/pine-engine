@@ -6,7 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.common.Updatable;
 import com.pine.engine.Engine;
-import com.pine.engine.core.EnvRepository;
+import com.pine.engine.core.RuntimeRepository;
 import com.pine.engine.core.service.serialization.SerializableRepository;
 import org.joml.Vector3f;
 
@@ -16,7 +16,7 @@ import java.util.Map;
 public class CameraService extends SerializableRepository implements Updatable {
     private static final Gson GSON = new Gson();
     transient private final Engine engine;
-    transient private final EnvRepository envRepository;
+    transient private final RuntimeRepository runtimeRepository;
     private float pitch = 0.0f;
     private float yaw = -90.0f;
     private float sensitivity = 0.1f;
@@ -31,7 +31,7 @@ public class CameraService extends SerializableRepository implements Updatable {
 
     public CameraService(Engine engine) {
         this.engine = engine;
-        this.envRepository = engine.getInputRepository();
+        this.runtimeRepository = engine.getRuntimeRepository();
     }
 
     @Override
@@ -104,9 +104,9 @@ public class CameraService extends SerializableRepository implements Updatable {
 
     @Override
     public void tick() {
-        currentCamera.setViewportWidth(envRepository.getViewportW());
-        currentCamera.setViewportHeight(envRepository.getViewportH());
-        if (envRepository.isInputFocused()) {
+        currentCamera.setViewportWidth(runtimeRepository.getViewportW());
+        currentCamera.setViewportHeight(runtimeRepository.getViewportH());
+        if (runtimeRepository.isInputFocused()) {
             handleMouseInput();
             handleKeyboardInput();
             currentCamera.tick();
@@ -116,8 +116,8 @@ public class CameraService extends SerializableRepository implements Updatable {
     }
 
     private void handleMouseInput() {
-        float mouseX = envRepository.getMouseX();
-        float mouseY = envRepository.getMouseY();
+        float mouseX = runtimeRepository.getMouseX();
+        float mouseY = runtimeRepository.getMouseY();
 
         if (firstMouseMove) {
             lastMouseX = mouseX;
@@ -144,22 +144,22 @@ public class CameraService extends SerializableRepository implements Updatable {
         var forward = new Vector3f(direction).normalize();
         var right = direction.cross(currentCamera.getUp()).normalize(); // Right vector
         Vector3f position = currentCamera.getPosition();
-        if (envRepository.isForwardPressed()) {
+        if (runtimeRepository.isForwardPressed()) {
             position.add(forward.mul(movementSpeed * deltaTime)); // Move forward
         }
-        if (envRepository.isBackwardPressed()) {
+        if (runtimeRepository.isBackwardPressed()) {
             position.sub(forward.mul(movementSpeed * deltaTime)); // Move backward
         }
-        if (envRepository.isLeftPressed()) {
+        if (runtimeRepository.isLeftPressed()) {
             position.sub(right.mul(movementSpeed * deltaTime)); // Move left
         }
-        if (envRepository.isRightPressed()) {
+        if (runtimeRepository.isRightPressed()) {
             position.add(right.mul(movementSpeed * deltaTime)); // Move right
         }
-        if (envRepository.isUpPressed()) {
+        if (runtimeRepository.isUpPressed()) {
             position.add(currentCamera.getUp().mul(movementSpeed * deltaTime)); // Move up
         }
-        if (envRepository.isDownPressed()) {
+        if (runtimeRepository.isDownPressed()) {
             position.sub(currentCamera.getUp().mul(movementSpeed * deltaTime)); // Move down
         }
 

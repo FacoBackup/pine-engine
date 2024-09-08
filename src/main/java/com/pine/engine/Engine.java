@@ -6,8 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.common.Renderable;
 import com.pine.engine.core.ClockRepository;
-import com.pine.engine.core.EnvRepository;
-import com.pine.engine.core.components.system.ISystem;
+import com.pine.engine.core.ConfigurationRepository;
+import com.pine.engine.core.RuntimeRepository;
 import com.pine.engine.core.service.camera.CameraService;
 import com.pine.engine.core.service.loader.ResourceLoader;
 import com.pine.engine.core.service.resource.*;
@@ -16,21 +16,21 @@ import com.pine.engine.core.service.world.WorldService;
 
 
 public class Engine extends SerializableRepository implements Renderable {
-    private final ClockRepository clock = new ClockRepository();
-    private final EnvRepository envRepository = new EnvRepository();
+    transient private final ClockRepository clock = new ClockRepository();
+    transient private final RuntimeRepository runtimeRepository = new RuntimeRepository();
+    transient private ExecutionEnvironment env = ExecutionEnvironment.DEVELOPMENT;
     private final CameraService camera = new CameraService(this);
-    private final WorldService world = new WorldService();
-    private final ResourceService resources = new ResourceService(clock);
+    private final WorldService world = new WorldService(this);
+    private final ResourceService resources = new ResourceService(this);
     private final ResourceLoader loader = new ResourceLoader(this);
+    private final ConfigurationRepository config = new ConfigurationRepository();
 
     @Override
     public void onInitialize() {
         resources.onInitialize();
         camera.onInitialize();
         loader.onInitialize();
-        for (var sys : world.getSystems()) {
-            sys.setEngine(this);
-        }
+        world.onInitialize();
     }
 
     @Override
@@ -39,12 +39,12 @@ public class Engine extends SerializableRepository implements Renderable {
         camera.tick();
         resources.tick();
         loader.tick();
-        world.getSystems().forEach(ISystem::tick);
+        world.tick();
     }
 
     @Override
     public void render() {
-        world.getWorld().process();
+        world.render();
     }
 
     public void shutdown() {
@@ -90,8 +90,8 @@ public class Engine extends SerializableRepository implements Renderable {
         return camera;
     }
 
-    public EnvRepository getInputRepository() {
-        return envRepository;
+    public RuntimeRepository getRuntimeRepository() {
+        return runtimeRepository;
     }
 
     public ResourceService getResources() {
@@ -108,5 +108,17 @@ public class Engine extends SerializableRepository implements Renderable {
 
     public ResourceLoader getLoader() {
         return loader;
+    }
+
+    public ExecutionEnvironment getEnvironment() {
+        return env;
+    }
+
+    public void setEnvironment(ExecutionEnvironment env) {
+        this.env = env;
+    }
+
+    public ConfigurationRepository getConfigurationRepository() {
+        return config;
     }
 }
