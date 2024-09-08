@@ -55,7 +55,8 @@ public class FilesHeaderPanel extends AbstractPanel {
 
     @Override
     public void tick() {
-        importFile.setVisible(filesContext.getSelectedFile() != null);
+        FileInfoDTO selected = filesContext.getSelectedFile();
+        importFile.setVisible(selected != null && !selected.isDirectory());
     }
 
     private void importFile() {

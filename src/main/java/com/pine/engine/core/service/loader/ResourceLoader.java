@@ -4,17 +4,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.common.Updatable;
+import com.pine.common.messages.MessageCollector;
+import com.pine.common.messages.MessageSeverity;
 import com.pine.engine.Engine;
 import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.service.loader.impl.AudioLoader;
 import com.pine.engine.core.service.loader.impl.MeshLoader;
 import com.pine.engine.core.service.loader.impl.TextureLoader;
+import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.AudioLoaderResponse;
-import com.pine.engine.core.service.loader.impl.info.ILoaderExtraInfo;
+import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.engine.core.service.loader.impl.response.TextureLoaderResponse;
 import com.pine.engine.core.service.serialization.SerializableRepository;
 import jakarta.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,29 +40,40 @@ public class ResourceLoader extends SerializableRepository implements Updatable 
         resourceLoaders.add(new MeshLoader(engine));
     }
 
-    public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable ILoaderExtraInfo extraInfo) {
+    public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
         var dto = new LoadRequest(path, isStaticResource, extraInfo);
         final String extension = path.substring(path.lastIndexOf(".") + 1);
         AbstractLoaderResponse metadata = null;
         for (AbstractResourceLoader i : resourceLoaders) {
             if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
-                if (extraInfo != null && extraInfo.getResourceType() == i.getResourceType()) {
-                    metadata = i.load(dto, extraInfo);
-                } else {
-                    metadata = i.load(dto, null);
-                }
-
-                if (metadata.isLoaded()) {
-                    loadedResources.add(metadata);
-                }
+                metadata = process(extraInfo, i, dto);
             }
         }
 
         if (metadata == null) {
             metadata = new AbstractLoaderResponse(false, path) {
             };
+            MessageCollector.pushMessage("No loader was found for extension " + path.split("\\.")[1], MessageSeverity.ERROR);
         }
 
+        return metadata;
+    }
+
+    @NotNull
+    private AbstractLoaderResponse process(@Nullable AbstractLoaderExtraInfo extraInfo, AbstractResourceLoader i, LoadRequest dto) {
+        AbstractLoaderResponse metadata;
+        if (extraInfo != null && extraInfo.getResourceType() == i.getResourceType()) {
+            metadata = i.load(dto, extraInfo);
+        } else {
+            metadata = i.load(dto, null);
+        }
+
+        if (metadata.isLoaded()) {
+            if (extraInfo == null || !extraInfo.isSilentOperation()) {
+                MessageCollector.pushMessage("File was successfully loaded", MessageSeverity.SUCCESS);
+            }
+            loadedResources.add(metadata);
+        }
         return metadata;
     }
 
@@ -122,6 +137,6 @@ public class ResourceLoader extends SerializableRepository implements Updatable 
 
     @Override
     public void onInitialize() {
-        load("plane.glb", true, null);
+        load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
     }
 }

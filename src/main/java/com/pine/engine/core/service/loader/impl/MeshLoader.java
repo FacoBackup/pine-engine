@@ -3,7 +3,7 @@ package com.pine.engine.core.service.loader.impl;
 import com.pine.engine.Engine;
 import com.pine.engine.core.service.loader.AbstractLoaderResponse;
 import com.pine.engine.core.service.loader.AbstractResourceLoader;
-import com.pine.engine.core.service.loader.impl.info.ILoaderExtraInfo;
+import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshInstanceMetadata;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
@@ -27,7 +27,7 @@ public class MeshLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public AbstractLoaderResponse load(LoadRequest resource, @Nullable ILoaderExtraInfo extraInfo) {
+    public AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
         var extra = (MeshLoaderExtraInfo) extraInfo;
         try {
             List<MeshInstanceMetadata> meshes = new ArrayList<>();

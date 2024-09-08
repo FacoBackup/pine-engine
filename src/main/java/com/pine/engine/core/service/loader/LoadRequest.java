@@ -1,6 +1,6 @@
 package com.pine.engine.core.service.loader;
 
-import com.pine.engine.core.service.loader.impl.info.ILoaderExtraInfo;
+import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 
-public record LoadRequest(String path, boolean isStaticResource, ILoaderExtraInfo extraInfo) {
+public record LoadRequest(String path, boolean isStaticResource, AbstractLoaderExtraInfo extraInfo) {
 }

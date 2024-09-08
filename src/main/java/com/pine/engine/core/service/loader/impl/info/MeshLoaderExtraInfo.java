@@ -2,7 +2,7 @@ package com.pine.engine.core.service.loader.impl.info;
 
 import com.pine.engine.core.service.resource.resource.ResourceType;
 
-public final class MeshLoaderExtraInfo implements ILoaderExtraInfo {
+public final class MeshLoaderExtraInfo extends AbstractLoaderExtraInfo {
     private Integer meshIndex;
     private boolean instantiateHierarchy;
 

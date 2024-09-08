@@ -4,7 +4,7 @@ import com.pine.engine.Engine;
 import com.pine.engine.core.service.loader.AbstractLoaderResponse;
 import com.pine.engine.core.service.loader.AbstractResourceLoader;
 import com.pine.engine.core.service.loader.LoadRequest;
-import com.pine.engine.core.service.loader.impl.info.ILoaderExtraInfo;
+import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.TextureLoaderResponse;
 import com.pine.engine.core.service.resource.resource.ResourceType;
 import jakarta.annotation.Nullable;
@@ -18,7 +18,7 @@ public class TextureLoader extends AbstractResourceLoader {
     }
 
     @Override
-    public AbstractLoaderResponse load(LoadRequest resource, @Nullable ILoaderExtraInfo extraInfo) {
+    public AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
         return new TextureLoaderResponse(false, resource.path(), Collections.emptyList());
     }
 

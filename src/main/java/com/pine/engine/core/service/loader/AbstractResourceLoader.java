@@ -2,7 +2,7 @@ package com.pine.engine.core.service.loader;
 
 import com.pine.common.Loggable;
 import com.pine.engine.Engine;
-import com.pine.engine.core.service.loader.impl.info.ILoaderExtraInfo;
+import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.resource.resource.ResourceType;
 import jakarta.annotation.Nullable;
 import org.lwjgl.BufferUtils;
@@ -17,7 +17,7 @@ public abstract class AbstractResourceLoader implements Loggable {
         this.engine = engine;
     }
 
-    public abstract AbstractLoaderResponse load(LoadRequest resource, @Nullable ILoaderExtraInfo extraInfo);
+    public abstract AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo);
 
     public abstract ResourceType getResourceType();
 

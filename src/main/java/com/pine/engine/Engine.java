@@ -27,6 +27,7 @@ public class Engine extends SerializableRepository implements Renderable {
     public void onInitialize() {
         resources.onInitialize();
         camera.onInitialize();
+        loader.onInitialize();
         for (var sys : world.getSystems()) {
             sys.setEngine(this);
         }
