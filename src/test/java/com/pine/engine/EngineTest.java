@@ -3,9 +3,9 @@ package com.pine.engine;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.pine.engine.core.components.component.MeshComponent;
-import com.pine.engine.core.components.component.TransformationComponent;
-import com.pine.engine.core.service.world.WorldService;
+import com.pine.engine.core.component.MeshComponent;
+import com.pine.engine.core.component.TransformationComponent;
+import com.pine.engine.core.service.world.SystemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class EngineTest {
         assertNotNull(element);
         assertFalse(element.isEmpty());
         JsonObject serviceData = element.getAsJsonObject();
-        if (Objects.equals(serviceData.get(CLASS_KEY).getAsString(), WorldService.class.getName())) {
+        if (Objects.equals(serviceData.get(CLASS_KEY).getAsString(), SystemService.class.getName())) {
             JsonArray entitiesArray = serviceData.get(DATA_KEY).getAsJsonArray();
             assertEquals(expectedSize, entitiesArray.size());
         }

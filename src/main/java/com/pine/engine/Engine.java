@@ -7,23 +7,36 @@ import com.google.gson.JsonObject;
 import com.pine.common.Renderable;
 import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.ConfigurationRepository;
+import com.pine.engine.core.modules.EngineExternalModule;
+import com.pine.engine.tools.ExecutionEnvironment;
 import com.pine.engine.core.RuntimeRepository;
 import com.pine.engine.core.service.camera.CameraService;
 import com.pine.engine.core.service.loader.ResourceLoader;
 import com.pine.engine.core.service.resource.*;
 import com.pine.engine.core.service.serialization.SerializableRepository;
-import com.pine.engine.core.service.world.WorldService;
+import com.pine.engine.core.service.world.SystemService;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class Engine extends SerializableRepository implements Renderable {
     transient private final ClockRepository clock = new ClockRepository();
     transient private final RuntimeRepository runtimeRepository = new RuntimeRepository();
+    private final Map<String, EngineExternalModule<?>> modules = new HashMap<>();
     transient private ExecutionEnvironment env = ExecutionEnvironment.DEVELOPMENT;
     private final CameraService camera = new CameraService(this);
-    private final WorldService world = new WorldService(this);
+    private final SystemService world = new SystemService(this);
     private final ResourceService resources = new ResourceService(this);
     private final ResourceLoader loader = new ResourceLoader(this);
     private final ConfigurationRepository config = new ConfigurationRepository();
+
+    public Engine(List<EngineExternalModule<?>> modules){
+        modules.forEach(m -> {
+            this.modules.put(m.getClass().getName(), m);
+        });
+    }
 
     @Override
     public void onInitialize() {
@@ -98,7 +111,7 @@ public class Engine extends SerializableRepository implements Renderable {
         return resources;
     }
 
-    public WorldService getWorld() {
+    public SystemService getWorld() {
         return world;
     }
 
@@ -120,5 +133,9 @@ public class Engine extends SerializableRepository implements Renderable {
 
     public ConfigurationRepository getConfigurationRepository() {
         return config;
+    }
+
+    public <T extends EngineExternalModule<?>> getModules() {
+        return modules;
     }
 }

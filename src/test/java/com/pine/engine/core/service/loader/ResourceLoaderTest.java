@@ -6,9 +6,8 @@ import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.resource.resource.AbstractResource;
-import com.pine.engine.core.service.world.WorldService;
+import com.pine.engine.core.service.world.SystemService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -34,8 +33,8 @@ class ResourceLoaderTest {
         ResourceService resourceServiceMock = Mockito.mock(ResourceService.class);
         Mockito.doReturn(resourceServiceMock).when(engine).getResources();
 
-        WorldService worldService = Mockito.spy(new WorldService());
-        Mockito.doReturn(worldService).when(engine).getWorld();
+        SystemService systemService = Mockito.spy(new SystemService());
+        Mockito.doReturn(systemService).when(engine).getWorld();
 
         AbstractResource resourceMock = Mockito.mock(AbstractResource.class);
         Mockito.doReturn(resourceMock).when(resourceServiceMock).addResource(Mockito.any());
