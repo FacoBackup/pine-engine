@@ -1,12 +1,11 @@
 package com.pine.engine.core.component;
 
-import com.artemis.Component;
 import com.pine.engine.core.service.serialization.SerializableResource;
 
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractComponent extends Component implements SerializableResource {
+public abstract class AbstractComponent implements SerializableResource {
     private String instanceId;
 
     public AbstractComponent() {
