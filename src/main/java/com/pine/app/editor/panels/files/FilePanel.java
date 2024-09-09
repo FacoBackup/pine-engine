@@ -5,22 +5,17 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.TableView;
 import com.pine.app.editor.EditorWindow;
 import com.pine.common.fs.FileInfoDTO;
-import com.pine.engine.core.service.loader.ResourceLoader;
+import com.pine.engine.core.service.loader.ResourceLoaderService;
 import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import imgui.ImGui;
 import imgui.ImVec4;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiTableBgTarget;
-import imgui.flag.ImGuiTableRowFlags;
-
-import static com.pine.app.core.ui.theme.ThemeUtil.ACCENT_COLOR;
 
 public class FilePanel extends AbstractPanel {
     private final FileInfoDTO item;
     private final ImVec4 color = new ImVec4();
     private String iconCodepoint;
     private FilesContext context;
-    private ResourceLoader loader;
+    private ResourceLoaderService loader;
 
     public FilePanel(FileInfoDTO item) {
         super();
@@ -30,7 +25,7 @@ public class FilePanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        loader = ((EditorWindow) document.getWindow()).getEngine().getLoader();
+        loader = ((EditorWindow) document.getWindow()).getEngine().getResourceLoaderService();
         context = (FilesContext) getContext();
         iconCodepoint = item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint;
         if (item.isDirectory()) {

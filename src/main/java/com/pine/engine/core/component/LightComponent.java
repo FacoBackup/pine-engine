@@ -1,10 +1,9 @@
 package com.pine.engine.core.component;
 
 import com.pine.engine.core.type.LightType;
+import org.joml.Matrix4f;
 
 import java.util.List;
-
-import org.joml.*;
 
 public class LightComponent extends AbstractComponent {
     private boolean needsRepackaging = false;

@@ -6,13 +6,12 @@ import com.pine.app.core.ui.ViewDocument;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.ui.panel.DockPanel;
 import com.pine.common.ContextService;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageCollector;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
-import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiWindowFlags;
@@ -39,7 +38,7 @@ public abstract class AbstractWindow implements Renderable {
     private final DockPanel root = new DockPanel();
     private boolean isVisible = true;
 
-    @Inject
+    @InjectBean
     public WindowService windowService;
 
     public AbstractWindow() {

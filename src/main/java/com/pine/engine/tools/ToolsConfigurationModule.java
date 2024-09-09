@@ -1,6 +1,8 @@
-package com.pine.engine.core;
+package com.pine.engine.tools;
 
-public class ConfigurationRepository {
+import com.pine.engine.core.modules.EngineExternalModule;
+
+public class ToolsConfigurationModule implements EngineExternalModule {
     // Grid settings
     public float gridColor = 0.3f;
     public float gridScale = 1f;
@@ -18,4 +20,6 @@ public class ConfigurationRepository {
     public boolean showOutline = true;
     public float outlineWidth = 0.75f;
     public float[] outlineColor = {1f, 0.5f, 0f};
+
+    public ExecutionEnvironment environment = ExecutionEnvironment.DEVELOPMENT;
 }

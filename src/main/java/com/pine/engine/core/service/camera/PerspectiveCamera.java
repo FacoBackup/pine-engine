@@ -1,8 +1,6 @@
 package com.pine.engine.core.service.camera;
 
-import org.joml.*;
-
-import java.lang.Math;
+import org.joml.Vector3f;
 
 public class PerspectiveCamera extends AbstractCamera {
     private float fieldOfView = 67;

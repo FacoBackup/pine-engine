@@ -3,8 +3,6 @@ package com.pine.engine.core.service.resource.primitives.shader;
 import com.pine.engine.core.service.resource.resource.ResourceCreationData;
 import com.pine.engine.core.service.resource.resource.ResourceType;
 
-import java.util.Objects;
-
 public final class ShaderCreationData extends ResourceCreationData {
     private final String vertex;
     private final String fragment;

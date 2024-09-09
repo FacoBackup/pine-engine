@@ -2,14 +2,14 @@ package com.pine.app.editor.panels.files;
 
 import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 import com.pine.common.fs.FSService;
 
 public class FilesPanel extends AbstractWindowPanel {
-    @Inject
+    @InjectBean
     public FSService service;
 
-    @Inject
+    @InjectBean
     public ProjectService projectService;
 
     public FilesPanel() {

@@ -6,7 +6,7 @@ import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.resource.resource.AbstractResource;
-import com.pine.engine.core.service.world.SystemService;
+import com.pine.engine.core.service.SystemService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ import static com.pine.engine.core.service.resource.ResourceService.MAX_TIMEOUT;
 
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-class ResourceLoaderTest {
+class ResourceLoaderServiceTest {
     private final Engine engine = Mockito.mock(Engine.class);
 
     @Test
@@ -28,13 +28,13 @@ class ResourceLoaderTest {
         clock.totalTime = MAX_TIMEOUT;
         Mockito.doReturn(clock).when(engine).getClock();
 
-        ResourceLoader loader = new ResourceLoader(engine);
+        ResourceLoaderService loader = new ResourceLoaderService(engine);
 
         ResourceService resourceServiceMock = Mockito.mock(ResourceService.class);
-        Mockito.doReturn(resourceServiceMock).when(engine).getResources();
+        Mockito.doReturn(resourceServiceMock).when(engine).getResourcesService();
 
         SystemService systemService = Mockito.spy(new SystemService());
-        Mockito.doReturn(systemService).when(engine).getWorld();
+        Mockito.doReturn(systemService).when(engine).getSystemsService();
 
         AbstractResource resourceMock = Mockito.mock(AbstractResource.class);
         Mockito.doReturn(resourceMock).when(resourceServiceMock).addResource(Mockito.any());

@@ -1,8 +1,8 @@
 package com.pine.engine.core;
 
-import com.pine.common.Updatable;
+import com.pine.common.EngineComponent;
 
-public class ClockRepository implements Updatable {
+public class ClockRepository implements EngineComponent {
     public final long startupTime = System.currentTimeMillis();
     public long since = 0;
     public long elapsedTime = 0;

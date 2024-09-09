@@ -1,8 +1,9 @@
 package com.pine.common;
 
-public interface Updatable {
+public interface EngineComponent extends Initializable {
     void tick();
 
+    @Override
     default void onInitialize() {
     }
 }

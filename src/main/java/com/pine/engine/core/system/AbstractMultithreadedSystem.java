@@ -1,18 +1,27 @@
 package com.pine.engine.core.system;
 
-import com.pine.engine.Engine;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractMultithreadedSystem extends AbstractSystem {
-    private final Thread thread = new Thread(this::tickInternal);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private boolean isInitiated;
+
+    protected int getTickIntervalMilliseconds() {
+        return 16;
+    }
 
     @Override
-    final public void process() {
-        // ONLY FOR RENDERING
+    final public void render() {
     }
 
     @Override
     final public void tick() {
-        thread.start();
+        if (!isInitiated) {
+            isInitiated = true;
+            scheduler.scheduleAtFixedRate(this::tickInternal, 0, getTickIntervalMilliseconds(), TimeUnit.MILLISECONDS);
+        }
     }
 
     /**

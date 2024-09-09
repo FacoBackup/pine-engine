@@ -1,8 +1,8 @@
 package com.pine.engine.core.service.resource.primitives.ubo;
 
+import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.resource.AbstractResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.service.resource.primitives.GLSLType;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;

@@ -4,7 +4,7 @@ import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.InputView;
 import com.pine.app.editor.EditorWindow;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 import com.pine.common.fs.FSService;
 import com.pine.common.fs.FileInfoDTO;
 import com.pine.engine.Engine;
@@ -13,7 +13,7 @@ import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import java.io.File;
 
 public class FilesHeaderPanel extends AbstractPanel {
-    @Inject
+    @InjectBean
     public FSService fsService;
     private Engine engine;
     private ButtonView importFile;
@@ -62,7 +62,7 @@ public class FilesHeaderPanel extends AbstractPanel {
     private void importFile() {
         FileInfoDTO file = filesContext.getSelectedFile();
         if (file != null && !file.isDirectory()) {
-            engine.getLoader().load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+            engine.getResourceLoaderService().load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
         }
     }
 

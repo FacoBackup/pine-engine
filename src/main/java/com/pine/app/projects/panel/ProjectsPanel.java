@@ -5,7 +5,7 @@ import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.ListView;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class ProjectsPanel extends AbstractWindowPanel {
     private final List<ProjectDTO> data = new ArrayList<>();
 
-    @Inject
+    @InjectBean
     public ProjectService projectService;
 
     @Override

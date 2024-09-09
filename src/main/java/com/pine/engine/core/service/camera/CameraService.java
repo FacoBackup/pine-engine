@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.common.Updatable;
+import com.pine.common.EngineComponent;
 import com.pine.engine.Engine;
 import com.pine.engine.core.RuntimeRepository;
 import com.pine.engine.core.service.serialization.SerializableRepository;
@@ -13,7 +13,7 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CameraService extends SerializableRepository implements Updatable {
+public class CameraService extends SerializableRepository implements EngineComponent {
     private static final Gson GSON = new Gson();
     transient private final Engine engine;
     transient private final RuntimeRepository runtimeRepository;

@@ -1,20 +1,19 @@
 package com.pine.engine;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.common.Renderable;
 import com.pine.engine.core.ClockRepository;
-import com.pine.engine.core.ConfigurationRepository;
-import com.pine.engine.core.modules.EngineExternalModule;
-import com.pine.engine.tools.ExecutionEnvironment;
 import com.pine.engine.core.RuntimeRepository;
+import com.pine.engine.core.modules.EngineExternalModule;
+import com.pine.engine.core.service.SystemService;
 import com.pine.engine.core.service.camera.CameraService;
-import com.pine.engine.core.service.loader.ResourceLoader;
-import com.pine.engine.core.service.resource.*;
+import com.pine.engine.core.service.entity.EntityService;
+import com.pine.engine.core.service.loader.ResourceLoaderService;
+import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.serialization.SerializableRepository;
-import com.pine.engine.core.service.world.SystemService;
+import jakarta.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,63 +21,56 @@ import java.util.Map;
 
 
 public class Engine extends SerializableRepository implements Renderable {
+    transient private final Map<String, EngineExternalModule> modules = new HashMap<>();
     transient private final ClockRepository clock = new ClockRepository();
     transient private final RuntimeRepository runtimeRepository = new RuntimeRepository();
-    private final Map<String, EngineExternalModule<?>> modules = new HashMap<>();
-    transient private ExecutionEnvironment env = ExecutionEnvironment.DEVELOPMENT;
-    private final CameraService camera = new CameraService(this);
-    private final SystemService world = new SystemService(this);
-    private final ResourceService resources = new ResourceService(this);
-    private final ResourceLoader loader = new ResourceLoader(this);
-    private final ConfigurationRepository config = new ConfigurationRepository();
+    private final CameraService cameraService = new CameraService(this);
+    private final SystemService systemsService = new SystemService(this, modules);
+    private final ResourceService resourcesService = new ResourceService(this);
+    private final ResourceLoaderService resourceLoaderService = new ResourceLoaderService(this);
+    private final EntityService entityService = new EntityService();
 
-    public Engine(List<EngineExternalModule<?>> modules){
+    public Engine(List<EngineExternalModule> modules) {
         modules.forEach(m -> {
             this.modules.put(m.getClass().getName(), m);
         });
     }
 
+    public Engine() {
+    }
+
     @Override
     public void onInitialize() {
-        resources.onInitialize();
-        camera.onInitialize();
-        loader.onInitialize();
-        world.onInitialize();
+        resourcesService.onInitialize();
+        cameraService.onInitialize();
+        resourceLoaderService.onInitialize();
+        systemsService.onInitialize();
     }
 
     @Override
     public void tick() {
         clock.tick();
-        camera.tick();
-        resources.tick();
-        loader.tick();
-        world.tick();
+        cameraService.tick();
+        resourcesService.tick();
+        resourceLoaderService.tick();
+        systemsService.tick();
     }
 
     @Override
     public void render() {
-        world.render();
+        systemsService.render();
     }
 
     public void shutdown() {
-        resources.shutdown();
-        world.shutdown();
-    }
-
-    public void parse(String serialized) {
-        try {
-            world.parse(new Gson().fromJson(serialized, JsonObject.class));
-        } catch (Exception e) {
-            getLogger().error("Failed to parse world", e);
-        }
+        resourcesService.shutdown();
     }
 
     @Override
     public JsonElement serializeData() {
         JsonArray arr = new JsonArray();
-        arr.add(world.serialize().toString());
-        arr.add(camera.serialize().toString());
-        arr.add(loader.serialize().toString());
+        arr.add(entityService.serialize().toString());
+        arr.add(cameraService.serialize().toString());
+        arr.add(resourceLoaderService.serialize().toString());
         return arr;
     }
 
@@ -87,55 +79,48 @@ public class Engine extends SerializableRepository implements Renderable {
         JsonArray json = data.getAsJsonArray();
         json.forEach(a -> {
             JsonObject obj = a.getAsJsonObject();
-            if (world.isCompatible(obj)) {
-                world.parse(obj);
+            if (entityService.isCompatible(obj)) {
+                entityService.parse(obj);
             }
-            if (loader.isCompatible(obj)) {
-                loader.parse(obj);
+            if (resourceLoaderService.isCompatible(obj)) {
+                resourceLoaderService.parse(obj);
             }
-            if (camera.isCompatible(obj)) {
-                camera.parse(obj);
+            if (cameraService.isCompatible(obj)) {
+                cameraService.parse(obj);
             }
         });
     }
 
     public CameraService getCameraService() {
-        return camera;
+        return cameraService;
     }
 
     public RuntimeRepository getRuntimeRepository() {
         return runtimeRepository;
     }
 
-    public ResourceService getResources() {
-        return resources;
+    public ResourceService getResourcesService() {
+        return resourcesService;
     }
 
-    public SystemService getWorld() {
-        return world;
+    public SystemService getSystemsService() {
+        return systemsService;
     }
 
     public ClockRepository getClock() {
         return clock;
     }
 
-    public ResourceLoader getLoader() {
-        return loader;
+    public ResourceLoaderService getResourceLoaderService() {
+        return resourceLoaderService;
     }
 
-    public ExecutionEnvironment getEnvironment() {
-        return env;
+    @Nullable
+    public EngineExternalModule getModule(Class<? extends EngineExternalModule> clazz) {
+        return modules.get(clazz.getName());
     }
 
-    public void setEnvironment(ExecutionEnvironment env) {
-        this.env = env;
-    }
-
-    public ConfigurationRepository getConfigurationRepository() {
-        return config;
-    }
-
-    public <T extends EngineExternalModule<?>> getModules() {
-        return modules;
+    public EntityService getEntityService() {
+        return entityService;
     }
 }

@@ -3,7 +3,7 @@ package com.pine.engine.core.service.loader;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.common.Updatable;
+import com.pine.common.EngineComponent;
 import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;
 import com.pine.engine.Engine;
@@ -11,9 +11,9 @@ import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.service.loader.impl.AudioLoader;
 import com.pine.engine.core.service.loader.impl.MeshLoader;
 import com.pine.engine.core.service.loader.impl.TextureLoader;
+import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.AudioLoaderResponse;
-import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.engine.core.service.loader.impl.response.TextureLoaderResponse;
 import com.pine.engine.core.service.serialization.SerializableRepository;
@@ -27,14 +27,14 @@ import java.util.Objects;
 
 import static com.pine.engine.core.service.resource.ResourceService.MAX_TIMEOUT;
 
-public class ResourceLoader extends SerializableRepository implements Updatable {
+public class ResourceLoaderService extends SerializableRepository implements EngineComponent {
     private final List<AbstractLoaderResponse> loadedResources = new ArrayList<>();
     private final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();
     private final ClockRepository clock;
     private final Engine engine;
     private long sinceLastCleanup = 0;
 
-    public ResourceLoader(Engine engine) {
+    public ResourceLoaderService(Engine engine) {
         clock = engine.getClock();
         this.engine = engine;
         resourceLoaders.add(new AudioLoader(engine));

@@ -24,7 +24,7 @@ public abstract class AbstractResourceLoader implements Loggable {
     @Nullable
     protected ByteBuffer loadStaticResource(String path) {
         try {
-            try (InputStream inputStream = ResourceLoader.class.getClassLoader().getResourceAsStream(path)) {
+            try (InputStream inputStream = ResourceLoaderService.class.getClassLoader().getResourceAsStream(path)) {
                 if(inputStream != null) {
                     byte[] bytes = inputStream.readAllBytes();
                     ByteBuffer byteBuffer = BufferUtils.createByteBuffer(bytes.length + 1);

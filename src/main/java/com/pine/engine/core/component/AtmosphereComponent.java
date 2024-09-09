@@ -1,9 +1,8 @@
 package com.pine.engine.core.component;
 
 import com.pine.engine.core.type.AtmosphereType;
-import org.joml.*;
+import org.joml.Vector3f;
 
-import java.lang.Math;
 import java.util.List;
 
 public class AtmosphereComponent extends AbstractComponent {

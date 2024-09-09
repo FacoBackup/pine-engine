@@ -3,11 +3,11 @@ package com.pine.engine.core.service.loader.impl;
 import com.pine.engine.Engine;
 import com.pine.engine.core.service.loader.AbstractLoaderResponse;
 import com.pine.engine.core.service.loader.AbstractResourceLoader;
+import com.pine.engine.core.service.loader.LoadRequest;
 import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshInstanceMetadata;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
-import com.pine.engine.core.service.loader.LoadRequest;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.engine.core.service.resource.resource.ResourceType;
 import jakarta.annotation.Nullable;
@@ -111,7 +111,7 @@ public class MeshLoader extends AbstractResourceLoader {
                     uvs[i * 2 + 1] = nUV.get(i).y();
                 }
             }
-            resourceId = engine.getResources().addResource(new MeshCreationData(vertices, indices, normals, uvs)).getId();
+            resourceId = engine.getResourcesService().addResource(new MeshCreationData(vertices, indices, normals, uvs)).getId();
         }
         return new MeshInstanceMetadata(mesh.mName().dataString(), resource.path(), index, resourceId);
     }

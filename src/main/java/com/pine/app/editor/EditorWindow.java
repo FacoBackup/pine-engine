@@ -7,17 +7,19 @@ import com.pine.app.editor.panels.console.ConsolePanel;
 import com.pine.app.editor.panels.files.FilesPanel;
 import com.pine.app.editor.panels.inspector.InspectorPanel;
 import com.pine.app.editor.panels.viewport.ViewportPanel;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 import com.pine.engine.Engine;
+import com.pine.engine.tools.ToolsConfigurationModule;
+import com.pine.engine.tools.ToolsModule;
 import imgui.flag.ImGuiDir;
 
 import java.util.List;
 
 public class EditorWindow extends AbstractWindow {
-    @Inject
+    @InjectBean
     public ProjectService projectService;
 
-    public final Engine engine = new Engine();
+    public final Engine engine = new Engine(List.of(new ToolsModule(), new ToolsConfigurationModule()));
 
     @Override
     protected List<DockDTO> getDockSpaces() {

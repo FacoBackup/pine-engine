@@ -1,7 +1,7 @@
 package com.pine.engine.core.service.resource;
 
+import com.pine.common.EngineComponent;
 import com.pine.common.Loggable;
-import com.pine.common.Updatable;
 import com.pine.engine.Engine;
 import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.RuntimeRepository;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ResourceService implements Updatable, Loggable {
+public class ResourceService implements EngineComponent, Loggable {
     public static final long MAX_TIMEOUT = 5 * 60 * 1000;
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();

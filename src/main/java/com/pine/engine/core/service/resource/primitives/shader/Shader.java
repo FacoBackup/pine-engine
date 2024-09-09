@@ -1,14 +1,12 @@
 package com.pine.engine.core.service.resource.primitives.shader;
 
+import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.resource.AbstractResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.service.resource.primitives.GLSLType;
 import org.lwjgl.opengl.GL46;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Shader extends AbstractResource {
     private int program;

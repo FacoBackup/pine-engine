@@ -27,7 +27,7 @@ public class ContextService {
 
         Field[] fields = instance.getClass().getFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(Inject.class)) {
+            if (field.isAnnotationPresent(InjectBean.class)) {
                 Object dependency = context.getBean(field.getType());
                 field.setAccessible(true);
                 try {

@@ -5,12 +5,12 @@ import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.InputView;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 
 import java.util.function.Consumer;
 
 public class ProjectRowPanel extends AbstractPanel {
-    @Inject
+    @InjectBean
     public ProjectService projectService;
 
     private final ProjectDTO dto;

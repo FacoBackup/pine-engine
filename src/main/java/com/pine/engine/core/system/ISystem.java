@@ -1,18 +1,20 @@
 package com.pine.engine.core.system;
 
-import com.pine.engine.Engine;
+import com.pine.common.Initializable;
+import com.pine.common.Renderable;
 
-public interface ISystem {
+public interface ISystem extends Initializable, Renderable {
     /**
      * Logic and state update
      */
-    default void tick(){
+    default void tick() {
     }
 
-    /**
-     * Actual rendering
-     */
-    void process();
+    @Override
+    default void render() {
+    }
 
-    void setEngine(Engine engine);
+    @Override
+    default void onInitialize() {
+    }
 }
