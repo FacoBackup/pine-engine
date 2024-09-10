@@ -7,6 +7,4 @@ public class RigidBodyComponent extends AbstractComponent{
     public List<Class<? extends AbstractComponent>> getDependencies() {
         return List.of(TransformationComponent.class, PhysicsColliderComponent.class);
     }
-
-    // TODO
 }
