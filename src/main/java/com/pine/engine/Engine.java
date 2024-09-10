@@ -5,6 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.common.Renderable;
 import com.pine.engine.core.ClockRepository;
+import com.pine.engine.core.EngineConfiguration;
+import com.pine.engine.core.FramebufferRepository;
 import com.pine.engine.core.RuntimeRepository;
 import com.pine.engine.core.modules.EngineExternalModule;
 import com.pine.engine.core.service.SystemService;
@@ -24,6 +26,8 @@ public class Engine extends SerializableRepository implements Renderable {
     transient private final Map<String, EngineExternalModule> modules = new HashMap<>();
     transient private final ClockRepository clock = new ClockRepository();
     transient private final RuntimeRepository runtimeRepository = new RuntimeRepository();
+    transient private final FramebufferRepository framebufferRepository = new FramebufferRepository(this);
+    private final EngineConfiguration configuration = new EngineConfiguration();
     private final CameraService cameraService = new CameraService(this);
     private final SystemService systemsService = new SystemService(this, modules);
     private final ResourceService resourcesService = new ResourceService(this);
@@ -45,6 +49,7 @@ public class Engine extends SerializableRepository implements Renderable {
         cameraService.onInitialize();
         resourceLoaderService.onInitialize();
         systemsService.onInitialize();
+        framebufferRepository.onInitialize();
     }
 
     @Override
@@ -122,5 +127,9 @@ public class Engine extends SerializableRepository implements Renderable {
 
     public EntityService getEntityService() {
         return entityService;
+    }
+
+    public EngineConfiguration getConfiguration() {
+        return configuration;
     }
 }

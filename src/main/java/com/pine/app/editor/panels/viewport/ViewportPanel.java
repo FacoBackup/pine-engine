@@ -33,5 +33,7 @@ public class ViewportPanel extends AbstractWindowPanel {
         repo.setMouseY(ImGui.getMousePosY());
         repo.setViewportH(size.y);
         repo.setViewportW(size.x);
+        repo.windowW = document.getWindow().getDisplayW();
+        repo.windowH = document.getWindow().getDisplayH();
     }
 }

@@ -1,4 +1,4 @@
-package com.pine.engine.core.service.resource.primitives.shader;
+package com.pine.engine.core.gl.shader;
 
 import com.pine.engine.core.service.resource.resource.ResourceCreationData;
 import com.pine.engine.core.service.resource.resource.ResourceType;

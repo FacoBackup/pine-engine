@@ -13,6 +13,9 @@ public class RuntimeRepository {
     private float viewportW = 0;
     private float viewportH = 0;
 
+    public int windowW = 0;
+    public int windowH = 0;
+
     public String gridShaderId;
     public String planeMeshId;
     public String spriteShaderId;
@@ -123,4 +126,5 @@ public class RuntimeRepository {
     public void setViewportH(float viewportH) {
         this.viewportH = viewportH;
     }
+
 }

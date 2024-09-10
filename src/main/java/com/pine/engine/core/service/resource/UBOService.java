@@ -1,8 +1,8 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.engine.core.service.resource.primitives.ubo.UBO;
-import com.pine.engine.core.service.resource.primitives.ubo.UBOCreationData;
-import com.pine.engine.core.service.resource.primitives.ubo.UBORuntimeData;
+import com.pine.engine.core.gl.ubo.UBO;
+import com.pine.engine.core.gl.ubo.UBOCreationData;
+import com.pine.engine.core.gl.ubo.UBORuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;

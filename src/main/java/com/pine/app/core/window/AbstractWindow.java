@@ -34,6 +34,8 @@ public abstract class AbstractWindow implements Renderable {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
+    private int displayW = 1920;
+    private int displayH = 1080;
     private final ViewDocument viewDocument = new ViewDocument(this);
     private final DockPanel root = new DockPanel();
     private boolean isVisible = true;
@@ -92,7 +94,9 @@ public abstract class AbstractWindow implements Renderable {
 
             GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
             final GLFWVidMode vidmode = Objects.requireNonNull(GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()));
-            GLFW.glfwSetWindowPos(handle, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
+            displayW = vidmode.width();
+            displayH = vidmode.height();
+            GLFW.glfwSetWindowPos(handle, (displayW - pWidth.get(0)) / 2, (displayH - pHeight.get(0)) / 2);
         }
 
         GLFW.glfwMakeContextCurrent(handle);
@@ -231,4 +235,12 @@ public abstract class AbstractWindow implements Renderable {
     public abstract int getWindowHeight();
 
     public abstract boolean isFullScreen();
+
+    public int getDisplayW() {
+        return displayW;
+    }
+
+    public int getDisplayH() {
+        return displayH;
+    }
 }

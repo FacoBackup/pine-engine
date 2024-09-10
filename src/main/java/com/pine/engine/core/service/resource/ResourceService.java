@@ -5,7 +5,7 @@ import com.pine.common.Loggable;
 import com.pine.engine.Engine;
 import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.RuntimeRepository;
-import com.pine.engine.core.service.resource.primitives.shader.ShaderCreationData;
+import com.pine.engine.core.gl.shader.ShaderCreationData;
 import com.pine.engine.core.service.resource.resource.*;
 
 import java.util.ArrayList;
