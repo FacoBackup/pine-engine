@@ -136,4 +136,8 @@ public class Engine extends SerializableRepository implements EngineInjectable, 
     public CoreResourceRepository getCoreResourceRepository() {
         return coreResourceRepository;
     }
+
+    public int getFinalFrame() {
+        return coreResourceRepository.finalFrameSampler;
+    }
 }
