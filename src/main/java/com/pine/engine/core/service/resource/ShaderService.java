@@ -1,18 +1,23 @@
 package com.pine.engine.core.service.resource;
 
 import com.pine.common.fs.FSUtil;
+import com.pine.engine.Engine;
+import com.pine.engine.core.service.EngineInjectable;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
-import com.pine.engine.core.gl.shader.Shader;
-import com.pine.engine.core.gl.shader.ShaderCreationData;
-import com.pine.engine.core.gl.shader.ShaderRuntimeData;
-import com.pine.engine.core.gl.shader.UniformDTO;
+import com.pine.engine.core.service.resource.shader.Shader;
+import com.pine.engine.core.service.resource.shader.ShaderCreationData;
+import com.pine.engine.core.service.resource.shader.ShaderRuntimeData;
+import com.pine.engine.core.service.resource.shader.UniformDTO;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
+import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +25,10 @@ import java.util.regex.Pattern;
 public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
     private String currentShaderId;
+
+    public ShaderService(Engine engine) {
+        super(engine);
+    }
 
     @Override
     protected void bindInternal(Shader instance, ShaderRuntimeData data) {
@@ -43,21 +52,22 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     @Override
     protected IResource addInternal(ShaderCreationData data) {
         if (data.absoluteId() != null) {
-            String vertex = processIncludes(new String(FSUtil.loadResource(data.vertex())));
-            String frag = processIncludes(new String(FSUtil.loadResource(data.fragment())));
+            String vertex = processIncludes(data.vertex());
+            String frag = processIncludes(data.fragment());
             return create(data.absoluteId(), new ShaderCreationData(vertex, frag, null));
         }
         return create(getId(), data);
     }
 
-    private String processIncludes(String input) {
+    protected String processIncludes(String file) {
+        String input = new String(FSUtil.loadResource(file));
         String pattern = "#include \"./(\\w+\\.glsl)\"";
         Pattern regex = Pattern.compile(pattern);
         Matcher matcher = regex.matcher(input);
 
         var result = new StringBuilder();
         while (matcher.find()) {
-            String fileName = matcher.group(1);
+            String fileName = "shaders" + File.separator + matcher.group(1);
             String replacement = new String(FSUtil.loadResource(fileName));
             matcher.appendReplacement(result, replacement);
         }

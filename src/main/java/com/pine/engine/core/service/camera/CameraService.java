@@ -7,16 +7,17 @@ import com.google.gson.JsonObject;
 import com.pine.common.EngineComponent;
 import com.pine.engine.Engine;
 import com.pine.engine.core.RuntimeRepository;
+import com.pine.engine.core.service.EngineInjectable;
 import com.pine.engine.core.service.serialization.SerializableRepository;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CameraService extends SerializableRepository implements EngineComponent {
+public class CameraService extends SerializableRepository implements EngineInjectable, EngineComponent {
     private static final Gson GSON = new Gson();
     transient private final Engine engine;
-    transient private final RuntimeRepository runtimeRepository;
+    transient private RuntimeRepository runtimeRepository;
     private float pitch = 0.0f;
     private float yaw = -90.0f;
     private float sensitivity = 0.1f;
@@ -31,11 +32,11 @@ public class CameraService extends SerializableRepository implements EngineCompo
 
     public CameraService(Engine engine) {
         this.engine = engine;
-        this.runtimeRepository = engine.getRuntimeRepository();
     }
 
     @Override
     public void onInitialize() {
+        this.runtimeRepository = engine.getRuntimeRepository();
         defaultOrthographicCamera = createNewCamera(true);
         defaultPerspectiveCamera = createNewCamera(false);
         currentCamera = getCamera(defaultPerspectiveCamera);

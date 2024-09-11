@@ -2,17 +2,22 @@ package com.pine.app.editor.panels.viewport;
 
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.editor.EditorWindow;
+import com.pine.engine.Engine;
 import com.pine.engine.core.RuntimeRepository;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 
 public class ViewportPanel extends AbstractWindowPanel {
     private RuntimeRepository repo;
+    private Engine engine;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        repo = ((EditorWindow) document.getWindow()).getEngine().getRuntimeRepository();
+        engine = ((EditorWindow) document.getWindow()).getEngine();
+        repo = engine.getRuntimeRepository();
+        padding.x = 0;
+        padding.y = 0;
     }
 
     @Override
@@ -21,19 +26,27 @@ public class ViewportPanel extends AbstractWindowPanel {
     }
 
     @Override
+    public void tick() {
+        engine.render();
+    }
+
+    @Override
+    public void renderInternal() {
+        ImGui.image(engine.getCoreResourceRepository().finalFrameSampler, size.x , size.y - FRAME_SIZE);
+    }
+
+    @Override
     protected void afterWindow() {
-        repo.setInputFocused(ImGui.isWindowFocused() && ImGui.isMouseClicked(0));
-        repo.setForwardPressed(ImGui.isKeyPressed(ImGuiKey.W));
-        repo.setBackwardPressed(ImGui.isKeyPressed(ImGuiKey.S));
-        repo.setLeftPressed(ImGui.isKeyPressed(ImGuiKey.A));
-        repo.setRightPressed(ImGui.isKeyPressed(ImGuiKey.D));
-        repo.setUpPressed(ImGui.isKeyPressed(ImGuiKey.Space));
-        repo.setDownPressed(ImGui.isKeyPressed(ImGuiKey.LeftShift));
-        repo.setMouseX(ImGui.getMousePosX());
-        repo.setMouseY(ImGui.getMousePosY());
-        repo.setViewportH(size.y);
-        repo.setViewportW(size.x);
-        repo.windowW = document.getWindow().getDisplayW();
-        repo.windowH = document.getWindow().getDisplayH();
+        repo.inputFocused = ImGui.isWindowFocused() && ImGui.isMouseClicked(0);
+        repo.forwardPressed = ImGui.isKeyPressed(ImGuiKey.W);
+        repo.backwardPressed = ImGui.isKeyPressed(ImGuiKey.S);
+        repo.leftPressed = ImGui.isKeyPressed(ImGuiKey.A);
+        repo.rightPressed = ImGui.isKeyPressed(ImGuiKey.D);
+        repo.upPressed = ImGui.isKeyPressed(ImGuiKey.Space);
+        repo.downPressed = ImGui.isKeyPressed(ImGuiKey.LeftShift);
+        repo.mouseX = ImGui.getMousePosX();
+        repo.mouseY = ImGui.getMousePosY();
+        repo.viewportH = size.y;
+        repo.viewportW = size.x;
     }
 }

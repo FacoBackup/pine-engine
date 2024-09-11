@@ -1,4 +1,4 @@
-package com.pine.engine.core.gl.ubo;
+package com.pine.engine.core.service.resource.ubo;
 
 import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.resource.AbstractResource;

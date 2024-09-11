@@ -1,8 +1,10 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.engine.core.gl.ubo.UBO;
-import com.pine.engine.core.gl.ubo.UBOCreationData;
-import com.pine.engine.core.gl.ubo.UBORuntimeData;
+import com.pine.engine.Engine;
+import com.pine.engine.core.service.EngineInjectable;
+import com.pine.engine.core.service.resource.ubo.UBO;
+import com.pine.engine.core.service.resource.ubo.UBOCreationData;
+import com.pine.engine.core.service.resource.ubo.UBORuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
@@ -13,6 +15,10 @@ import java.nio.ByteBuffer;
 // TODO - Runtime data should be object containing new values for UBO
 public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBOCreationData> {
     private UBO currentUBO;
+
+    public UBOService(Engine engine) {
+        super(engine);
+    }
 
     @Override
     protected void bindInternal(UBO instance, UBORuntimeData data) {

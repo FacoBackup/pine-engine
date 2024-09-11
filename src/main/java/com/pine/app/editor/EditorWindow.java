@@ -19,7 +19,19 @@ public class EditorWindow extends AbstractWindow {
     @InjectBean
     public ProjectService projectService;
 
-    public final Engine engine = new Engine(List.of(new ToolsModule(), new ToolsConfigurationModule()));
+    private Engine engine;
+
+    @Override
+    public void onInitialize() {
+        super.onInitialize();
+        engine = new Engine(List.of(new ToolsModule(), new ToolsConfigurationModule()), displayW, displayH);
+        engine.onInitialize();
+    }
+
+    @Override
+    public void tick() {
+        engine.tick();
+    }
 
     @Override
     protected List<DockDTO> getDockSpaces() {
@@ -54,22 +66,6 @@ public class EditorWindow extends AbstractWindow {
                 dockDown,
                 dockDownRight
         );
-    }
-
-    @Override
-    public void onInitialize() {
-        super.onInitialize();
-        engine.onInitialize();
-    }
-
-    @Override
-    public void tick() {
-        engine.tick();
-    }
-
-    @Override
-    public void renderInternal() {
-        engine.render();
     }
 
     public int getWindowWidth() {

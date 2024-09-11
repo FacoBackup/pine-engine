@@ -1,4 +1,4 @@
-package com.pine.engine.core.gl.ubo;
+package com.pine.engine.core.service.resource.ubo;
 
 import com.pine.engine.core.service.resource.resource.ResourceCreationData;
 import com.pine.engine.core.service.resource.resource.ResourceType;
@@ -6,7 +6,7 @@ import com.pine.engine.core.service.resource.resource.ResourceType;
 import java.util.List;
 import java.util.Objects;
 
-public final class UBOCreationData extends ResourceCreationData {
+public final class UBOCreationData implements ResourceCreationData {
     private final List<UBOData> data;
     private final String blockName;
 

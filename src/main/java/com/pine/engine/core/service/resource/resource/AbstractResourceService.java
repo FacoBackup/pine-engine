@@ -1,11 +1,20 @@
 package com.pine.engine.core.service.resource.resource;
 
+import com.pine.common.Initializable;
 import com.pine.common.Loggable;
+import com.pine.engine.Engine;
+import com.pine.engine.core.service.EngineInjectable;
 
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractResourceService<T extends IResource, R extends IResourceRuntimeData, C extends ResourceCreationData> implements Loggable {
+public abstract class AbstractResourceService<T extends IResource, R extends IResourceRuntimeData, C extends ResourceCreationData> implements Loggable, EngineInjectable {
+
+    protected final Engine engine;
+
+    public AbstractResourceService(Engine engine) {
+        this.engine = engine;
+    }
 
     public void bind(IResource instance, IResourceRuntimeData data) {
         bindInternal((T) instance, (R) data);

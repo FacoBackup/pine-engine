@@ -101,7 +101,7 @@ public class AbstractView implements View {
     }
 
     @Override
-    final public void render() {
+     public void render() {
         tick();
         if (!visible) {
             return;

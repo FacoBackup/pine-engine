@@ -1,28 +1,35 @@
-package com.pine.engine.core.gl;
+package com.pine.engine.core.service.resource.fbo;
 
 import com.pine.engine.core.EngineUtils;
+import com.pine.engine.core.service.resource.resource.AbstractResource;
+import com.pine.engine.core.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FBO {
+public class FBO extends AbstractResource {
     public final int width;
     public final int height;
     private final int FBO;
-    private int RBO;
-    private int depthSampler;
+    private Integer RBO = null;
+    private Integer depthSampler = null;
     private final List<Integer> colors = new ArrayList<>();
     private final List<Integer> attachments = new ArrayList<>();
     private final float[] resolution = new float[2];
 
     public FBO(int width, int height) {
+        super(null);
         this.width = width;
         this.height = height;
         this.resolution[0] = width;
         this.resolution[1] = height;
         this.FBO = GL46.glGenFramebuffers();
+    }
+
+    public int getFBO() {
+        return FBO;
     }
 
     public void startMapping(boolean noClearing) {
@@ -33,16 +40,12 @@ public class FBO {
         }
     }
 
-    public int getDepthSampler() {
+    public Integer getDepthSampler() {
         return depthSampler;
     }
 
-    public int getRBO() {
+    public Integer getRBO() {
         return RBO;
-    }
-
-    public void stopMapping() {
-        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
     }
 
     public float[] getResolution() {
@@ -53,7 +56,7 @@ public class FBO {
         return colors;
     }
 
-    public FBO depthTexture() {
+    public void depthTexture() {
         use();
         this.depthSampler = EngineUtils.createTexture(
                 this.width,
@@ -77,17 +80,15 @@ public class FBO {
                 this.depthSampler,
                 0
         );
-        return this;
     }
 
-    public FBO depthTest() {
+    public void depthTest() {
         use();
         this.RBO = GL46.glGenRenderbuffers();
         GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, this.RBO);
         GL46.glRenderbufferStorage(GL46.GL_RENDERBUFFER, GL46.GL_DEPTH_COMPONENT24, this.width, this.height);
         GL46.glFramebufferRenderbuffer(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_ATTACHMENT, GL46.GL_RENDERBUFFER, this.RBO);
 
-        return this;
     }
 
     public FBO texture() {
@@ -131,5 +132,10 @@ public class FBO {
 
     public void stop() {
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.FBO;
     }
 }

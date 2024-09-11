@@ -1,9 +1,5 @@
 package com.pine.common;
 
-public interface EngineComponent extends Initializable {
+public interface EngineComponent {
     void tick();
-
-    @Override
-    default void onInitialize() {
-    }
 }

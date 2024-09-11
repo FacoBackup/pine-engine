@@ -5,7 +5,8 @@ import com.pine.common.Loggable;
 import com.pine.engine.Engine;
 import com.pine.engine.core.ClockRepository;
 import com.pine.engine.core.RuntimeRepository;
-import com.pine.engine.core.gl.shader.ShaderCreationData;
+import com.pine.engine.core.service.EngineInjectable;
+import com.pine.engine.core.service.resource.shader.ShaderCreationData;
 import com.pine.engine.core.service.resource.resource.*;
 
 import java.util.ArrayList;
@@ -14,25 +15,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ResourceService implements EngineComponent, Loggable {
+public class ResourceService implements Loggable, EngineInjectable, EngineComponent {
     public static final long MAX_TIMEOUT = 5 * 60 * 1000;
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();
     private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
-    private final List<AbstractResourceService<? extends IResource, ? extends IResourceRuntimeData, ? extends ResourceCreationData>> implementations = List.of(
-            new AudioService(),
-            new MeshService(),
-            new ShaderService(),
-            new TextureService(),
-            new UBOService()
-    );
+    private final List<AbstractResourceService<?, ?, ?>> implementations = new ArrayList<>();
     private final ClockRepository clock;
-    private final RuntimeRepository runtimeRepository;
     private long sinceLastCleanup = 0;
 
     public ResourceService(Engine engine) {
+        implementations.add(new AudioService(engine));
+        implementations.add(new MeshService(engine));
+        implementations.add(new ShaderService(engine));
+        implementations.add(new TextureService(engine));
+        implementations.add(new UBOService(engine));
+        implementations.add(new FBOService(engine));
+
         this.clock = engine.getClock();
-        this.runtimeRepository = engine.getRuntimeRepository();
     }
 
     public IResource addResource(ResourceCreationData data) {
@@ -67,6 +67,7 @@ public class ResourceService implements EngineComponent, Loggable {
                 i.remove(resource);
             }
         }
+        resources.remove(id);
     }
 
     public <T extends IResource, R extends IResourceRuntimeData> void bind(T instance, R data) {
@@ -113,50 +114,8 @@ public class ResourceService implements EngineComponent, Loggable {
         }
     }
 
-    public AudioService getAudioService() {
-        return (AudioService) this.implementations.getFirst();
-    }
-
-    public MeshService getMeshService() {
-        return (MeshService) this.implementations.get(1);
-    }
-
-    public ShaderService getShaderService() {
-        return (ShaderService) this.implementations.get(2);
-    }
-
-    public TextureService getTextureService() {
-        return (TextureService) this.implementations.get(3);
-    }
-
-    public UBOService getUBOService() {
-        return (UBOService) this.implementations.get(4);
-    }
-
-    @Override
-    public void onInitialize() {
-        runtimeRepository.spriteShaderId = addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite")).getId();
-        runtimeRepository.visibilityShaderId = addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility")).getId();
-        runtimeRepository.toScreenShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen")).getId();
-        runtimeRepository.downscaleShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILINEAR_DOWNSCALE.glsl", "downscale")).getId();
-        runtimeRepository.bilateralBlurShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILATERAL_BLUR.glsl", "bilateralBlur")).getId();
-        runtimeRepository.bokehShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOKEH.frag", "bokeh")).getId();
-        runtimeRepository.irradianceShaderId = addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/IRRADIANCE_MAP.frag", "irradiance")).getId();
-        runtimeRepository.prefilteredShaderId = addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/PREFILTERED_MAP.frag", "prefiltered")).getId();
-        runtimeRepository.ssgiShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSGI.frag", "ssgi")).getId();
-        runtimeRepository.mbShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/MOTION_BLUR.frag", "mb")).getId();
-        runtimeRepository.ssaoShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSAO.frag", "ssao")).getId();
-        runtimeRepository.boxBlurShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOX-BLUR.frag", "boxBlur")).getId();
-        runtimeRepository.directShadowsShaderId = addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag", "directShadows")).getId();
-        runtimeRepository.omniDirectShadowsShaderId = addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag", "omniDirectShadows")).getId();
-        runtimeRepository.compositionShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/FRAME_COMPOSITION.frag", "composition")).getId();
-        runtimeRepository.bloomShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BRIGHTNESS_FILTER.frag", "bloom")).getId();
-        runtimeRepository.lensShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/LENS_POST_PROCESSING.frag", "lens")).getId();
-        runtimeRepository.gaussianShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/GAUSSIAN.frag", "gaussian")).getId();
-        runtimeRepository.upSamplingShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/UPSAMPLE_TENT.glsl", "upSampling")).getId();
-        runtimeRepository.atmosphereShaderId = addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag", "atmosphere")).getId();
-
-        runtimeRepository.gridShaderId = addResource(new ShaderCreationData("shaders/GRID.vert", "shaders/GRID.frag", "grid")).getId();
+    public List<AbstractResourceService<?, ?, ?>> getImplementations() {
+        return implementations;
     }
 
     public IResource getById(String id) {

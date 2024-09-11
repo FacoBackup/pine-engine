@@ -8,6 +8,7 @@ import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;
 import com.pine.engine.Engine;
 import com.pine.engine.core.ClockRepository;
+import com.pine.engine.core.service.EngineInjectable;
 import com.pine.engine.core.service.loader.impl.AudioLoader;
 import com.pine.engine.core.service.loader.impl.MeshLoader;
 import com.pine.engine.core.service.loader.impl.TextureLoader;
@@ -27,16 +28,14 @@ import java.util.Objects;
 
 import static com.pine.engine.core.service.resource.ResourceService.MAX_TIMEOUT;
 
-public class ResourceLoaderService extends SerializableRepository implements EngineComponent {
+public class ResourceLoaderService extends SerializableRepository implements EngineInjectable, EngineComponent {
     private final List<AbstractLoaderResponse> loadedResources = new ArrayList<>();
     private final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();
     private final ClockRepository clock;
-    private final Engine engine;
     private long sinceLastCleanup = 0;
 
     public ResourceLoaderService(Engine engine) {
         clock = engine.getClock();
-        this.engine = engine;
         resourceLoaders.add(new AudioLoader(engine));
         resourceLoaders.add(new TextureLoader(engine));
         resourceLoaders.add(new MeshLoader(engine));
@@ -135,10 +134,5 @@ public class ResourceLoaderService extends SerializableRepository implements Eng
                 }
             });
         }
-    }
-
-    @Override
-    public void onInitialize() {
-        engine.getRuntimeRepository().planeMeshId = (load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true))).getInstanceId();
     }
 }

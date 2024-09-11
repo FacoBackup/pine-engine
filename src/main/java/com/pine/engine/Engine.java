@@ -4,11 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.common.Renderable;
-import com.pine.engine.core.ClockRepository;
-import com.pine.engine.core.EngineConfiguration;
-import com.pine.engine.core.FramebufferRepository;
-import com.pine.engine.core.RuntimeRepository;
+import com.pine.engine.core.*;
 import com.pine.engine.core.modules.EngineExternalModule;
+import com.pine.engine.core.service.EngineInjectable;
 import com.pine.engine.core.service.SystemService;
 import com.pine.engine.core.service.camera.CameraService;
 import com.pine.engine.core.service.entity.EntityService;
@@ -22,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Engine extends SerializableRepository implements Renderable {
+public class Engine extends SerializableRepository implements EngineInjectable, Renderable {
     transient private final Map<String, EngineExternalModule> modules = new HashMap<>();
     transient private final ClockRepository clock = new ClockRepository();
-    transient private final RuntimeRepository runtimeRepository = new RuntimeRepository();
-    transient private final FramebufferRepository framebufferRepository = new FramebufferRepository(this);
+    transient private final RuntimeRepository runtimeRepository;
+    transient private final CoreResourceRepository coreResourceRepository = new CoreResourceRepository(this);
     private final EngineConfiguration configuration = new EngineConfiguration();
     private final CameraService cameraService = new CameraService(this);
     private final SystemService systemsService = new SystemService(this, modules);
@@ -34,13 +32,15 @@ public class Engine extends SerializableRepository implements Renderable {
     private final ResourceLoaderService resourceLoaderService = new ResourceLoaderService(this);
     private final EntityService entityService = new EntityService();
 
-    public Engine(List<EngineExternalModule> modules) {
+    public Engine(List<EngineExternalModule> modules, int displayW, int displayH) {
+        this(displayW, displayH);
         modules.forEach(m -> {
             this.modules.put(m.getClass().getName(), m);
         });
     }
 
-    public Engine() {
+    public Engine(int displayW, int displayH) {
+        runtimeRepository = new RuntimeRepository(displayW, displayH);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Engine extends SerializableRepository implements Renderable {
         cameraService.onInitialize();
         resourceLoaderService.onInitialize();
         systemsService.onInitialize();
-        framebufferRepository.onInitialize();
+        coreResourceRepository.onInitialize();
     }
 
     @Override
@@ -131,5 +131,9 @@ public class Engine extends SerializableRepository implements Renderable {
 
     public EngineConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public CoreResourceRepository getCoreResourceRepository() {
+        return coreResourceRepository;
     }
 }

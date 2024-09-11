@@ -34,8 +34,8 @@ public abstract class AbstractWindow implements Renderable {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
-    private int displayW = 1920;
-    private int displayH = 1080;
+    protected int displayW = 1920;
+    protected int displayH = 1080;
     private final ViewDocument viewDocument = new ViewDocument(this);
     private final DockPanel root = new DockPanel();
     private boolean isVisible = true;
@@ -235,12 +235,4 @@ public abstract class AbstractWindow implements Renderable {
     public abstract int getWindowHeight();
 
     public abstract boolean isFullScreen();
-
-    public int getDisplayW() {
-        return displayW;
-    }
-
-    public int getDisplayH() {
-        return displayH;
-    }
 }
