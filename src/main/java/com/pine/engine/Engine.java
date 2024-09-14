@@ -1,13 +1,11 @@
 package com.pine.engine;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.pine.common.Renderable;
 import com.pine.engine.core.*;
 import com.pine.engine.core.modules.EngineExternalModule;
 import com.pine.engine.core.repository.*;
-import com.pine.engine.core.service.SystemService;
+import com.pine.engine.core.service.LightService;
+import com.pine.engine.core.service.system.SystemService;
+import com.pine.engine.core.service.TransformationService;
 import com.pine.engine.core.service.camera.CameraService;
 import com.pine.engine.core.service.entity.EntityService;
 import com.pine.engine.core.service.loader.ResourceLoaderService;
@@ -17,7 +15,7 @@ import com.pine.engine.core.EngineDependency;
 
 import java.util.List;
 
-public class Engine extends SerializableRepository implements Renderable {
+public class Engine {
     public static final String GLSL_VERSION = "#version 410";
     public static final int MAX_LIGHTS = 310;
 
@@ -29,6 +27,9 @@ public class Engine extends SerializableRepository implements Renderable {
 
     @EngineDependency
     public ModulesService modules;
+
+    @EngineDependency
+    public EngineRepository engineRepository;
 
     @EngineDependency
     public ClockRepository clock;
@@ -57,53 +58,24 @@ public class Engine extends SerializableRepository implements Renderable {
     @EngineDependency
     public EntityService entityService;
 
+    @EngineDependency
+    public TransformationService transformationService;
+
+    @EngineDependency
+    public LightService lightService;
+
     public Engine(int displayW, int displayH) {
         this.displayW = displayW;
         this.displayH = displayH;
     }
 
-    @Override
-    public void tick() {
-        clock.tick();
-        cameraService.tick();
-        resourcesService.tick();
-        resourceLoaderService.tick();
-        systemsService.tick();
-    }
-
-    @Override
     public void render() {
+        clock.tick();
         systemsService.render();
     }
 
     public void shutdown() {
         resourcesService.shutdown();
-    }
-
-    @Override
-    public JsonElement serializeData() {
-        JsonArray arr = new JsonArray();
-        arr.add(entityService.serialize().toString());
-        arr.add(cameraService.serialize().toString());
-        arr.add(resourceLoaderService.serialize().toString());
-        return arr;
-    }
-
-    @Override
-    protected void parseInternal(JsonElement data) {
-        JsonArray json = data.getAsJsonArray();
-        json.forEach(a -> {
-            JsonObject obj = a.getAsJsonObject();
-            if (entityService.isCompatible(obj)) {
-                entityService.parse(obj);
-            }
-            if (resourceLoaderService.isCompatible(obj)) {
-                resourceLoaderService.parse(obj);
-            }
-            if (cameraService.isCompatible(obj)) {
-                cameraService.parse(obj);
-            }
-        });
     }
 
     public CameraService getCameraService() {
@@ -148,5 +120,17 @@ public class Engine extends SerializableRepository implements Renderable {
 
     public void addModules(List<EngineExternalModule> modules) {
         this.modules.addModules(modules);
+    }
+
+    public EngineRepository getEngineRepository() {
+        return engineRepository;
+    }
+
+    public TransformationService getTransformationService() {
+        return transformationService;
+    }
+
+    public LightService getLightService() {
+        return lightService;
     }
 }

@@ -1,7 +1,7 @@
 package com.pine.engine.core.modules;
 
 import com.pine.common.Initializable;
-import com.pine.engine.core.system.AbstractSystem;
+import com.pine.engine.core.service.system.AbstractSystem;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.pine.engine.core.system.impl;
+package com.pine.engine.core.service.system.impl;
 
-import com.pine.engine.core.system.AbstractSystem;
+import com.pine.engine.core.service.system.AbstractSystem;
 
 public class PostProcessingSystem extends AbstractSystem {
 

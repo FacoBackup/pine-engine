@@ -5,7 +5,7 @@ import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.EngineInjector;
 import com.pine.engine.core.modules.EngineExternalModule;
-import com.pine.engine.core.service.SystemService;
+import com.pine.engine.core.service.system.SystemService;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

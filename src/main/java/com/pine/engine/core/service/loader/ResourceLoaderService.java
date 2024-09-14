@@ -1,23 +1,15 @@
 package com.pine.engine.core.service.loader;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.pine.common.Updatable;
 import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;
-import com.pine.engine.Engine;
-import com.pine.engine.core.repository.ClockRepository;
+import com.pine.engine.core.repository.ResourceLoaderRepository;
+import com.pine.engine.core.service.AbstractMultithreadedService;
 import com.pine.engine.core.service.loader.impl.AudioLoader;
 import com.pine.engine.core.service.loader.impl.MeshLoader;
 import com.pine.engine.core.service.loader.impl.TextureLoader;
 import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.info.LoadRequest;
 import com.pine.engine.core.service.loader.impl.response.AbstractLoaderResponse;
-import com.pine.engine.core.service.loader.impl.response.AudioLoaderResponse;
-import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
-import com.pine.engine.core.service.loader.impl.response.TextureLoaderResponse;
-import com.pine.engine.core.service.serialization.SerializableRepository;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import jakarta.annotation.Nullable;
@@ -26,18 +18,16 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static com.pine.engine.core.service.resource.ResourceService.MAX_TIMEOUT;
 
 @EngineInjectable
-public class ResourceLoaderService extends SerializableRepository implements Updatable {
-    private final List<AbstractLoaderResponse> loadedResources = new ArrayList<>();
-    private final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();
-    private long sinceLastCleanup = 0;
-
+public class ResourceLoaderService extends AbstractMultithreadedService {
     @EngineDependency
     public AudioLoader implAudioLoader;
+
+    @EngineDependency
+    public ResourceLoaderRepository repository;
 
     @EngineDependency
     public TextureLoader implTextureLoader;
@@ -45,16 +35,13 @@ public class ResourceLoaderService extends SerializableRepository implements Upd
     @EngineDependency
     public MeshLoader implMeshLoader;
 
-    @EngineDependency
-    public ClockRepository clock;
-
     public List<AbstractResourceLoader> getResourceLoaders() {
-        if (resourceLoaders.isEmpty()) {
-            resourceLoaders.add(implAudioLoader);
-            resourceLoaders.add(implTextureLoader);
-            resourceLoaders.add(implMeshLoader);
+        if (repository.resourceLoaders.isEmpty()) {
+            repository.resourceLoaders.add(implAudioLoader);
+            repository.resourceLoaders.add(implTextureLoader);
+            repository.resourceLoaders.add(implMeshLoader);
         }
-        return resourceLoaders;
+        return repository.resourceLoaders;
     }
 
     public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
@@ -90,50 +77,23 @@ public class ResourceLoaderService extends SerializableRepository implements Upd
             if (extraInfo == null || !extraInfo.isSilentOperation()) {
                 MessageCollector.pushMessage("File was successfully loaded", MessageSeverity.SUCCESS);
             }
-            loadedResources.add(metadata);
+            repository.loadedResources.add(metadata);
         }
         return metadata;
     }
 
     @Override
-    protected void parseInternal(JsonElement data) {
-        data.getAsJsonArray().forEach(a -> {
-            JsonObject obj = a.getAsJsonObject();
-            AbstractLoaderResponse instance = null;
-            if (Objects.equals(obj.get(CLASS_KEY).getAsString(), TextureLoaderResponse.class.getName())) {
-                instance = new TextureLoaderResponse();
-            } else if (Objects.equals(obj.get(CLASS_KEY).getAsString(), MeshLoaderResponse.class.getName())) {
-                instance = new MeshLoaderResponse();
-            } else if (Objects.equals(obj.get(CLASS_KEY).getAsString(), AudioLoaderResponse.class.getName())) {
-                instance = new AudioLoaderResponse();
-            }
-
-            if (instance != null) {
-                instance.parse(obj);
-                loadedResources.add(instance);
-            }
-        });
+    protected int getTickIntervalMilliseconds() {
+        return MAX_TIMEOUT;
     }
 
     @Override
-    public JsonElement serializeData() {
-        JsonArray jsonElements = new JsonArray();
-        loadedResources.forEach(a -> {
-            jsonElements.add(a.serialize());
+    protected void tickInternal() {
+        ArrayList<AbstractLoaderResponse> resources = new ArrayList<>(repository.loadedResources);
+        resources.forEach(r -> {
+            if (!(new File(r.getFilePath())).exists()) {
+                repository.loadedResources.remove(r);
+            }
         });
-        return jsonElements;
-    }
-
-    @Override
-    public void tick() {
-        if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
-            sinceLastCleanup = clock.totalTime;
-            ArrayList<AbstractLoaderResponse> resources = new ArrayList<>(loadedResources);
-            resources.forEach(r -> {
-                if (!(new File(r.getFilePath())).exists()) {
-                    loadedResources.remove(r);
-                }
-            });
-        }
     }
 }

@@ -1,4 +1,4 @@
-package com.pine.engine.core.system;
+package com.pine.engine.core.service.system;
 
 
 import com.pine.common.Updatable;
@@ -7,7 +7,7 @@ import com.pine.common.Renderable;
 import com.pine.engine.Engine;
 import com.pine.engine.core.EngineDependency;
 
-public abstract class AbstractSystem implements Initializable, Renderable, Updatable {
+public abstract class AbstractSystem implements Initializable {
 
     @EngineDependency
     public Engine engine;
@@ -15,13 +15,7 @@ public abstract class AbstractSystem implements Initializable, Renderable, Updat
     /**
      * Logic and state update
      */
-    @Override
-    public void tick() {
-    }
-
-    @Override
-    public void render() {
-    }
+    public abstract void render();
 
     @Override
     public void onInitialize() {

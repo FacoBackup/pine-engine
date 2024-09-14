@@ -5,16 +5,7 @@ import com.pine.engine.core.service.serialization.SerializableRepository;
 import com.pine.engine.core.EngineInjectable;
 
 @EngineInjectable
-public class EntityService extends SerializableRepository  {
+public class EntityService   {
     private final EntityRepository entityRepository = new EntityRepository();
 
-    @Override
-    protected void parseInternal(JsonElement data) {
-        entityRepository.parseInternal(data);
-    }
-
-    @Override
-    public JsonElement serializeData() {
-        return entityRepository.serializeData();
-    }
 }
