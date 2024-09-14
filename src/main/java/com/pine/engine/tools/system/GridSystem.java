@@ -8,8 +8,6 @@ import com.pine.engine.core.service.resource.MeshService;
 import com.pine.engine.core.service.resource.ShaderService;
 import com.pine.engine.core.service.resource.fbo.FBO;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
-import com.pine.engine.core.service.resource.primitives.mesh.MeshRenderingMode;
-import com.pine.engine.core.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.engine.core.service.resource.shader.ShaderRuntimeData;
 import com.pine.engine.core.service.resource.shader.UniformDTO;
 import com.pine.engine.core.service.system.AbstractSystem;
@@ -20,8 +18,6 @@ import org.lwjgl.opengl.GL46;
 
 
 public class GridSystem extends AbstractSystem {
-    private static final MeshRuntimeData DRAW_COMMAND = new MeshRuntimeData(MeshRenderingMode.TRIANGLES);
-
     @EngineDependency
     public Engine engine;
 
@@ -71,7 +67,6 @@ public class GridSystem extends AbstractSystem {
     @Override
     protected void renderInternal() {
         shaderService.bind(toolsResourceRepository.gridShader);
-
         buffer[0] = engineConfig.gridColor;
         buffer[1] = engineConfig.gridScale;
         buffer[2] = engineConfig.gridThreshold;
@@ -80,6 +75,8 @@ public class GridSystem extends AbstractSystem {
         GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
         EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, coreResourceRepository.sceneDepthVelocity);
 
-        meshService.bind(coreResourceRepository.planeMesh, DRAW_COMMAND);
+        meshService.bind(coreResourceRepository.planeMesh);
+        shaderService.unbind();
+        meshService.unbind();
     }
 }

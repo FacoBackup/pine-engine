@@ -18,7 +18,6 @@ import org.lwjgl.opengl.GL46;
 import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +26,7 @@ import static com.pine.engine.Engine.GLSL_VERSION;
 @EngineInjectable
 public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
-    private String currentShaderId;
+    private Shader currentShader;
 
     @EngineDependency
     public UBOService uboService;
@@ -51,7 +50,8 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
 
     @Override
     public void unbind() {
-        GL46.glUseProgram(0);
+        GL46.glUseProgram(GL46.GL_NONE);
+        currentShader = null;
     }
 
     @Override
@@ -114,8 +114,8 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     @Override
     protected void removeInternal(Shader shader) {
         GL46.glDeleteProgram(shader.getProgram());
-        if (Objects.equals(currentShaderId, shader.getId())) {
-            currentShaderId = null;
+        if (shader == currentShader) {
+            currentShader = null;
         }
     }
 
@@ -125,13 +125,13 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     }
 
     public void bindProgram(Shader shader) {
-        if (Objects.equals(currentShaderId, shader.getId())) {
+        if (currentShader == shader) {
             return;
         }
 
         this.currentSamplerIndex = 0;
         GL46.glUseProgram(shader.getProgram());
-        currentShaderId = shader.getId();
+        currentShader = shader;
     }
 
     public void bindUniform(UniformDTO uniformDTO, Object data) {

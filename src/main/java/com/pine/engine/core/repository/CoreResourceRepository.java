@@ -14,6 +14,7 @@ import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.primitives.mesh.Mesh;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.engine.core.service.resource.shader.Shader;
+import com.pine.engine.core.service.resource.shader.ShaderCreationData;
 import com.pine.engine.core.service.resource.ubo.UBO;
 import com.pine.engine.core.service.resource.ubo.UBOCreationData;
 import com.pine.engine.core.service.resource.ubo.UBOData;
@@ -61,6 +62,7 @@ public class CoreResourceRepository implements LateInitializable {
     public Shader gaussianShader;
     public Shader upSamplingShader;
     public Shader atmosphereShader;
+    public Shader debugShader;
 
     public FBO finalFrame;
     public int finalFrameSampler;
@@ -113,9 +115,9 @@ public class CoreResourceRepository implements LateInitializable {
                 null
         ));
 
-        initializeShaders();
         initializeFBOs();
         initializeUBOs();
+        initializeShaders();
     }
 
     private void initializeUBOs() {
@@ -198,6 +200,7 @@ public class CoreResourceRepository implements LateInitializable {
     }
 
     private void initializeShaders() {
+        debugShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/DEBUG.frag", "debug"));
 //        spriteShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite"));
 //        visibilityShader = (Shader) resources.addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility"));
 //        toScreenShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen"));

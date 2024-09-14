@@ -12,31 +12,17 @@ public class UBOSyncSystem extends AbstractSystem {
     public UBOService uboService;
 
     @EngineDependency
-    public CoreResourceRepository coreResourceRepository;
+    public CoreResourceRepository resources;
 
     @Override
     protected void renderInternal() {
-        uboService.bind(coreResourceRepository.cameraViewUBO);
-        uboService.updateBuffer(coreResourceRepository.cameraViewUBOState, 0);
-
-        uboService.bind(coreResourceRepository.frameCompositionUBO);
-        uboService.updateBuffer(coreResourceRepository.frameCompositionUBOState, 0);
-
-        uboService.bind(coreResourceRepository.lensPostProcessingUBO);
-        uboService.updateBuffer(coreResourceRepository.lensPostProcessingUBOState, 0);
-
-        uboService.bind(coreResourceRepository.ssaoUBO);
-        uboService.updateBuffer(coreResourceRepository.ssaoUBOState, 0);
-
-        uboService.bind(coreResourceRepository.uberUBO);
-        uboService.updateBuffer(coreResourceRepository.uberUBOState, 0);
-
-        uboService.bind(coreResourceRepository.lightsUBO);
-        uboService.updateBuffer(coreResourceRepository.lightsUBOState, 0);
-        uboService.bind(coreResourceRepository.lightsUBO);
-        uboService.updateBuffer(coreResourceRepository.lightsUBOState2, MAX_LIGHTS * 16);
-
-        uboService.bind(coreResourceRepository.cameraProjectionUBO);
-        uboService.updateBuffer(coreResourceRepository.cameraProjectionUBOState, 0);
+        uboService.updateBuffer(resources.cameraViewUBO, resources.cameraViewUBOState, 0);
+        uboService.updateBuffer(resources.frameCompositionUBO, resources.frameCompositionUBOState, 0);
+        uboService.updateBuffer(resources.lensPostProcessingUBO, resources.lensPostProcessingUBOState, 0);
+        uboService.updateBuffer(resources.ssaoUBO, resources.ssaoUBOState, 0);
+        uboService.updateBuffer(resources.uberUBO, resources.uberUBOState, 0);
+        uboService.updateBuffer(resources.lightsUBO, resources.lightsUBOState, 0);
+        uboService.updateBuffer(resources.lightsUBO, resources.lightsUBOState2, MAX_LIGHTS * 16);
+        uboService.updateBuffer(resources.cameraProjectionUBO, resources.cameraProjectionUBOState, 0);
     }
 }

@@ -22,7 +22,7 @@ public class Engine {
     public final int displayH;
 
     @SuppressWarnings("unused")
-    private final EngineInjector engineInjector = new EngineInjector(this);
+    private final EngineInjector engineInjector;
 
     @EngineDependency
     public ModulesService modules;
@@ -66,6 +66,7 @@ public class Engine {
     public Engine(int displayW, int displayH) {
         this.displayW = displayW;
         this.displayH = displayH;
+        engineInjector = new EngineInjector(this);
     }
 
     public void render() {

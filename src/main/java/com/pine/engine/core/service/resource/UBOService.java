@@ -1,35 +1,34 @@
 package com.pine.engine.core.service.resource;
 
 import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.service.resource.primitives.EmptyRuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
 import com.pine.engine.core.service.resource.ubo.UBO;
 import com.pine.engine.core.service.resource.ubo.UBOCreationData;
-import com.pine.engine.core.service.resource.ubo.UBORuntimeData;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 
 @EngineInjectable
-public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBOCreationData> {
+public class UBOService extends AbstractResourceService<UBO, EmptyRuntimeData, UBOCreationData> {
     private UBO currentUBO;
 
     @Override
-    protected void bindInternal(UBO instance, UBORuntimeData data) {
+    protected void bindInternal(UBO instance, EmptyRuntimeData data) {
         bindInternal(instance);
-        updateData(data);
     }
 
     @Override
     protected void bindInternal(UBO instance) {
         currentUBO = instance;
-        bindInternal();
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
     }
 
     @Override
     public void unbind() {
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, GL46.GL_NONE);
     }
 
     @Override
@@ -55,20 +54,9 @@ public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBO
         unbind();
     }
 
-    private void bindInternal() {
+    public void updateBuffer(UBO ubo, FloatBuffer data, int offset) {
+        currentUBO = ubo;
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
-    }
-
-    public void updateData(UBORuntimeData data) {
-        UBO.UBOItem item = currentUBO.getItems()
-                .get(currentUBO.getKeys().indexOf(data.propertyName()));
-        bindInternal();
-        updateBuffer(data.newData(), item.offset());
-        unbind();
-    }
-
-    public void updateBuffer(FloatBuffer data, int offset) {
-        bindInternal();
         GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, data);
         unbind();
     }
