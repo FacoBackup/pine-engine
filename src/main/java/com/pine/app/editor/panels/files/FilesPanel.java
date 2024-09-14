@@ -1,6 +1,5 @@
 package com.pine.app.editor.panels.files;
 
-import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.common.InjectBean;
 import com.pine.common.fs.FSService;

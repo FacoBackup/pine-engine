@@ -2,13 +2,13 @@ package com.pine.engine.core.service.resource;
 
 import com.pine.engine.Engine;
 import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.resource.fbo.FBO;
 import com.pine.engine.core.service.resource.fbo.FBOCreationData;
 import com.pine.engine.core.service.resource.primitives.EmptyRuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.EngineInjectable;
 import org.lwjgl.opengl.GL46;
 
 @EngineInjectable

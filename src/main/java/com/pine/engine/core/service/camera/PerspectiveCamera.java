@@ -8,13 +8,9 @@ public class PerspectiveCamera extends AbstractCamera {
 
     @Override
     public void tick() {
-        projection.perspective(fieldOfView, viewportWidth / viewportHeight, Math.abs(near), Math.abs(far));
-        view.lookAt(position, tmp.set(position).add(direction), up);
-        combined.set(projection);
-        combined.mul(view);
-
-        invProjectionView.set(combined);
-        invProjectionView.invert();
+        projectionMatrix.perspective(fieldOfView, viewportWidth / viewportHeight, Math.abs(near), Math.abs(far));
+        viewMatrix.lookAt(position, tmp.set(position).add(direction), up);
+        updateMatrices();
     }
 
     public float getFieldOfView() {

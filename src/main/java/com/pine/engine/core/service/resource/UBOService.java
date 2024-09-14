@@ -1,15 +1,15 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.engine.core.service.resource.ubo.UBO;
-import com.pine.engine.core.service.resource.ubo.UBOCreationData;
-import com.pine.engine.core.service.resource.ubo.UBORuntimeData;
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.service.resource.ubo.UBO;
+import com.pine.engine.core.service.resource.ubo.UBOCreationData;
+import com.pine.engine.core.service.resource.ubo.UBORuntimeData;
 import org.lwjgl.opengl.GL46;
 
-import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 @EngineInjectable
 public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBOCreationData> {
@@ -67,7 +67,7 @@ public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBO
         unbind();
     }
 
-    public void updateBuffer(ByteBuffer data, int offset) {
+    public void updateBuffer(FloatBuffer data, int offset) {
         bindInternal();
         GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, data);
         unbind();

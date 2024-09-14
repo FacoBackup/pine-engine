@@ -29,11 +29,11 @@ public abstract class AbstractSystem implements Initializable {
     }
 
     protected boolean isRenderable() {
-        return false;
+        return true;
     }
 
     protected boolean shouldClearFBO() {
-        return false;
+        return true;
     }
 
     @Override

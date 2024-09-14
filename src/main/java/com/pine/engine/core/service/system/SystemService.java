@@ -1,11 +1,9 @@
 package com.pine.engine.core.service.system;
 
-import com.pine.common.Updatable;
-import com.pine.common.Renderable;
-import com.pine.engine.core.EngineInjector;
-import com.pine.engine.core.LateInitializable;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.EngineInjector;
+import com.pine.engine.core.LateInitializable;
 import com.pine.engine.core.service.system.impl.*;
 
 import java.util.List;
@@ -16,6 +14,7 @@ public class SystemService implements LateInitializable {
     public EngineInjector engineInjector;
 
     private List<AbstractSystem> systems = List.of(
+            new UBOSyncSystem(),
             new ScriptExecutorSystem(),
             new ShadowsSystem(),
             new VisibilityRendererSystem(),

@@ -1,6 +1,5 @@
 package com.pine.engine.core.repository;
 
-import com.pine.common.Initializable;
 import com.pine.engine.Engine;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
@@ -13,13 +12,16 @@ import com.pine.engine.core.service.resource.fbo.FBO;
 import com.pine.engine.core.service.resource.fbo.FBOCreationData;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.primitives.mesh.Mesh;
+import com.pine.engine.core.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.engine.core.service.resource.shader.Shader;
 import com.pine.engine.core.service.resource.ubo.UBO;
 import com.pine.engine.core.service.resource.ubo.UBOCreationData;
 import com.pine.engine.core.service.resource.ubo.UBOData;
 import com.pine.engine.core.type.CoreUBOName;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryUtil;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +32,6 @@ public class CoreResourceRepository implements LateInitializable {
     @EngineDependency
     public Engine engine;
     @EngineDependency
-    public RuntimeRepository runtime;
-    @EngineDependency
     public ResourceService resources;
     @EngineDependency
     public ConfigurationRepository configuration;
@@ -39,6 +39,8 @@ public class CoreResourceRepository implements LateInitializable {
     public ResourceLoaderService resourceLoader;
 
     public Mesh planeMesh;
+    public Mesh quadMesh;
+
     public Shader spriteShader;
     public Shader visibilityShader;
     public Shader toScreenShader;
@@ -91,10 +93,25 @@ public class CoreResourceRepository implements LateInitializable {
     public UBO lightsUBO;
     public UBO cameraProjectionUBO;
 
+    public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(52);
+    public final FloatBuffer frameCompositionUBOState = MemoryUtil.memAllocFloat(1);
+    public final FloatBuffer lensPostProcessingUBOState = MemoryUtil.memAllocFloat(1);
+    public final FloatBuffer ssaoUBOState = MemoryUtil.memAllocFloat(1);
+    public final FloatBuffer uberUBOState = MemoryUtil.memAllocFloat(1);
+    public final FloatBuffer lightsUBOState = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
+    public final FloatBuffer lightsUBOState2 = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
+    public final FloatBuffer cameraProjectionUBOState = MemoryUtil.memAllocFloat(35);
+
     @Override
     public void lateInitialize() {
         var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         planeMesh = (Mesh) resources.getById(planeResponse.getMeshes().getFirst().id());
+        quadMesh = (Mesh) resources.addResource(new MeshCreationData(
+                new float[]{-1, -1, (float) -4.371138828673793e-8, 1, -1, (float) -4.371138828673793e-8, -1, 1, 4.371138828673793e-8F, 1, 1, 4.371138828673793e-8F},
+                new int[]{0, 1, 3, 0, 3, 2},
+                null,
+                null
+        ));
 
         initializeShaders();
         initializeFBOs();

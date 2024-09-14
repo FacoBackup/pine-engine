@@ -1,9 +1,13 @@
 package com.pine.engine.core;
 
 import jakarta.annotation.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
 public class EngineUtils {
     public static void bindTexture2d(int location, int activeIndex, int sampler) {
@@ -54,4 +58,17 @@ public class EngineUtils {
         return texture;
     }
 
+    public static void copyWithOffset(FloatBuffer target, Matrix4f m, int offset) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                target.put(j + i + offset, m.get(j, i));
+            }
+        }
+    }
+
+    public static void copyWithOffset(FloatBuffer target, Vector3f v, int offset) {
+        target.put(offset, v.x);
+        target.put(1 + offset, v.y);
+        target.put(2 + offset, v.z);
+    }
 }

@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.common.Initializable;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.camera.AbstractCamera;
 import com.pine.engine.core.service.camera.OrthographicCamera;
@@ -29,7 +28,6 @@ public class CameraRepository extends SerializableRepository {
     transient public String defaultOrthographicCamera;
     public final Map<String, AbstractCamera> cameras = new HashMap<>();
     transient public AbstractCamera currentCamera = null;
-
 
     @Override
     public JsonElement serializeData() {

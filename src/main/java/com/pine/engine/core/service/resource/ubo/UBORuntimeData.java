@@ -2,7 +2,7 @@ package com.pine.engine.core.service.resource.ubo;
 
 import com.pine.engine.core.service.resource.resource.IResourceRuntimeData;
 
-import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
-public record UBORuntimeData(String propertyName, ByteBuffer newData) implements IResourceRuntimeData {
+public record UBORuntimeData(String propertyName, FloatBuffer newData) implements IResourceRuntimeData {
 }

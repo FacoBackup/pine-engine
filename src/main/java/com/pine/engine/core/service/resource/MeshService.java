@@ -1,5 +1,6 @@
 package com.pine.engine.core.service.resource;
 
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.resource.primitives.mesh.Mesh;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshRenderingMode;
@@ -7,7 +8,6 @@ import com.pine.engine.core.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.EngineInjectable;
 import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
 

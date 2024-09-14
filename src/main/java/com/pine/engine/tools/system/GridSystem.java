@@ -1,9 +1,9 @@
 package com.pine.engine.tools.system;
 
 import com.pine.engine.Engine;
-import com.pine.engine.core.repository.CoreResourceRepository;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineUtils;
+import com.pine.engine.core.repository.CoreResourceRepository;
 import com.pine.engine.core.service.resource.MeshService;
 import com.pine.engine.core.service.resource.ShaderService;
 import com.pine.engine.core.service.resource.fbo.FBO;
@@ -64,10 +64,12 @@ public class GridSystem extends AbstractSystem {
     }
 
     @Override
-    protected void renderInternal() {
-//            resolution[0] = runtimeRepository.getViewportW();
-//            resolution[1] = runtimeRepository.getViewportH();
+    protected boolean shouldClearFBO() {
+        return false;
+    }
 
+    @Override
+    protected void renderInternal() {
         shaderService.bind(toolsResourceRepository.gridShader);
 
         buffer[0] = engineConfig.gridColor;
@@ -76,7 +78,7 @@ public class GridSystem extends AbstractSystem {
         buffer[3] = engineConfig.gridOpacity;
 
         GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
-        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, coreResourceRepository.sceneDepthVelocity); // TODO - GET TEXTURE
+        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, coreResourceRepository.sceneDepthVelocity);
 
         meshService.bind(coreResourceRepository.planeMesh, DRAW_COMMAND);
     }

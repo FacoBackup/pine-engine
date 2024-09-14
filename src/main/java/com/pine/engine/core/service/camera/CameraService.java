@@ -1,34 +1,36 @@
 package com.pine.engine.core.service.camera;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.pine.common.Updatable;
-import com.pine.common.Initializable;
-import com.pine.engine.core.repository.CameraRepository;
-import com.pine.engine.core.repository.ClockRepository;
-import com.pine.engine.core.repository.RuntimeRepository;
-import com.pine.engine.core.service.AbstractMultithreadedService;
-import com.pine.engine.core.service.serialization.SerializableRepository;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.EngineUtils;
+import com.pine.engine.core.repository.CameraRepository;
+import com.pine.engine.core.repository.ClockRepository;
+import com.pine.engine.core.repository.CoreResourceRepository;
+import com.pine.engine.core.repository.RuntimeRepository;
+import com.pine.engine.core.service.AbstractMultithreadedService;
+import com.pine.engine.core.service.resource.UBOService;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @EngineInjectable
 public class CameraService extends AbstractMultithreadedService {
+    private static final double LOG_2 = Math.log(2);
 
     @EngineDependency
     public CameraRepository repository;
+
+    @EngineDependency
+    public CoreResourceRepository coreResourceRepository;
 
     @EngineDependency
     public RuntimeRepository runtimeRepository;
 
     @EngineDependency
     public ClockRepository clock;
+
+    @EngineDependency
+    public UBOService uboService;
 
     @Override
     public void lateInitialize() {
@@ -50,7 +52,7 @@ public class CameraService extends AbstractMultithreadedService {
             newCamera = new PerspectiveCamera();
         }
         repository.cameras.put(newCamera.getId(), newCamera);
-        newCamera.getPosition().set(0.0f, 0.0f, 5.0f);
+        newCamera.position.set(0.0f, 0.0f, 5.0f);
         newCamera.lookAt(0.0f, 0.0f, 0.0f);
         newCamera.setNear(0.1f);
         newCamera.setFar(300.0f);
@@ -111,7 +113,21 @@ public class CameraService extends AbstractMultithreadedService {
         } else {
             repository.firstMouseMove = true;
         }
-//        CameraManager.updateUBOs()
+
+        var V = coreResourceRepository.cameraViewUBOState;
+        EngineUtils.copyWithOffset(V, repository.currentCamera.viewProjectionMatrix, 0);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.viewMatrix, 16);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.invViewMatrix, 32);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.position, 48);
+
+        var P = coreResourceRepository.cameraProjectionUBOState;
+        EngineUtils.copyWithOffset(P, repository.currentCamera.projectionMatrix, 0);
+        EngineUtils.copyWithOffset(P, repository.currentCamera.invProjectionMatrix, 16);
+
+        P.put(32, runtimeRepository.viewportW);
+        P.put(33, runtimeRepository.viewportH);
+        P.put(34, (float) (2.0 / (Math.log(repository.currentCamera.projectionMatrix.get(0, 0) + 1) / LOG_2)));
+
     }
 
     private void handleMouseInput() {
@@ -138,11 +154,11 @@ public class CameraService extends AbstractMultithreadedService {
     }
 
     private void handleKeyboardInput() {
-        float deltaTime = clock.totalTime;
-        Vector3f direction = repository.currentCamera.getDirection();
-        var forward = new Vector3f(direction).normalize();
-        var right = direction.cross(repository.currentCamera.getUp()).normalize(); // Right vector
-        Vector3f position = repository.currentCamera.getPosition();
+        final float deltaTime = clock.totalTime;
+        final Vector3f direction = repository.currentCamera.direction;
+        final var forward = new Vector3f(direction).normalize();
+        final var right = direction.cross(repository.currentCamera.up).normalize(); // Right vector
+        final Vector3f position = repository.currentCamera.position;
         if (runtimeRepository.isForwardPressed()) {
             position.add(forward.mul(repository.movementSpeed * deltaTime)); // Move forward
         }
@@ -156,17 +172,17 @@ public class CameraService extends AbstractMultithreadedService {
             position.add(right.mul(repository.movementSpeed * deltaTime)); // Move right
         }
         if (runtimeRepository.isUpPressed()) {
-            position.add(repository.currentCamera.getUp().mul(repository.movementSpeed * deltaTime)); // Move up
+            position.add(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move up
         }
         if (runtimeRepository.isDownPressed()) {
-            position.sub(repository.currentCamera.getUp().mul(repository.movementSpeed * deltaTime)); // Move down
+            position.sub(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move down
         }
 
         repository.currentCamera.tick();
     }
 
     private void updateCameraDirection() {
-        Vector3f direction = repository.currentCamera.getDirection();
+        Vector3f direction = repository.currentCamera.direction;
         direction.x = (float) Math.cos(Math.toRadians(repository.yaw)) * (float) Math.cos(Math.toRadians(repository.pitch));
         direction.y = (float) Math.sin(Math.toRadians(repository.pitch));
         direction.z = (float) Math.sin(Math.toRadians(repository.yaw)) * (float) Math.cos(Math.toRadians(repository.pitch));

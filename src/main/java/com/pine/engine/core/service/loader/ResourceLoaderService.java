@@ -2,6 +2,8 @@ package com.pine.engine.core.service.loader;
 
 import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.repository.ResourceLoaderRepository;
 import com.pine.engine.core.service.AbstractMultithreadedService;
 import com.pine.engine.core.service.loader.impl.AudioLoader;
@@ -10,8 +12,6 @@ import com.pine.engine.core.service.loader.impl.TextureLoader;
 import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.info.LoadRequest;
 import com.pine.engine.core.service.loader.impl.response.AbstractLoaderResponse;
-import com.pine.engine.core.EngineDependency;
-import com.pine.engine.core.EngineInjectable;
 import jakarta.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 

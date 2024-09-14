@@ -10,14 +10,10 @@ public class OrthographicCamera extends AbstractCamera {
 
     @Override
     public void tick() {
-        projection.ortho(zoom * -viewportWidth / 2, zoom * (viewportWidth / 2), zoom * -(viewportHeight / 2),
+        projectionMatrix.ortho(zoom * -viewportWidth / 2, zoom * (viewportWidth / 2), zoom * -(viewportHeight / 2),
                 zoom * viewportHeight / 2, near, far);
-        view.lookAt(position, tmp.set(position).add(direction), up);
-        combined.set(projection);
-        combined.mul(view);
-
-        invProjectionView.set(combined);
-        invProjectionView.invert();
+        viewMatrix.lookAt(position, tmp.set(position).add(direction), up);
+        updateMatrices();
     }
 
     public void translate(float x, float y) {

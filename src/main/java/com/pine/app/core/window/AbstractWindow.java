@@ -1,12 +1,12 @@
 package com.pine.app.core.window;
 
 import com.pine.app.core.service.WindowService;
-import com.pine.common.Renderable;
 import com.pine.app.core.ui.ViewDocument;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.ui.panel.DockPanel;
 import com.pine.common.ContextService;
 import com.pine.common.InjectBean;
+import com.pine.common.Renderable;
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageCollector;
 import imgui.ImGui;

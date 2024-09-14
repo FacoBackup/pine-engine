@@ -1,18 +1,18 @@
 package com.pine.engine.core.service.resource;
 
 import com.pine.common.fs.FSUtil;
-import com.pine.engine.core.repository.CoreResourceRepository;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
-import com.pine.engine.core.type.CoreUBOName;
+import com.pine.engine.core.repository.CoreResourceRepository;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
+import com.pine.engine.core.service.resource.resource.AbstractResourceService;
+import com.pine.engine.core.service.resource.resource.IResource;
+import com.pine.engine.core.service.resource.resource.ResourceType;
 import com.pine.engine.core.service.resource.shader.Shader;
 import com.pine.engine.core.service.resource.shader.ShaderCreationData;
 import com.pine.engine.core.service.resource.shader.ShaderRuntimeData;
 import com.pine.engine.core.service.resource.shader.UniformDTO;
-import com.pine.engine.core.service.resource.resource.AbstractResourceService;
-import com.pine.engine.core.service.resource.resource.IResource;
-import com.pine.engine.core.service.resource.resource.ResourceType;
+import com.pine.engine.core.type.CoreUBOName;
 import org.lwjgl.opengl.GL46;
 
 import java.io.File;

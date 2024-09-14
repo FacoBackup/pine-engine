@@ -32,7 +32,7 @@ public class ViewportPanel extends AbstractWindowPanel {
 
     @Override
     public void renderInternal() {
-//        ImGui.image(engine.getFinalFrame(), size.x , size.y - FRAME_SIZE);
+        ImGui.image(engine.getFinalFrame(), size.x , size.y - FRAME_SIZE);
     }
 
     @Override
