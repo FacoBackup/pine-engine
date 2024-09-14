@@ -96,13 +96,13 @@ public class CoreResourceRepository implements LateInitializable {
     public UBO cameraProjectionUBO;
 
     public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(52);
+    public final FloatBuffer cameraProjectionUBOState = MemoryUtil.memAllocFloat(35);
     public final FloatBuffer frameCompositionUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer lensPostProcessingUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer ssaoUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer uberUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer lightsUBOState = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
     public final FloatBuffer lightsUBOState2 = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
-    public final FloatBuffer cameraProjectionUBOState = MemoryUtil.memAllocFloat(35);
 
     @Override
     public void lateInitialize() {

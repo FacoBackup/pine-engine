@@ -29,9 +29,6 @@ public class CameraService extends AbstractMultithreadedService {
     @EngineDependency
     public ClockRepository clock;
 
-    @EngineDependency
-    public UBOService uboService;
-
     @Override
     public void lateInitialize() {
         repository.defaultOrthographicCamera = createNewCamera(true);
@@ -101,12 +98,11 @@ public class CameraService extends AbstractMultithreadedService {
         return repository.movementSpeed;
     }
 
-
     @Override
     protected void tickInternal() {
-        repository.currentCamera.setViewportWidth(runtimeRepository.getViewportW());
-        repository.currentCamera.setViewportHeight(runtimeRepository.getViewportH());
-        if (runtimeRepository.isInputFocused()) {
+        repository.currentCamera.setViewportWidth(runtimeRepository.viewportW);
+        repository.currentCamera.setViewportHeight(runtimeRepository.viewportH);
+        if (runtimeRepository.inputFocused) {
             handleMouseInput();
             handleKeyboardInput();
             repository.currentCamera.tick();
@@ -127,12 +123,11 @@ public class CameraService extends AbstractMultithreadedService {
         P.put(32, runtimeRepository.viewportW);
         P.put(33, runtimeRepository.viewportH);
         P.put(34, (float) (2.0 / (Math.log(repository.currentCamera.projectionMatrix.get(0, 0) + 1) / LOG_2)));
-
     }
 
     private void handleMouseInput() {
-        float mouseX = runtimeRepository.getMouseX();
-        float mouseY = runtimeRepository.getMouseY();
+        float mouseX = runtimeRepository.mouseX;
+        float mouseY = runtimeRepository.mouseY;
 
         if (repository.firstMouseMove) {
             repository.lastMouseX = mouseX;
@@ -159,22 +154,22 @@ public class CameraService extends AbstractMultithreadedService {
         final var forward = new Vector3f(direction).normalize();
         final var right = direction.cross(repository.currentCamera.up).normalize(); // Right vector
         final Vector3f position = repository.currentCamera.position;
-        if (runtimeRepository.isForwardPressed()) {
+        if (runtimeRepository.forwardPressed) {
             position.add(forward.mul(repository.movementSpeed * deltaTime)); // Move forward
         }
-        if (runtimeRepository.isBackwardPressed()) {
+        if (runtimeRepository.backwardPressed) {
             position.sub(forward.mul(repository.movementSpeed * deltaTime)); // Move backward
         }
-        if (runtimeRepository.isLeftPressed()) {
+        if (runtimeRepository.leftPressed) {
             position.sub(right.mul(repository.movementSpeed * deltaTime)); // Move left
         }
-        if (runtimeRepository.isRightPressed()) {
+        if (runtimeRepository.rightPressed) {
             position.add(right.mul(repository.movementSpeed * deltaTime)); // Move right
         }
-        if (runtimeRepository.isUpPressed()) {
+        if (runtimeRepository.upPressed) {
             position.add(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move up
         }
-        if (runtimeRepository.isDownPressed()) {
+        if (runtimeRepository.downPressed) {
             position.sub(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move down
         }
 

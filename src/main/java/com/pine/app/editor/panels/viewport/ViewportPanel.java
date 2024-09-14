@@ -37,7 +37,7 @@ public class ViewportPanel extends AbstractWindowPanel {
 
     @Override
     protected void afterWindow() {
-        repo.inputFocused = ImGui.isWindowFocused() && ImGui.isMouseClicked(0);
+        repo.inputFocused = ImGui.isWindowFocused() && (ImGui.isMouseDown(2) || ImGui.isMouseDown(1));
         repo.forwardPressed = ImGui.isKeyPressed(ImGuiKey.W);
         repo.backwardPressed = ImGui.isKeyPressed(ImGuiKey.S);
         repo.leftPressed = ImGui.isKeyPressed(ImGuiKey.A);

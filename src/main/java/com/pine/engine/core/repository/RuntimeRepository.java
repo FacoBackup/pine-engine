@@ -42,23 +42,4 @@ public class RuntimeRepository  {
         return downPressed;
     }
 
-    public boolean isInputFocused() {
-        return inputFocused;
-    }
-
-    public float getMouseX() {
-        return mouseX;
-    }
-
-    public float getMouseY() {
-        return mouseY;
-    }
-
-    public float getViewportW() {
-        return viewportW;
-    }
-
-    public float getViewportH() {
-        return viewportH;
-    }
 }
