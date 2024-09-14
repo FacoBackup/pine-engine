@@ -1,18 +1,17 @@
 package com.pine.app.core.window;
 
 import com.pine.app.core.service.WindowService;
-import com.pine.common.Renderable;
 import com.pine.app.core.ui.ViewDocument;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.ui.panel.DockPanel;
 import com.pine.common.ContextService;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
+import com.pine.common.Renderable;
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageCollector;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
-import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.flag.ImGuiWindowFlags;
@@ -29,17 +28,19 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.pine.common.messages.MessageCollector.MESSAGE_DURATION;
+import static com.pine.engine.Engine.GLSL_VERSION;
 
 public abstract class AbstractWindow implements Renderable {
-    private static final String GLSL_VERSION = "#version 130";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
+    protected int displayW = 1920;
+    protected int displayH = 1080;
     private final ViewDocument viewDocument = new ViewDocument(this);
     private final DockPanel root = new DockPanel();
     private boolean isVisible = true;
 
-    @Inject
+    @InjectBean
     public WindowService windowService;
 
     public AbstractWindow() {
@@ -93,7 +94,9 @@ public abstract class AbstractWindow implements Renderable {
 
             GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
             final GLFWVidMode vidmode = Objects.requireNonNull(GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()));
-            GLFW.glfwSetWindowPos(handle, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
+            displayW = vidmode.width();
+            displayH = vidmode.height();
+            GLFW.glfwSetWindowPos(handle, (displayW - pWidth.get(0)) / 2, (displayH - pHeight.get(0)) / 2);
         }
 
         GLFW.glfwMakeContextCurrent(handle);

@@ -1,112 +1,136 @@
 package com.pine.engine;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.pine.common.Renderable;
-import com.pine.engine.core.ClockRepository;
-import com.pine.engine.core.EnvRepository;
-import com.pine.engine.core.components.system.ISystem;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjector;
+import com.pine.engine.core.modules.EngineExternalModule;
+import com.pine.engine.core.repository.*;
+import com.pine.engine.core.service.LightService;
+import com.pine.engine.core.service.TransformationService;
 import com.pine.engine.core.service.camera.CameraService;
-import com.pine.engine.core.service.loader.ResourceLoader;
-import com.pine.engine.core.service.resource.*;
-import com.pine.engine.core.service.serialization.SerializableRepository;
-import com.pine.engine.core.service.world.WorldService;
+import com.pine.engine.core.service.entity.EntityService;
+import com.pine.engine.core.service.loader.ResourceLoaderService;
+import com.pine.engine.core.service.resource.ResourceService;
+import com.pine.engine.core.service.system.SystemService;
 
+import java.util.List;
 
-public class Engine extends SerializableRepository implements Renderable {
-    private final ClockRepository clock = new ClockRepository();
-    private final EnvRepository envRepository = new EnvRepository();
-    private final CameraService camera = new CameraService(this);
-    private final WorldService world = new WorldService();
-    private final ResourceService resources = new ResourceService(clock);
-    private final ResourceLoader loader = new ResourceLoader(this);
+public class Engine {
+    public static final String GLSL_VERSION = "#version 410";
+    public static final int MAX_LIGHTS = 310;
 
-    @Override
-    public void onInitialize() {
-        resources.onInitialize();
-        camera.onInitialize();
-        loader.onInitialize();
-        for (var sys : world.getSystems()) {
-            sys.setEngine(this);
-        }
+    public final int displayW;
+    public final int displayH;
+
+    @SuppressWarnings("unused")
+    private final EngineInjector engineInjector;
+
+    @EngineDependency
+    public ModulesService modules;
+
+    @EngineDependency
+    public EngineRepository engineRepository;
+
+    @EngineDependency
+    public ClockRepository clock;
+
+    @EngineDependency
+    public RuntimeRepository runtimeRepository;
+
+    @EngineDependency
+    public CoreResourceRepository coreResourceRepository;
+
+    @EngineDependency
+    public ConfigurationRepository configuration;
+
+    @EngineDependency
+    public CameraService cameraService;
+
+    @EngineDependency
+    public SystemService systemsService;
+
+    @EngineDependency
+    public ResourceService resourcesService;
+
+    @EngineDependency
+    public ResourceLoaderService resourceLoaderService;
+
+    @EngineDependency
+    public EntityService entityService;
+
+    @EngineDependency
+    public TransformationService transformationService;
+
+    @EngineDependency
+    public LightService lightService;
+
+    public Engine(int displayW, int displayH) {
+        this.displayW = displayW;
+        this.displayH = displayH;
+        engineInjector = new EngineInjector(this);
     }
 
-    @Override
-    public void tick() {
-        clock.tick();
-        camera.tick();
-        resources.tick();
-        loader.tick();
-        world.getSystems().forEach(ISystem::tick);
-    }
-
-    @Override
     public void render() {
-        world.getWorld().process();
+        clock.tick();
+        systemsService.render();
     }
 
     public void shutdown() {
-        resources.shutdown();
-        world.shutdown();
-    }
-
-    public void parse(String serialized) {
-        try {
-            world.parse(new Gson().fromJson(serialized, JsonObject.class));
-        } catch (Exception e) {
-            getLogger().error("Failed to parse world", e);
-        }
-    }
-
-    @Override
-    public JsonElement serializeData() {
-        JsonArray arr = new JsonArray();
-        arr.add(world.serialize().toString());
-        arr.add(camera.serialize().toString());
-        arr.add(loader.serialize().toString());
-        return arr;
-    }
-
-    @Override
-    protected void parseInternal(JsonElement data) {
-        JsonArray json = data.getAsJsonArray();
-        json.forEach(a -> {
-            JsonObject obj = a.getAsJsonObject();
-            if (world.isCompatible(obj)) {
-                world.parse(obj);
-            }
-            if (loader.isCompatible(obj)) {
-                loader.parse(obj);
-            }
-            if (camera.isCompatible(obj)) {
-                camera.parse(obj);
-            }
-        });
+        resourcesService.shutdown();
     }
 
     public CameraService getCameraService() {
-        return camera;
+        return cameraService;
     }
 
-    public EnvRepository getInputRepository() {
-        return envRepository;
+    public RuntimeRepository getRuntimeRepository() {
+        return runtimeRepository;
     }
 
-    public ResourceService getResources() {
-        return resources;
+    public ResourceService getResourcesService() {
+        return resourcesService;
     }
 
-    public WorldService getWorld() {
-        return world;
+    public SystemService getSystemsService() {
+        return systemsService;
     }
 
     public ClockRepository getClock() {
         return clock;
     }
 
-    public ResourceLoader getLoader() {
-        return loader;
+    public ResourceLoaderService getResourceLoaderService() {
+        return resourceLoaderService;
+    }
+
+    public EntityService getEntityService() {
+        return entityService;
+    }
+
+    public ConfigurationRepository getConfiguration() {
+        return configuration;
+    }
+
+    public CoreResourceRepository getCoreResourceRepository() {
+        return coreResourceRepository;
+    }
+
+    public int getFinalFrame() {
+        return coreResourceRepository.finalFrameSampler;
+    }
+
+    public void addModules(List<EngineExternalModule> modules) {
+        this.modules.addModules(modules);
+    }
+
+    public EngineRepository getEngineRepository() {
+        return engineRepository;
+    }
+
+    public TransformationService getTransformationService() {
+        return transformationService;
+    }
+
+    public LightService getLightService() {
+        return lightService;
     }
 }

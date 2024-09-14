@@ -7,7 +7,8 @@ public enum ResourceType {
     TEXTURE(List.of("png", "jpeg", "jpg")),
     AUDIO(List.of("wav")),
     SHADER(List.of("vert", "frag", "glsl")),
-    UBO(List.of());
+    UBO(List.of()),
+    FBO(List.of());
 
     private final List<String> fileExtensions;
 

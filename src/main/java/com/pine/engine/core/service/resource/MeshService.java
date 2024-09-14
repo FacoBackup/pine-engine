@@ -1,15 +1,17 @@
 package com.pine.engine.core.service.resource;
 
+import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.service.resource.primitives.mesh.Mesh;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshCreationData;
+import com.pine.engine.core.service.resource.primitives.mesh.MeshRenderingMode;
+import com.pine.engine.core.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.service.resource.primitives.mesh.Mesh;
-import com.pine.engine.core.service.resource.primitives.mesh.MeshRenderingMode;
-import com.pine.engine.core.service.resource.primitives.mesh.MeshRuntimeData;
 import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
 
+@EngineInjectable
 public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, MeshCreationData> {
     private Mesh currentMesh;
     private boolean isInWireframeMode = false;
@@ -33,7 +35,7 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
         }
 
         if (data == null) {
-            draw();
+            drawTriangles();
             return;
         }
         switch (data.mode()) {
@@ -42,13 +44,23 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
             case TRIANGLE_FAN -> drawTriangleFan();
             case TRIANGLE_STRIP -> drawTriangleStrip();
             case LINES -> drawLines();
-            default -> draw();
+            default -> drawTriangles();
         }
     }
 
     @Override
     public void unbind() {
-        unbindResources();
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, GL46.GL_NONE);
+        currentMesh.vertexVBO.disable();
+
+        if (currentMesh.uvVBO != null) {
+            currentMesh.uvVBO.disable();
+        }
+        if (currentMesh.normalVBO != null) {
+            currentMesh.normalVBO.disable();
+        }
+
+        GL46.glBindVertexArray(GL46.GL_NONE);
         currentMesh = null;
     }
 
@@ -68,45 +80,27 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
     }
 
     public void bindResources() {
-        GL46.glBindVertexArray(currentMesh.getVaoId());
-
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, currentMesh.getVertexVboId());
-        GL46.glEnableVertexAttribArray(0);
-
-        if (currentMesh.getUvVboId() != null) {
-            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, currentMesh.getUvVboId());
-            GL46.glEnableVertexAttribArray(1);
+        GL46.glBindVertexArray(currentMesh.VAO);
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, currentMesh.indexVBO);
+        currentMesh.vertexVBO.enable();
+        if (currentMesh.normalVBO != null) {
+            currentMesh.normalVBO.enable();
         }
-
-        if (currentMesh.getNormalVboId() != null) {
-            GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, currentMesh.getNormalVboId());
-            GL46.glEnableVertexAttribArray(2);
+        if (currentMesh.uvVBO != null) {
+            currentMesh.uvVBO.enable();
         }
-
-        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, currentMesh.getIndexVboId());
-    }
-
-    private void unbindResources() {
-        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        GL46.glDisableVertexAttribArray(0);
-        GL46.glDisableVertexAttribArray(1);
-        GL46.glDisableVertexAttribArray(2);
-
-        GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);
-        GL46.glBindVertexArray(0);
     }
 
     private void drawWireframe() {
         GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         isInWireframeMode = true;
-        draw();
+        drawTriangles();
     }
 
-    private void draw() {
+    private void drawTriangles() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLES, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_TRIANGLES, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
     /**
@@ -114,25 +108,25 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
      */
     private void drawLineLoop() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_LINE_LOOP, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_LINE_LOOP, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
     private void drawTriangleStrip() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLE_STRIP, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_TRIANGLE_STRIP, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
     private void drawTriangleFan() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLE_FAN, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_TRIANGLE_FAN, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
     private void drawLines() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_LINES, currentMesh.getVertexCount(), GL46.GL_UNSIGNED_INT, 0);
-        GL46.glBindVertexArray(0);
+        GL46.glDrawElements(GL46.GL_LINES, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glBindVertexArray(GL46.GL_NONE);
     }
 }

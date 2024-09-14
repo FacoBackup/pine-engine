@@ -1,39 +1,39 @@
 package com.pine.engine.core.service.resource;
 
+import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.service.resource.primitives.EmptyRuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.service.resource.primitives.ubo.UBO;
-import com.pine.engine.core.service.resource.primitives.ubo.UBOCreationData;
-import com.pine.engine.core.service.resource.primitives.ubo.UBORuntimeData;
+import com.pine.engine.core.service.resource.ubo.UBO;
+import com.pine.engine.core.service.resource.ubo.UBOCreationData;
 import org.lwjgl.opengl.GL46;
 
-import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 
-// TODO - Runtime data should be object containing new values for UBO
-public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBOCreationData> {
+@EngineInjectable
+public class UBOService extends AbstractResourceService<UBO, EmptyRuntimeData, UBOCreationData> {
     private UBO currentUBO;
 
     @Override
-    protected void bindInternal(UBO instance, UBORuntimeData data) {
+    protected void bindInternal(UBO instance, EmptyRuntimeData data) {
         bindInternal(instance);
-        updateData(data);
     }
 
     @Override
     protected void bindInternal(UBO instance) {
         currentUBO = instance;
-        bindInternal();
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
     }
 
     @Override
     public void unbind() {
-        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, 0);
+        GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, GL46.GL_NONE);
     }
 
     @Override
     protected IResource addInternal(UBOCreationData data) {
-        return null;
+        return new UBO(getId(), data);
     }
 
     @Override
@@ -46,27 +46,17 @@ public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBO
         return ResourceType.UBO;
     }
 
-    public void bindWithShader(int shaderProgram) {
+    public void bindWithShader(UBO ubo, int shaderProgram) {
+        bindInternal(ubo);
         GL46.glUseProgram(shaderProgram);
         int index = GL46.glGetUniformBlockIndex(shaderProgram, currentUBO.getBlockName());
         GL46.glUniformBlockBinding(shaderProgram, index, currentUBO.getBlockPoint());
         unbind();
     }
 
-    private void bindInternal() {
+    public void updateBuffer(UBO ubo, FloatBuffer data, int offset) {
+        currentUBO = ubo;
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
-    }
-
-    public void updateData(UBORuntimeData data) {
-        UBO.UBOItem item = currentUBO.getItems()
-                .get(currentUBO.getKeys().indexOf(data.propertyName()));
-        bindInternal();
-        updateBuffer(data.newData(), item.offset());
-        unbind();
-    }
-
-    public void updateBuffer(ByteBuffer data, int offset) {
-        bindInternal();
         GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, data);
         unbind();
     }

@@ -1,5 +1,6 @@
 package com.pine.app.editor;
 
+import com.pine.app.ProjectDTO;
 import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.window.AbstractWindow;
@@ -7,17 +8,26 @@ import com.pine.app.editor.panels.console.ConsolePanel;
 import com.pine.app.editor.panels.files.FilesPanel;
 import com.pine.app.editor.panels.inspector.InspectorPanel;
 import com.pine.app.editor.panels.viewport.ViewportPanel;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 import com.pine.engine.Engine;
+import com.pine.engine.tools.ToolsConfigurationModule;
+import com.pine.engine.tools.ToolsModule;
 import imgui.flag.ImGuiDir;
 
 import java.util.List;
 
 public class EditorWindow extends AbstractWindow {
-    @Inject
+    @InjectBean
     public ProjectService projectService;
 
-    public final Engine engine = new Engine();
+    private Engine engine;
+
+    @Override
+    public void onInitialize() {
+        super.onInitialize();
+        engine = new Engine(displayW, displayH);
+        engine.addModules(List.of(new ToolsModule(), new ToolsConfigurationModule()));
+    }
 
     @Override
     protected List<DockDTO> getDockSpaces() {
@@ -54,28 +64,16 @@ public class EditorWindow extends AbstractWindow {
         );
     }
 
-    @Override
-    public void onInitialize() {
-        super.onInitialize();
-        engine.onInitialize();
-    }
-
-    @Override
-    public void tick() {
-        engine.tick();
-    }
-
-    @Override
-    public void renderInternal() {
-        engine.render();
-    }
-
     public int getWindowWidth() {
         return 960;
     }
 
     public String getWindowName() {
-        return projectService.getCurrentProject().getName();
+        ProjectDTO currentProject = projectService.getCurrentProject();
+        if(currentProject != null) {
+            return currentProject.getName();
+        }
+        return "New Project - Pine Engine";
     }
 
     public int getWindowHeight() {

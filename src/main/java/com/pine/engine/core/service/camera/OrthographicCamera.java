@@ -1,6 +1,7 @@
 package com.pine.engine.core.service.camera;
 
-import org.joml.*;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class OrthographicCamera extends AbstractCamera {
     public float zoom = 1;
@@ -9,14 +10,10 @@ public class OrthographicCamera extends AbstractCamera {
 
     @Override
     public void tick() {
-        projection.ortho(zoom * -viewportWidth / 2, zoom * (viewportWidth / 2), zoom * -(viewportHeight / 2),
+        projectionMatrix.ortho(zoom * -viewportWidth / 2, zoom * (viewportWidth / 2), zoom * -(viewportHeight / 2),
                 zoom * viewportHeight / 2, near, far);
-        view.lookAt(position, tmp.set(position).add(direction), up);
-        combined.set(projection);
-        combined.mul(view);
-
-        invProjectionView.set(combined);
-        invProjectionView.invert();
+        viewMatrix.lookAt(position, tmp.set(position).add(direction), up);
+        updateMatrices();
     }
 
     public void translate(float x, float y) {

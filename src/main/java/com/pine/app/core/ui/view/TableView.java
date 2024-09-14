@@ -5,7 +5,6 @@ import com.pine.app.core.ui.view.table.TableHeader;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableBgTarget;
 import imgui.flag.ImGuiTableFlags;
-import imgui.flag.ImGuiTableRowFlags;
 
 import java.util.Collections;
 import java.util.List;

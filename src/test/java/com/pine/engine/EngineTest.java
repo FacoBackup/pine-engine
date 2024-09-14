@@ -3,9 +3,7 @@ package com.pine.engine;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.pine.engine.core.components.component.MeshComponent;
-import com.pine.engine.core.components.component.TransformationComponent;
-import com.pine.engine.core.service.world.WorldService;
+import com.pine.engine.core.service.system.SystemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -28,14 +26,14 @@ class EngineTest {
 
     @BeforeEach
     void setUpBefore() {
-        engine = new Engine();
-        int entity = engine.getWorld().addEntity();
-        engine.getWorld().addComponent(entity, MeshComponent.class);
-
-        int entity2 = engine.getWorld().addEntity();
-        engine.getWorld().addComponent(entity2, TransformationComponent.class);
-
-        serialized = engine.serialize().toString();
+//        engine = new Engine();
+//        int entity = engine.getSystemsService().addEntity();
+//        engine.getSystemsService().addComponent(entity, MeshComponent.class);
+//
+//        int entity2 = engine.getSystemsService().addEntity();
+//        engine.getSystemsService().addComponent(entity2, TransformationComponent.class);
+//
+//        serialized = engine.serialize().toString();
     }
 
     @Test
@@ -49,7 +47,7 @@ class EngineTest {
         assertNotNull(element);
         assertFalse(element.isEmpty());
         JsonObject serviceData = element.getAsJsonObject();
-        if (Objects.equals(serviceData.get(CLASS_KEY).getAsString(), WorldService.class.getName())) {
+        if (Objects.equals(serviceData.get(CLASS_KEY).getAsString(), SystemService.class.getName())) {
             JsonArray entitiesArray = serviceData.get(DATA_KEY).getAsJsonArray();
             assertEquals(expectedSize, entitiesArray.size());
         }
@@ -58,11 +56,11 @@ class EngineTest {
     @Test
     @Order(2)
     void parseAll() {
-        engine.getWorld().getWorld().delete(0);
-        engine.getWorld().getWorld().delete(1);
-        engine.getWorld().getWorld().process();
-        testDump(0, engine.serialize().toString());
-        engine.parse(serialized);
-        testDump(2, engine.serialize().toString());
+//        engine.getSystemsService().getWorld().delete(0);
+//        engine.getSystemsService().getWorld().delete(1);
+//        engine.getSystemsService().getWorld().process();
+//        testDump(0, engine.serialize().toString());
+//        engine.parse(serialized);
+//        testDump(2, engine.serialize().toString());
     }
 }

@@ -1,48 +1,44 @@
 package com.pine.engine.core.service.camera;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.pine.common.Updatable;
-import com.pine.engine.Engine;
-import com.pine.engine.core.EnvRepository;
-import com.pine.engine.core.service.serialization.SerializableRepository;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.EngineUtils;
+import com.pine.engine.core.repository.CameraRepository;
+import com.pine.engine.core.repository.ClockRepository;
+import com.pine.engine.core.repository.CoreResourceRepository;
+import com.pine.engine.core.repository.RuntimeRepository;
+import com.pine.engine.core.service.AbstractMultithreadedService;
+import com.pine.engine.core.service.resource.UBOService;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class CameraService extends SerializableRepository implements Updatable {
-    private static final Gson GSON = new Gson();
-    transient private final Engine engine;
-    transient private final EnvRepository envRepository;
-    private float pitch = 0.0f;
-    private float yaw = -90.0f;
-    private float sensitivity = 0.1f;
-    transient private float lastMouseX;
-    transient private float lastMouseY;
-    private boolean firstMouseMove = true;
-    private float movementSpeed = 5.0f;
-    transient private String defaultPerspectiveCamera;
-    transient private String defaultOrthographicCamera;
-    private final Map<String, AbstractCamera> cameras = new HashMap<>();
-    transient private AbstractCamera currentCamera = null;
+@EngineInjectable
+public class CameraService extends AbstractMultithreadedService {
+    private static final double LOG_2 = Math.log(2);
 
-    public CameraService(Engine engine) {
-        this.engine = engine;
-        this.envRepository = engine.getInputRepository();
-    }
+    @EngineDependency
+    public CameraRepository repository;
+
+    @EngineDependency
+    public CoreResourceRepository coreResourceRepository;
+
+    @EngineDependency
+    public RuntimeRepository runtimeRepository;
+
+    @EngineDependency
+    public ClockRepository clock;
 
     @Override
-    public void onInitialize() {
-        defaultOrthographicCamera = createNewCamera(true);
-        defaultPerspectiveCamera = createNewCamera(false);
-        currentCamera = getCamera(defaultPerspectiveCamera);
+    public void lateInitialize() {
+        repository.defaultOrthographicCamera = createNewCamera(true);
+        repository.defaultPerspectiveCamera = createNewCamera(false);
+        repository.currentCamera = getCamera(repository.defaultPerspectiveCamera);
+        super.lateInitialize();
     }
 
     public AbstractCamera getCamera(String id) {
-        return cameras.get(id);
+        return repository.cameras.get(id);
     }
 
     public String createNewCamera(boolean isOrthographic) {
@@ -52,8 +48,8 @@ public class CameraService extends SerializableRepository implements Updatable {
         } else {
             newCamera = new PerspectiveCamera();
         }
-        cameras.put(newCamera.getId(), newCamera);
-        newCamera.getPosition().set(0.0f, 0.0f, 5.0f);
+        repository.cameras.put(newCamera.getId(), newCamera);
+        newCamera.position.set(0.0f, 0.0f, 5.0f);
         newCamera.lookAt(0.0f, 0.0f, 0.0f);
         newCamera.setNear(0.1f);
         newCamera.setFar(300.0f);
@@ -62,153 +58,130 @@ public class CameraService extends SerializableRepository implements Updatable {
     }
 
     public void setCurrentCamera(String id) {
-        if (cameras.containsKey(id)) {
-            currentCamera = cameras.get(id);
+        if (repository.cameras.containsKey(id)) {
+            repository.currentCamera = repository.cameras.get(id);
         }
     }
 
     public Map<String, AbstractCamera> getCameras() {
-        return cameras;
+        return repository.cameras;
     }
 
     public String getDefaultOrthographicCamera() {
-        return defaultOrthographicCamera;
+        return repository.defaultOrthographicCamera;
     }
 
     public String getDefaultPerspectiveCamera() {
-        return defaultPerspectiveCamera;
+        return repository.defaultPerspectiveCamera;
     }
 
     public void removeCamera(String id) {
-        if (defaultPerspectiveCamera.equals(id) || defaultOrthographicCamera.equals(id)) {
+        if (repository.defaultPerspectiveCamera.equals(id) || repository.defaultOrthographicCamera.equals(id)) {
             return;
         }
-        cameras.remove(id);
+        repository.cameras.remove(id);
     }
 
     public void setSensitivity(float sensitivity) {
-        this.sensitivity = sensitivity;
+        repository.sensitivity = sensitivity;
     }
 
     public float getSensitivity() {
-        return sensitivity;
+        return repository.sensitivity;
     }
 
     public void setMovementSpeed(float movementSpeed) {
-        this.movementSpeed = movementSpeed;
+        repository.movementSpeed = movementSpeed;
     }
 
     public float getMovementSpeed() {
-        return movementSpeed;
+        return repository.movementSpeed;
     }
 
     @Override
-    public void tick() {
-        currentCamera.setViewportWidth(envRepository.getViewportW());
-        currentCamera.setViewportHeight(envRepository.getViewportH());
-        if (envRepository.isInputFocused()) {
+    protected void tickInternal() {
+        repository.currentCamera.setViewportWidth(runtimeRepository.viewportW);
+        repository.currentCamera.setViewportHeight(runtimeRepository.viewportH);
+        if (runtimeRepository.inputFocused) {
             handleMouseInput();
             handleKeyboardInput();
-            currentCamera.tick();
+            repository.currentCamera.tick();
         } else {
-            firstMouseMove = true;
+            repository.firstMouseMove = true;
         }
+
+        var V = coreResourceRepository.cameraViewUBOState;
+        EngineUtils.copyWithOffset(V, repository.currentCamera.viewProjectionMatrix, 0);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.viewMatrix, 16);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.invViewMatrix, 32);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.position, 48);
+
+        var P = coreResourceRepository.cameraProjectionUBOState;
+        EngineUtils.copyWithOffset(P, repository.currentCamera.projectionMatrix, 0);
+        EngineUtils.copyWithOffset(P, repository.currentCamera.invProjectionMatrix, 16);
+
+        P.put(32, runtimeRepository.viewportW);
+        P.put(33, runtimeRepository.viewportH);
+        P.put(34, (float) (2.0 / (Math.log(repository.currentCamera.projectionMatrix.get(0, 0) + 1) / LOG_2)));
     }
 
     private void handleMouseInput() {
-        float mouseX = envRepository.getMouseX();
-        float mouseY = envRepository.getMouseY();
+        float mouseX = runtimeRepository.mouseX;
+        float mouseY = runtimeRepository.mouseY;
 
-        if (firstMouseMove) {
-            lastMouseX = mouseX;
-            lastMouseY = mouseY;
-            firstMouseMove = false;
+        if (repository.firstMouseMove) {
+            repository.lastMouseX = mouseX;
+            repository.lastMouseY = mouseY;
+            repository.firstMouseMove = false;
         }
 
-        float deltaX = (mouseX - lastMouseX) * sensitivity;
-        float deltaY = (lastMouseY - mouseY) * sensitivity;
+        float deltaX = (mouseX - repository.lastMouseX) * repository.sensitivity;
+        float deltaY = (repository.lastMouseY - mouseY) * repository.sensitivity;
 
-        yaw += deltaX;
-        pitch -= deltaY;
-        pitch = Math.max(-89.0f, Math.min(89.0f, pitch));
+        repository.yaw += deltaX;
+        repository.pitch -= deltaY;
+        repository.pitch = Math.max(-89.0f, Math.min(89.0f, repository.pitch));
 
         updateCameraDirection();
 
-        lastMouseX = mouseX;
-        lastMouseY = mouseY;
+        repository.lastMouseX = mouseX;
+        repository.lastMouseY = mouseY;
     }
 
     private void handleKeyboardInput() {
-        float deltaTime = engine.getClock().totalTime;
-        Vector3f direction = currentCamera.getDirection();
-        var forward = new Vector3f(direction).normalize();
-        var right = direction.cross(currentCamera.getUp()).normalize(); // Right vector
-        Vector3f position = currentCamera.getPosition();
-        if (envRepository.isForwardPressed()) {
-            position.add(forward.mul(movementSpeed * deltaTime)); // Move forward
+        final float deltaTime = clock.totalTime;
+        final Vector3f direction = repository.currentCamera.direction;
+        final var forward = new Vector3f(direction).normalize();
+        final var right = direction.cross(repository.currentCamera.up).normalize(); // Right vector
+        final Vector3f position = repository.currentCamera.position;
+        if (runtimeRepository.forwardPressed) {
+            position.add(forward.mul(repository.movementSpeed * deltaTime)); // Move forward
         }
-        if (envRepository.isBackwardPressed()) {
-            position.sub(forward.mul(movementSpeed * deltaTime)); // Move backward
+        if (runtimeRepository.backwardPressed) {
+            position.sub(forward.mul(repository.movementSpeed * deltaTime)); // Move backward
         }
-        if (envRepository.isLeftPressed()) {
-            position.sub(right.mul(movementSpeed * deltaTime)); // Move left
+        if (runtimeRepository.leftPressed) {
+            position.sub(right.mul(repository.movementSpeed * deltaTime)); // Move left
         }
-        if (envRepository.isRightPressed()) {
-            position.add(right.mul(movementSpeed * deltaTime)); // Move right
+        if (runtimeRepository.rightPressed) {
+            position.add(right.mul(repository.movementSpeed * deltaTime)); // Move right
         }
-        if (envRepository.isUpPressed()) {
-            position.add(currentCamera.getUp().mul(movementSpeed * deltaTime)); // Move up
+        if (runtimeRepository.upPressed) {
+            position.add(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move up
         }
-        if (envRepository.isDownPressed()) {
-            position.sub(currentCamera.getUp().mul(movementSpeed * deltaTime)); // Move down
+        if (runtimeRepository.downPressed) {
+            position.sub(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move down
         }
 
-        currentCamera.tick();
+        repository.currentCamera.tick();
     }
 
     private void updateCameraDirection() {
-        Vector3f direction = currentCamera.getDirection();
-        direction.x = (float) Math.cos(Math.toRadians(yaw)) * (float) Math.cos(Math.toRadians(pitch));
-        direction.y = (float) Math.sin(Math.toRadians(pitch));
-        direction.z = (float) Math.sin(Math.toRadians(yaw)) * (float) Math.cos(Math.toRadians(pitch));
+        Vector3f direction = repository.currentCamera.direction;
+        direction.x = (float) Math.cos(Math.toRadians(repository.yaw)) * (float) Math.cos(Math.toRadians(repository.pitch));
+        direction.y = (float) Math.sin(Math.toRadians(repository.pitch));
+        direction.z = (float) Math.sin(Math.toRadians(repository.yaw)) * (float) Math.cos(Math.toRadians(repository.pitch));
         direction.normalize(direction);
     }
 
-    @Override
-    public JsonElement serializeData() {
-        JsonElement jsonTree = GSON.toJsonTree(this);
-        JsonObject obj = jsonTree.getAsJsonObject();
-        obj.addProperty("currentCamera", currentCamera.getId());
-        JsonArray cameras = new JsonArray();
-        obj.add("cameras", cameras);
-
-        for (var camera : this.cameras.values()) {
-            JsonObject serialized = GSON.toJsonTree(camera).getAsJsonObject();
-            serialized.addProperty("isOrthographic", camera instanceof OrthographicCamera);
-            cameras.add(serialized);
-        }
-        return obj;
-    }
-
-
-    @Override
-    protected void parseInternal(JsonElement data) {
-        JsonObject json = GSON.fromJson(data, JsonObject.class);
-        pitch = json.get("pitch").getAsFloat();
-        yaw = json.get("yaw").getAsFloat();
-        sensitivity = json.get("sensitivity").getAsFloat();
-        firstMouseMove = json.get("firstMouseMove").getAsBoolean();
-        movementSpeed = json.get("movementSpeed").getAsFloat();
-        json.get("cameras").getAsJsonArray().forEach(e -> {
-            JsonObject obj = e.getAsJsonObject();
-            AbstractCamera instance;
-            if (obj.get("isOrthographic").getAsBoolean()) {
-                instance = GSON.fromJson(e, OrthographicCamera.class);
-            } else {
-                instance = GSON.fromJson(e, PerspectiveCamera.class);
-            }
-
-            cameras.put(instance.getId(), instance);
-        });
-    }
 }

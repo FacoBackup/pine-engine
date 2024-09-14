@@ -9,16 +9,20 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.internal.ImGuiWindow;
 
 public abstract class AbstractWindowPanel extends AbstractPanel {
+    public static final float FRAME_SIZE = 25;
     private static final ImVec2 DEFAULT = new ImVec2(-1, -1);
     private static final ImVec2 DEFAULT_MAX = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);
     private static final ImVec2 PIVOT = new ImVec2(0.5f, 0.5f);
 
     private ImGuiWindow window;
-    private final ImVec2 initialSize = DEFAULT.clone();
-    private final ImVec2 minSize = DEFAULT.clone();
-    private final ImVec2 maxSize = DEFAULT_MAX.clone();
-    private final ImVec2 padding = DEFAULT.clone();
+    protected final ImVec2 initialSize = DEFAULT.clone();
+    protected final ImVec2 minSize = DEFAULT.clone();
+    protected final ImVec2 maxSize = DEFAULT_MAX.clone();
+    protected final ImVec2 padding = DEFAULT.clone();
     protected final ImVec2 position = DEFAULT.clone();
+    /**
+     * Window Size; Updated every frame
+     */
     protected final ImVec2 size = DEFAULT.clone();
     private int stylePushCount;
     private AbstractWindowPanel mainWindow;
@@ -35,7 +39,12 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
+        tick();
+        if (!visible) {
+            return;
+        }
+
         if (!initialSize.equals(DEFAULT)) {
             ImGui.setNextWindowSize(initialSize, ImGuiCond.FirstUseEver);
         }
@@ -58,7 +67,7 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
         }
 
         if (window != null) {
-            super.renderInternal();
+            renderInternal();
         }
         ImGui.end();
 
@@ -69,7 +78,8 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
     /**
      * is executed immediately after window is opened
      */
-    protected void afterWindow(){}
+    protected void afterWindow() {
+    }
 
     private void beforeWindow() {
         if (mainWindow != null && mainWindow != this) {

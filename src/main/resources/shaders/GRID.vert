@@ -1,5 +1,6 @@
 layout (location = 0) in vec3 position;
 layout (location = 2) in vec2 uvTexture;
+
 #include "./CAMERA_VIEW_INFO.glsl"
 
 out vec3 worldPosition;

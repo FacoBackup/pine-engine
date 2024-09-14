@@ -1,7 +1,5 @@
 package com.pine.engine.core.service.loader.impl.response;
 
-import com.pine.engine.core.service.loader.AbstractLoaderResponse;
-
 import java.util.List;
 
 public class MeshLoaderResponse extends AbstractLoaderResponse {

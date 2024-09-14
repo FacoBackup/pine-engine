@@ -4,14 +4,14 @@ import com.pine.app.ProjectService;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.projects.panel.ProjectsPanel;
-import com.pine.common.Inject;
+import com.pine.common.InjectBean;
 import imgui.flag.ImGuiDir;
 
 import java.util.List;
 
 public class ProjectsWindow extends AbstractWindow {
 
-    @Inject
+    @InjectBean
     public ProjectService projectService;
 
     @Override

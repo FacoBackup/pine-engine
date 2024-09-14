@@ -1,12 +1,14 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.engine.core.service.resource.resource.AbstractResourceService;
-import com.pine.engine.core.service.resource.resource.IResource;
-import com.pine.engine.core.service.resource.resource.ResourceType;
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.resource.primitives.EmptyRuntimeData;
 import com.pine.engine.core.service.resource.primitives.texture.Texture;
 import com.pine.engine.core.service.resource.primitives.texture.TextureCreationData;
+import com.pine.engine.core.service.resource.resource.AbstractResourceService;
+import com.pine.engine.core.service.resource.resource.IResource;
+import com.pine.engine.core.service.resource.resource.ResourceType;
 
+@EngineInjectable
 public class TextureService extends AbstractResourceService<Texture, EmptyRuntimeData, TextureCreationData> {
 
     @Override
