@@ -6,6 +6,7 @@ import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineUtils;
 import com.pine.engine.core.service.resource.MeshService;
 import com.pine.engine.core.service.resource.ShaderService;
+import com.pine.engine.core.service.resource.fbo.FBO;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshRuntimeData;
@@ -53,24 +54,30 @@ public class GridSystem extends AbstractSystem {
     }
 
     @Override
-    public void render() {
-        if (engineConfig.showGrid && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT) {
+    protected boolean isRenderable() {
+        return engineConfig.showGrid && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT;
+    }
+
+    @Override
+    protected FBO getTargetFBO() {
+        return coreResourceRepository.finalFrame;
+    }
+
+    @Override
+    protected void renderInternal() {
 //            resolution[0] = runtimeRepository.getViewportW();
 //            resolution[1] = runtimeRepository.getViewportH();
 
-            shaderService.bind(toolsResourceRepository.gridShader);
+        shaderService.bind(toolsResourceRepository.gridShader);
 
-            buffer[0] = engineConfig.gridColor;
-            buffer[1] = engineConfig.gridScale;
-            buffer[2] = engineConfig.gridThreshold;
-            buffer[3] = engineConfig.gridOpacity;
+        buffer[0] = engineConfig.gridColor;
+        buffer[1] = engineConfig.gridScale;
+        buffer[2] = engineConfig.gridThreshold;
+        buffer[3] = engineConfig.gridOpacity;
 
-            GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
-            EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, coreResourceRepository.sceneDepthVelocity); // TODO - GET TEXTURE
+        GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
+        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, coreResourceRepository.sceneDepthVelocity); // TODO - GET TEXTURE
 
-            coreResourceRepository.finalFrame.startMapping(false);
-            meshService.bind(coreResourceRepository.planeMesh, DRAW_COMMAND);
-            coreResourceRepository.finalFrame.stop();
-        }
+        meshService.bind(coreResourceRepository.planeMesh, DRAW_COMMAND);
     }
 }

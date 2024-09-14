@@ -16,7 +16,6 @@ public class SystemService implements LateInitializable {
     public EngineInjector engineInjector;
 
     private List<AbstractSystem> systems = List.of(
-            new PreLoopSystem(),
             new ScriptExecutorSystem(),
             new ShadowsSystem(),
             new VisibilityRendererSystem(),

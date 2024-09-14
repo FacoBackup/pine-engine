@@ -4,7 +4,7 @@ import com.pine.engine.core.service.system.AbstractSystem;
 
 public class ShadowsSystem extends AbstractSystem {
     @Override
-    public void render() {
+    protected void renderInternal() {
         processOmnidirectional();
         processDirectional();
     }

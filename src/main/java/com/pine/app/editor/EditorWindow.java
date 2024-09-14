@@ -30,11 +30,6 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    public void tick() {
-        engine.tick();
-    }
-
-    @Override
     protected List<DockDTO> getDockSpaces() {
         DockDTO dockRight = new DockDTO("Viewport", ViewportPanel.class);
         DockDTO dockRightDown = new DockDTO("Inspector", InspectorPanel.class);

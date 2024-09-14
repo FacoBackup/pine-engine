@@ -32,10 +32,10 @@ public class FBO extends AbstractResource {
         return FBO;
     }
 
-    public void startMapping(boolean noClearing) {
+    public void startMapping(boolean clearing) {
         use();
         GL46.glViewport(0, 0, this.width, this.height);
-        if (!noClearing) {
+        if (clearing) {
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
         }
     }

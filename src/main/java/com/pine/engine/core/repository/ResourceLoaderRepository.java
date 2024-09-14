@@ -3,6 +3,7 @@ package com.pine.engine.core.repository;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.loader.AbstractResourceLoader;
 import com.pine.engine.core.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.engine.core.service.loader.impl.response.AudioLoaderResponse;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@EngineInjectable
 public class ResourceLoaderRepository extends SerializableRepository {
     public final List<AbstractLoaderResponse> loadedResources = new ArrayList<>();
     public final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();

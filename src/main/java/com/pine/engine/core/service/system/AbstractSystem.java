@@ -1,21 +1,40 @@
 package com.pine.engine.core.service.system;
 
 
-import com.pine.common.Updatable;
 import com.pine.common.Initializable;
-import com.pine.common.Renderable;
-import com.pine.engine.Engine;
-import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.service.resource.fbo.FBO;
 
 public abstract class AbstractSystem implements Initializable {
+    final public void render() {
+        if (!isRenderable()) {
+            return;
+        }
 
-    @EngineDependency
-    public Engine engine;
+        FBO fbo = getTargetFBO();
+        if (fbo != null) {
+            fbo.startMapping(shouldClearFBO());
+            renderInternal();
+            fbo.stop();
+        } else {
+            renderInternal();
+        }
+    }
 
-    /**
-     * Logic and state update
-     */
-    public abstract void render();
+    protected FBO getTargetFBO() {
+        return null;
+    }
+
+    protected void renderInternal() {
+
+    }
+
+    protected boolean isRenderable() {
+        return false;
+    }
+
+    protected boolean shouldClearFBO() {
+        return false;
+    }
 
     @Override
     public void onInitialize() {

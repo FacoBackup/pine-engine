@@ -5,7 +5,7 @@ import com.pine.engine.core.service.system.AbstractSystem;
 public class PostProcessingSystem extends AbstractSystem {
 
     @Override
-    public void render() {
+    protected void renderInternal() {
         doBokehDOF();
         doMotionBlur();
         doBloom();

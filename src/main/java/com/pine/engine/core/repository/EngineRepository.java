@@ -4,10 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.entity.EntityRepository;
 import com.pine.engine.core.service.entity.EntityService;
 import com.pine.engine.core.service.serialization.SerializableRepository;
 
+@EngineInjectable
 public class EngineRepository extends SerializableRepository {
 
     @EngineDependency
