@@ -1,19 +1,17 @@
 package com.pine.engine.tools.repository;
 
-import com.pine.engine.Engine;
-import com.pine.engine.core.service.EngineInjectable;
+import com.pine.common.Initializable;
 import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.resource.shader.Shader;
 import com.pine.engine.core.service.resource.shader.ShaderCreationData;
+import com.pine.engine.core.EngineDependency;
 
-public class ToolsResourceRepository implements EngineInjectable {
-    private ResourceService resources;
+public class ToolsResourceRepository implements Initializable {
+
+    @EngineDependency
+    public ResourceService resources;
+
     public Shader gridShader;
-
-    @Override
-    public void setEngine(Engine engine) {
-        this.resources = engine.getResourcesService();
-    }
 
     @Override
     public void onInitialize() {

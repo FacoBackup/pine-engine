@@ -4,7 +4,7 @@ in vec3 worldPosition;
 in vec3 cameraPosition;
 uniform vec4 settings;
 
-//import(sceneDepthUtils)
+#include "./SCENE_DEPTH_UTILS.glsl"
 out vec4 finalColor;
 vec2 quadUV;
 

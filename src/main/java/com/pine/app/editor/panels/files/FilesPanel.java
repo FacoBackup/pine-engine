@@ -9,12 +9,9 @@ public class FilesPanel extends AbstractWindowPanel {
     @InjectBean
     public FSService service;
 
-    @InjectBean
-    public ProjectService projectService;
-
     public FilesPanel() {
         super();
-        setContext(new FilesContext(projectService.getCurrentProject().getPath()));
+        setContext(new FilesContext(FSService.getUserRootPath()));
     }
 
     @Override

@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.pine.common.messages.MessageCollector.MESSAGE_DURATION;
+import static com.pine.engine.Engine.GLSL_VERSION;
 
 public abstract class AbstractWindow implements Renderable {
-    private static final String GLSL_VERSION = "#version 130";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;

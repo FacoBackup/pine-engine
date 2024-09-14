@@ -1,10 +1,10 @@
-package com.pine.engine.core;
+package com.pine.engine.core.repository;
 
-import com.pine.common.EngineComponent;
-import com.pine.engine.Engine;
-import com.pine.engine.core.service.EngineInjectable;
+import com.pine.common.Updatable;
+import com.pine.engine.core.EngineInjectable;
 
-public class ClockRepository implements EngineInjectable, EngineComponent {
+@EngineInjectable
+public class ClockRepository implements Updatable {
     public final long startupTime = System.currentTimeMillis();
     public long since = 0;
     public long elapsedTime = 0;

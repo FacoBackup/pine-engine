@@ -1,12 +1,11 @@
-package com.pine.engine.core;
+package com.pine.engine.core.repository;
 
-import com.pine.engine.Engine;
-import com.pine.engine.core.service.EngineInjectable;
 
-public class RuntimeRepository implements EngineInjectable {
-    public final int displayW;
-    public final int displayH;
-    
+import com.pine.engine.core.EngineInjectable;
+
+@EngineInjectable
+public class RuntimeRepository  {
+
     public boolean forwardPressed = false;
     public boolean backwardPressed = false;
     public boolean leftPressed = false;
@@ -18,11 +17,6 @@ public class RuntimeRepository implements EngineInjectable {
     public float mouseY = 0;
     public float viewportW = 0;
     public float viewportH = 0;
-
-    public RuntimeRepository(int displayW, int displayH) {
-        this.displayW = displayW;
-        this.displayH = displayH;
-    }
 
     public boolean isForwardPressed() {
         return forwardPressed;

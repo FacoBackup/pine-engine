@@ -1,8 +1,10 @@
 package com.pine.engine.core.service.resource;
 
 import com.pine.common.fs.FSUtil;
-import com.pine.engine.Engine;
-import com.pine.engine.core.service.EngineInjectable;
+import com.pine.engine.core.repository.CoreResourceRepository;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
+import com.pine.engine.core.type.CoreUBOName;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.shader.Shader;
 import com.pine.engine.core.service.resource.shader.ShaderCreationData;
@@ -16,19 +18,22 @@ import org.lwjgl.opengl.GL46;
 import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.pine.engine.Engine.GLSL_VERSION;
+
+@EngineInjectable
 public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
     private String currentShaderId;
 
-    public ShaderService(Engine engine) {
-        super(engine);
-    }
+    @EngineDependency
+    public UBOService uboService;
+
+    @EngineDependency
+    public CoreResourceRepository coreResources;
 
     @Override
     protected void bindInternal(Shader instance, ShaderRuntimeData data) {
@@ -52,36 +57,58 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     @Override
     protected IResource addInternal(ShaderCreationData data) {
         if (data.absoluteId() != null) {
-            String vertex = processIncludes(data.vertex());
-            String frag = processIncludes(data.fragment());
+            String vertex = GLSL_VERSION + "\n" + processShader(data.vertex());
+            String frag = GLSL_VERSION + "\n" + processShader(data.fragment());
             return create(data.absoluteId(), new ShaderCreationData(vertex, frag, null));
         }
         return create(getId(), data);
     }
 
-    protected String processIncludes(String file) {
-        String input = new String(FSUtil.loadResource(file));
-        String pattern = "#include \"./(\\w+\\.glsl)\"";
-        Pattern regex = Pattern.compile(pattern);
-        Matcher matcher = regex.matcher(input);
-
-        var result = new StringBuilder();
-        while (matcher.find()) {
-            String fileName = "shaders" + File.separator + matcher.group(1);
-            String replacement = new String(FSUtil.loadResource(fileName));
-            matcher.appendReplacement(result, replacement);
-        }
-        matcher.appendTail(result);
-        return result.toString();
-    }
-
     private Shader create(String id, ShaderCreationData data) {
         var instance = new Shader(id, data);
         if (instance.isValid()) {
-            // TODO - BIND UBOs
+            if (data.fragment().contains(CoreUBOName.CAMERA_VIEW.getBlockName()) || data.vertex().contains(CoreUBOName.CAMERA_VIEW.getBlockName()))
+                uboService.bindWithShader(coreResources.cameraViewUBO, instance.getProgram());
+            if (data.fragment().contains(CoreUBOName.CAMERA_PROJECTION.getBlockName()) || data.vertex().contains(CoreUBOName.CAMERA_PROJECTION.getBlockName()))
+                uboService.bindWithShader(coreResources.cameraProjectionUBO, instance.getProgram());
+            if (data.fragment().contains(CoreUBOName.FRAME_COMPOSITION.getBlockName()) || data.vertex().contains(CoreUBOName.FRAME_COMPOSITION.getBlockName()))
+                uboService.bindWithShader(coreResources.frameCompositionUBO, instance.getProgram());
+            if (data.fragment().contains(CoreUBOName.LENS_PP.getBlockName()) || data.vertex().contains(CoreUBOName.LENS_PP.getBlockName()))
+                uboService.bindWithShader(coreResources.lensPostProcessingUBO, instance.getProgram());
+            if (data.fragment().contains(CoreUBOName.SSAO.getBlockName()) || data.vertex().contains(CoreUBOName.SSAO.getBlockName()))
+                uboService.bindWithShader(coreResources.ssaoUBO, instance.getProgram());
+            if (data.fragment().contains(CoreUBOName.UBER.getBlockName()) || data.vertex().contains(CoreUBOName.UBER.getBlockName()))
+                uboService.bindWithShader(coreResources.uberUBO, instance.getProgram());
+            if (data.fragment().contains(CoreUBOName.LIGHTS.getBlockName()) || data.vertex().contains(CoreUBOName.LIGHTS.getBlockName()))
+                uboService.bindWithShader(coreResources.lightsUBO, instance.getProgram());
             return instance;
         }
         return null;
+    }
+
+    protected String processShader(String file) {
+        String input = new String(FSUtil.loadResource(file));
+        return process(input);
+    }
+
+    private String process(String input) {
+        final String pattern = "#include \"./(\\w+\\.glsl)\"";
+        final Pattern regex = Pattern.compile(pattern);
+        final Matcher matcher = regex.matcher(input);
+
+        final var resultBuilder = new StringBuilder();
+        while (matcher.find()) {
+            String fileName = "shaders" + File.separator + matcher.group(1);
+            String replacement = new String(FSUtil.loadResource(fileName));
+            matcher.appendReplacement(resultBuilder, replacement);
+        }
+        matcher.appendTail(resultBuilder);
+
+        String finalResult = resultBuilder.toString();
+        if (finalResult.contains("#include ")) {
+            finalResult = process(finalResult);
+        }
+        return finalResult;
     }
 
     @Override
@@ -111,54 +138,54 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         if (data == null) return;
         Integer uLocation = uniformDTO.getLocation();
         switch (uniformDTO.getType()) {
-            case GLSLType.f:
+            case GLSLType.FLOAT:
                 if (data instanceof FloatBuffer) {
                     GL46.glUniform1fv(uLocation, (FloatBuffer) data);
                 }
                 break;
-            case GLSLType.vec2:
+            case GLSLType.VEC_2:
                 if (data instanceof FloatBuffer) {
                     GL46.glUniform2fv(uLocation, (FloatBuffer) data);
                 }
                 break;
 
-            case GLSLType.vec3:
+            case GLSLType.VEC_3:
                 if (data instanceof FloatBuffer) {
                     GL46.glUniform3fv(uLocation, (FloatBuffer) data);
                 }
                 break;
-            case GLSLType.vec4:
+            case GLSLType.VEC_4:
                 if (data instanceof FloatBuffer) {
                     GL46.glUniform4fv(uLocation, (FloatBuffer) data);
                 }
                 break;
-            case GLSLType.ivec2:
+            case GLSLType.IVEC_2:
                 if (data instanceof IntBuffer) {
                     GL46.glUniform2iv(uLocation, (IntBuffer) data);
                 }
                 break;
-            case GLSLType.ivec3:
+            case GLSLType.IVEC_3:
                 if (data instanceof IntBuffer) {
                     GL46.glUniform3iv(uLocation, (IntBuffer) data);
                 }
                 break;
-            case GLSLType.bool:
+            case GLSLType.BOOL:
                 if (data instanceof IntBuffer) {
                     GL46.glUniform1iv(uLocation, (IntBuffer) data);
                 }
                 break;
-            case GLSLType.mat3:
+            case GLSLType.MAT_3:
                 if (data instanceof FloatBuffer) {
                     GL46.glUniformMatrix3fv(uLocation, false, (FloatBuffer) data);
                 }
                 break;
 
-            case GLSLType.mat4:
+            case GLSLType.MAT_4:
                 if (data instanceof FloatBuffer) {
                     GL46.glUniformMatrix4fv(uLocation, false, (FloatBuffer) data);
                 }
                 break;
-            case GLSLType.samplerCube:
+            case GLSLType.SAMPLER_CUBE:
                 if (data instanceof Integer) {
                     GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
                     GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, (Integer) data);
@@ -166,7 +193,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
                     currentSamplerIndex++;
                 }
                 break;
-            case GLSLType.sampler2D:
+            case GLSLType.SAMPLER_2_D:
                 if (data instanceof Integer) {
                     GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
                     GL46.glBindTexture(GL46.GL_TEXTURE_2D, (Integer) data);

@@ -95,7 +95,7 @@ public class UBO extends AbstractResource {
                 }
                 chunk = 16;
             } else if (tsize == 0) {
-                if (data.getType() == GLSLType.vec3 && chunk == 16) {
+                if (data.getType() == GLSLType.VEC_3 && chunk == 16) {
                     chunk -= size[1];
                 } else {
                     chunk = 16;

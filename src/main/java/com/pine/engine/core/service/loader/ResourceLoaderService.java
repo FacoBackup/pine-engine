@@ -3,21 +3,23 @@ package com.pine.engine.core.service.loader;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.common.EngineComponent;
+import com.pine.common.Updatable;
 import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;
 import com.pine.engine.Engine;
-import com.pine.engine.core.ClockRepository;
-import com.pine.engine.core.service.EngineInjectable;
+import com.pine.engine.core.repository.ClockRepository;
 import com.pine.engine.core.service.loader.impl.AudioLoader;
 import com.pine.engine.core.service.loader.impl.MeshLoader;
 import com.pine.engine.core.service.loader.impl.TextureLoader;
 import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
-import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
+import com.pine.engine.core.service.loader.impl.info.LoadRequest;
+import com.pine.engine.core.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.engine.core.service.loader.impl.response.AudioLoaderResponse;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.engine.core.service.loader.impl.response.TextureLoaderResponse;
 import com.pine.engine.core.service.serialization.SerializableRepository;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
 import jakarta.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,24 +30,39 @@ import java.util.Objects;
 
 import static com.pine.engine.core.service.resource.ResourceService.MAX_TIMEOUT;
 
-public class ResourceLoaderService extends SerializableRepository implements EngineInjectable, EngineComponent {
+@EngineInjectable
+public class ResourceLoaderService extends SerializableRepository implements Updatable {
     private final List<AbstractLoaderResponse> loadedResources = new ArrayList<>();
     private final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();
-    private final ClockRepository clock;
     private long sinceLastCleanup = 0;
 
-    public ResourceLoaderService(Engine engine) {
-        clock = engine.getClock();
-        resourceLoaders.add(new AudioLoader(engine));
-        resourceLoaders.add(new TextureLoader(engine));
-        resourceLoaders.add(new MeshLoader(engine));
+    @EngineDependency
+    public AudioLoader implAudioLoader;
+
+    @EngineDependency
+    public TextureLoader implTextureLoader;
+
+    @EngineDependency
+    public MeshLoader implMeshLoader;
+
+    @EngineDependency
+    public ClockRepository clock;
+
+    public List<AbstractResourceLoader> getResourceLoaders() {
+        if (resourceLoaders.isEmpty()) {
+            resourceLoaders.add(implAudioLoader);
+            resourceLoaders.add(implTextureLoader);
+            resourceLoaders.add(implMeshLoader);
+        }
+        return resourceLoaders;
     }
 
     public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
+
         var dto = new LoadRequest(path, isStaticResource, extraInfo);
         final String extension = path.substring(path.lastIndexOf(".") + 1);
         AbstractLoaderResponse metadata = null;
-        for (AbstractResourceLoader i : resourceLoaders) {
+        for (AbstractResourceLoader i : getResourceLoaders()) {
             if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
                 metadata = process(extraInfo, i, dto);
             }
@@ -105,22 +122,6 @@ public class ResourceLoaderService extends SerializableRepository implements Eng
             jsonElements.add(a.serialize());
         });
         return jsonElements;
-    }
-
-    public AudioLoader getAudioLoader() {
-        return (AudioLoader) resourceLoaders.getFirst();
-    }
-
-    public TextureLoader getTextureLoader() {
-        return (TextureLoader) resourceLoaders.get(1);
-    }
-
-    public MeshLoader getMeshLoader() {
-        return (MeshLoader) resourceLoaders.get(2);
-    }
-
-    public List<AbstractLoaderResponse> getLoadedResources() {
-        return loadedResources;
     }
 
     @Override

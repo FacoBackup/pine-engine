@@ -1,5 +1,5 @@
 package com.pine.common;
 
-public interface EngineComponent {
+public interface Updatable {
     void tick();
 }

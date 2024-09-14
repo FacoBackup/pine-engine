@@ -3,36 +3,34 @@ package com.pine.engine.core.service.resource.ubo;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
 
 public class UBOData {
-    private String name;
-    private GLSLType type;
+    private final String name;
+    private final GLSLType type;
     private Integer offset;
     private Integer dataSize;
     private Integer chunkSize;
     private Integer dataLength;
 
-    public UBOData(String name, GLSLType type, Integer offset, Integer dataSize, Integer chunkSize, Integer dataLength) {
+    private UBOData(String name, GLSLType type) {
         this.name = name;
         this.type = type;
-        this.offset = offset;
-        this.dataSize = dataSize;
-        this.chunkSize = chunkSize;
-        this.dataLength = dataLength;
+    }
+
+    public static UBOData of(String name, GLSLType type) {
+        return new UBOData(name, type);
+    }
+
+    public static UBOData of(String name, GLSLType type, int dataLength) {
+        var ubo = of(name, type);
+        ubo.setDataLength(dataLength);
+        return ubo;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public GLSLType getType() {
         return type;
-    }
-
-    public void setType(GLSLType type) {
-        this.type = type;
     }
 
     public Integer getOffset() {

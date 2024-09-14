@@ -1,4 +1,4 @@
-package com.pine.engine.core;
+package com.pine.engine.core.repository;
 
 import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;

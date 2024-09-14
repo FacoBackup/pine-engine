@@ -1,10 +1,8 @@
 package com.pine.engine.core.modules;
 
 import com.pine.common.Initializable;
-import com.pine.engine.core.service.EngineInjectable;
-import com.pine.engine.core.system.ISystem;
+import com.pine.engine.core.system.AbstractSystem;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +13,7 @@ public interface EngineExternalModule extends Initializable {
      * @param systems: currently instantiated systems
      * @return instantiated systems + additional systems
      */
-    default List<ISystem> getExternalSystems(List<ISystem> systems) {
+    default List<AbstractSystem> getExternalSystems(List<AbstractSystem> systems) {
         return systems;
     }
 
@@ -24,10 +22,10 @@ public interface EngineExternalModule extends Initializable {
     }
 
     /**
-     * Only accessible through systems via @InjectEngineDependency
+     * Only accessible through systems via @EngineDependency
      * @return
      */
-    default List<? extends EngineInjectable> getInjectables() {
+    default List<Object> getInjectables() {
         return Collections.emptyList();
     }
 }

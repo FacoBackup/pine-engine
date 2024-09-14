@@ -1,33 +1,22 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.common.fs.FSUtil;
 import com.pine.engine.Engine;
-import com.pine.engine.core.service.EngineInjectable;
+import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.service.resource.fbo.FBO;
 import com.pine.engine.core.service.resource.fbo.FBOCreationData;
 import com.pine.engine.core.service.resource.primitives.EmptyRuntimeData;
-import com.pine.engine.core.service.resource.primitives.GLSLType;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import com.pine.engine.core.service.resource.shader.Shader;
-import com.pine.engine.core.service.resource.shader.ShaderCreationData;
-import com.pine.engine.core.service.resource.shader.ShaderRuntimeData;
-import com.pine.engine.core.service.resource.shader.UniformDTO;
+import com.pine.engine.core.EngineInjectable;
 import org.lwjgl.opengl.GL46;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+@EngineInjectable
 public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, FBOCreationData> {
     private FBO current;
 
-    public FBOService(Engine engine) {
-        super(engine);
-    }
+    @EngineDependency
+    public Engine engine;
 
     @Override
     protected void unbind() {
@@ -50,8 +39,8 @@ public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, F
 
     @Override
     protected IResource addInternal(FBOCreationData data) {
-        int w = engine.getRuntimeRepository().displayW;
-        int h = engine.getRuntimeRepository().displayH;
+        int w = engine.displayW;
+        int h = engine.displayH;
         if (data.getW() != null) {
             w = data.getW();
         }

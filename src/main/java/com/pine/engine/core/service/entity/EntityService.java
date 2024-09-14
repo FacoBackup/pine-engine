@@ -1,10 +1,11 @@
 package com.pine.engine.core.service.entity;
 
 import com.google.gson.JsonElement;
-import com.pine.engine.core.service.EngineInjectable;
 import com.pine.engine.core.service.serialization.SerializableRepository;
+import com.pine.engine.core.EngineInjectable;
 
-public class EntityService extends SerializableRepository implements EngineInjectable {
+@EngineInjectable
+public class EntityService extends SerializableRepository  {
     private final EntityRepository entityRepository = new EntityRepository();
 
     @Override

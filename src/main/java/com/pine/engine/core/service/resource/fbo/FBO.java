@@ -1,6 +1,6 @@
 package com.pine.engine.core.service.resource.fbo;
 
-import com.pine.engine.core.EngineUtils;
+import com.pine.engine.core.repository.EngineUtils;
 import com.pine.engine.core.service.resource.resource.AbstractResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;

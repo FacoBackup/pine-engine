@@ -10,8 +10,8 @@ public final class UBOCreationData implements ResourceCreationData {
     private final List<UBOData> data;
     private final String blockName;
 
-    public UBOCreationData(List<UBOData> data, String blockName) {
-        this.data = data;
+    public UBOCreationData(String blockName, UBOData ...data) {
+        this.data = List.of(data);
         this.blockName = blockName;
     }
 

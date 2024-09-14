@@ -3,7 +3,7 @@ package com.pine.app.editor.panels.viewport;
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.editor.EditorWindow;
 import com.pine.engine.Engine;
-import com.pine.engine.core.RuntimeRepository;
+import com.pine.engine.core.repository.RuntimeRepository;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 
@@ -32,7 +32,7 @@ public class ViewportPanel extends AbstractWindowPanel {
 
     @Override
     public void renderInternal() {
-        ImGui.image(engine.getFinalFrame(), size.x , size.y - FRAME_SIZE);
+//        ImGui.image(engine.getFinalFrame(), size.x , size.y - FRAME_SIZE);
     }
 
     @Override

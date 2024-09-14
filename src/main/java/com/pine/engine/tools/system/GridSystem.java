@@ -1,10 +1,9 @@
 package com.pine.engine.tools.system;
 
 import com.pine.engine.Engine;
-import com.pine.engine.core.CoreResourceRepository;
-import com.pine.engine.core.RuntimeRepository;
-import com.pine.engine.core.system.InjectEngineDependency;
-import com.pine.engine.core.EngineUtils;
+import com.pine.engine.core.repository.CoreResourceRepository;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.repository.EngineUtils;
 import com.pine.engine.core.service.resource.MeshService;
 import com.pine.engine.core.service.resource.ShaderService;
 import com.pine.engine.core.service.resource.primitives.GLSLType;
@@ -22,48 +21,42 @@ import org.lwjgl.opengl.GL46;
 public class GridSystem extends AbstractSystem {
     private static final MeshRuntimeData DRAW_COMMAND = new MeshRuntimeData(MeshRenderingMode.TRIANGLES);
 
-    @InjectEngineDependency
+    @EngineDependency
     public Engine engine;
 
-    @InjectEngineDependency
+    @EngineDependency
     public ToolsConfigurationModule engineConfig;
 
-    @InjectEngineDependency
+    @EngineDependency
     public ShaderService shaderService;
 
-    @InjectEngineDependency
+    @EngineDependency
     public MeshService meshService;
 
-    @InjectEngineDependency
+    @EngineDependency
     public CoreResourceRepository coreResourceRepository;
 
-    @InjectEngineDependency
+    @EngineDependency
     public ToolsResourceRepository toolsResourceRepository;
 
-    @InjectEngineDependency
-    public RuntimeRepository runtimeRepository;
-
     private final float[] buffer = new float[4];
-    private final float[] resolution = new float[2];
     private final ShaderRuntimeData uniforms = new ShaderRuntimeData();
 
     private UniformDTO depthUniform;
     private UniformDTO settingsUniform;
-    private UniformDTO resolutionUniform;
 
     @Override
     public void onInitialize() {
-        settingsUniform = toolsResourceRepository.gridShader.addUniformDeclaration("settings", GLSLType.vec4);
-        depthUniform = toolsResourceRepository.gridShader.addUniformDeclaration("sceneDepth", GLSLType.sampler2D);
-        resolutionUniform = toolsResourceRepository.gridShader.addUniformDeclaration("resolution", GLSLType.vec2);
+        settingsUniform = toolsResourceRepository.gridShader.addUniformDeclaration("settings", GLSLType.VEC_4);
+        depthUniform = toolsResourceRepository.gridShader.addUniformDeclaration("sceneDepth", GLSLType.SAMPLER_2_D);
         uniforms.getUniformData().put("settings", buffer);
     }
 
     @Override
     public void render() {
         if (engineConfig.showGrid && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT) {
-            resolution[0] = runtimeRepository.getViewportW();
-            resolution[1] = runtimeRepository.getViewportH();
+//            resolution[0] = runtimeRepository.getViewportW();
+//            resolution[1] = runtimeRepository.getViewportH();
 
             shaderService.bind(toolsResourceRepository.gridShader);
 
@@ -74,7 +67,6 @@ public class GridSystem extends AbstractSystem {
 
             GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
             EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, coreResourceRepository.sceneDepthVelocity); // TODO - GET TEXTURE
-            GL46.glUniform2fv(resolutionUniform.getLocation(), resolution);
 
             coreResourceRepository.finalFrame.startMapping(false);
             meshService.bind(coreResourceRepository.planeMesh, DRAW_COMMAND);

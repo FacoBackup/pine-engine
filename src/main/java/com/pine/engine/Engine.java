@@ -6,50 +6,60 @@ import com.google.gson.JsonObject;
 import com.pine.common.Renderable;
 import com.pine.engine.core.*;
 import com.pine.engine.core.modules.EngineExternalModule;
-import com.pine.engine.core.service.EngineInjectable;
+import com.pine.engine.core.repository.*;
 import com.pine.engine.core.service.SystemService;
 import com.pine.engine.core.service.camera.CameraService;
 import com.pine.engine.core.service.entity.EntityService;
 import com.pine.engine.core.service.loader.ResourceLoaderService;
 import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.serialization.SerializableRepository;
-import jakarta.annotation.Nullable;
+import com.pine.engine.core.EngineDependency;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+public class Engine extends SerializableRepository implements Renderable {
+    public static final String GLSL_VERSION = "#version 410";
+    public static final int MAX_LIGHTS = 310;
 
-public class Engine extends SerializableRepository implements EngineInjectable, Renderable {
-    transient private final Map<String, EngineExternalModule> modules = new HashMap<>();
-    transient private final ClockRepository clock = new ClockRepository();
-    transient private final RuntimeRepository runtimeRepository;
-    transient private final CoreResourceRepository coreResourceRepository = new CoreResourceRepository(this);
-    private final EngineConfiguration configuration = new EngineConfiguration();
-    private final CameraService cameraService = new CameraService(this);
-    private final SystemService systemsService = new SystemService(this, modules);
-    private final ResourceService resourcesService = new ResourceService(this);
-    private final ResourceLoaderService resourceLoaderService = new ResourceLoaderService(this);
-    private final EntityService entityService = new EntityService();
+    public final int displayW;
+    public final int displayH;
 
-    public Engine(List<EngineExternalModule> modules, int displayW, int displayH) {
-        this(displayW, displayH);
-        modules.forEach(m -> {
-            this.modules.put(m.getClass().getName(), m);
-        });
-    }
+    @SuppressWarnings("unused")
+    private final EngineInjector engineInjector = new EngineInjector(this);
+
+    @EngineDependency
+    public ModulesService modules;
+
+    @EngineDependency
+    public ClockRepository clock;
+
+    @EngineDependency
+    public RuntimeRepository runtimeRepository;
+
+    @EngineDependency
+    public CoreResourceRepository coreResourceRepository;
+
+    @EngineDependency
+    public ConfigurationRepository configuration;
+
+    @EngineDependency
+    public CameraService cameraService;
+
+    @EngineDependency
+    public SystemService systemsService;
+
+    @EngineDependency
+    public ResourceService resourcesService;
+
+    @EngineDependency
+    public ResourceLoaderService resourceLoaderService;
+
+    @EngineDependency
+    public EntityService entityService;
 
     public Engine(int displayW, int displayH) {
-        runtimeRepository = new RuntimeRepository(displayW, displayH);
-    }
-
-    @Override
-    public void onInitialize() {
-        resourcesService.onInitialize();
-        cameraService.onInitialize();
-        resourceLoaderService.onInitialize();
-        systemsService.onInitialize();
-        coreResourceRepository.onInitialize();
+        this.displayW = displayW;
+        this.displayH = displayH;
     }
 
     @Override
@@ -120,16 +130,11 @@ public class Engine extends SerializableRepository implements EngineInjectable, 
         return resourceLoaderService;
     }
 
-    @Nullable
-    public EngineExternalModule getModule(Class<? extends EngineExternalModule> clazz) {
-        return modules.get(clazz.getName());
-    }
-
     public EntityService getEntityService() {
         return entityService;
     }
 
-    public EngineConfiguration getConfiguration() {
+    public ConfigurationRepository getConfiguration() {
         return configuration;
     }
 
@@ -139,5 +144,9 @@ public class Engine extends SerializableRepository implements EngineInjectable, 
 
     public int getFinalFrame() {
         return coreResourceRepository.finalFrameSampler;
+    }
+
+    public void addModules(List<EngineExternalModule> modules) {
+        this.modules.addModules(modules);
     }
 }

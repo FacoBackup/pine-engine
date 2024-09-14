@@ -1,24 +1,19 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.engine.Engine;
-import com.pine.engine.core.service.EngineInjectable;
 import com.pine.engine.core.service.resource.ubo.UBO;
 import com.pine.engine.core.service.resource.ubo.UBOCreationData;
 import com.pine.engine.core.service.resource.ubo.UBORuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
+import com.pine.engine.core.EngineInjectable;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
 
-// TODO - Runtime data should be object containing new values for UBO
+@EngineInjectable
 public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBOCreationData> {
     private UBO currentUBO;
-
-    public UBOService(Engine engine) {
-        super(engine);
-    }
 
     @Override
     protected void bindInternal(UBO instance, UBORuntimeData data) {
@@ -39,7 +34,7 @@ public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBO
 
     @Override
     protected IResource addInternal(UBOCreationData data) {
-        return null;
+        return new UBO(getId(), data);
     }
 
     @Override
@@ -52,7 +47,8 @@ public class UBOService extends AbstractResourceService<UBO, UBORuntimeData, UBO
         return ResourceType.UBO;
     }
 
-    public void bindWithShader(int shaderProgram) {
+    public void bindWithShader(UBO ubo, int shaderProgram) {
+        bindInternal(ubo);
         GL46.glUseProgram(shaderProgram);
         int index = GL46.glGetUniformBlockIndex(shaderProgram, currentUBO.getBlockName());
         GL46.glUniformBlockBinding(shaderProgram, index, currentUBO.getBlockPoint());

@@ -1,18 +1,14 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.engine.Engine;
-import com.pine.engine.core.service.EngineInjectable;
 import com.pine.engine.core.service.resource.primitives.audio.Audio;
 import com.pine.engine.core.service.resource.primitives.audio.AudioDTO;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
+import com.pine.engine.core.EngineInjectable;
 
+@EngineInjectable
 public class AudioService extends AbstractResourceService<Audio, AudioDTO, AudioDTO> {
-
-    public AudioService(Engine engine) {
-        super(engine);
-    }
 
     @Override
     public void bindInternal(Audio instance, AudioDTO data) {

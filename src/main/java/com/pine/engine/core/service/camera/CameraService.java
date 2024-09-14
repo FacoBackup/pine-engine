@@ -4,20 +4,28 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.common.EngineComponent;
-import com.pine.engine.Engine;
-import com.pine.engine.core.RuntimeRepository;
-import com.pine.engine.core.service.EngineInjectable;
+import com.pine.common.Updatable;
+import com.pine.common.Initializable;
+import com.pine.engine.core.repository.ClockRepository;
+import com.pine.engine.core.repository.RuntimeRepository;
 import com.pine.engine.core.service.serialization.SerializableRepository;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CameraService extends SerializableRepository implements EngineInjectable, EngineComponent {
+@EngineInjectable
+public class CameraService extends SerializableRepository implements Initializable, Updatable {
     private static final Gson GSON = new Gson();
-    transient private final Engine engine;
-    transient private RuntimeRepository runtimeRepository;
+
+    @EngineDependency
+    transient public RuntimeRepository runtimeRepository;
+
+    @EngineDependency
+    transient public ClockRepository clock;
+
     private float pitch = 0.0f;
     private float yaw = -90.0f;
     private float sensitivity = 0.1f;
@@ -30,13 +38,8 @@ public class CameraService extends SerializableRepository implements EngineInjec
     private final Map<String, AbstractCamera> cameras = new HashMap<>();
     transient private AbstractCamera currentCamera = null;
 
-    public CameraService(Engine engine) {
-        this.engine = engine;
-    }
-
     @Override
     public void onInitialize() {
-        this.runtimeRepository = engine.getRuntimeRepository();
         defaultOrthographicCamera = createNewCamera(true);
         defaultPerspectiveCamera = createNewCamera(false);
         currentCamera = getCamera(defaultPerspectiveCamera);
@@ -140,7 +143,7 @@ public class CameraService extends SerializableRepository implements EngineInjec
     }
 
     private void handleKeyboardInput() {
-        float deltaTime = engine.getClock().totalTime;
+        float deltaTime = clock.totalTime;
         Vector3f direction = currentCamera.getDirection();
         var forward = new Vector3f(direction).normalize();
         var right = direction.cross(currentCamera.getUp()).normalize(); // Right vector

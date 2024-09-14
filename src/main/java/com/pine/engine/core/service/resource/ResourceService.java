@@ -1,13 +1,12 @@
 package com.pine.engine.core.service.resource;
 
-import com.pine.common.EngineComponent;
+import com.pine.common.Updatable;
+import com.pine.common.Initializable;
 import com.pine.common.Loggable;
-import com.pine.engine.Engine;
-import com.pine.engine.core.ClockRepository;
-import com.pine.engine.core.RuntimeRepository;
-import com.pine.engine.core.service.EngineInjectable;
-import com.pine.engine.core.service.resource.shader.ShaderCreationData;
+import com.pine.engine.core.repository.ClockRepository;
 import com.pine.engine.core.service.resource.resource.*;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,29 +14,52 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ResourceService implements Loggable, EngineInjectable, EngineComponent {
+@EngineInjectable
+public class ResourceService implements Loggable, Updatable {
     public static final long MAX_TIMEOUT = 5 * 60 * 1000;
+
+    @EngineDependency
+    public ClockRepository clock;
+
+    @EngineDependency
+    public AudioService implAudioService;
+
+    @EngineDependency
+    public MeshService implMeshService;
+
+    @EngineDependency
+    public ShaderService implShaderService;
+
+    @EngineDependency
+    public TextureService implTextureService;
+
+    @EngineDependency
+    public UBOService implUBOService;
+
+    @EngineDependency
+    public FBOService implFBOService;
+
+    private final List<AbstractResourceService<?, ?, ?>> implementations = new ArrayList<>();
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();
     private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
-    private final List<AbstractResourceService<?, ?, ?>> implementations = new ArrayList<>();
-    private final ClockRepository clock;
     private long sinceLastCleanup = 0;
 
-    public ResourceService(Engine engine) {
-        implementations.add(new AudioService(engine));
-        implementations.add(new MeshService(engine));
-        implementations.add(new ShaderService(engine));
-        implementations.add(new TextureService(engine));
-        implementations.add(new UBOService(engine));
-        implementations.add(new FBOService(engine));
-
-        this.clock = engine.getClock();
+    public List<AbstractResourceService<?, ?, ?>> getImplementations() {
+        if(implementations.isEmpty()){
+            implementations.add(implAudioService);
+            implementations.add(implMeshService);
+            implementations.add(implShaderService);
+            implementations.add(implTextureService);
+            implementations.add(implUBOService);
+            implementations.add(implFBOService);
+        }
+        return implementations;
     }
 
     public IResource addResource(ResourceCreationData data) {
         IResource instance = null;
-        for (var i : implementations) {
+        for (var i : getImplementations()) {
             if (i.getResourceType() == data.getResourceType()) {
                 instance = i.add(data);
             }
@@ -62,7 +84,7 @@ public class ResourceService implements Loggable, EngineInjectable, EngineCompon
             return;
         }
 
-        for (var i : implementations) {
+        for (var i : getImplementations()) {
             if (i.getResourceType() == resource.getResourceType()) {
                 i.remove(resource);
             }
@@ -71,7 +93,7 @@ public class ResourceService implements Loggable, EngineInjectable, EngineCompon
     }
 
     public <T extends IResource, R extends IResourceRuntimeData> void bind(T instance, R data) {
-        for (var i : implementations) {
+        for (var i : getImplementations()) {
             if (i.getResourceType() == instance.getResourceType()) {
                 i.bind(instance, data);
             }
@@ -79,7 +101,7 @@ public class ResourceService implements Loggable, EngineInjectable, EngineCompon
     }
 
     public <T extends IResource> void bind(T instance) {
-        for (var i : implementations) {
+        for (var i : getImplementations()) {
             if (i.getResourceType() == instance.getResourceType()) {
                 i.bind(instance);
             }
@@ -91,7 +113,7 @@ public class ResourceService implements Loggable, EngineInjectable, EngineCompon
     }
 
     public void shutdown() {
-        implementations.forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
+        getImplementations().forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
     }
 
     @Override
@@ -112,10 +134,6 @@ public class ResourceService implements Loggable, EngineInjectable, EngineCompon
                 usedResources.get(resource.getResourceType()).add(resource.getId());
             });
         }
-    }
-
-    public List<AbstractResourceService<?, ?, ?>> getImplementations() {
-        return implementations;
     }
 
     public IResource getById(String id) {

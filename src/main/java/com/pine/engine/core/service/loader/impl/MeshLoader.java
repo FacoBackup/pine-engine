@@ -1,15 +1,17 @@
 package com.pine.engine.core.service.loader.impl;
 
-import com.pine.engine.Engine;
-import com.pine.engine.core.service.loader.AbstractLoaderResponse;
+import com.pine.engine.core.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.engine.core.service.loader.AbstractResourceLoader;
-import com.pine.engine.core.service.loader.LoadRequest;
+import com.pine.engine.core.service.loader.impl.info.LoadRequest;
 import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.response.MeshInstanceMetadata;
 import com.pine.engine.core.service.loader.impl.response.MeshLoaderResponse;
+import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.engine.core.service.resource.resource.ResourceType;
+import com.pine.engine.core.EngineDependency;
+import com.pine.engine.core.EngineInjectable;
 import jakarta.annotation.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
@@ -20,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@EngineInjectable
 public class MeshLoader extends AbstractResourceLoader {
 
-    public MeshLoader(Engine engine) {
-        super(engine);
-    }
+    @EngineDependency
+    public ResourceService resources;
 
     @Override
     public AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
@@ -111,7 +113,7 @@ public class MeshLoader extends AbstractResourceLoader {
                     uvs[i * 2 + 1] = nUV.get(i).y();
                 }
             }
-            resourceId = engine.getResourcesService().addResource(new MeshCreationData(vertices, indices, normals, uvs)).getId();
+            resourceId = resources.addResource(new MeshCreationData(vertices, indices, normals, uvs)).getId();
         }
         return new MeshInstanceMetadata(mesh.mName().dataString(), resource.path(), index, resourceId);
     }
