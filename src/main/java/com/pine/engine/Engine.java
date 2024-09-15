@@ -7,7 +7,7 @@ import com.pine.engine.core.repository.*;
 import com.pine.engine.core.service.LightService;
 import com.pine.engine.core.service.TransformationService;
 import com.pine.engine.core.service.camera.CameraService;
-import com.pine.engine.core.service.entity.EntityService;
+import com.pine.engine.core.service.world.WorldService;
 import com.pine.engine.core.service.loader.ResourceLoaderService;
 import com.pine.engine.core.service.resource.ResourceService;
 import com.pine.engine.core.service.system.SystemService;
@@ -55,7 +55,7 @@ public class Engine {
     public ResourceLoaderService resourceLoaderService;
 
     @EngineDependency
-    public EntityService entityService;
+    public WorldService worldService;
 
     @EngineDependency
     public TransformationService transformationService;
@@ -102,8 +102,8 @@ public class Engine {
         return resourceLoaderService;
     }
 
-    public EntityService getEntityService() {
-        return entityService;
+    public WorldService getWorld() {
+        return worldService;
     }
 
     public ConfigurationRepository getConfiguration() {

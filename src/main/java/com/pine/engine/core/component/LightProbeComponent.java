@@ -1,13 +1,28 @@
 package com.pine.engine.core.component;
 
-import java.util.List;
+import com.pine.engine.core.EngineInjectable;
 
-public class LightProbeComponent extends AbstractComponent {
+import java.util.List;
+import java.util.Set;
+
+@EngineInjectable
+public class LightProbeComponent extends AbstractComponent<LightProbeComponent> {
     public int mipmaps = 6;
-    public int maxDistance = 50;
+    /**
+     * Only entities within  this radius will be rendered into the probe
+     */
+    public int collectionRadius = 50;
+
+    public LightProbeComponent(int entityId) {
+        super(entityId);
+    }
+
+    public LightProbeComponent() {
+        super();
+    }
 
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class);
     }
 }

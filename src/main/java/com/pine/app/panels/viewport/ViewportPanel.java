@@ -1,7 +1,7 @@
-package com.pine.app.editor.panels.viewport;
+package com.pine.app.panels.viewport;
 
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
-import com.pine.app.editor.EditorWindow;
+import com.pine.app.EditorWindow;
 import com.pine.engine.Engine;
 import com.pine.engine.core.repository.RuntimeRepository;
 import imgui.ImGui;

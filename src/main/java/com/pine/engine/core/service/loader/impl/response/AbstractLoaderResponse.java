@@ -12,19 +12,8 @@ import java.util.UUID;
 public abstract class AbstractLoaderResponse implements SerializableResource {
     private boolean isLoaded;
     private String filePath;
-    private String id = UUID.randomUUID().toString();
 
     public AbstractLoaderResponse() {
-    }
-
-    @Override
-    public String getInstanceId() {
-        return id;
-    }
-
-    @Override
-    public void setInstanceId(String id) {
-        this.id = id;
     }
 
     public AbstractLoaderResponse(boolean isLoaded, String filePath) {

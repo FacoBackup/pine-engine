@@ -1,10 +1,25 @@
 package com.pine.engine.core.component;
 
-import java.util.List;
+import com.pine.engine.core.EngineInjectable;
 
-public class CullingComponent extends AbstractComponent{
+import java.util.List;
+import java.util.Set;
+
+@EngineInjectable
+public class CullingComponent extends AbstractComponent<CullingComponent> {
+
+    public long maxDistanceFromCamera = 300;
+
+    public CullingComponent(int entityId) {
+        super(entityId);
+    }
+
+    public CullingComponent() {
+        super();
+    }
+
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class);
     }
 }

@@ -1,15 +1,26 @@
 package com.pine.engine.core.component;
 
-import java.util.List;
+import com.pine.engine.core.EngineInjectable;
 
-public class SpriteComponent extends AbstractComponent {
-    public String imageID;
-    public final int[] attributes = {0, 0};
+import java.util.List;
+import java.util.Set;
+
+@EngineInjectable
+public class SpriteComponent extends AbstractComponent<SpriteComponent> {
+    public String textureId;
     public boolean keepSameSize = true;
     public boolean alwaysFaceCamera = true;
 
+    public SpriteComponent(int entityId) {
+        super(entityId);
+    }
+
+    public SpriteComponent() {
+        super();
+    }
+
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class);
     }
 }

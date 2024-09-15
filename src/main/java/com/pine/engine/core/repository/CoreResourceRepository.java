@@ -107,7 +107,9 @@ public class CoreResourceRepository implements LateInitializable {
     @Override
     public void lateInitialize() {
         var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
-        planeMesh = (Mesh) resources.getById(planeResponse.getMeshes().getFirst().id());
+        if (planeResponse != null) {
+            planeMesh = (Mesh) resources.getById(planeResponse.getMeshes().getFirst().id());
+        }
         quadMesh = (Mesh) resources.addResource(new MeshCreationData(
                 new float[]{-1, -1, (float) -4.371138828673793e-8, 1, -1, (float) -4.371138828673793e-8, -1, 1, 4.371138828673793e-8F, 1, 1, 4.371138828673793e-8F},
                 new int[]{0, 1, 3, 0, 3, 2},

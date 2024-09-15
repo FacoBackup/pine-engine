@@ -1,4 +1,4 @@
-package com.pine.app.editor.panels.files;
+package com.pine.app.panels.files;
 
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.TableView;

@@ -1,10 +1,23 @@
 package com.pine.engine.core.component;
 
-import java.util.List;
+import com.pine.engine.core.EngineInjectable;
 
-public class PhysicsColliderComponent extends AbstractComponent {
+import java.util.List;
+import java.util.Set;
+
+@EngineInjectable
+public class PhysicsColliderComponent extends AbstractComponent<PhysicsColliderComponent> {
+
+    public PhysicsColliderComponent(int entityId) {
+        super(entityId);
+    }
+
+    public PhysicsColliderComponent() {
+        super();
+    }
+
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class, RigidBodyComponent.class, MeshComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class, RigidBodyComponent.class, MeshComponent.class);
     }
 }

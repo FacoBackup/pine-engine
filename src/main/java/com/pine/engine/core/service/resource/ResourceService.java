@@ -17,43 +17,15 @@ public class ResourceService extends AbstractMultithreadedService implements Log
     public static final int MAX_TIMEOUT = 5 * 60 * 1000;
 
     @EngineDependency
-    public AudioService implAudioService;
+    public List<AbstractResourceService> implementations;
 
-    @EngineDependency
-    public MeshService implMeshService;
-
-    @EngineDependency
-    public ShaderService implShaderService;
-
-    @EngineDependency
-    public TextureService implTextureService;
-
-    @EngineDependency
-    public UBOService implUBOService;
-
-    @EngineDependency
-    public FBOService implFBOService;
-
-    private final List<AbstractResourceService<?, ?, ?>> implementations = new ArrayList<>();
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();
     private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
 
-    public List<AbstractResourceService<?, ?, ?>> getImplementations() {
-        if (implementations.isEmpty()) {
-            implementations.add(implAudioService);
-            implementations.add(implMeshService);
-            implementations.add(implShaderService);
-            implementations.add(implTextureService);
-            implementations.add(implUBOService);
-            implementations.add(implFBOService);
-        }
-        return implementations;
-    }
-
     public IResource addResource(ResourceCreationData data) {
         IResource instance = null;
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == data.getResourceType()) {
                 instance = i.add(data);
             }
@@ -78,7 +50,7 @@ public class ResourceService extends AbstractMultithreadedService implements Log
             return;
         }
 
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == resource.getResourceType()) {
                 i.remove(resource);
             }
@@ -87,7 +59,7 @@ public class ResourceService extends AbstractMultithreadedService implements Log
     }
 
     public <T extends IResource, R extends IResourceRuntimeData> void bind(T instance, R data) {
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == instance.getResourceType()) {
                 i.bind(instance, data);
             }
@@ -95,7 +67,7 @@ public class ResourceService extends AbstractMultithreadedService implements Log
     }
 
     public <T extends IResource> void bind(T instance) {
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == instance.getResourceType()) {
                 i.bind(instance);
             }
@@ -107,7 +79,7 @@ public class ResourceService extends AbstractMultithreadedService implements Log
     }
 
     public void shutdown() {
-        getImplementations().forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
+        implementations.forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
     }
 
     @Override

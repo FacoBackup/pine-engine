@@ -1,5 +1,6 @@
-package com.pine.app;
+package com.pine.app.repository;
 
+import com.pine.app.service.ProjectDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository

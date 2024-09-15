@@ -1,11 +1,14 @@
 package com.pine.engine.core.component;
 
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.type.AtmosphereType;
 import org.joml.Vector3f;
 
-import java.util.List;
+import java.util.Set;
 
-public class AtmosphereComponent extends AbstractComponent {
+@EngineInjectable
+public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> {
+    
     public float elapsedTime = 0;
     public Vector3f sunDirection = new Vector3f(0, 1, 1);
     public int maxSamples = 10;
@@ -19,9 +22,17 @@ public class AtmosphereComponent extends AbstractComponent {
     public float[] betaMie = {1.0f, 1.0f, 1.0f};
     public float threshold = 0;
 
+    public AtmosphereComponent() {
+        super();
+    }
+
+    public AtmosphereComponent(int entityId) {
+        super(entityId);
+    }
+
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class);
     }
 
     public void setElapsedTime(float elapsedTime) {

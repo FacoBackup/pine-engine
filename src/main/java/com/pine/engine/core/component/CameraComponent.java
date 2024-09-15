@@ -1,8 +1,12 @@
 package com.pine.engine.core.component;
 
-import java.util.List;
+import com.pine.engine.core.EngineInjectable;
 
-public class CameraComponent extends AbstractComponent {
+import java.util.List;
+import java.util.Set;
+
+@EngineInjectable
+public class CameraComponent extends AbstractComponent<CameraComponent> {
     public float fov = 45.0f;
     public boolean dynamicAspectRatio = true;
     public float aspectRatio = 1.0f;
@@ -34,8 +38,16 @@ public class CameraComponent extends AbstractComponent {
     public int samplesDOF = 100;
     public boolean enabledDOF = false;
 
+    public CameraComponent(int entityId) {
+        super(entityId);
+    }
+
+    public CameraComponent() {
+        super();
+    }
+
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class);
     }
 }

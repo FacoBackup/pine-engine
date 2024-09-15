@@ -1,13 +1,14 @@
-package com.pine.app.editor;
+package com.pine.app;
 
-import com.pine.app.ProjectDTO;
-import com.pine.app.ProjectService;
+import com.pine.app.panels.hierarchy.HierarchyPanel;
+import com.pine.app.service.ProjectDTO;
+import com.pine.app.service.ProjectService;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.window.AbstractWindow;
-import com.pine.app.editor.panels.console.ConsolePanel;
-import com.pine.app.editor.panels.files.FilesPanel;
-import com.pine.app.editor.panels.inspector.InspectorPanel;
-import com.pine.app.editor.panels.viewport.ViewportPanel;
+import com.pine.app.panels.console.ConsolePanel;
+import com.pine.app.panels.files.FilesPanel;
+import com.pine.app.panels.inspector.InspectorPanel;
+import com.pine.app.panels.viewport.ViewportPanel;
 import com.pine.common.InjectBean;
 import com.pine.engine.Engine;
 import com.pine.engine.tools.ToolsConfigurationModule;
@@ -31,20 +32,26 @@ public class EditorWindow extends AbstractWindow {
 
     @Override
     protected List<DockDTO> getDockSpaces() {
-        DockDTO dockRight = new DockDTO("Viewport", ViewportPanel.class);
+        DockDTO dockCenter = new DockDTO("Viewport", ViewportPanel.class);
+        DockDTO dockRightUp = new DockDTO("Hierarchy", HierarchyPanel.class);
         DockDTO dockRightDown = new DockDTO("Inspector", InspectorPanel.class);
         DockDTO dockDown = new DockDTO("Console", ConsolePanel.class);
         DockDTO dockDownRight = new DockDTO("Files", FilesPanel.class);
 
-        dockRight.setOrigin(null);
-        dockRight.setSplitDir(ImGuiDir.Right);
-        dockRight.setSizeRatioForNodeAtDir(0.17f);
-        dockRight.setOutAtOppositeDir(null);
+        dockCenter.setOrigin(null);
+        dockCenter.setSplitDir(ImGuiDir.Right);
+        dockCenter.setSizeRatioForNodeAtDir(0.17f);
+        dockCenter.setOutAtOppositeDir(null);
 
-        dockRightDown.setOrigin(dockRight);
+        dockRightUp.setOrigin(dockCenter);
+        dockRightUp.setSplitDir(ImGuiDir.Down);
+        dockRightUp.setSizeRatioForNodeAtDir(0.4f);
+        dockRightUp.setOutAtOppositeDir(dockCenter);
+
+        dockRightDown.setOrigin(dockRightUp);
         dockRightDown.setSplitDir(ImGuiDir.Down);
         dockRightDown.setSizeRatioForNodeAtDir(0.6f);
-        dockRightDown.setOutAtOppositeDir(dockRight);
+        dockRightDown.setOutAtOppositeDir(dockRightUp);
 
         dockDown.setOrigin(null);
         dockDown.setSplitDir(ImGuiDir.Down);
@@ -57,7 +64,8 @@ public class EditorWindow extends AbstractWindow {
         dockDownRight.setOutAtOppositeDir(dockDown);
 
         return List.of(
-                dockRight,
+                dockCenter,
+                dockRightUp,
                 dockRightDown,
                 dockDown,
                 dockDownRight

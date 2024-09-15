@@ -1,4 +1,4 @@
-package com.pine.app.editor.panels.inspector;
+package com.pine.app.panels.inspector;
 
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 

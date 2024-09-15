@@ -1,9 +1,9 @@
-package com.pine.app.editor.panels.files;
+package com.pine.app.panels.files;
 
 import com.pine.app.core.Icon;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.TableView;
-import com.pine.app.editor.EditorWindow;
+import com.pine.app.EditorWindow;
 import com.pine.common.fs.FileInfoDTO;
 import com.pine.engine.core.service.loader.ResourceLoaderService;
 import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;

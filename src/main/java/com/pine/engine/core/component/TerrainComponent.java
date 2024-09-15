@@ -1,14 +1,26 @@
 package com.pine.engine.core.component;
 
-import java.util.List;
+import com.pine.engine.core.EngineInjectable;
 
-public class TerrainComponent extends AbstractComponent {
+import java.util.List;
+import java.util.Set;
+
+@EngineInjectable
+public class TerrainComponent extends AbstractComponent<TerrainComponent> {
     public boolean castsShadows = true;
-    public String terrainID;
+    public String heightMapTextureId;
     public float heightScale = 1;
 
+    public TerrainComponent(int entityId) {
+        super(entityId);
+    }
+
+    public TerrainComponent() {
+        super();
+    }
+
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class);
     }
 }

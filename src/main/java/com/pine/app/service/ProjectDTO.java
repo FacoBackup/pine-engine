@@ -1,4 +1,4 @@
-package com.pine.app;
+package com.pine.app.service;
 
 import com.pine.app.core.ui.view.RepeatingViewItem;
 

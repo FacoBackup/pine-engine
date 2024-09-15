@@ -1,4 +1,4 @@
-package com.pine.app.editor.panels.console;
+package com.pine.app.panels.console;
 
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 

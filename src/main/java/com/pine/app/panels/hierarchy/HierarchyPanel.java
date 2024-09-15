@@ -1,0 +1,40 @@
+package com.pine.app.panels.hierarchy;
+
+import com.pine.app.EditorWindow;
+import com.pine.app.core.ui.panel.AbstractWindowPanel;
+import com.pine.app.core.ui.view.FragmentView;
+import com.pine.app.core.ui.view.TreeView;
+import com.pine.engine.core.service.world.WorldService;
+import imgui.ImGui;
+
+public class HierarchyPanel extends AbstractWindowPanel {
+
+    private WorldService world;
+
+    @Override
+    protected String getDefinition() {
+        return """
+            <group>
+                <fragment id='hierarchyHeader'/>
+                <tree id='hierarchyTree'/>
+            </group>
+            """;
+    }
+
+    @Override
+    public void onInitialize() {
+        super.onInitialize();
+        world = ((EditorWindow) document.getWindow()).getEngine().getWorld();
+
+        var headerContainer = (FragmentView) document.getElementById("hierarchyHeader");
+        headerContainer.appendChild(new HierarchyHeaderPanel());
+
+        var hierarchyTree = (TreeView) document.getElementById("hierarchyTree");
+        hierarchyTree.setTree(world.getHierarchyTree());
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Hierarchy";
+    }
+}
