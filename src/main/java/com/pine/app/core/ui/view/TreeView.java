@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public class TreeView extends AbstractView {
     private static final int FLAGS = ImGuiTreeNodeFlags.SpanFullWidth;
     private final WeakHashMap<AbstractTree<?>, Boolean> selected = new WeakHashMap<>();
-    private Consumer<Collection<AbstractTree<?>>> onClick;
+    private BiConsumer<AbstractTree<?>, Boolean> onClick;
     private AbstractTree<?> tree;
 
     public TreeView(View parent, String id) {
@@ -42,13 +42,14 @@ public class TreeView extends AbstractView {
 
         boolean isOpen = ImGui.treeNodeEx(branch.key, flags, branch.getName());
         if (ImGui.isItemClicked()) {
-            if (!ImGui.isKeyPressed(ImGuiKey.LeftCtrl)) {
+            boolean isMultiSelect = ImGui.isKeyPressed(ImGuiKey.LeftCtrl);
+            if (!isMultiSelect) {
                 selected.clear();
             }
             selected.put(branch, true);
 
             if (onClick != null) {
-                onClick.accept(selected.keySet());
+                onClick.accept(branch, isMultiSelect);
             }
         }
 
@@ -60,7 +61,7 @@ public class TreeView extends AbstractView {
         }
     }
 
-    public void setOnClick(Consumer<Collection<AbstractTree<?>>> onClick) {
+    public void setOnClick(BiConsumer<AbstractTree<?>, Boolean> onClick) {
         this.onClick = onClick;
     }
 

@@ -1,6 +1,7 @@
 package com.pine.app;
 
 import com.pine.app.panels.hierarchy.HierarchyPanel;
+import com.pine.app.repository.EntitySelectionRepository;
 import com.pine.app.service.ProjectDTO;
 import com.pine.app.service.ProjectService;
 import com.pine.app.core.ui.panel.DockDTO;
@@ -18,8 +19,12 @@ import imgui.flag.ImGuiDir;
 import java.util.List;
 
 public class EditorWindow extends AbstractWindow {
+
     @InjectBean
     public ProjectService projectService;
+
+    @InjectBean
+    private EntitySelectionRepository selectionRepository;
 
     private Engine engine;
 
@@ -27,7 +32,7 @@ public class EditorWindow extends AbstractWindow {
     public void onInitialize() {
         super.onInitialize();
         engine = new Engine(displayW, displayH);
-        engine.addModules(List.of(new ToolsModule(), new ToolsConfigurationModule()));
+        engine.addModules(List.of(new ToolsModule(), new ToolsConfigurationModule(selectionRepository.getSelected())));
     }
 
     @Override

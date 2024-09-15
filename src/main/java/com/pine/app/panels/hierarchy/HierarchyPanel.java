@@ -4,21 +4,28 @@ import com.pine.app.EditorWindow;
 import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.core.ui.view.FragmentView;
 import com.pine.app.core.ui.view.TreeView;
+import com.pine.app.repository.EntitySelectionRepository;
+import com.pine.common.InjectBean;
+import com.pine.engine.core.component.AbstractComponent;
+import com.pine.engine.core.component.MetadataComponent;
 import com.pine.engine.core.service.world.WorldService;
 import imgui.ImGui;
 
 public class HierarchyPanel extends AbstractWindowPanel {
+
+    @InjectBean
+    private EntitySelectionRepository selectionRepository;
 
     private WorldService world;
 
     @Override
     protected String getDefinition() {
         return """
-            <group>
-                <fragment id='hierarchyHeader'/>
-                <tree id='hierarchyTree'/>
-            </group>
-            """;
+                <group>
+                    <fragment id='hierarchyHeader'/>
+                    <tree id='hierarchyTree'/>
+                </group>
+                """;
     }
 
     @Override
@@ -31,6 +38,12 @@ public class HierarchyPanel extends AbstractWindowPanel {
 
         var hierarchyTree = (TreeView) document.getElementById("hierarchyTree");
         hierarchyTree.setTree(world.getHierarchyTree());
+        hierarchyTree.setOnClick((branch, multiSelect) -> {
+            if (!multiSelect) {
+                selectionRepository.clearSelection();
+            }
+            selectionRepository.addSelected(((AbstractComponent<?>) branch.data).getEntityId());
+        });
     }
 
     @Override

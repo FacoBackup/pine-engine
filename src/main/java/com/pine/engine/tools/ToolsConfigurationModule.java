@@ -2,7 +2,11 @@ package com.pine.engine.tools;
 
 import com.pine.engine.core.modules.EngineExternalModule;
 
+import java.util.LinkedList;
+
 public class ToolsConfigurationModule implements EngineExternalModule {
+    public final LinkedList<Integer> selected;
+
     // Grid settings
     public float gridColor = 0.3f;
     public float gridScale = 1f;
@@ -22,4 +26,8 @@ public class ToolsConfigurationModule implements EngineExternalModule {
     public float[] outlineColor = {1f, 0.5f, 0f};
 
     public ExecutionEnvironment environment = ExecutionEnvironment.DEVELOPMENT;
+
+    public ToolsConfigurationModule(LinkedList<Integer> selected) {
+        this.selected = selected;
+    }
 }
