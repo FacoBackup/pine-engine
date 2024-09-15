@@ -1,5 +1,6 @@
 package com.pine.engine.core.service.system;
 
+import com.pine.common.Updatable;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.EngineInjector;
@@ -9,7 +10,7 @@ import com.pine.engine.core.service.system.impl.*;
 import java.util.List;
 
 @EngineInjectable
-public class SystemService implements LateInitializable {
+public class SystemService implements LateInitializable, Updatable {
     @EngineDependency
     public EngineInjector engineInjector;
 
@@ -45,7 +46,8 @@ public class SystemService implements LateInitializable {
         this.systems = systems;
     }
 
-    public void render() {
+    @Override
+    public void tick() {
         for (var system : systems) {
             system.render();
         }

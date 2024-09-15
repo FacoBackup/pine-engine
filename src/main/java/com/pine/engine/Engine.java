@@ -71,7 +71,8 @@ public class Engine {
 
     public void render() {
         clock.tick();
-        systemsService.render();
+        resourcesService.tick();
+        systemsService.tick();
     }
 
     public void shutdown() {
