@@ -9,7 +9,7 @@ class ShaderServiceTest {
 
     @Test
     void processShader() {
-        ShaderService shaderService = new ShaderService(null);
+        ShaderService shaderService = new ShaderService();
         String result = shaderService.processShader("shaders" + File.separator + "TO_BE_INJECTED.frag");
         Assertions.assertTrue(result.contains("// THIS WAS HERE BEFORE"));
         Assertions.assertFalse(result.contains("#include"));

@@ -7,9 +7,7 @@ import com.pine.app.core.ui.view.TreeView;
 import com.pine.app.repository.EntitySelectionRepository;
 import com.pine.common.InjectBean;
 import com.pine.engine.core.component.AbstractComponent;
-import com.pine.engine.core.component.MetadataComponent;
 import com.pine.engine.core.service.world.WorldService;
-import imgui.ImGui;
 
 public class HierarchyPanel extends AbstractWindowPanel {
 

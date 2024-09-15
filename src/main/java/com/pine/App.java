@@ -1,7 +1,7 @@
 package com.pine;
 
-import com.pine.app.core.service.WindowService;
 import com.pine.app.EditorWindow;
+import com.pine.app.core.service.WindowService;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

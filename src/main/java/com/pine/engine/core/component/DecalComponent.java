@@ -3,7 +3,6 @@ package com.pine.engine.core.component;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.type.MaterialRenderingType;
 
-import java.util.List;
 import java.util.Set;
 
 @EngineInjectable

@@ -6,7 +6,8 @@ import com.google.gson.JsonObject;
 
 import java.lang.reflect.Field;
 
-import static com.pine.engine.core.service.serialization.SerializableRepository.*;
+import static com.pine.engine.core.service.serialization.SerializableRepository.CLASS_KEY;
+import static com.pine.engine.core.service.serialization.SerializableRepository.DATA_KEY;
 
 public interface SerializableResource extends SerializableInstance {
 

@@ -6,9 +6,6 @@ import com.pine.engine.core.component.AbstractComponent;
 import com.pine.engine.core.repository.WorldRepository;
 import com.pine.engine.core.service.world.WorldService;
 
-import java.util.HashMap;
-import java.util.List;
-
 public class AddComponentWorldRequest extends AbstractWorldRequest {
     private final Class<? extends AbstractComponent> componentClass;
     private final int entityId;

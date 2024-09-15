@@ -2,7 +2,6 @@ package com.pine.engine.core.component;
 
 import com.pine.engine.core.EngineInjectable;
 
-import java.util.List;
 import java.util.Set;
 
 @EngineInjectable

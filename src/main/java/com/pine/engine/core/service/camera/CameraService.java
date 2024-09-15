@@ -5,7 +5,6 @@ import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.EngineUtils;
 import com.pine.engine.core.repository.CameraRepository;
-import com.pine.engine.core.repository.ClockRepository;
 import com.pine.engine.core.repository.CoreResourceRepository;
 import com.pine.engine.core.repository.RuntimeRepository;
 import com.pine.engine.core.service.AbstractMultithreadedService;

@@ -1,9 +1,9 @@
 package com.pine.app.panels.files;
 
+import com.pine.app.EditorWindow;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
 import com.pine.app.core.ui.view.InputView;
-import com.pine.app.EditorWindow;
 import com.pine.common.InjectBean;
 import com.pine.common.fs.FSService;
 import com.pine.common.fs.FileInfoDTO;

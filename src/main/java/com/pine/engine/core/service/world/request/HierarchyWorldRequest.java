@@ -2,14 +2,11 @@ package com.pine.engine.core.service.world.request;
 
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageSeverity;
-import com.pine.engine.core.component.AbstractComponent;
 import com.pine.engine.core.repository.WorldRepository;
 import com.pine.engine.core.service.world.WorldService;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import static com.pine.engine.core.repository.WorldRepository.ROOT_ID;
 

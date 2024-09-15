@@ -2,7 +2,9 @@ package com.pine.engine.core.component;
 
 import com.pine.engine.core.service.serialization.SerializableResource;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 
 public abstract class AbstractComponent<T> implements SerializableResource {
     public transient final List<T> bag = new Vector<>();

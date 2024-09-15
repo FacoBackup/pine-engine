@@ -1,15 +1,15 @@
 package com.pine.app;
 
-import com.pine.app.panels.hierarchy.HierarchyPanel;
-import com.pine.app.repository.EntitySelectionRepository;
-import com.pine.app.service.ProjectDTO;
-import com.pine.app.service.ProjectService;
 import com.pine.app.core.ui.panel.DockDTO;
 import com.pine.app.core.window.AbstractWindow;
 import com.pine.app.panels.console.ConsolePanel;
 import com.pine.app.panels.files.FilesPanel;
+import com.pine.app.panels.hierarchy.HierarchyPanel;
 import com.pine.app.panels.inspector.InspectorPanel;
 import com.pine.app.panels.viewport.ViewportPanel;
+import com.pine.app.repository.EntitySelectionRepository;
+import com.pine.app.service.ProjectDTO;
+import com.pine.app.service.ProjectService;
 import com.pine.common.InjectBean;
 import com.pine.engine.Engine;
 import com.pine.engine.tools.ToolsConfigurationModule;

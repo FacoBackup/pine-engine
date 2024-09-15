@@ -3,19 +3,14 @@ package com.pine.app.panels.hierarchy;
 import com.pine.app.EditorWindow;
 import com.pine.app.core.ui.panel.AbstractPanel;
 import com.pine.app.core.ui.view.ButtonView;
-import com.pine.app.core.ui.view.InputView;
 import com.pine.app.panels.files.FilesContext;
 import com.pine.common.InjectBean;
 import com.pine.common.fs.FSService;
-import com.pine.common.fs.FileInfoDTO;
 import com.pine.engine.Engine;
-import com.pine.engine.core.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.engine.core.service.world.WorldService;
 import com.pine.engine.core.service.world.request.AddEntityWorldRequest;
 
-import java.io.File;
 import java.util.Collections;
-import java.util.List;
 
 public class HierarchyHeaderPanel extends AbstractPanel {
     @InjectBean

@@ -3,7 +3,6 @@ package com.pine.engine.core.component;
 import com.pine.engine.core.EngineInjectable;
 import org.joml.Vector3f;
 
-import java.util.List;
 import java.util.Set;
 
 @EngineInjectable

@@ -2,8 +2,6 @@ package com.pine.app.service;
 
 import com.google.gson.Gson;
 import com.pine.app.repository.ProjectRepository;
-import com.pine.app.core.service.WindowService;
-import com.pine.app.EditorWindow;
 import com.pine.common.Loggable;
 import com.pine.common.fs.FSService;
 import org.springframework.beans.factory.annotation.Autowired;

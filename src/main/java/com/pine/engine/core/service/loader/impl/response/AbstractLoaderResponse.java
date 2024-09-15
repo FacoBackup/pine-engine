@@ -2,8 +2,6 @@ package com.pine.engine.core.service.loader.impl.response;
 
 import com.pine.engine.core.service.serialization.SerializableResource;
 
-import java.util.UUID;
-
 /**
  * Serializable information relating to file, used for dropdown selection at runtime of textures/meshes etc. since some files include more information
  * than only one instance.

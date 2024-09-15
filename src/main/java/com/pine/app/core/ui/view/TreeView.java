@@ -1,14 +1,12 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.engine.core.service.world.Tree;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiTreeNodeFlags;
 
-import java.util.*;
+import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class TreeView extends AbstractView {
     private static final int FLAGS = ImGuiTreeNodeFlags.SpanFullWidth;

@@ -4,7 +4,6 @@ import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.type.LightType;
 import org.joml.Matrix4f;
 
-import java.util.List;
 import java.util.Set;
 
 @EngineInjectable
