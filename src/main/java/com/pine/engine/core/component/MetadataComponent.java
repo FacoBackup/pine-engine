@@ -12,7 +12,7 @@ public class MetadataComponent extends AbstractComponent<MetadataComponent> {
     public String name = "New Entity";
     public final long creationDate = System.currentTimeMillis();
 
-    public MetadataComponent(int entityId) {
+    public MetadataComponent(Integer entityId) {
         super(entityId);
         pickerId.x = (float) ((entityId) & 0xFF) / 0xFF;
         pickerId.y = (float) ((entityId >> 8) & 0xFF) / 0xFF;

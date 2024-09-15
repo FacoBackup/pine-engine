@@ -38,7 +38,7 @@ public class CameraComponent extends AbstractComponent<CameraComponent> {
     public int samplesDOF = 100;
     public boolean enabledDOF = false;
 
-    public CameraComponent(int entityId) {
+    public CameraComponent(Integer entityId) {
         super(entityId);
     }
 

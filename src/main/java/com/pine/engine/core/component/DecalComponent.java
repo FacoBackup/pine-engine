@@ -21,7 +21,7 @@ public class DecalComponent extends AbstractComponent<DecalComponent> {
     public float sheen = 0.0f;
     public float sheenTint = 0.0f;
 
-    public DecalComponent(int entityId) {
+    public DecalComponent(Integer entityId) {
         super(entityId);
     }
 

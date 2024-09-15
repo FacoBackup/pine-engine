@@ -12,7 +12,7 @@ public abstract class AbstractComponent<T> implements SerializableResource {
         entityId = -1;
     }
 
-    public AbstractComponent(int entityId) {
+    public AbstractComponent(Integer entityId) {
         this.entityId = entityId;
     }
 

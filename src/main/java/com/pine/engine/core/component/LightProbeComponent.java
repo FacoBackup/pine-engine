@@ -13,7 +13,7 @@ public class LightProbeComponent extends AbstractComponent<LightProbeComponent> 
      */
     public int collectionRadius = 50;
 
-    public LightProbeComponent(int entityId) {
+    public LightProbeComponent(Integer entityId) {
         super(entityId);
     }
 

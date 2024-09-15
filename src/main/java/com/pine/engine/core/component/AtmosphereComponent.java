@@ -26,7 +26,7 @@ public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> 
         super();
     }
 
-    public AtmosphereComponent(int entityId) {
+    public AtmosphereComponent(Integer entityId) {
         super(entityId);
     }
 

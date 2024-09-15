@@ -74,14 +74,16 @@ public class CameraService extends AbstractMultithreadedService implements Logga
     }
 
     private void updateMatrices() {
+        final Camera camera = repository.currentCamera;
 
 //        float elapsed = clock.elapsed;
 //        float tSmoothing = CameraNotificationDecoder.translationSmoothing;
 //        float incrementTranslation = tSmoothing == 0 ? 1 : 1 - (float) Math.pow(.001, elapsed * tSmoothing);
 //        repository.currentCamera.currentTranslation.lerp(repository.currentCamera.translationBuffer, incrementTranslation);
 //        repository.currentCamera.currentRotation.set(repository.currentCamera.rotationBuffer);
-        updateView();
         updateProjection();
+        updateView();
+        camera.viewProjectionMatrix.set(camera.projectionMatrix).mul(camera.viewMatrix);
 
         repository.toApplyTranslation.x = 0;
         repository.toApplyTranslation.y = 0;
@@ -96,8 +98,6 @@ public class CameraService extends AbstractMultithreadedService implements Logga
         camera.invViewMatrix.invert(camera.viewMatrix);
         camera.position.set(camera.invViewMatrix.m30(), camera.invViewMatrix.m31(), camera.invViewMatrix.m32());
 
-        camera.projectionMatrix.get(camera.viewProjectionMatrix).mul(camera.viewMatrix);
-
         camera.staticViewMatrix.set(camera.viewMatrix);
         camera.staticViewMatrix.m30(0).m31(0).m32(0);
     }
@@ -105,18 +105,17 @@ public class CameraService extends AbstractMultithreadedService implements Logga
     private void updateProjection() {
         Camera camera = repository.currentCamera;
 
+        camera.aspectRatio = runtimeRepository.viewportW / runtimeRepository.viewportH;
         if (camera.isOrthographic) {
             camera.projectionMatrix.setOrtho(-camera.orthographicProjectionSize, camera.orthographicProjectionSize,
                     -camera.orthographicProjectionSize / camera.aspectRatio, camera.orthographicProjectionSize / camera.aspectRatio,
                     -camera.zFar, camera.zFar);
         } else {
             camera.projectionMatrix.setPerspective(camera.fov, camera.aspectRatio, camera.zNear, camera.zFar);
-            camera.skyboxProjectionMatrix.setPerspective(camera.fov, camera.aspectRatio, 0.1f, 1000f);
-            camera.invSkyboxProjectionMatrix.set(camera.skyboxProjectionMatrix).invert();
         }
-
+        camera.skyboxProjectionMatrix.setPerspective(camera.fov, camera.aspectRatio, 0.1f, 1000f);
+        camera.invSkyboxProjectionMatrix.set(camera.skyboxProjectionMatrix).invert();
         camera.invProjectionMatrix.set(camera.projectionMatrix).invert();
-        camera.viewProjectionMatrix.set(camera.projectionMatrix).mul(camera.viewMatrix);
     }
 
     private void handleMouse() {

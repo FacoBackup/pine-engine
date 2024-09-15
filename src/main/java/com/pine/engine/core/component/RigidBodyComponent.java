@@ -7,7 +7,7 @@ import java.util.Set;
 
 @EngineInjectable
 public class RigidBodyComponent extends AbstractComponent<RigidBodyComponent> {
-    public RigidBodyComponent(int entityId) {
+    public RigidBodyComponent(Integer entityId) {
         super(entityId);
     }
 

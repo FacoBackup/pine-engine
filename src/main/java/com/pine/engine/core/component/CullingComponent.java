@@ -10,7 +10,7 @@ public class CullingComponent extends AbstractComponent<CullingComponent> {
 
     public long maxDistanceFromCamera = 300;
 
-    public CullingComponent(int entityId) {
+    public CullingComponent(Integer entityId) {
         super(entityId);
     }
 

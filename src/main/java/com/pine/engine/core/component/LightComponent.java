@@ -33,7 +33,7 @@ public class LightComponent extends AbstractComponent<LightComponent> {
     public transient final Matrix4f lightView = new Matrix4f();
     public transient final Matrix4f lightProjection = new Matrix4f();
 
-    public LightComponent(int entityId) {
+    public LightComponent(Integer entityId) {
         super(entityId);
     }
 

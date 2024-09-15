@@ -27,7 +27,7 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
     public boolean lockedScaling = false;
     public Vector3f absoluteTranslation = new Vector3f();
 
-    public TransformationComponent(int entityId) {
+    public TransformationComponent(Integer entityId) {
         super(entityId);
     }
 

@@ -11,7 +11,7 @@ public class SpriteComponent extends AbstractComponent<SpriteComponent> {
     public boolean keepSameSize = true;
     public boolean alwaysFaceCamera = true;
 
-    public SpriteComponent(int entityId) {
+    public SpriteComponent(Integer entityId) {
         super(entityId);
     }
 

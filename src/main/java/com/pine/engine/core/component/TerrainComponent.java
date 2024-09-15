@@ -11,7 +11,7 @@ public class TerrainComponent extends AbstractComponent<TerrainComponent> {
     public String heightMapTextureId;
     public float heightScale = 1;
 
-    public TerrainComponent(int entityId) {
+    public TerrainComponent(Integer entityId) {
         super(entityId);
     }
 

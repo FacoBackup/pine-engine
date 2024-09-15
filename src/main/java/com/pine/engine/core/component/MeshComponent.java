@@ -12,7 +12,7 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
     public String meshID;
     public String materialID;
 
-    public MeshComponent(int entityId) {
+    public MeshComponent(Integer entityId) {
         super(entityId);
     }
 

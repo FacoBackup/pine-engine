@@ -1,5 +1,6 @@
 package com.pine.engine.core.service.world.request;
 
+import com.pine.common.Loggable;
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageSeverity;
 import com.pine.engine.core.component.AbstractComponent;
@@ -12,7 +13,7 @@ import java.util.*;
 
 import static com.pine.engine.core.repository.WorldRepository.ROOT_ID;
 
-public class AddEntityWorldRequest extends AbstractWorldRequest {
+public class AddEntityWorldRequest extends AbstractWorldRequest implements Loggable {
     private final List<Class<? extends AbstractComponent>> components;
     private Integer parentId;
     private int entityId;
@@ -51,7 +52,8 @@ public class AddEntityWorldRequest extends AbstractWorldRequest {
 
             return new Message("Entity created successfully", MessageSeverity.SUCCESS);
         } catch (Exception e) {
-            return new Message("Could add components to new entity", MessageSeverity.WARN);
+            getLogger().error("Could not add component", e);
+            return new Message("Could not add component", MessageSeverity.WARN);
         }
     }
 

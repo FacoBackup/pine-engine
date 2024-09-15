@@ -8,7 +8,7 @@ import java.util.Set;
 @EngineInjectable
 public class PhysicsColliderComponent extends AbstractComponent<PhysicsColliderComponent> {
 
-    public PhysicsColliderComponent(int entityId) {
+    public PhysicsColliderComponent(Integer entityId) {
         super(entityId);
     }
 
