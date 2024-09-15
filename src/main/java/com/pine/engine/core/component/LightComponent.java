@@ -1,11 +1,13 @@
 package com.pine.engine.core.component;
 
+import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.type.LightType;
 import org.joml.Matrix4f;
 
-import java.util.List;
+import java.util.Set;
 
-public class LightComponent extends AbstractComponent {
+@EngineInjectable
+public class LightComponent extends AbstractComponent<LightComponent> {
     // TODO - BREAK INTO SEPARATED COMPONENT TYPES
     public boolean screenSpaceShadows = false;
     public double shadowBias = 0.0001;
@@ -27,12 +29,20 @@ public class LightComponent extends AbstractComponent {
     public double[] fixedColor = {1, 1, 1};
     public boolean shadowMap = true;
     public int[] atlasFace = {0, 0};
-    public final Matrix4f lightView = new Matrix4f();
-    public final Matrix4f lightProjection = new Matrix4f();
+    public transient final Matrix4f lightView = new Matrix4f();
+    public transient final Matrix4f lightProjection = new Matrix4f();
+
+    public LightComponent(Integer entityId) {
+        super(entityId);
+    }
+
+    public LightComponent() {
+        super();
+    }
 
     @Override
-    public List<Class<? extends AbstractComponent>> getDependencies() {
-        return List.of(TransformationComponent.class);
+    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+        return Set.of(TransformationComponent.class);
     }
 }
 

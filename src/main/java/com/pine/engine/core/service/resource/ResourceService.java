@@ -1,9 +1,10 @@
 package com.pine.engine.core.service.resource;
 
 import com.pine.common.Loggable;
+import com.pine.common.Updatable;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
-import com.pine.engine.core.service.AbstractMultithreadedService;
+import com.pine.engine.core.repository.ClockRepository;
 import com.pine.engine.core.service.resource.resource.*;
 
 import java.util.ArrayList;
@@ -13,47 +14,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @EngineInjectable
-public class ResourceService extends AbstractMultithreadedService implements Loggable {
+public class ResourceService implements Loggable, Updatable {
     public static final int MAX_TIMEOUT = 5 * 60 * 1000;
 
     @EngineDependency
-    public AudioService implAudioService;
+    public List<AbstractResourceService> implementations;
 
     @EngineDependency
-    public MeshService implMeshService;
+    public ClockRepository clock;
 
-    @EngineDependency
-    public ShaderService implShaderService;
-
-    @EngineDependency
-    public TextureService implTextureService;
-
-    @EngineDependency
-    public UBOService implUBOService;
-
-    @EngineDependency
-    public FBOService implFBOService;
-
-    private final List<AbstractResourceService<?, ?, ?>> implementations = new ArrayList<>();
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();
     private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
-
-    public List<AbstractResourceService<?, ?, ?>> getImplementations() {
-        if (implementations.isEmpty()) {
-            implementations.add(implAudioService);
-            implementations.add(implMeshService);
-            implementations.add(implShaderService);
-            implementations.add(implTextureService);
-            implementations.add(implUBOService);
-            implementations.add(implFBOService);
-        }
-        return implementations;
-    }
+    private long sinceLastCleanup;
 
     public IResource addResource(ResourceCreationData data) {
         IResource instance = null;
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == data.getResourceType()) {
                 instance = i.add(data);
             }
@@ -78,7 +55,7 @@ public class ResourceService extends AbstractMultithreadedService implements Log
             return;
         }
 
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == resource.getResourceType()) {
                 i.remove(resource);
             }
@@ -87,7 +64,7 @@ public class ResourceService extends AbstractMultithreadedService implements Log
     }
 
     public <T extends IResource, R extends IResourceRuntimeData> void bind(T instance, R data) {
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == instance.getResourceType()) {
                 i.bind(instance, data);
             }
@@ -95,7 +72,7 @@ public class ResourceService extends AbstractMultithreadedService implements Log
     }
 
     public <T extends IResource> void bind(T instance) {
-        for (var i : getImplementations()) {
+        for (var i : implementations) {
             if (i.getResourceType() == instance.getResourceType()) {
                 i.bind(instance);
             }
@@ -107,29 +84,27 @@ public class ResourceService extends AbstractMultithreadedService implements Log
     }
 
     public void shutdown() {
-        getImplementations().forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
+        implementations.forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
     }
 
     @Override
-    protected int getTickIntervalMilliseconds() {
-        return MAX_TIMEOUT;
-    }
-
-    @Override
-    protected void tickInternal() {
-        int removed = 0;
-        for (var entry : sinceLastUse.entrySet()) {
-            if (System.currentTimeMillis() - entry.getValue() > MAX_TIMEOUT) {
-                removeResource(entry.getKey());
-                removed++;
+    public void tick() {
+        if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
+            sinceLastCleanup = clock.totalTime;
+            int removed = 0;
+            for (var entry : sinceLastUse.entrySet()) {
+                if (System.currentTimeMillis() - entry.getValue() > MAX_TIMEOUT) {
+                    removeResource(entry.getKey());
+                    removed++;
+                }
             }
+            getLogger().warn("Removed {} unused resources", removed);
+            usedResources.clear();
+            resources.values().forEach(resource -> {
+                usedResources.putIfAbsent(resource.getResourceType(), new ArrayList<>());
+                usedResources.get(resource.getResourceType()).add(resource.getId());
+            });
         }
-        getLogger().warn("Removed {} unused resources", removed);
-        usedResources.clear();
-        resources.values().forEach(resource -> {
-            usedResources.putIfAbsent(resource.getResourceType(), new ArrayList<>());
-            usedResources.get(resource.getResourceType()).add(resource.getId());
-        });
     }
 
     public IResource getById(String id) {

@@ -2,8 +2,6 @@ package com.pine.engine.core.service.loader.impl.response;
 
 import com.pine.engine.core.service.serialization.SerializableResource;
 
-import java.util.UUID;
-
 /**
  * Serializable information relating to file, used for dropdown selection at runtime of textures/meshes etc. since some files include more information
  * than only one instance.
@@ -12,19 +10,8 @@ import java.util.UUID;
 public abstract class AbstractLoaderResponse implements SerializableResource {
     private boolean isLoaded;
     private String filePath;
-    private String id = UUID.randomUUID().toString();
 
     public AbstractLoaderResponse() {
-    }
-
-    @Override
-    public String getInstanceId() {
-        return id;
-    }
-
-    @Override
-    public void setInstanceId(String id) {
-        this.id = id;
     }
 
     public AbstractLoaderResponse(boolean isLoaded, String filePath) {

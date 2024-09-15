@@ -3,6 +3,7 @@ package com.pine.engine.core.repository;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.loader.AbstractResourceLoader;
 import com.pine.engine.core.service.loader.impl.response.AbstractLoaderResponse;
@@ -18,7 +19,9 @@ import java.util.Objects;
 @EngineInjectable
 public class ResourceLoaderRepository extends SerializableRepository {
     public final List<AbstractLoaderResponse> loadedResources = new ArrayList<>();
-    public final List<AbstractResourceLoader> resourceLoaders = new ArrayList<>();
+
+    @EngineDependency
+    public List<AbstractResourceLoader> resourceLoaders;
 
     @Override
     protected void parseInternal(JsonElement data) {

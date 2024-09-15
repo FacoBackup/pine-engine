@@ -6,9 +6,6 @@ import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.repository.ResourceLoaderRepository;
 import com.pine.engine.core.service.AbstractMultithreadedService;
-import com.pine.engine.core.service.loader.impl.AudioLoader;
-import com.pine.engine.core.service.loader.impl.MeshLoader;
-import com.pine.engine.core.service.loader.impl.TextureLoader;
 import com.pine.engine.core.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.engine.core.service.loader.impl.info.LoadRequest;
 import com.pine.engine.core.service.loader.impl.response.AbstractLoaderResponse;
@@ -17,51 +14,25 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.pine.engine.core.service.resource.ResourceService.MAX_TIMEOUT;
 
 @EngineInjectable
 public class ResourceLoaderService extends AbstractMultithreadedService {
     @EngineDependency
-    public AudioLoader implAudioLoader;
-
-    @EngineDependency
     public ResourceLoaderRepository repository;
 
-    @EngineDependency
-    public TextureLoader implTextureLoader;
-
-    @EngineDependency
-    public MeshLoader implMeshLoader;
-
-    public List<AbstractResourceLoader> getResourceLoaders() {
-        if (repository.resourceLoaders.isEmpty()) {
-            repository.resourceLoaders.add(implAudioLoader);
-            repository.resourceLoaders.add(implTextureLoader);
-            repository.resourceLoaders.add(implMeshLoader);
-        }
-        return repository.resourceLoaders;
-    }
-
+    @Nullable
     public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
-
         var dto = new LoadRequest(path, isStaticResource, extraInfo);
         final String extension = path.substring(path.lastIndexOf(".") + 1);
-        AbstractLoaderResponse metadata = null;
-        for (AbstractResourceLoader i : getResourceLoaders()) {
+        for (AbstractResourceLoader i : repository.resourceLoaders) {
             if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
-                metadata = process(extraInfo, i, dto);
+                return process(extraInfo, i, dto);
             }
         }
-
-        if (metadata == null) {
-            metadata = new AbstractLoaderResponse(false, path) {
-            };
-            MessageCollector.pushMessage("No loader was found for extension " + path.split("\\.")[1], MessageSeverity.ERROR);
-        }
-
-        return metadata;
+        MessageCollector.pushMessage("No loader was found for extension " + path.split("\\.")[1], MessageSeverity.ERROR);
+        return null;
     }
 
     @NotNull

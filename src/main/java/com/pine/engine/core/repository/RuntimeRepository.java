@@ -6,6 +6,7 @@ import com.pine.engine.core.EngineInjectable;
 @EngineInjectable
 public class RuntimeRepository  {
 
+    public boolean fasterPressed = false;
     public boolean forwardPressed = false;
     public boolean backwardPressed = false;
     public boolean leftPressed = false;

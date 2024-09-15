@@ -3,7 +3,7 @@ package com.pine.engine.core.service;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.repository.CoreResourceRepository;
-import com.pine.engine.core.service.entity.EntityService;
+import com.pine.engine.core.service.world.WorldService;
 
 @EngineInjectable
 public class LightService extends AbstractMultithreadedService {
@@ -11,7 +11,7 @@ public class LightService extends AbstractMultithreadedService {
     public CoreResourceRepository coreResourceRepository;
 
     @EngineDependency
-    public EntityService entityService;
+    public WorldService worldService;
 
     @Override
     protected int getTickIntervalMilliseconds() {

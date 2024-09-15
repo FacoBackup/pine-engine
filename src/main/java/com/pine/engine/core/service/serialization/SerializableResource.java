@@ -6,13 +6,10 @@ import com.google.gson.JsonObject;
 
 import java.lang.reflect.Field;
 
-import static com.pine.engine.core.service.serialization.SerializableRepository.*;
+import static com.pine.engine.core.service.serialization.SerializableRepository.CLASS_KEY;
+import static com.pine.engine.core.service.serialization.SerializableRepository.DATA_KEY;
 
 public interface SerializableResource extends SerializableInstance {
-
-    String getInstanceId();
-
-    void setInstanceId(String id);
 
     default JsonElement serializeData() {
         return (new Gson()).toJsonTree(this);
@@ -21,14 +18,12 @@ public interface SerializableResource extends SerializableInstance {
     default JsonObject serialize() {
         JsonObject json = new JsonObject();
 
-        json.addProperty(INSTANCE_KEY, getInstanceId());
         json.add(DATA_KEY, serializeData());
         json.addProperty(CLASS_KEY, getClass().getName());
         return json;
     }
 
     default void parse(JsonObject json) {
-        setInstanceId(json.get(INSTANCE_KEY).getAsString());
         var data = json.get(DATA_KEY).getAsJsonObject();
         try {
             Field[] fields = this.getClass().getDeclaredFields();

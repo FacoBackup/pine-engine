@@ -61,7 +61,7 @@ public class GridSystem extends AbstractSystem {
 
     @Override
     protected boolean shouldClearFBO() {
-        return false;
+        return true;
     }
 
     @Override

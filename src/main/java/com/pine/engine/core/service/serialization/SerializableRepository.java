@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import java.util.Objects;
 
 public abstract class SerializableRepository implements SerializableInstance {
-    public static final String INSTANCE_KEY = "instanceID";
     public static final String CLASS_KEY = "className";
     public static final String DATA_KEY = "data";
 

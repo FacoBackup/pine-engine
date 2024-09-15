@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
-import com.pine.engine.core.service.entity.EntityRepository;
 import com.pine.engine.core.service.serialization.SerializableRepository;
 
 @EngineInjectable
@@ -18,12 +17,12 @@ public class EngineRepository extends SerializableRepository {
     public ResourceLoaderRepository resourceLoaderRepository;
 
     @EngineDependency
-    public EntityRepository entityRepository;
+    public WorldRepository worldRepository;
 
     @Override
     public JsonElement serializeData() {
         JsonArray arr = new JsonArray();
-        arr.add(entityRepository.serialize().toString());
+        arr.add(worldRepository.serialize().toString());
         arr.add(cameraRepository.serialize().toString());
         arr.add(resourceLoaderRepository.serialize().toString());
         return arr;
@@ -34,8 +33,8 @@ public class EngineRepository extends SerializableRepository {
         JsonArray json = data.getAsJsonArray();
         json.forEach(a -> {
             JsonObject obj = a.getAsJsonObject();
-            if (entityRepository.isCompatible(obj)) {
-                entityRepository.parse(obj);
+            if (worldRepository.isCompatible(obj)) {
+                worldRepository.parse(obj);
             }
             if (resourceLoaderRepository.isCompatible(obj)) {
                 resourceLoaderRepository.parse(obj);

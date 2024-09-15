@@ -3,24 +3,30 @@ package com.pine.engine.core.component;
 import com.pine.engine.core.service.serialization.SerializableResource;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
+import java.util.Vector;
 
-public abstract class AbstractComponent implements SerializableResource {
-    private String instanceId;
+public abstract class AbstractComponent<T> implements SerializableResource {
+    public transient final List<T> bag = new Vector<>();
+    private final int entityId;
 
     public AbstractComponent() {
-        instanceId = UUID.randomUUID().toString();
+        entityId = -1;
     }
 
-    @Override
-    public String getInstanceId() {
-        return instanceId;
+    public AbstractComponent(Integer entityId) {
+        this.entityId = entityId;
     }
 
-    @Override
-    public void setInstanceId(String id) {
-        instanceId = id;
+    public int getEntityId() {
+        return entityId;
     }
 
-    public abstract List<Class<? extends AbstractComponent>> getDependencies();
+    final public Set<Class<? extends AbstractComponent>> getDependencies(){
+        var internal = getDependenciesInternal();
+        internal.add(MetadataComponent.class);
+        return internal;
+    }
+
+    protected abstract Set<Class<? extends AbstractComponent>> getDependenciesInternal();
 }

@@ -9,10 +9,11 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.internal.ImGuiWindow;
 
 public abstract class AbstractWindowPanel extends AbstractPanel {
-    public static final float FRAME_SIZE = 25;
+    private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove;
     private static final ImVec2 DEFAULT = new ImVec2(-1, -1);
     private static final ImVec2 DEFAULT_MAX = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);
     private static final ImVec2 PIVOT = new ImVec2(0.5f, 0.5f);
+    public static final float FRAME_SIZE = 25;
 
     private ImGuiWindow window;
     protected final ImVec2 initialSize = DEFAULT.clone();
@@ -59,7 +60,7 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
         }
 
         beforeWindow();
-        if (ImGui.begin(getTitle(), ImGuiWindowFlags.NoCollapse)) {
+        if (ImGui.begin(getTitle(), FLAGS)) {
             afterWindow();
             window = imgui.internal.ImGui.getCurrentWindow();
             ImGui.getWindowSize(size);

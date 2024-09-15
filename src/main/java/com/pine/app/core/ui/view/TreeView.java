@@ -1,21 +1,18 @@
 package com.pine.app.core.ui.view;
 
 import com.pine.app.core.ui.View;
-import com.pine.app.core.ui.view.tree.Branch;
-import com.pine.app.core.ui.view.tree.Tree;
 import imgui.ImGui;
+import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiTreeNodeFlags;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
 
 public class TreeView extends AbstractView {
-    private static final int FLAGS = ImGuiTreeNodeFlags.Bullet | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.SpanFullWidth;
-    private Map<String, Boolean> selected = Collections.emptyMap();
-    private BiConsumer<Branch, Boolean> onClick;
-    private Tree tree;
+    private static final int FLAGS = ImGuiTreeNodeFlags.SpanFullWidth;
+    private final WeakHashMap<AbstractTree<?>, Boolean> selected = new WeakHashMap<>();
+    private BiConsumer<AbstractTree<?>, Boolean> onClick;
+    private AbstractTree<?> tree;
 
     public TreeView(View parent, String id) {
         super(parent, id);
@@ -26,16 +23,12 @@ public class TreeView extends AbstractView {
         if (tree == null) {
             return;
         }
-
         renderNode(tree);
     }
 
-
-
-    private void renderNode(Branch branch) {
+    private void renderNode(AbstractTree<?> branch) {
         int flags = FLAGS;
-        Boolean isSelected = selected.get(branch.getId());
-        if (isSelected != null && isSelected) {
+        if (selected.containsKey(branch)) {
             flags |= ImGuiTreeNodeFlags.Selected;
         }
 
@@ -45,37 +38,32 @@ public class TreeView extends AbstractView {
             flags |= ImGuiTreeNodeFlags.Leaf;
         }
 
-        boolean isOpen = ImGui.treeNodeEx(branch.getKey(), 0, branch.getName());
-        if (ImGui.isItemClicked() && onClick != null) {
-            onClick.accept(branch, ImGui.isMouseDoubleClicked(0));
+        boolean isOpen = ImGui.treeNodeEx(branch.key, flags, branch.getName());
+        if (ImGui.isItemClicked()) {
+            boolean isMultiSelect = ImGui.isKeyPressed(ImGuiKey.LeftCtrl);
+            if (!isMultiSelect) {
+                selected.clear();
+            }
+            selected.put(branch, true);
+
+            if (onClick != null) {
+                onClick.accept(branch, isMultiSelect);
+            }
         }
 
         if (isOpen) {
-            List<Branch> branches = branch.getBranches();
-            for (var childBranch : branches) {
+            for (var childBranch : branch.branches) {
                 renderNode(childBranch);
             }
             ImGui.treePop();
         }
     }
 
-    public void setSelected(Map<String, Boolean> selected) {
-        this.selected = selected;
-    }
-
-    public Map<String, Boolean> getSelected() {
-        return selected;
-    }
-
-    public void setOnClick(BiConsumer<Branch, Boolean> onClick) {
+    public void setOnClick(BiConsumer<AbstractTree<?>, Boolean> onClick) {
         this.onClick = onClick;
     }
 
-    public Tree getTree() {
-        return tree;
-    }
-
-    public void setTree(Tree tree) {
+    public void setTree(AbstractTree<?> tree) {
         this.tree = tree;
     }
 }

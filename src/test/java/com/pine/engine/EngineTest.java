@@ -27,8 +27,8 @@ class EngineTest {
     @BeforeEach
     void setUpBefore() {
 //        engine = new Engine();
-//        int entity = engine.getSystemsService().addEntity();
-//        engine.getSystemsService().addComponent(entity, MeshComponent.class);
+//        int world = engine.getSystemsService().addEntity();
+//        engine.getSystemsService().addComponent(world, MeshComponent.class);
 //
 //        int entity2 = engine.getSystemsService().addEntity();
 //        engine.getSystemsService().addComponent(entity2, TransformationComponent.class);
