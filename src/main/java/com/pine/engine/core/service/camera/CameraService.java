@@ -1,5 +1,6 @@
 package com.pine.engine.core.service.camera;
 
+import com.pine.common.Loggable;
 import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.EngineUtils;
@@ -8,13 +9,10 @@ import com.pine.engine.core.repository.ClockRepository;
 import com.pine.engine.core.repository.CoreResourceRepository;
 import com.pine.engine.core.repository.RuntimeRepository;
 import com.pine.engine.core.service.AbstractMultithreadedService;
-import com.pine.engine.core.service.resource.UBOService;
-import org.joml.Vector3f;
-
-import java.util.Map;
+import org.joml.Quaternionf;
 
 @EngineInjectable
-public class CameraService extends AbstractMultithreadedService {
+public class CameraService extends AbstractMultithreadedService implements Loggable {
     private static final double LOG_2 = Math.log(2);
 
     @EngineDependency
@@ -26,106 +24,102 @@ public class CameraService extends AbstractMultithreadedService {
     @EngineDependency
     public RuntimeRepository runtimeRepository;
 
-    @EngineDependency
-    public ClockRepository clock;
-
-    @Override
-    public void lateInitialize() {
-        repository.defaultOrthographicCamera = createNewCamera(true);
-        repository.defaultPerspectiveCamera = createNewCamera(false);
-        repository.currentCamera = getCamera(repository.defaultPerspectiveCamera);
-        super.lateInitialize();
-    }
-
-    public AbstractCamera getCamera(String id) {
-        return repository.cameras.get(id);
-    }
-
-    public String createNewCamera(boolean isOrthographic) {
-        AbstractCamera newCamera;
-        if (isOrthographic) {
-            newCamera = new OrthographicCamera();
-        } else {
-            newCamera = new PerspectiveCamera();
-        }
-        repository.cameras.put(newCamera.getId(), newCamera);
-        newCamera.position.set(0.0f, 0.0f, 5.0f);
-        newCamera.lookAt(0.0f, 0.0f, 0.0f);
-        newCamera.setNear(0.1f);
-        newCamera.setFar(300.0f);
-        newCamera.tick();
-        return newCamera.getId();
-    }
-
-    public void setCurrentCamera(String id) {
-        if (repository.cameras.containsKey(id)) {
-            repository.currentCamera = repository.cameras.get(id);
-        }
-    }
-
-    public Map<String, AbstractCamera> getCameras() {
-        return repository.cameras;
-    }
-
-    public String getDefaultOrthographicCamera() {
-        return repository.defaultOrthographicCamera;
-    }
-
-    public String getDefaultPerspectiveCamera() {
-        return repository.defaultPerspectiveCamera;
-    }
-
-    public void removeCamera(String id) {
-        if (repository.defaultPerspectiveCamera.equals(id) || repository.defaultOrthographicCamera.equals(id)) {
-            return;
-        }
-        repository.cameras.remove(id);
-    }
-
-    public void setSensitivity(float sensitivity) {
-        repository.sensitivity = sensitivity;
-    }
-
-    public float getSensitivity() {
-        return repository.sensitivity;
-    }
-
-    public void setMovementSpeed(float movementSpeed) {
-        repository.movementSpeed = movementSpeed;
-    }
-
-    public float getMovementSpeed() {
-        return repository.movementSpeed;
-    }
-
     @Override
     protected void tickInternal() {
-        repository.currentCamera.setViewportWidth(runtimeRepository.viewportW);
-        repository.currentCamera.setViewportHeight(runtimeRepository.viewportH);
-        if (runtimeRepository.inputFocused) {
-            handleMouseInput();
-            handleKeyboardInput();
-            repository.currentCamera.tick();
-        } else {
-            repository.firstMouseMove = true;
+        try {
+            if (runtimeRepository.inputFocused) {
+                handleMouse();
+                handleKeyboard();
+
+                Quaternionf pitch = (new Quaternionf()).fromAxisAngleDeg(1f, 0f, 0f, (float) Math.toDegrees(repository.pitch));
+                Quaternionf yaw = (new Quaternionf()).fromAxisAngleDeg(0, 1f, 0, (float) Math.toDegrees(repository.yaw));
+                repository.currentCamera.rotationBuffer.set(pitch);
+                repository.currentCamera.rotationBuffer.mul(yaw);
+
+                repository.toApplyTranslation.rotate(repository.currentCamera.rotationBuffer);
+                repository.currentCamera.translationBuffer.add(repository.toApplyTranslation);
+            } else {
+                repository.firstMouseMove = true;
+            }
+
+            updateMatrices();
+            updateUBOBuffer();
+        } catch (Exception e) {
+            getLogger().error("Error processing camera", e);
         }
-
-        var V = coreResourceRepository.cameraViewUBOState;
-        EngineUtils.copyWithOffset(V, repository.currentCamera.viewProjectionMatrix, 0);
-        EngineUtils.copyWithOffset(V, repository.currentCamera.viewMatrix, 16);
-        EngineUtils.copyWithOffset(V, repository.currentCamera.invViewMatrix, 32);
-        EngineUtils.copyWithOffset(V, repository.currentCamera.position, 48);
-
-        var P = coreResourceRepository.cameraProjectionUBOState;
-        EngineUtils.copyWithOffset(P, repository.currentCamera.projectionMatrix, 0);
-        EngineUtils.copyWithOffset(P, repository.currentCamera.invProjectionMatrix, 16);
-
-        P.put(32, runtimeRepository.viewportW);
-        P.put(33, runtimeRepository.viewportH);
-        P.put(34, (float) (2.0 / (Math.log(repository.currentCamera.projectionMatrix.get(0, 0) + 1) / LOG_2)));
     }
 
-    private void handleMouseInput() {
+    private void handleKeyboard() {
+        float multiplier = runtimeRepository.fasterPressed ? 10 * repository.movementSpeed : repository.movementSpeed;
+        if (runtimeRepository.leftPressed) {
+            repository.toApplyTranslation.x -= multiplier;
+        }
+        if (runtimeRepository.rightPressed) {
+            repository.toApplyTranslation.x += multiplier;
+        }
+        if (runtimeRepository.backwardPressed) {
+            if (repository.currentCamera.isOrthographic) {
+                repository.currentCamera.orthographicProjectionSize += multiplier;
+            } else {
+                repository.toApplyTranslation.z += multiplier;
+            }
+        }
+        if (runtimeRepository.forwardPressed) {
+            if (repository.currentCamera.isOrthographic) {
+                repository.currentCamera.orthographicProjectionSize -= multiplier;
+            } else {
+                repository.toApplyTranslation.z -= multiplier;
+            }
+        }
+    }
+
+    private void updateMatrices() {
+
+//        float elapsed = clock.elapsed;
+//        float tSmoothing = CameraNotificationDecoder.translationSmoothing;
+//        float incrementTranslation = tSmoothing == 0 ? 1 : 1 - (float) Math.pow(.001, elapsed * tSmoothing);
+//        repository.currentCamera.currentTranslation.lerp(repository.currentCamera.translationBuffer, incrementTranslation);
+//        repository.currentCamera.currentRotation.set(repository.currentCamera.rotationBuffer);
+        updateView();
+        updateProjection();
+
+        repository.toApplyTranslation.x = 0;
+        repository.toApplyTranslation.y = 0;
+        repository.toApplyTranslation.z = 0;
+    }
+
+    public void updateView() {
+        final Camera camera = repository.currentCamera;
+        camera.invViewMatrix.identity();
+
+        camera.invViewMatrix.rotate(camera.rotationBuffer).translate(camera.translationBuffer);
+        camera.invViewMatrix.invert(camera.viewMatrix);
+        camera.position.set(camera.invViewMatrix.m30(), camera.invViewMatrix.m31(), camera.invViewMatrix.m32());
+
+        camera.projectionMatrix.get(camera.viewProjectionMatrix).mul(camera.viewMatrix);
+
+        camera.staticViewMatrix.set(camera.viewMatrix);
+        camera.staticViewMatrix.m30(0).m31(0).m32(0);
+    }
+
+    private void updateProjection() {
+        Camera camera = repository.currentCamera;
+
+        if (camera.isOrthographic) {
+            camera.projectionMatrix.setOrtho(-camera.orthographicProjectionSize, camera.orthographicProjectionSize,
+                    -camera.orthographicProjectionSize / camera.aspectRatio, camera.orthographicProjectionSize / camera.aspectRatio,
+                    -camera.zFar, camera.zFar);
+        } else {
+            camera.projectionMatrix.setPerspective(camera.fov, camera.aspectRatio, camera.zNear, camera.zFar);
+            camera.skyboxProjectionMatrix.setPerspective(camera.fov, camera.aspectRatio, 0.1f, 1000f);
+            camera.invSkyboxProjectionMatrix.set(camera.skyboxProjectionMatrix).invert();
+        }
+
+        camera.invProjectionMatrix.set(camera.projectionMatrix).invert();
+        camera.viewProjectionMatrix.set(camera.projectionMatrix).mul(camera.viewMatrix);
+    }
+
+    private void handleMouse() {
         float mouseX = runtimeRepository.mouseX;
         float mouseY = runtimeRepository.mouseY;
 
@@ -142,46 +136,23 @@ public class CameraService extends AbstractMultithreadedService {
         repository.pitch -= deltaY;
         repository.pitch = Math.max(-89.0f, Math.min(89.0f, repository.pitch));
 
-        updateCameraDirection();
-
         repository.lastMouseX = mouseX;
         repository.lastMouseY = mouseY;
     }
 
-    private void handleKeyboardInput() {
-        final float deltaTime = clock.totalTime;
-        final Vector3f direction = repository.currentCamera.direction;
-        final var forward = new Vector3f(direction).normalize();
-        final var right = direction.cross(repository.currentCamera.up).normalize(); // Right vector
-        final Vector3f position = repository.currentCamera.position;
-        if (runtimeRepository.forwardPressed) {
-            position.add(forward.mul(repository.movementSpeed * deltaTime)); // Move forward
-        }
-        if (runtimeRepository.backwardPressed) {
-            position.sub(forward.mul(repository.movementSpeed * deltaTime)); // Move backward
-        }
-        if (runtimeRepository.leftPressed) {
-            position.sub(right.mul(repository.movementSpeed * deltaTime)); // Move left
-        }
-        if (runtimeRepository.rightPressed) {
-            position.add(right.mul(repository.movementSpeed * deltaTime)); // Move right
-        }
-        if (runtimeRepository.upPressed) {
-            position.add(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move up
-        }
-        if (runtimeRepository.downPressed) {
-            position.sub(repository.currentCamera.up.mul(repository.movementSpeed * deltaTime)); // Move down
-        }
+    private void updateUBOBuffer() {
+        var V = coreResourceRepository.cameraViewUBOState;
+        EngineUtils.copyWithOffset(V, repository.currentCamera.viewProjectionMatrix, 0);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.viewMatrix, 16);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.invViewMatrix, 32);
+        EngineUtils.copyWithOffset(V, repository.currentCamera.position, 48);
 
-        repository.currentCamera.tick();
+        var P = coreResourceRepository.cameraProjectionUBOState;
+        EngineUtils.copyWithOffset(P, repository.currentCamera.projectionMatrix, 0);
+        EngineUtils.copyWithOffset(P, repository.currentCamera.invProjectionMatrix, 16);
+
+        P.put(32, runtimeRepository.viewportW);
+        P.put(33, runtimeRepository.viewportH);
+        P.put(34, (float) (2.0 / (Math.log(repository.currentCamera.projectionMatrix.get(0, 0) + 1) / LOG_2)));
     }
-
-    private void updateCameraDirection() {
-        Vector3f direction = repository.currentCamera.direction;
-        direction.x = (float) Math.cos(Math.toRadians(repository.yaw)) * (float) Math.cos(Math.toRadians(repository.pitch));
-        direction.y = (float) Math.sin(Math.toRadians(repository.pitch));
-        direction.z = (float) Math.sin(Math.toRadians(repository.yaw)) * (float) Math.cos(Math.toRadians(repository.pitch));
-        direction.normalize(direction);
-    }
-
 }

@@ -4,6 +4,7 @@ import com.pine.app.core.ui.panel.AbstractWindowPanel;
 import com.pine.app.EditorWindow;
 import com.pine.engine.Engine;
 import com.pine.engine.core.repository.RuntimeRepository;
+import com.pine.engine.core.service.camera.Camera;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 
@@ -38,12 +39,13 @@ public class ViewportPanel extends AbstractWindowPanel {
     @Override
     protected void afterWindow() {
         repo.inputFocused = ImGui.isWindowFocused() && (ImGui.isMouseDown(2) || ImGui.isMouseDown(1));
+        repo.fasterPressed = ImGui.isKeyPressed(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyPressed(ImGuiKey.W);
         repo.backwardPressed = ImGui.isKeyPressed(ImGuiKey.S);
         repo.leftPressed = ImGui.isKeyPressed(ImGuiKey.A);
         repo.rightPressed = ImGui.isKeyPressed(ImGuiKey.D);
         repo.upPressed = ImGui.isKeyPressed(ImGuiKey.Space);
-        repo.downPressed = ImGui.isKeyPressed(ImGuiKey.LeftShift);
+        repo.downPressed = ImGui.isKeyPressed(ImGuiKey.LeftCtrl);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = size.y;
