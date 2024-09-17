@@ -6,7 +6,7 @@ import com.pine.engine.core.type.MaterialRenderingType;
 import java.util.Set;
 
 @EngineInjectable
-public class DecalComponent extends AbstractComponent<DecalComponent> {
+public class DecalComponent extends AbstractComponent {
     public String albedoID;
     public String roughnessID;
     public String metallicID;
@@ -29,7 +29,12 @@ public class DecalComponent extends AbstractComponent<DecalComponent> {
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of(TransformationComponent.class);
+    }
+
+    @Override
+    public String getComponentName() {
+        return "Decal";
     }
 }

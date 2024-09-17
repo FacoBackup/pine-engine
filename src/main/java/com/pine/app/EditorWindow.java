@@ -24,13 +24,12 @@ public class EditorWindow extends AbstractWindow {
     public ProjectService projectService;
 
     @InjectBean
-    private EntitySelectionRepository selectionRepository;
+    public EntitySelectionRepository selectionRepository;
 
     private Engine engine;
 
     @Override
-    public void onInitialize() {
-        super.onInitialize();
+    public void onInitialization() {
         engine = new Engine(displayW, displayH);
         engine.addModules(List.of(new ToolsModule(), new ToolsConfigurationModule(selectionRepository.getSelected())));
     }

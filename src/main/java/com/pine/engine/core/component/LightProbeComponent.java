@@ -5,7 +5,7 @@ import com.pine.engine.core.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class LightProbeComponent extends AbstractComponent<LightProbeComponent> {
+public class LightProbeComponent extends AbstractComponent {
     public int mipmaps = 6;
     /**
      * Only entities within  this radius will be rendered into the probe
@@ -21,7 +21,12 @@ public class LightProbeComponent extends AbstractComponent<LightProbeComponent> 
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of(TransformationComponent.class);
+    }
+
+    @Override
+    public String getComponentName() {
+        return "Probe";
     }
 }

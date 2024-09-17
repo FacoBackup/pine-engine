@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 import java.util.Set;
 
 @EngineInjectable
-public class MetadataComponent extends AbstractComponent<MetadataComponent> {
+public class MetadataComponent extends AbstractComponent {
     public final Vector3f pickerId = new Vector3f();
     public String name = "New Entity";
     public final long creationDate = System.currentTimeMillis();
@@ -23,7 +23,12 @@ public class MetadataComponent extends AbstractComponent<MetadataComponent> {
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of();
+    }
+    
+    @Override
+    public String getComponentName() {
+        return "Metadata";
     }
 }

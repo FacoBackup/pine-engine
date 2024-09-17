@@ -16,20 +16,7 @@ public class SystemService implements LateInitializable, Updatable {
 
     private List<AbstractSystem> systems = List.of(
             new UBOSyncSystem(),
-            new ScriptExecutorSystem(),
-            new ShadowsSystem(),
-            new VisibilityRendererSystem(),
-            new PreRendererSystem(),
-            new AtmosphereRendererSystem(),
-            new TerrainRendererSystem(),
-            new OpaqueRendererSystem(),
-            new DecalRendererSystem(),
-            new SpriteRendererSystem(),
-            new PostRendererSystem(),
-            new TransparencyRendererSystem(),
-            new GlobalIlluminationSystem(),
-            new PostProcessingSystem(),
-            new FrameCompositionSystem()
+            new InstancedRenderingSystem()
     );
 
     public List<AbstractSystem> getSystems() {

@@ -41,6 +41,7 @@ public class CoreResourceRepository implements LateInitializable {
 
     public Mesh planeMesh;
     public Mesh quadMesh;
+    public Mesh cubeMesh;
 
     public Shader spriteShader;
     public Shader visibilityShader;
@@ -63,6 +64,7 @@ public class CoreResourceRepository implements LateInitializable {
     public Shader upSamplingShader;
     public Shader atmosphereShader;
     public Shader terrainShader;
+    public Shader demoInstancedShader;
 
     public FBO finalFrame;
     public int finalFrameSampler;
@@ -109,6 +111,11 @@ public class CoreResourceRepository implements LateInitializable {
         var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         if (planeResponse != null) {
             planeMesh = (Mesh) resources.getById(planeResponse.getMeshes().getFirst().id());
+        }
+
+        var cubeResponse = (MeshLoaderResponse) resourceLoader.load("cube.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
+        if (cubeResponse != null) {
+            this.cubeMesh = (Mesh) resources.getById(cubeResponse.getMeshes().getFirst().id());
         }
         quadMesh = (Mesh) resources.addResource(new MeshCreationData(
                 new float[]{-1, -1, (float) -4.371138828673793e-8, 1, -1, (float) -4.371138828673793e-8, -1, 1, 4.371138828673793e-8F, 1, 1, 4.371138828673793e-8F},
@@ -202,6 +209,7 @@ public class CoreResourceRepository implements LateInitializable {
     }
 
     private void initializeShaders() {
+        demoInstancedShader = (Shader) resources.addResource(new ShaderCreationData("shaders/DEMO_INSTANCED.vert", "shaders/DEMO_INSTANCED.frag", "terrain"));
         terrainShader = (Shader) resources.addResource(new ShaderCreationData("shaders/TERRAIN.vert", "shaders/TERRAIN.frag", "terrain"));
         spriteShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite"));
         visibilityShader = (Shader) resources.addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility"));

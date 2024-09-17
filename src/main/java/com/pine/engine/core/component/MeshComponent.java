@@ -5,7 +5,7 @@ import com.pine.engine.core.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class MeshComponent extends AbstractComponent<MeshComponent> {
+public class MeshComponent extends AbstractComponent {
     public boolean castsShadows = true;
     public boolean contributeToProbes = true;
     public String meshID;
@@ -20,7 +20,13 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of(TransformationComponent.class);
+    }
+
+
+    @Override
+    public String getComponentName() {
+        return "Mesh";
     }
 }

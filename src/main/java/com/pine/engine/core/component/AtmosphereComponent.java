@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 import java.util.Set;
 
 @EngineInjectable
-public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> {
+public class AtmosphereComponent extends AbstractComponent {
     
     public float elapsedTime = 0;
     public Vector3f sunDirection = new Vector3f(0, 1, 1);
@@ -31,12 +31,17 @@ public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> 
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of(TransformationComponent.class);
     }
 
     public void setElapsedTime(float elapsedTime) {
         this.elapsedTime = elapsedTime;
         sunDirection = (new Vector3f((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 1.0f)).normalize();
+    }
+
+    @Override
+    public String getComponentName() {
+        return "Atmosphere";
     }
 }

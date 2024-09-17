@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-public abstract class AbstractComponent<T> implements SerializableResource {
-    public transient final List<T> bag = new Vector<>();
+public abstract class AbstractComponent implements SerializableResource, EntityComponent {
+    public transient final Vector<EntityComponent> bag = new Vector<>();
     private final int entityId;
 
     public AbstractComponent() {
@@ -22,11 +22,22 @@ public abstract class AbstractComponent<T> implements SerializableResource {
         return entityId;
     }
 
-    final public Set<Class<? extends AbstractComponent>> getDependencies(){
+    @Override
+    public Vector<EntityComponent> getBag() {
+        return bag;
+    }
+
+    @Override
+    final public Set<Class<? extends EntityComponent>> getDependencies(){
         var internal = getDependenciesInternal();
         internal.add(MetadataComponent.class);
         return internal;
     }
 
-    protected abstract Set<Class<? extends AbstractComponent>> getDependenciesInternal();
+    protected abstract Set<Class<? extends EntityComponent>> getDependenciesInternal();
+
+    @Override
+    public String toString() {
+        return getComponentName();
+    }
 }

@@ -59,21 +59,21 @@ public class EngineUtils {
 
     public static void copyWithOffset(FloatBuffer target, Matrix4f m, int offset) {
         target.put(offset, m.get(0, 0));
-        target.put(1 + offset, m.get(1, 0));
-        target.put(2 + offset, m.get(2, 0));
-        target.put(3 + offset, m.get(3, 0));
-        target.put(4 + offset, m.get(0, 1));
-        target.put(5 + offset, m.get(1, 1));
-        target.put(6 + offset, m.get(2, 1));
-        target.put(7 + offset, m.get(3, 1));
-        target.put(8 + offset, m.get(0, 2));
-        target.put(9 + offset, m.get(1, 2));
-        target.put(10 + offset, m.get(2, 2));
-        target.put(11 + offset, m.get(3, 2));
-        target.put(12 + offset, m.get(0, 3));
-        target.put(13 + offset, m.get(1, 3));
-        target.put(14 + offset, m.get(2, 3));
-        target.put(15 + offset, m.get(3, 3));
+        target.put(1 + offset, m.get( 0,1));
+        target.put(2 + offset, m.get( 0,2));
+        target.put(3 + offset, m.get( 0,3));
+        target.put(4 + offset, m.get( 1,0));
+        target.put(5 + offset, m.get( 1,1));
+        target.put(6 + offset, m.get( 1,2));
+        target.put(7 + offset, m.get( 1,3));
+        target.put(8 + offset, m.get( 2,0));
+        target.put(9 + offset, m.get( 2,1));
+        target.put(10 + offset, m.get( 2,2));
+        target.put(11 + offset, m.get( 2,3));
+        target.put(12 + offset, m.get( 3,0));
+        target.put(13 + offset, m.get( 3,1));
+        target.put(14 + offset, m.get( 3,2));
+        target.put(15 + offset, m.get( 3,3));
     }
 
     public static void copyWithOffset(FloatBuffer target, Vector3f v, int offset) {

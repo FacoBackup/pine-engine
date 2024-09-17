@@ -10,9 +10,9 @@ import java.util.function.BiConsumer;
 
 public class TreeView extends AbstractView {
     private static final int FLAGS = ImGuiTreeNodeFlags.SpanFullWidth;
-    private final WeakHashMap<AbstractTree<?>, Boolean> selected = new WeakHashMap<>();
-    private BiConsumer<AbstractTree<?>, Boolean> onClick;
-    private AbstractTree<?> tree;
+    private final WeakHashMap<AbstractTree<?, ?>, Boolean> selected = new WeakHashMap<>();
+    private BiConsumer<AbstractTree<?, ?>, Boolean> onClick;
+    private AbstractTree<?, ?> tree;
 
     public TreeView(View parent, String id) {
         super(parent, id);
@@ -26,7 +26,7 @@ public class TreeView extends AbstractView {
         renderNode(tree);
     }
 
-    private void renderNode(AbstractTree<?> branch) {
+    private void renderNode(AbstractTree<?, ?> branch) {
         int flags = FLAGS;
         if (selected.containsKey(branch)) {
             flags |= ImGuiTreeNodeFlags.Selected;
@@ -34,8 +34,6 @@ public class TreeView extends AbstractView {
 
         if (branch == tree) {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
-        } else {
-            flags |= ImGuiTreeNodeFlags.Leaf;
         }
 
         boolean isOpen = ImGui.treeNodeEx(branch.key, flags, branch.getName());
@@ -55,15 +53,20 @@ public class TreeView extends AbstractView {
             for (var childBranch : branch.branches) {
                 renderNode(childBranch);
             }
+            
+            for (Object extraData : branch.extraData) {
+                ImGui.text(extraData.toString());
+            }
+
             ImGui.treePop();
         }
     }
 
-    public void setOnClick(BiConsumer<AbstractTree<?>, Boolean> onClick) {
+    public void setOnClick(BiConsumer<AbstractTree<?, ?>, Boolean> onClick) {
         this.onClick = onClick;
     }
 
-    public void setTree(AbstractTree<?> tree) {
+    public void setTree(AbstractTree<?, ?> tree) {
         this.tree = tree;
     }
 }

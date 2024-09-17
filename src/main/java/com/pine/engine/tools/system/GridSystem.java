@@ -37,7 +37,6 @@ public class GridSystem extends AbstractSystem {
     public ToolsResourceRepository toolsResourceRepository;
 
     private final float[] buffer = new float[4];
-    private final ShaderRuntimeData uniforms = new ShaderRuntimeData();
 
     private UniformDTO depthUniform;
     private UniformDTO settingsUniform;
@@ -46,7 +45,6 @@ public class GridSystem extends AbstractSystem {
     public void onInitialize() {
         settingsUniform = toolsResourceRepository.gridShader.addUniformDeclaration("settings", GLSLType.VEC_4);
         depthUniform = toolsResourceRepository.gridShader.addUniformDeclaration("sceneDepth", GLSLType.SAMPLER_2_D);
-        uniforms.getUniformData().put("settings", buffer);
     }
 
     @Override
@@ -57,11 +55,6 @@ public class GridSystem extends AbstractSystem {
     @Override
     protected FBO getTargetFBO() {
         return coreResourceRepository.finalFrame;
-    }
-
-    @Override
-    protected boolean shouldClearFBO() {
-        return true;
     }
 
     @Override

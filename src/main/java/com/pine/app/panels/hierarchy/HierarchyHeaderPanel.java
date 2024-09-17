@@ -7,10 +7,12 @@ import com.pine.app.panels.files.FilesContext;
 import com.pine.common.InjectBean;
 import com.pine.common.fs.FSService;
 import com.pine.engine.Engine;
+import com.pine.engine.core.component.InstancedMeshComponent;
 import com.pine.engine.core.service.world.WorldService;
 import com.pine.engine.core.service.world.request.AddEntityWorldRequest;
 
 import java.util.Collections;
+import java.util.List;
 
 public class HierarchyHeaderPanel extends AbstractPanel {
     @InjectBean
@@ -37,7 +39,7 @@ public class HierarchyHeaderPanel extends AbstractPanel {
 
         var addEntity = (ButtonView) document.getElementById("addEntity");
         addEntity.setOnClick(() -> {
-            world.addRequest(new AddEntityWorldRequest(Collections.emptyList()));
+            world.addRequest(new AddEntityWorldRequest(List.of(InstancedMeshComponent.class)));
         });
     }
 }

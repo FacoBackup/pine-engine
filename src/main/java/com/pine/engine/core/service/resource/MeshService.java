@@ -8,43 +8,45 @@ import com.pine.engine.core.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.engine.core.service.resource.resource.AbstractResourceService;
 import com.pine.engine.core.service.resource.resource.IResource;
 import com.pine.engine.core.service.resource.resource.ResourceType;
-import jakarta.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
 
 @EngineInjectable
 public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, MeshCreationData> {
     private Mesh currentMesh;
+    private MeshRuntimeData drawCommand;
     private boolean isInWireframeMode = false;
 
     @Override
     protected void bindInternal(Mesh instance, MeshRuntimeData data) {
         currentMesh = instance;
-        draw(data);
+        drawCommand = data;
+        draw();
     }
 
     @Override
     protected void bindInternal(Mesh instance) {
         currentMesh = instance;
-        draw(null);
+        drawCommand = null;
+        draw();
     }
 
-    public void draw(@Nullable MeshRuntimeData data) {
-        if (isInWireframeMode && (data == null || data.mode() != MeshRenderingMode.WIREFRAME)) {
+    private void draw() {
+        if (isInWireframeMode && (drawCommand == null || drawCommand.mode != MeshRenderingMode.WIREFRAME)) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
             isInWireframeMode = false;
         }
 
-        if (data == null) {
-            drawTriangles();
+        if (drawCommand == null) {
+            triangles();
             return;
         }
-        switch (data.mode()) {
-            case LINE_LOOP -> drawLineLoop();
-            case WIREFRAME -> drawWireframe();
-            case TRIANGLE_FAN -> drawTriangleFan();
-            case TRIANGLE_STRIP -> drawTriangleStrip();
-            case LINES -> drawLines();
-            default -> drawTriangles();
+        switch (drawCommand.mode) {
+            case LINE_LOOP -> lineLoop();
+            case WIREFRAME -> wireframe();
+            case TRIANGLE_FAN -> triangleFan();
+            case TRIANGLE_STRIP -> triangleStrip();
+            case LINES -> lines();
+            default -> triangles();
         }
     }
 
@@ -91,42 +93,50 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
         }
     }
 
-    private void drawWireframe() {
+    private void wireframe() {
         GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         isInWireframeMode = true;
-        drawTriangles();
+        triangles();
     }
 
-    private void drawTriangles() {
+    private void triangles() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLES, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        draw(GL46.GL_TRIANGLES);
         GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
     /**
      * Draws the mesh as a line loop.
      */
-    private void drawLineLoop() {
+    private void lineLoop() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_LINE_LOOP, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        draw(GL46.GL_LINE_LOOP);
         GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
-    private void drawTriangleStrip() {
+    private void triangleStrip() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLE_STRIP, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        draw(GL46.GL_TRIANGLE_STRIP);
         GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
-    private void drawTriangleFan() {
+    private void triangleFan() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_TRIANGLE_FAN, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        draw(GL46.GL_TRIANGLE_FAN);
         GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
-    private void drawLines() {
+    private void lines() {
         bindResources();
-        GL46.glDrawElements(GL46.GL_LINES, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        draw(GL46.GL_LINES);
         GL46.glBindVertexArray(GL46.GL_NONE);
+    }
+
+    private void draw(int glTriangles) {
+        if (drawCommand != null && drawCommand.instanceCount > 0) {
+            GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, drawCommand.instanceCount, GL46.GL_UNSIGNED_INT, 0, drawCommand.instanceCount);
+            return;
+        }
+        GL46.glDrawElements(glTriangles, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
     }
 }

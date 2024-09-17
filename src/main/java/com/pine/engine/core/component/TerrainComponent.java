@@ -5,7 +5,7 @@ import com.pine.engine.core.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class TerrainComponent extends AbstractComponent<TerrainComponent> {
+public class TerrainComponent extends AbstractComponent {
     public boolean castsShadows = true;
     public String heightMapTextureId;
     public float heightScale = 1;
@@ -19,7 +19,12 @@ public class TerrainComponent extends AbstractComponent<TerrainComponent> {
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of(TransformationComponent.class);
+    }
+
+    @Override
+    public String getComponentName() {
+        return "Terrain";
     }
 }

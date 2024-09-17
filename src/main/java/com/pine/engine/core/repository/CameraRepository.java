@@ -6,6 +6,7 @@ import com.pine.common.Initializable;
 import com.pine.engine.core.EngineInjectable;
 import com.pine.engine.core.service.camera.Camera;
 import com.pine.engine.core.service.serialization.SerializableRepository;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -15,8 +16,9 @@ import java.util.Map;
 public class CameraRepository extends SerializableRepository implements Initializable {
     private static final Gson GSON = new Gson();
 
+    public Quaternionf pitchQ = new Quaternionf();
     public float pitch = 0.0f;
-    public float yaw = -90.0f;
+    public float yaw = -90;
     public float sensitivity = 0.1f;
     transient public float lastMouseX;
     transient public float lastMouseY;

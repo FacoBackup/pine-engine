@@ -2,9 +2,11 @@ package com.pine.engine.core.service.world;
 
 import com.pine.app.core.ui.view.AbstractTree;
 import com.pine.common.messages.MessageCollector;
+import com.pine.engine.core.EngineDependency;
 import com.pine.engine.core.EngineInjectable;
-import com.pine.engine.core.component.AbstractComponent;
+import com.pine.engine.core.component.EntityComponent;
 import com.pine.engine.core.component.MetadataComponent;
+import com.pine.engine.core.component.TransformationComponent;
 import com.pine.engine.core.repository.WorldRepository;
 import com.pine.engine.core.service.AbstractMultithreadedService;
 import com.pine.engine.core.service.world.request.AbstractWorldRequest;
@@ -16,8 +18,10 @@ import static com.pine.engine.core.repository.WorldRepository.ROOT_ID;
 
 @EngineInjectable
 public class WorldService extends AbstractMultithreadedService {
-    @EngineInjectable
-    private final WorldRepository worldRepository = new WorldRepository();
+    private static final String TRANSFORMATION_CLASS = TransformationComponent.class.getSimpleName();
+
+    @EngineDependency
+    public WorldRepository worldRepository;
 
     private final List<AbstractWorldRequest> requests = new ArrayList<>();
 
@@ -40,10 +44,11 @@ public class WorldService extends AbstractMultithreadedService {
         }
     }
 
-    private void updateTree(Integer entityId, Vector<AbstractTree<MetadataComponent>> branch) {
+    private void updateTree(Integer entityId, Vector<AbstractTree<MetadataComponent, EntityComponent>> branch) {
         LinkedList<Integer> children = worldRepository.parentChildren.get(entityId);
-        Tree current = new Tree(getComponent(entityId, MetadataComponent.class));
+        WorldHierarchyTree current = new WorldHierarchyTree(getComponent(entityId, MetadataComponent.class));
         branch.add(current);
+        current.extraData.addAll(worldRepository.entities.get(entityId).values());
         if (children != null) {
             for (Integer childId : children) {
                 updateTree(childId, current.branches);
@@ -53,19 +58,23 @@ public class WorldService extends AbstractMultithreadedService {
 
     @Nullable
     @SuppressWarnings("unchecked")
-    public <T extends AbstractComponent> T getComponent(Integer entityId, Class<T> component) {
-        HashMap<String, AbstractComponent> components = worldRepository.entities.get(entityId);
+    public <T extends EntityComponent> T getComponent(Integer entityId, Class<T> component) {
+        var components = worldRepository.entities.get(entityId);
         if (components != null) {
             return (T) components.get(component.getSimpleName());
         }
         return null;
     }
 
-    public Tree getHierarchyTree() {
+    public WorldHierarchyTree getHierarchyTree() {
         return worldRepository.worldTree;
     }
 
     public void addRequest(AbstractWorldRequest request) {
         requests.add(request);
+    }
+
+    public Object getTransformationComponentUnchecked(int entityId) {
+        return worldRepository.entities.get(entityId).get(TRANSFORMATION_CLASS);
     }
 }

@@ -33,7 +33,7 @@ public abstract class AbstractSystem implements Initializable {
     }
 
     protected boolean shouldClearFBO() {
-        return true;
+        return false;
     }
 
     @Override

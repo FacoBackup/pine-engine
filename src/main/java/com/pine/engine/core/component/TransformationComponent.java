@@ -10,7 +10,7 @@ import org.joml.Vector4f;
 import java.util.Set;
 
 @EngineInjectable
-public class TransformationComponent extends AbstractComponent<TransformationComponent> {
+public class TransformationComponent extends AbstractComponent {
     public Vector4f rotationQuaternion = new Vector4f();
     public Vector4f rotationQuaternionFinal = new Vector4f();
     public Vector3f translation = new Vector3f();
@@ -35,7 +35,12 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of();
+    }
+
+    @Override
+    public String getComponentName() {
+        return "Transformation";
     }
 }

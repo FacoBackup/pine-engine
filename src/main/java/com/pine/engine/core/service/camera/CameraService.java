@@ -29,14 +29,7 @@ public class CameraService extends AbstractMultithreadedService implements Logga
             if (runtimeRepository.inputFocused) {
                 handleMouse();
                 handleKeyboard();
-
-                Quaternionf pitch = (new Quaternionf()).fromAxisAngleDeg(1f, 0f, 0f, (float) Math.toDegrees(repository.pitch));
-                Quaternionf yaw = (new Quaternionf()).fromAxisAngleDeg(0, 1f, 0, (float) Math.toDegrees(repository.yaw));
-                repository.currentCamera.rotationBuffer.set(pitch);
-                repository.currentCamera.rotationBuffer.mul(yaw);
-
-                repository.toApplyTranslation.rotate(repository.currentCamera.rotationBuffer);
-                repository.currentCamera.translationBuffer.add(repository.toApplyTranslation);
+                rotateCamera();
             } else {
                 repository.firstMouseMove = true;
             }
@@ -46,6 +39,14 @@ public class CameraService extends AbstractMultithreadedService implements Logga
         } catch (Exception e) {
             getLogger().error("Error processing camera", e);
         }
+    }
+
+    private void rotateCamera() {
+        Quaternionf camRot = repository.currentCamera.rotationBuffer;
+
+        repository.pitchQ.identity().rotateX((float) Math.toRadians(repository.pitch));
+        camRot.identity().rotateY((float) Math.toRadians(repository.yaw)).mul(repository.pitchQ);
+        repository.currentCamera.translationBuffer.add(repository.toApplyTranslation);
     }
 
     private void handleKeyboard() {
@@ -131,7 +132,7 @@ public class CameraService extends AbstractMultithreadedService implements Logga
         float deltaY = (repository.lastMouseY - mouseY) * repository.sensitivity;
 
         repository.yaw += deltaX;
-        repository.pitch -= deltaY;
+        repository.pitch += deltaY;
         repository.pitch = Math.max(-89.0f, Math.min(89.0f, repository.pitch));
 
         repository.lastMouseX = mouseX;

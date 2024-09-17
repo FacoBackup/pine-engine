@@ -7,6 +7,7 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.internal.ImGuiWindow;
+import org.joml.Vector2f;
 
 public abstract class AbstractWindowPanel extends AbstractPanel {
     private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove;
@@ -24,7 +25,8 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
     /**
      * Window Size; Updated every frame
      */
-    protected final ImVec2 size = DEFAULT.clone();
+    private final ImVec2 sizeInternal = DEFAULT.clone();
+    protected final Vector2f size = new Vector2f();
     private int stylePushCount;
     private AbstractWindowPanel mainWindow;
 
@@ -63,7 +65,9 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
         if (ImGui.begin(getTitle(), FLAGS)) {
             afterWindow();
             window = imgui.internal.ImGui.getCurrentWindow();
-            ImGui.getWindowSize(size);
+            ImGui.getWindowSize(sizeInternal);
+            size.x = sizeInternal.x;
+            size.y = sizeInternal.y;
             ImGui.getWindowPos(position);
         }
 
@@ -96,7 +100,7 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
     }
 
     private ImVec2 getSize() {
-        return size;
+        return sizeInternal;
     }
 
     public ImGuiWindow getWindow() {

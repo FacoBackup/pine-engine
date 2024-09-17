@@ -5,7 +5,7 @@ import com.pine.engine.core.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class SpriteComponent extends AbstractComponent<SpriteComponent> {
+public class SpriteComponent extends AbstractComponent {
     public String textureId;
     public boolean keepSameSize = true;
     public boolean alwaysFaceCamera = true;
@@ -19,7 +19,13 @@ public class SpriteComponent extends AbstractComponent<SpriteComponent> {
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of(TransformationComponent.class);
+    }
+
+
+    @Override
+    public String getComponentName() {
+        return "Sprite";
     }
 }

@@ -12,7 +12,7 @@ import com.pine.engine.core.service.world.WorldService;
 public class HierarchyPanel extends AbstractWindowPanel {
 
     @InjectBean
-    private EntitySelectionRepository selectionRepository;
+    public EntitySelectionRepository selectionRepository;
 
     private WorldService world;
 
@@ -40,7 +40,7 @@ public class HierarchyPanel extends AbstractWindowPanel {
             if (!multiSelect) {
                 selectionRepository.clearSelection();
             }
-            selectionRepository.addSelected(((AbstractComponent<?>) branch.data).getEntityId());
+            selectionRepository.addSelected(((AbstractComponent) branch.data).getEntityId());
         });
     }
 

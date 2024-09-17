@@ -7,7 +7,7 @@ import org.joml.Matrix4f;
 import java.util.Set;
 
 @EngineInjectable
-public class LightComponent extends AbstractComponent<LightComponent> {
+public class LightComponent extends AbstractComponent {
     // TODO - BREAK INTO SEPARATED COMPONENT TYPES
     public boolean screenSpaceShadows = false;
     public double shadowBias = 0.0001;
@@ -41,8 +41,13 @@ public class LightComponent extends AbstractComponent<LightComponent> {
     }
 
     @Override
-    protected Set<Class<? extends AbstractComponent>> getDependenciesInternal() {
+    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
         return Set.of(TransformationComponent.class);
+    }
+
+    @Override
+    public String getComponentName() {
+        return "Light";
     }
 }
 

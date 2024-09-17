@@ -48,7 +48,22 @@ public abstract class AbstractWindow implements Renderable {
     }
 
     @Override
-    public void onInitialize() {
+    final public void onInitialize() {
+        initializeWindow();
+        onInitialization();
+        initializeView();
+    }
+
+    protected abstract void onInitialization();
+
+    private void initializeView() {
+        viewDocument.initialize();
+        root.setDocument(viewDocument);
+        root.initializeDockSpaces(getDockSpaces());
+        root.onInitialize();
+    }
+
+    private void initializeWindow() {
         createGlfwContext();
         ImGui.createContext();
 
@@ -61,12 +76,6 @@ public abstract class AbstractWindow implements Renderable {
         io.setConfigViewportsNoTaskBarIcon(true);
         io.setConfigDockingAlwaysTabBar(true);
         io.setConfigWindowsResizeFromEdges(true);
-
-        viewDocument.initialize();
-
-        root.setDocument(viewDocument);
-        root.initializeDockSpaces(getDockSpaces());
-        root.onInitialize();
     }
 
     protected abstract List<DockDTO> getDockSpaces();
