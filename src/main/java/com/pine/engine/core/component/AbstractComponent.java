@@ -2,6 +2,7 @@ package com.pine.engine.core.component;
 
 import com.pine.engine.core.service.serialization.SerializableResource;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -29,7 +30,7 @@ public abstract class AbstractComponent implements SerializableResource, EntityC
 
     @Override
     final public Set<Class<? extends EntityComponent>> getDependencies(){
-        var internal = getDependenciesInternal();
+        var internal = new HashSet<>(getDependenciesInternal());
         internal.add(MetadataComponent.class);
         return internal;
     }
