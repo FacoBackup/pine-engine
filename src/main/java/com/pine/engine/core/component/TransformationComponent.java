@@ -7,6 +7,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @EngineInjectable
@@ -36,7 +37,7 @@ public class TransformationComponent extends AbstractComponent {
 
     @Override
     protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of();
+        return new HashSet<>();
     }
 
     @Override

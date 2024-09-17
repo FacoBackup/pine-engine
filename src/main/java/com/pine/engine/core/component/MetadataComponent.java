@@ -3,6 +3,7 @@ package com.pine.engine.core.component;
 import com.pine.engine.core.EngineInjectable;
 import org.joml.Vector3f;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @EngineInjectable
@@ -24,7 +25,7 @@ public class MetadataComponent extends AbstractComponent {
 
     @Override
     protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of();
+        return new HashSet<>();
     }
     
     @Override
