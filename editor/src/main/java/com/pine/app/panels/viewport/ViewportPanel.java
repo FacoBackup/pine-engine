@@ -3,7 +3,7 @@ package com.pine.app.panels.viewport;
 import com.pine.Engine;
 import com.pine.app.EditorWindow;
 import com.pine.ui.panel.AbstractWindowPanel;
-import com.pine.core.repository.RuntimeRepository;
+import com.pine.repository.RuntimeRepository;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 

@@ -7,18 +7,13 @@ import com.pine.app.panels.files.FilesContext;
 import com.pine.InjectBean;
 import com.pine.common.fs.FSService;
 import com.pine.Engine;
-import com.pine.core.component.InstancedMeshComponent;
-import com.pine.core.service.world.WorldService;
-import com.pine.core.service.world.request.AddEntityWorldRequest;
+import com.pine.component.InstancedMeshComponent;
+import com.pine.service.world.WorldService;
+import com.pine.service.world.request.AddEntityRequest;
 
 import java.util.List;
 
 public class HierarchyHeaderPanel extends AbstractPanel {
-    @InjectBean
-    public FSService fsService;
-    private Engine engine;
-    private ButtonView importFile;
-    private FilesContext filesContext;
 
     @Override
     protected String getDefinition() {
@@ -33,12 +28,9 @@ public class HierarchyHeaderPanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        filesContext = (FilesContext) getContext();
-        WorldService world = ((EditorWindow) document.getWindow()).getEngine().getWorld();
-
         var addEntity = (ButtonView) document.getElementById("addEntity");
         addEntity.setOnClick(() -> {
-            world.addRequest(new AddEntityWorldRequest(List.of(InstancedMeshComponent.class)));
+            ((EditorWindow) document.getWindow()).getEngine().addRequest(new AddEntityRequest(List.of(InstancedMeshComponent.class)));
         });
     }
 }

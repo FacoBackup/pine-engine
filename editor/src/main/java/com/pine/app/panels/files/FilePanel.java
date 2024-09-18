@@ -5,8 +5,8 @@ import com.pine.Icon;
 import com.pine.ui.panel.AbstractPanel;
 import com.pine.ui.view.TableView;
 import com.pine.common.fs.FileInfoDTO;
-import com.pine.core.service.loader.ResourceLoaderService;
-import com.pine.core.service.loader.impl.info.MeshLoaderExtraInfo;
+import com.pine.service.loader.ResourceLoaderService;
+import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import imgui.ImGui;
 import imgui.ImVec4;
 

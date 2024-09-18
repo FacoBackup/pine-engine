@@ -8,7 +8,7 @@ import com.pine.InjectBean;
 import com.pine.common.fs.FSService;
 import com.pine.common.fs.FileInfoDTO;
 import com.pine.Engine;
-import com.pine.core.service.loader.impl.info.MeshLoaderExtraInfo;
+import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 
 import java.io.File;
 

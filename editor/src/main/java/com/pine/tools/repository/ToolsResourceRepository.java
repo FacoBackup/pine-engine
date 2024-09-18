@@ -1,10 +1,10 @@
 package com.pine.tools.repository;
 
 import com.pine.Initializable;
-import com.pine.core.EngineDependency;
-import com.pine.core.service.resource.ResourceService;
-import com.pine.core.service.resource.shader.Shader;
-import com.pine.core.service.resource.shader.ShaderCreationData;
+import com.pine.injection.EngineDependency;
+import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.ShaderCreationData;
 
 public class ToolsResourceRepository implements Initializable {
 

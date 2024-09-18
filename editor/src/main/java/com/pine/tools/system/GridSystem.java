@@ -1,15 +1,15 @@
 package com.pine.tools.system;
 
 import com.pine.Engine;
-import com.pine.core.EngineDependency;
-import com.pine.core.EngineUtils;
-import com.pine.core.repository.CoreResourceRepository;
-import com.pine.core.service.resource.MeshService;
-import com.pine.core.service.resource.ShaderService;
-import com.pine.core.service.resource.fbo.FBO;
-import com.pine.core.service.resource.primitives.GLSLType;
-import com.pine.core.service.resource.shader.UniformDTO;
-import com.pine.core.service.system.AbstractSystem;
+import com.pine.EngineUtils;
+import com.pine.injection.EngineDependency;
+import com.pine.repository.CoreResourceRepository;
+import com.pine.service.resource.MeshService;
+import com.pine.service.resource.ShaderService;
+import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.system.AbstractSystem;
 import com.pine.tools.ExecutionEnvironment;
 import com.pine.tools.ToolsConfigurationModule;
 import com.pine.tools.repository.ToolsResourceRepository;

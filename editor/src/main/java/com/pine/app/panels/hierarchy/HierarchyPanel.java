@@ -6,8 +6,8 @@ import com.pine.ui.view.FragmentView;
 import com.pine.ui.view.TreeView;
 import com.pine.app.repository.EntitySelectionRepository;
 import com.pine.InjectBean;
-import com.pine.core.component.AbstractComponent;
-import com.pine.core.service.world.WorldService;
+import com.pine.component.AbstractComponent;
+import com.pine.service.world.WorldService;
 
 public class HierarchyPanel extends AbstractWindowPanel {
 

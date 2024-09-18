@@ -1,7 +1,7 @@
 package com.pine.tools;
 
-import com.pine.core.modules.EngineExternalModule;
-import com.pine.core.service.system.AbstractSystem;
+import com.pine.injection.EngineExternalModule;
+import com.pine.service.system.AbstractSystem;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.system.GridSystem;
 
