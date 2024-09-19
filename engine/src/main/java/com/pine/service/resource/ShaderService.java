@@ -1,8 +1,8 @@
 package com.pine.service.resource;
 
 import com.pine.FSUtil;
-import com.pine.annotation.EngineDependency;
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;

@@ -1,6 +1,6 @@
 package com.pine.tasks;
 
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineInjectable;
 
 @EngineInjectable
 public class PhysicsTask extends AbstractTask {

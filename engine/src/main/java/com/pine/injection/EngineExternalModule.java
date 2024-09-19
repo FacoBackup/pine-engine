@@ -1,4 +1,4 @@
-package com.pine.annotation;
+package com.pine.injection;
 
 import com.pine.Initializable;
 import com.pine.service.system.AbstractSystem;

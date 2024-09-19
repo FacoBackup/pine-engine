@@ -2,8 +2,8 @@ package com.pine.service.resource;
 
 import com.pine.Loggable;
 import com.pine.Updatable;
-import com.pine.annotation.EngineDependency;
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
 import com.pine.repository.ClockRepository;
 import com.pine.service.resource.resource.*;
 

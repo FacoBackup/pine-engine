@@ -1,6 +1,6 @@
 package com.pine.service;
 
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineInjectable;
 
 import java.util.function.BiConsumer;
 

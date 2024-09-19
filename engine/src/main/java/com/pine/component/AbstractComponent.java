@@ -1,14 +1,18 @@
 package com.pine.component;
 
+import com.pine.inspection.FieldDTO;
+import com.pine.inspection.FieldType;
+import com.pine.inspection.MutableField;
 import com.pine.service.serialization.SerializableResource;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.*;
 
-public abstract class AbstractComponent<T extends EntityComponent> implements SerializableResource, EntityComponent {
+public abstract class AbstractComponent<T extends EntityComponent> extends WithMutableData implements SerializableResource, EntityComponent {
     private transient final Vector<T> bag = new Vector<>();
+
     private final int entityId;
 
     public AbstractComponent() {
@@ -19,22 +23,22 @@ public abstract class AbstractComponent<T extends EntityComponent> implements Se
         this.entityId = entityId;
     }
 
-    public int getEntityId() {
+    final public int getEntityId() {
         return entityId;
     }
 
-    public Vector<T> getBag() {
+    final public Vector<T> getBag() {
         return bag;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addComponent(EntityComponent instance) {
+    final public void addComponent(EntityComponent instance) {
         bag.add((T) instance);
     }
 
     @Override
-    final public Set<Class<? extends EntityComponent>> getDependencies(){
+    final public Set<Class<? extends EntityComponent>> getDependencies() {
         var internal = new HashSet<>(getDependenciesInternal());
         internal.add(MetadataComponent.class);
         return internal;
@@ -43,7 +47,9 @@ public abstract class AbstractComponent<T extends EntityComponent> implements Se
     protected abstract Set<Class<? extends EntityComponent>> getDependenciesInternal();
 
     @Override
-    public String toString() {
+    final public String toString() {
         return getComponentName();
     }
+
+
 }

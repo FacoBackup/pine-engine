@@ -1,7 +1,7 @@
 package com.pine.component;
 
-import com.pine.annotation.EngineInjectable;
-import com.pine.annotation.MutableField;
+import com.pine.injection.EngineInjectable;
+import com.pine.inspection.MutableField;
 import com.pine.type.LightType;
 import org.joml.Matrix4f;
 
@@ -12,7 +12,10 @@ public class LightComponent extends AbstractComponent<LightComponent> {
     // TODO - BREAK INTO SEPARATED COMPONENT TYPES
     @MutableField(label="Screen Space Shadows")
     public boolean screenSpaceShadows = false;
+
+    @MutableField(label="Shadow Bias")
     public double shadowBias = 0.0001;
+
     public int shadowSamples = 3;
     public double zNear = 1;
     public double zFar = 10000;

@@ -2,7 +2,7 @@ package com.pine.tools.system;
 
 import com.pine.Engine;
 import com.pine.EngineUtils;
-import com.pine.annotation.EngineDependency;
+import com.pine.injection.EngineDependency;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ShaderService;

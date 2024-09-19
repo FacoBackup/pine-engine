@@ -1,6 +1,6 @@
 package com.pine.component;
 
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineInjectable;
 import org.joml.Vector3f;
 
 import java.util.Collections;

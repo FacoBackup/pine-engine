@@ -1,8 +1,8 @@
 package com.pine.service.resource;
 
 import com.pine.Engine;
-import com.pine.annotation.EngineDependency;
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
 import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.primitives.EmptyRuntimeData;

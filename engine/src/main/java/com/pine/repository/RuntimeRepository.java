@@ -1,7 +1,7 @@
 package com.pine.repository;
 
 
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineInjectable;
 
 @EngineInjectable
 public class RuntimeRepository  {

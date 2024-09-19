@@ -2,8 +2,8 @@ package com.pine.tasks;
 
 import com.pine.component.AtmosphereComponent;
 import com.pine.component.LightComponent;
-import com.pine.annotation.EngineDependency;
-import com.pine.annotation.EngineInjectable;
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
 import com.pine.repository.CoreResourceRepository;
 
 @EngineInjectable

@@ -1,9 +1,9 @@
 package com.pine.repository;
 
 import com.pine.Engine;
-import com.pine.annotation.EngineDependency;
-import com.pine.annotation.EngineInjectable;
-import com.pine.annotation.LateInitializable;
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
+import com.pine.injection.LateInitializable;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.service.loader.impl.response.MeshLoaderResponse;
