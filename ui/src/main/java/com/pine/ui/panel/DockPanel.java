@@ -1,11 +1,13 @@
 package com.pine.ui.panel;
 
+import com.pine.Icon;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
+import imgui.internal.ImGuiDockNode;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 
@@ -33,16 +35,10 @@ public class DockPanel extends AbstractPanel {
         final ImGuiViewport viewport = ImGui.getMainViewport();
         final float offset_y = 0;
 
-        ImGui.setNextWindowPos(new ImVec2(viewport.getPos().x, viewport.getPos().y - offset_y));
-        ImGui.setNextWindowSize(new ImVec2(viewport.getSize().x, viewport.getSize().y - offset_y));
-        ImGui.setNextWindowViewport(viewport.getID());
-
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, new ImVec2(0.0f, 0.0f));
-        ImGui.setNextWindowBgAlpha(0.0f);
-
+        setupPosition(viewport, offset_y);
+        setupStyles();
         ImGui.begin(NAME, OPEN, FLAGS);
+        ImGui.popStyleVar(3);
 
         // TODO configurable values
         if (ImGui.beginMenuBar()) {
@@ -73,8 +69,19 @@ public class DockPanel extends AbstractPanel {
         ImGui.end();
     }
 
+    private static void setupPosition(ImGuiViewport viewport, float offset_y) {
+        ImGui.setNextWindowPos(new ImVec2(viewport.getPos().x, viewport.getPos().y - offset_y));
+        ImGui.setNextWindowSize(new ImVec2(viewport.getSize().x, viewport.getSize().y - offset_y));
+        ImGui.setNextWindowViewport(viewport.getID());
+    }
+
+    private static void setupStyles() {
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, new ImVec2(0.0f, 0.0f));
+    }
+
     private void renderView() {
-        ImGui.popStyleVar(3);
         int windowId = ImGui.getID(NAME);
         buildViews(windowId);
 
@@ -85,48 +92,55 @@ public class DockPanel extends AbstractPanel {
         super.renderInternal();
     }
 
-
     private void buildViews(int windowId) {
-
         if (!isInitialized) {
             isInitialized = true;
 
             dockMainId.set(windowId);
 
-            // reset current docking state
             imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
-            imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), ImGuiDockNodeFlags.None);
+            imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), ImGuiDockNodeFlags.AutoHideTabBar);
             imgui.internal.ImGui.dockBuilderSetNodeSize(dockMainId.get(), document.getViewportDimensions());
 
-            dockSpaces.forEach(d -> {
-                int origin = dockMainId.get();
-                if (d.getOrigin() != null) {
-                    origin = d.getOrigin().getNodeId().get();
-                }
-                ImInt target = dockMainId;
-                if (d.getOutAtOppositeDir() != null) {
-                    target = d.getOutAtOppositeDir().getNodeId();
-                }
+            for (DockDTO dockSpace : dockSpaces) {
+                createDockSpace(dockSpace);
+            }
 
-                d.getNodeId().set(imgui.internal.ImGui.dockBuilderSplitNode(origin, d.getSplitDir(), d.getSizeRatioForNodeAtDir(), null, target));
-            });
-
-            dockSpaces.forEach(d -> {
-                try {
-                    imgui.internal.ImGui.dockBuilderDockWindow(d.getName(), d.getNodeId().get());
-                    if (d.getBodyPanelClass() != null) {
-                        AbstractWindowPanel child = d.getBodyPanelClass().getConstructor().newInstance();
-                        appendChild(child);
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            for (DockDTO d : dockSpaces) {
+                addWindow(d);
+            }
 
             imgui.internal.ImGui.dockBuilderDockWindow("Viewport", dockMainId.get());
             imgui.internal.ImGui.dockBuilderFinish(dockMainId.get());
         }
 
+    }
+
+    private void createDockSpace(DockDTO dockSpace) {
+        int origin = dockMainId.get();
+        if (dockSpace.getOrigin() != null) {
+            origin = dockSpace.getOrigin().getNodeId().get();
+        }
+        ImInt target = dockMainId;
+        if (dockSpace.getOutAtOppositeDir() != null) {
+            target = dockSpace.getOutAtOppositeDir().getNodeId();
+        }
+
+        dockSpace.getNodeId().set(imgui.internal.ImGui.dockBuilderSplitNode(origin, dockSpace.getSplitDir(), dockSpace.getSizeRatioForNodeAtDir(), null, target));
+        ImGuiDockNode imGuiDockNode = imgui.internal.ImGui.dockBuilderGetNode(dockSpace.getNodeId().get());
+        imGuiDockNode.addLocalFlags(ImGuiDockNodeFlags.AutoHideTabBar);
+    }
+
+    private void addWindow(DockDTO d) {
+        try {
+            imgui.internal.ImGui.dockBuilderDockWindow(d.getName(), d.getNodeId().get());
+            if (d.getBodyPanelClass() != null) {
+                AbstractWindowPanel child = d.getBodyPanelClass().getConstructor().newInstance();
+                appendChild(child);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void initializeDockSpaces(List<DockDTO> dockSpaces) {

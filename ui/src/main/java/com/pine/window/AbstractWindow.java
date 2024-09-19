@@ -84,8 +84,8 @@ public abstract class AbstractWindow implements Renderable {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 0);
 
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-        handle = GLFW.glfwCreateWindow(getWindowWidth(), getWindowHeight(), getWindowName(), MemoryUtil.NULL, MemoryUtil.NULL);
-
+        getDisplayResolution();
+        handle = GLFW.glfwCreateWindow((int) (displayW * .75), (int) (displayH * .75), getWindowName(), MemoryUtil.NULL, MemoryUtil.NULL);
         if (handle == MemoryUtil.NULL) {
             throw new RuntimeException("Failed to create the GLFW window");
         }
@@ -95,9 +95,6 @@ public abstract class AbstractWindow implements Renderable {
             final IntBuffer pHeight = stack.mallocInt(1); // int*
 
             GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
-            final GLFWVidMode vidmode = Objects.requireNonNull(GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()));
-            displayW = vidmode.width();
-            displayH = vidmode.height();
             GLFW.glfwSetWindowPos(handle, (displayW - pWidth.get(0)) / 2, (displayH - pHeight.get(0)) / 2);
         }
 
@@ -106,14 +103,19 @@ public abstract class AbstractWindow implements Renderable {
         GLFW.glfwSwapInterval(GLFW.GLFW_TRUE);
         if (isFullScreen()) {
             GLFW.glfwMaximizeWindow(handle);
+            GLFW.glfwShowWindow(handle);
         } else {
             GLFW.glfwShowWindow(handle);
         }
-
         clearBuffer();
         renderBuffer();
-
         initGlfwEvents();
+    }
+
+    private void getDisplayResolution() {
+        final GLFWVidMode vidmode = Objects.requireNonNull(GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor()));
+        displayW = vidmode.width();
+        displayH = vidmode.height();
     }
 
     private void initGlfwEvents() {
@@ -205,11 +207,9 @@ public abstract class AbstractWindow implements Renderable {
         return handle;
     }
 
-    public abstract int getWindowWidth();
-
     public abstract String getWindowName();
 
-    public abstract int getWindowHeight();
-
-    public abstract boolean isFullScreen();
+    protected boolean isFullScreen() {
+        return true;
+    }
 }

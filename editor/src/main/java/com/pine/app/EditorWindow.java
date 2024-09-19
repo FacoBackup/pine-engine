@@ -118,24 +118,12 @@ public class EditorWindow extends AbstractWindow {
         return GLSL_VERSION;
     }
 
-    public int getWindowWidth() {
-        return 960;
-    }
-
     public String getWindowName() {
         ProjectDTO currentProject = projectService.getCurrentProject();
         if(currentProject != null) {
             return currentProject.getName();
         }
         return "New Project - Pine Engine";
-    }
-
-    public int getWindowHeight() {
-        return 540;
-    }
-
-    public boolean isFullScreen() {
-        return false;
     }
 
     public Engine getEngine() {
