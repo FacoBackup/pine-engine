@@ -68,6 +68,10 @@ public class AbstractView implements View {
         document.appendChild(child, this);
     }
 
+    @Override
+    public void removeChild(View child) {
+        document.removeChild(child, this);
+    }
 
     @Override
     public String getInnerText() {

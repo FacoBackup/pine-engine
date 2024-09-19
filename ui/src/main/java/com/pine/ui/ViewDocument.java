@@ -17,7 +17,7 @@ public class ViewDocument implements Loggable {
     private final Map<String, View> views = new HashMap<>();
     private final AbstractWindow window;
     private boolean darkMode = true;
-    private final float[] backgroundColor = new float[] { .0f, .0f, .0f};
+    private final float[] backgroundColor = new float[]{.0f, .0f, .0f};
 
     public ViewDocument(AbstractWindow window) {
         this.window = window;
@@ -102,5 +102,9 @@ public class ViewDocument implements Loggable {
     public void setDarkMode(boolean darkMode) {
         this.darkMode = darkMode;
         ThemeUtil.applyTheme(darkMode, backgroundColor);
+    }
+
+    public void removeChild(View child, AbstractView parent) {
+        parent.getChildren().remove(child);
     }
 }

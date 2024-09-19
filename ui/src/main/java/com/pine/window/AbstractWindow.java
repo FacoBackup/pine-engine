@@ -29,7 +29,7 @@ public abstract class AbstractWindow implements Renderable {
     protected int displayW = 1920;
     protected int displayH = 1080;
     protected final ViewDocument viewDocument = new ViewDocument(this);
-    private final DockPanel root = new DockPanel();
+    protected final DockPanel root = new DockPanel();
     private boolean isVisible = true;
 
     @InjectBean

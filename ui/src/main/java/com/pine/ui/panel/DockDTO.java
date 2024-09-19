@@ -10,6 +10,7 @@ public final class DockDTO {
     private DockDTO origin;
     private final String name;
     private final Class<? extends AbstractWindowPanel> bodyPanelClass;
+    private AbstractWindowPanel panel;
 
     public DockDTO(String name, Class<? extends AbstractWindowPanel> bodyPanelClass){
         this.name = name;
@@ -60,4 +61,11 @@ public final class DockDTO {
         return bodyPanelClass;
     }
 
+    public void setPanelInstance(AbstractWindowPanel child) {
+        panel = child;
+    }
+
+    public AbstractWindowPanel getPanel() {
+        return panel;
+    }
 }

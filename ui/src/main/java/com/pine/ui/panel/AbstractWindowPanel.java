@@ -12,14 +12,13 @@ import org.joml.Vector2f;
 public abstract class AbstractWindowPanel extends AbstractPanel {
     private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove;
     private static final ImVec2 DEFAULT = new ImVec2(-1, -1);
-    private static final ImVec2 DEFAULT_MAX = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);
+    private static final ImVec2 MAX_SIZE = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);
     private static final ImVec2 PIVOT = new ImVec2(0.5f, 0.5f);
     public static final float FRAME_SIZE = 25;
+    protected static final ImVec2 MIN_SIZE = new ImVec2(300, 300);
 
     private ImGuiWindow window;
     protected final ImVec2 initialSize = DEFAULT.clone();
-    protected final ImVec2 minSize = DEFAULT.clone();
-    protected final ImVec2 maxSize = DEFAULT_MAX.clone();
     protected final ImVec2 padding = DEFAULT.clone();
     protected final ImVec2 position = DEFAULT.clone();
     /**
@@ -52,9 +51,7 @@ public abstract class AbstractWindowPanel extends AbstractPanel {
             ImGui.setNextWindowSize(initialSize, ImGuiCond.FirstUseEver);
         }
 
-        if (!minSize.equals(DEFAULT) && !maxSize.equals(DEFAULT_MAX)) {
-            ImGui.setNextWindowSizeConstraints(minSize, maxSize);
-        }
+        ImGui.setNextWindowSizeConstraints(MIN_SIZE, MAX_SIZE);
 
         if (!padding.equals(DEFAULT)) {
             ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, padding);

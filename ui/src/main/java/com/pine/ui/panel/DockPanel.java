@@ -33,9 +33,8 @@ public class DockPanel extends AbstractPanel {
     @Override
     public void renderInternal() {
         final ImGuiViewport viewport = ImGui.getMainViewport();
-        final float offset_y = 0;
 
-        setupPosition(viewport, offset_y);
+        setupPosition(viewport);
         setupStyles();
         ImGui.begin(NAME, OPEN, FLAGS);
         ImGui.popStyleVar(3);
@@ -56,11 +55,8 @@ public class DockPanel extends AbstractPanel {
                 ImGui.endMenu();
             }
 
-            if (ImGui.beginMenu("Window")) {
-                if (ImGui.menuItem(document.isDarkMode() ? "Theme: Dark" : "Theme: Light" )) {
-                    document.setDarkMode(!document.isDarkMode());
-                }
-                ImGui.endMenu();
+            if (ImGui.button(document.isDarkMode() ? Icon.MOON.codePoint : Icon.SUN.codePoint)) {
+                document.setDarkMode(!document.isDarkMode());
             }
             ImGui.endMenuBar();
         }
@@ -69,9 +65,9 @@ public class DockPanel extends AbstractPanel {
         ImGui.end();
     }
 
-    private static void setupPosition(ImGuiViewport viewport, float offset_y) {
-        ImGui.setNextWindowPos(new ImVec2(viewport.getPos().x, viewport.getPos().y - offset_y));
-        ImGui.setNextWindowSize(new ImVec2(viewport.getSize().x, viewport.getSize().y - offset_y));
+    private static void setupPosition(ImGuiViewport viewport) {
+        ImGui.setNextWindowPos(new ImVec2(viewport.getPos().x, viewport.getPos().y));
+        ImGui.setNextWindowSize(new ImVec2(viewport.getSize().x, viewport.getSize().y));
         ImGui.setNextWindowViewport(viewport.getID());
     }
 
@@ -113,7 +109,6 @@ public class DockPanel extends AbstractPanel {
             imgui.internal.ImGui.dockBuilderDockWindow("Viewport", dockMainId.get());
             imgui.internal.ImGui.dockBuilderFinish(dockMainId.get());
         }
-
     }
 
     private void createDockSpace(DockDTO dockSpace) {
@@ -137,6 +132,7 @@ public class DockPanel extends AbstractPanel {
             if (d.getBodyPanelClass() != null) {
                 AbstractWindowPanel child = d.getBodyPanelClass().getConstructor().newInstance();
                 appendChild(child);
+                d.setPanelInstance(child);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -144,10 +140,11 @@ public class DockPanel extends AbstractPanel {
     }
 
     public void initializeDockSpaces(List<DockDTO> dockSpaces) {
-        if (isInitialized) {
-            getLogger().warn("Dock spaces already initialized");
-            return;
-        }
+        this.dockSpaces.forEach(d -> {
+            if (d.getPanel() != null) {
+                removeChild(d.getPanel());
+            }
+        });
         this.dockSpaces = dockSpaces;
     }
 }
