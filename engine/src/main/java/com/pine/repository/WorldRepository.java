@@ -2,8 +2,8 @@ package com.pine.repository;
 
 import com.google.gson.JsonElement;
 import com.pine.Initializable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjectable;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
 import com.pine.service.serialization.SerializableRepository;

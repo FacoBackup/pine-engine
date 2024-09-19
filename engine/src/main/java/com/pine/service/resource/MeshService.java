@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineInjectable;
 import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;

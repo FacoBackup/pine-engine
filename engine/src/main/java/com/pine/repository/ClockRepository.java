@@ -1,7 +1,7 @@
 package com.pine.repository;
 
 import com.pine.Updatable;
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineInjectable;
 
 @EngineInjectable
 public class ClockRepository implements Updatable {

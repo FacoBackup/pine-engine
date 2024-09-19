@@ -1,6 +1,6 @@
 package com.pine.service.system.impl;
 
-import com.pine.injection.EngineDependency;
+import com.pine.annotation.EngineDependency;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.UBOService;
 import com.pine.service.system.AbstractSystem;

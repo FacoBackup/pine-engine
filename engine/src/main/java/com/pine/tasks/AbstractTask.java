@@ -1,6 +1,6 @@
 package com.pine.tasks;
 
-import com.pine.injection.LateInitializable;
+import com.pine.annotation.LateInitializable;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

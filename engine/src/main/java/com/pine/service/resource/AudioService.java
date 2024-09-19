@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineInjectable;
 import com.pine.service.resource.primitives.audio.Audio;
 import com.pine.service.resource.primitives.audio.AudioDTO;
 import com.pine.service.resource.resource.AbstractResourceService;

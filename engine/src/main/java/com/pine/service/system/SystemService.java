@@ -1,9 +1,9 @@
 package com.pine.service.system;
 
 import com.pine.Updatable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
-import com.pine.injection.EngineInjector;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjectable;
+import com.pine.annotation.EngineInjector;
 import com.pine.service.system.impl.*;
 
 import java.util.List;

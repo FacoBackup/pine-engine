@@ -1,8 +1,8 @@
 package com.pine.tasks;
 
 import com.pine.AbstractTree;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjectable;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
 import com.pine.repository.WorldRepository;

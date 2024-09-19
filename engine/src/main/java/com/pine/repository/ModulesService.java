@@ -1,10 +1,10 @@
 package com.pine.repository;
 
 import com.pine.Initializable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
-import com.pine.injection.EngineInjector;
-import com.pine.injection.EngineExternalModule;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjectable;
+import com.pine.annotation.EngineInjector;
+import com.pine.annotation.EngineExternalModule;
 import com.pine.service.system.SystemService;
 import org.jetbrains.annotations.NotNull;
 

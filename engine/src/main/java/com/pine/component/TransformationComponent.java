@@ -1,6 +1,6 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineInjectable;
 import com.pine.type.RotationType;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;

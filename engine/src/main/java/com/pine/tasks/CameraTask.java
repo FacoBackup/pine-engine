@@ -1,8 +1,8 @@
 package com.pine.tasks;
 
 import com.pine.Loggable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjectable;
 import com.pine.EngineUtils;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreResourceRepository;

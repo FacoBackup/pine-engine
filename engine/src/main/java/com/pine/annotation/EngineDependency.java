@@ -1,4 +1,4 @@
-package com.pine.injection;
+package com.pine.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

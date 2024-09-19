@@ -3,7 +3,7 @@ package com.pine.repository;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.pine.Initializable;
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineInjectable;
 import com.pine.service.camera.Camera;
 import com.pine.service.serialization.SerializableRepository;
 import org.joml.Quaternionf;

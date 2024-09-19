@@ -1,7 +1,7 @@
 package com.pine.tasks;
 
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjectable;
 import com.pine.repository.ResourceLoaderRepository;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 

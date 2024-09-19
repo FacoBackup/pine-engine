@@ -1,6 +1,6 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineInjectable;
 
 import java.util.Set;
 

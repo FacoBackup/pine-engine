@@ -1,6 +1,6 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineInjectable;
 import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;
 

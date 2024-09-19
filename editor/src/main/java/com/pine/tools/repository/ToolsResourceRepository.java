@@ -1,7 +1,7 @@
 package com.pine.tools.repository;
 
 import com.pine.Initializable;
-import com.pine.injection.EngineDependency;
+import com.pine.annotation.EngineDependency;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;

@@ -1,7 +1,7 @@
 package com.pine.service.world;
 
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjectable;
 import com.pine.component.EntityComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.repository.WorldRepository;

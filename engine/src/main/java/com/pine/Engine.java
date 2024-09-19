@@ -1,8 +1,8 @@
 package com.pine;
 
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjector;
-import com.pine.injection.EngineExternalModule;
+import com.pine.annotation.EngineDependency;
+import com.pine.annotation.EngineInjector;
+import com.pine.annotation.EngineExternalModule;
 import com.pine.repository.*;
 import com.pine.service.world.request.AbstractRequest;
 import com.pine.service.MessageService;
