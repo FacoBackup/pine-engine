@@ -1,5 +1,7 @@
 package com.pine.tasks;
 
+import com.pine.component.AtmosphereComponent;
+import com.pine.component.LightComponent;
 import com.pine.injection.EngineDependency;
 import com.pine.injection.EngineInjectable;
 import com.pine.repository.CoreResourceRepository;
@@ -11,7 +13,10 @@ public class LightPackagingTask extends AbstractTask {
     public CoreResourceRepository coreResourceRepository;
 
     @EngineDependency
-    public WorldService worldService;
+    public LightComponent lights;
+
+    @EngineDependency
+    public AtmosphereComponent atmospheres;
 
     @Override
     protected int getTickIntervalMilliseconds() {

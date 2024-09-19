@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class CullingComponent extends AbstractComponent {
+public class CullingComponent extends AbstractComponent<CullingComponent> {
 
     public long maxDistanceFromCamera = 300;
 

@@ -7,7 +7,7 @@ import org.joml.Vector3f;
 import java.util.Set;
 
 @EngineInjectable
-public class AtmosphereComponent extends AbstractComponent {
+public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> {
     
     public float elapsedTime = 0;
     public Vector3f sunDirection = new Vector3f(0, 1, 1);

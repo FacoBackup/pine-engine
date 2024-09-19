@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class MeshComponent extends AbstractComponent {
+public class MeshComponent extends AbstractComponent<MeshComponent> {
     public boolean castsShadows = true;
     public boolean contributeToProbes = true;
     public String meshID;

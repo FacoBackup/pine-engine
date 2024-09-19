@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class SpriteComponent extends AbstractComponent {
+public class SpriteComponent extends AbstractComponent<SpriteComponent> {
     public String textureId;
     public boolean keepSameSize = true;
     public boolean alwaysFaceCamera = true;

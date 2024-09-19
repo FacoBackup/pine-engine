@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class CameraComponent extends AbstractComponent {
+public class CameraComponent extends AbstractComponent<CameraComponent> {
     public float fov = 45.0f;
     public boolean dynamicAspectRatio = true;
     public float aspectRatio = 1.0f;

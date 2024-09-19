@@ -8,7 +8,7 @@ public interface EntityComponent {
 
     Set<Class<? extends EntityComponent>> getDependencies();
 
-    Vector<EntityComponent> getBag();
-
     String getComponentName();
+
+    void addComponent(EntityComponent instance);
 }

@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class TerrainComponent extends AbstractComponent {
+public class TerrainComponent extends AbstractComponent<TerrainComponent> {
     public boolean castsShadows = true;
     public String heightMapTextureId;
     public float heightScale = 1;

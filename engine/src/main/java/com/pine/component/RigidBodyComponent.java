@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class RigidBodyComponent extends AbstractComponent {
+public class RigidBodyComponent extends AbstractComponent<RigidBodyComponent> {
     public RigidBodyComponent(Integer entityId) {
         super(entityId);
     }

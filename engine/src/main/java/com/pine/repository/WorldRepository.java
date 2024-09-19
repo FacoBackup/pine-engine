@@ -74,7 +74,7 @@ public class WorldRepository extends SerializableRepository implements Initializ
                     .stream()
                     .filter(a -> instance.getClass().isAssignableFrom(a.getClass()))
                     .findFirst()
-                    .ifPresent(a -> a.getBag().add(instance));
+                    .ifPresent(a -> a.addComponent(instance));
             return true;
         } catch (Exception e) {
             return false;

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @EngineInjectable
-public class InstancedMeshComponent extends AbstractComponent {
+public class InstancedMeshComponent extends AbstractComponent<InstancedMeshComponent> {
 
     public static class TransformationDTO {
         public final Vector3f translation = new Vector3f();

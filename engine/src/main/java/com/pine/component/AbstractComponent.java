@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-public abstract class AbstractComponent implements SerializableResource, EntityComponent {
-    public transient final Vector<EntityComponent> bag = new Vector<>();
+public abstract class AbstractComponent<T extends EntityComponent> implements SerializableResource, EntityComponent {
+    private transient final Vector<T> bag = new Vector<>();
     private final int entityId;
 
     public AbstractComponent() {
@@ -23,9 +23,14 @@ public abstract class AbstractComponent implements SerializableResource, EntityC
         return entityId;
     }
 
-    @Override
-    public Vector<EntityComponent> getBag() {
+    public Vector<T> getBag() {
         return bag;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void addComponent(EntityComponent instance) {
+        bag.add((T) instance);
     }
 
     @Override

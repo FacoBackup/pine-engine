@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class PhysicsColliderComponent extends AbstractComponent {
+public class PhysicsColliderComponent extends AbstractComponent<PhysicsColliderComponent> {
 
     public PhysicsColliderComponent(Integer entityId) {
         super(entityId);

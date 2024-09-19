@@ -6,7 +6,7 @@ import com.pine.type.MaterialRenderingType;
 import java.util.Set;
 
 @EngineInjectable
-public class DecalComponent extends AbstractComponent {
+public class DecalComponent extends AbstractComponent<DecalComponent> {
     public String albedoID;
     public String roughnessID;
     public String metallicID;

@@ -19,6 +19,7 @@ import java.nio.FloatBuffer;
 
 public class InstancedRenderingSystem extends AbstractSystem {
     private static final int MAT4_SIZE = 16;
+    private static final int BASE_ATTRIB_LOCATION = 3;
     private static final MeshRuntimeData DRAW_COMMAND = new MeshRuntimeData(MeshRenderingMode.TRIANGLES, 0);
 
     @EngineDependency
@@ -57,12 +58,11 @@ public class InstancedRenderingSystem extends AbstractSystem {
     protected void renderInternal() {
         shaderService.bind(coreResourceRepository.demoInstancedShader);
 
-        for (var component : instancedMeshes.bag) {
-            var mesh = (InstancedMeshComponent) component;
-            DRAW_COMMAND.instanceCount = mesh.numberOfInstances;
-            generateBuffers(mesh);
-            shaderService.bindUniform(baseModelMatrix, worldService.getTransformationComponentUnchecked(mesh.getEntityId()));
-            meshService.bind(coreResourceRepository.cubeMesh);
+        for (var component : instancedMeshes.getBag()) {
+            DRAW_COMMAND.instanceCount = component.numberOfInstances;
+            generateBuffers(component);
+            shaderService.bindUniform(baseModelMatrix, worldService.getTransformationComponentUnchecked(component.getEntityId()));
+            meshService.bind(coreResourceRepository.cubeMesh, DRAW_COMMAND);
             meshService.unbind();
         }
 
@@ -85,9 +85,9 @@ public class InstancedRenderingSystem extends AbstractSystem {
             int vec4Size = 4 * Float.BYTES;
 
             for (int i = 0; i < 4; i++) {
-                GL46.glEnableVertexAttribArray(3 + i);
-                GL46.glVertexAttribPointer(3 + i, 4, GL46.GL_FLOAT, false, MAT4_SIZE * Float.BYTES, i * vec4Size);
-                GL46.glVertexAttribDivisor(3 + i, 1);
+                GL46.glEnableVertexAttribArray(BASE_ATTRIB_LOCATION + i);
+                GL46.glVertexAttribPointer(BASE_ATTRIB_LOCATION + i, 4, GL46.GL_FLOAT, false, MAT4_SIZE * Float.BYTES, i * vec4Size);
+                GL46.glVertexAttribDivisor(BASE_ATTRIB_LOCATION + i, 1);
             }
 
             GL46.glBindBuffer(GL46.GL_ARRAY_BUFFER, 0);

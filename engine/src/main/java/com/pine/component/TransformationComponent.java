@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @EngineInjectable
-public class TransformationComponent extends AbstractComponent {
+public class TransformationComponent extends AbstractComponent<TransformationComponent> {
     public Vector4f rotationQuaternion = new Vector4f();
     public Vector4f rotationQuaternionFinal = new Vector4f();
     public Vector3f translation = new Vector3f();

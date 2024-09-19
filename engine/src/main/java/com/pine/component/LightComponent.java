@@ -7,7 +7,7 @@ import org.joml.Matrix4f;
 import java.util.Set;
 
 @EngineInjectable
-public class LightComponent extends AbstractComponent {
+public class LightComponent extends AbstractComponent<LightComponent> {
     // TODO - BREAK INTO SEPARATED COMPONENT TYPES
     public boolean screenSpaceShadows = false;
     public double shadowBias = 0.0001;

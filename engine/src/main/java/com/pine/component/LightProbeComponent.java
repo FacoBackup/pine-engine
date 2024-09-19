@@ -5,7 +5,7 @@ import com.pine.injection.EngineInjectable;
 import java.util.Set;
 
 @EngineInjectable
-public class LightProbeComponent extends AbstractComponent {
+public class LightProbeComponent extends AbstractComponent<LightProbeComponent> {
     public int mipmaps = 6;
     /**
      * Only entities within  this radius will be rendered into the probe
