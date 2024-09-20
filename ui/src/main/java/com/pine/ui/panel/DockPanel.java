@@ -122,8 +122,8 @@ public class DockPanel extends AbstractPanel {
         }
 
         dockSpace.getNodeId().set(imgui.internal.ImGui.dockBuilderSplitNode(origin, dockSpace.getSplitDir(), dockSpace.getSizeRatioForNodeAtDir(), null, target));
-//        ImGuiDockNode imGuiDockNode = imgui.internal.ImGui.dockBuilderGetNode(dockSpace.getNodeId().get());
-//        imGuiDockNode.addLocalFlags(ImGuiDockNodeFlags.AutoHideTabBar);
+        ImGuiDockNode imGuiDockNode = imgui.internal.ImGui.dockBuilderGetNode(dockSpace.getNodeId().get());
+        imGuiDockNode.addLocalFlags(ImGuiDockNodeFlags.AutoHideTabBar);
     }
 
     private void addWindow(DockDTO d) {

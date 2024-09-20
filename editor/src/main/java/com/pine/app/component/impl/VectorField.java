@@ -3,6 +3,7 @@ package com.pine.app.component.impl;
 import com.pine.app.component.AbstractFormField;
 import com.pine.inspection.FieldDTO;
 import imgui.ImGui;
+import imgui.flag.ImGuiSliderFlags;
 
 import java.util.function.BiConsumer;
 
@@ -16,9 +17,9 @@ public class VectorField extends AbstractFormField {
     @Override
     public void renderInternal() {
         switch (dto.getType()) {
-            case VECTOR2 -> ImGui.dragFloat2(dto.getLabel(), values, dto.getMin(), dto.getMax());
-            case VECTOR3 -> ImGui.dragFloat3(dto.getLabel(), values, dto.getMin(), dto.getMax());
-            case VECTOR4 -> ImGui.dragFloat4(dto.getLabel(), values, dto.getMin(), dto.getMax());
+            case VECTOR2 -> ImGui.dragFloat2(dto.getLabel(), values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR3 -> ImGui.dragFloat3(dto.getLabel(), values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR4 -> ImGui.dragFloat4(dto.getLabel(), values, .01f, dto.getMin(), dto.getMax());
         }
     }
 }

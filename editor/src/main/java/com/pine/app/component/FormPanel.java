@@ -24,6 +24,10 @@ public class FormPanel extends AbstractPanel {
                     appendChild(new StringField(field, changeHandler));
                     break;
                 }
+                case RESOURCE: {
+                    appendChild(new ResourceField(field, changeHandler));
+                    break;
+                }
                 case LONG:
                 case INT: {
                     appendChild(new IntField(field, changeHandler));

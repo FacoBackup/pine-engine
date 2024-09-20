@@ -18,7 +18,8 @@ public abstract class AbstractResource implements IResource {
         return isStatic;
     }
 
-    public void setStatic(boolean aStatic) {
-        isStatic = aStatic;
+    @Override
+    public void makeStatic() {
+        isStatic = true;
     }
 }

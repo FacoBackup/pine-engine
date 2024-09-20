@@ -3,7 +3,7 @@ package com.pine.service.resource.primitives.texture;
 import com.pine.service.resource.resource.ResourceCreationData;
 import com.pine.service.resource.resource.ResourceType;
 
-public class TextureCreationData implements ResourceCreationData {
+public class TextureCreationData extends ResourceCreationData {
     public TextureCreationData() {
         super();
         // TODO

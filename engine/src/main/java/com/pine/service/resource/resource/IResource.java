@@ -8,4 +8,6 @@ public interface IResource extends Loggable {
     ResourceType getResourceType();
 
     boolean isStatic();
+
+    void makeStatic();
 }

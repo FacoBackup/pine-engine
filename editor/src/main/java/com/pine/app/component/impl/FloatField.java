@@ -15,7 +15,7 @@ public class FloatField extends AbstractFormField {
 
     @Override
     public void renderInternal() {
-        if(ImGui.dragFloat(dto.getLabel(), values, dto.getMin(), dto.getMax())){
+        if(ImGui.dragFloat(dto.getLabel(), values, .01f, dto.getMin(), dto.getMax())){
             changerHandler.accept(dto, values[0]);
         }
     }

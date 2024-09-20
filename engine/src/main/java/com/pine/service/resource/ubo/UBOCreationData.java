@@ -6,7 +6,7 @@ import com.pine.service.resource.resource.ResourceType;
 import java.util.List;
 import java.util.Objects;
 
-public final class UBOCreationData implements ResourceCreationData {
+public final class UBOCreationData extends ResourceCreationData {
     private final List<UBOData> data;
     private final String blockName;
 

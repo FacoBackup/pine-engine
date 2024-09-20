@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL46;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FBOCreationData implements ResourceCreationData {
+public class FBOCreationData extends ResourceCreationData {
 
     private final List<FBOTextureData> colors = new ArrayList<>();
     private boolean depthTexture;

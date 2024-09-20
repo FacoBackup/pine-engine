@@ -111,18 +111,20 @@ public class CoreResourceRepository implements LateInitializable {
         var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         if (planeResponse != null) {
             planeMesh = (Mesh) resources.getById(planeResponse.getMeshes().getFirst().id());
+            resources.makeStatic(planeMesh);
         }
 
         var cubeResponse = (MeshLoaderResponse) resourceLoader.load("cube.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         if (cubeResponse != null) {
-            this.cubeMesh = (Mesh) resources.getById(cubeResponse.getMeshes().getFirst().id());
+            cubeMesh = (Mesh) resources.getById(cubeResponse.getMeshes().getFirst().id());
+            resources.makeStatic(cubeMesh);
         }
         quadMesh = (Mesh) resources.addResource(new MeshCreationData(
                 new float[]{-1, -1, (float) -4.371138828673793e-8, 1, -1, (float) -4.371138828673793e-8, -1, 1, 4.371138828673793e-8F, 1, 1, 4.371138828673793e-8F},
                 new int[]{0, 1, 3, 0, 3, 2},
                 null,
                 null
-        ));
+        ).staticResource());
 
         initializeFBOs();
         initializeUBOs();
@@ -136,7 +138,7 @@ public class CoreResourceRepository implements LateInitializable {
                 UBOData.of("viewProjection", GLSLType.MAT_4),
                 UBOData.of("viewMatrix", GLSLType.MAT_4),
                 UBOData.of("invViewMatrix", GLSLType.MAT_4),
-                UBOData.of("placement", GLSLType.VEC_4)));
+                UBOData.of("placement", GLSLType.VEC_4)).staticResource());
 
         cameraProjectionUBO = (UBO) resources.addResource(new UBOCreationData(
                 CoreUBOName.CAMERA_PROJECTION.getBlockName(),
@@ -144,7 +146,7 @@ public class CoreResourceRepository implements LateInitializable {
                 UBOData.of("invProjectionMatrix", GLSLType.MAT_4),
                 UBOData.of("bufferResolution", GLSLType.VEC_2),
                 UBOData.of("logDepthFC", GLSLType.FLOAT),
-                UBOData.of("logC", GLSLType.FLOAT)));
+                UBOData.of("logC", GLSLType.FLOAT)).staticResource());
 
         frameCompositionUBO = (UBO) resources.addResource(new UBOCreationData(
                 CoreUBOName.FRAME_COMPOSITION.getBlockName(),
@@ -154,7 +156,7 @@ public class CoreResourceRepository implements LateInitializable {
                 UBOData.of("FXAASpanMax", GLSLType.FLOAT),
                 UBOData.of("FXAAReduceMin", GLSLType.FLOAT),
                 UBOData.of("FXAAReduceMul", GLSLType.FLOAT),
-                UBOData.of("filmGrainStrength", GLSLType.FLOAT)));
+                UBOData.of("filmGrainStrength", GLSLType.FLOAT)).staticResource());
 
         lensPostProcessingUBO = (UBO) resources.addResource(new UBOCreationData(
                 CoreUBOName.LENS_PP.getBlockName(),
@@ -173,14 +175,14 @@ public class CoreResourceRepository implements LateInitializable {
                 UBOData.of("vignetteStrength", GLSLType.FLOAT),
                 UBOData.of("gamma", GLSLType.FLOAT),
                 UBOData.of("exposure", GLSLType.FLOAT)
-        ));
+        ).staticResource());
 
         ssaoUBO = (UBO) resources.addResource(new UBOCreationData(
                 CoreUBOName.SSAO.getBlockName(),
                 UBOData.of("settings", GLSLType.VEC_4),
                 UBOData.of("samples", GLSLType.VEC_4, 64),
                 UBOData.of("noiseScale", GLSLType.VEC_2)
-        ));
+        ).staticResource());
 
         uberUBO = (UBO) resources.addResource(new UBOCreationData(
                 CoreUBOName.UBER.getBlockName(),
@@ -199,38 +201,38 @@ public class CoreResourceRepository implements LateInitializable {
                 UBOData.of("maxStepsSSS", GLSLType.INT),
                 UBOData.of("hasSkylight", GLSLType.BOOL),
                 UBOData.of("hasAmbientOcclusion", GLSLType.BOOL)
-        ));
+        ).staticResource());
 
         lightsUBO = (UBO) resources.addResource(new UBOCreationData(
                 CoreUBOName.LIGHTS.getBlockName(),
                 UBOData.of("lightPrimaryBuffer", GLSLType.MAT_4, MAX_LIGHTS),
                 UBOData.of("lightSecondaryBuffer", GLSLType.MAT_4, MAX_LIGHTS)
-        ));
+        ).staticResource());
     }
 
     private void initializeShaders() {
-        demoInstancedShader = (Shader) resources.addResource(new ShaderCreationData("shaders/DEMO_INSTANCED.vert", "shaders/DEMO_INSTANCED.frag", "terrain"));
-        terrainShader = (Shader) resources.addResource(new ShaderCreationData("shaders/TERRAIN.vert", "shaders/TERRAIN.frag", "terrain"));
-        spriteShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite"));
-        visibilityShader = (Shader) resources.addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility"));
-        toScreenShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen"));
-        downscaleShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILINEAR_DOWNSCALE.glsl", "downscale"));
-        bilateralBlurShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILATERAL_BLUR.glsl", "bilateralBlur"));
-        bokehShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOKEH.frag", "bokeh"));
-        irradianceShader = (Shader) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/IRRADIANCE_MAP.frag", "irradiance"));
-        prefilteredShader = (Shader) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/PREFILTERED_MAP.frag", "prefiltered"));
-        ssgiShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSGI.frag", "ssgi"));
-        mbShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/MOTION_BLUR.frag", "mb"));
-        ssaoShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSAO.frag", "ssao"));
-        boxBlurShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOX-BLUR.frag", "boxBlur"));
-        directShadowsShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag", "directShadows"));
-        omniDirectShadowsShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag", "omniDirectShadows"));
-        compositionShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/FRAME_COMPOSITION.frag", "composition"));
-        bloomShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BRIGHTNESS_FILTER.frag", "bloom"));
-        lensShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/LENS_POST_PROCESSING.frag", "lens"));
-        gaussianShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/GAUSSIAN.frag", "gaussian"));
-        upSamplingShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/UPSAMPLE_TENT.glsl", "upSampling"));
-        atmosphereShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag", "atmosphere"));
+        demoInstancedShader = (Shader) resources.addResource(new ShaderCreationData("shaders/DEMO_INSTANCED.vert", "shaders/DEMO_INSTANCED.frag", "terrain").staticResource());
+        terrainShader = (Shader) resources.addResource(new ShaderCreationData("shaders/TERRAIN.vert", "shaders/TERRAIN.frag", "terrain").staticResource());
+        spriteShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite").staticResource());
+        visibilityShader = (Shader) resources.addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility").staticResource());
+        toScreenShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen").staticResource());
+        downscaleShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILINEAR_DOWNSCALE.glsl", "downscale").staticResource());
+        bilateralBlurShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILATERAL_BLUR.glsl", "bilateralBlur").staticResource());
+        bokehShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOKEH.frag", "bokeh").staticResource());
+        irradianceShader = (Shader) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/IRRADIANCE_MAP.frag", "irradiance").staticResource());
+        prefilteredShader = (Shader) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/PREFILTERED_MAP.frag", "prefiltered").staticResource());
+        ssgiShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSGI.frag", "ssgi").staticResource());
+        mbShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/MOTION_BLUR.frag", "mb").staticResource());
+        ssaoShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSAO.frag", "ssao").staticResource());
+        boxBlurShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOX-BLUR.frag", "boxBlur").staticResource());
+        directShadowsShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag", "directShadows").staticResource());
+        omniDirectShadowsShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag", "omniDirectShadows").staticResource());
+        compositionShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/FRAME_COMPOSITION.frag", "composition").staticResource());
+        bloomShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BRIGHTNESS_FILTER.frag", "bloom").staticResource());
+        lensShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/LENS_POST_PROCESSING.frag", "lens").staticResource());
+        gaussianShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/GAUSSIAN.frag", "gaussian").staticResource());
+        upSamplingShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/UPSAMPLE_TENT.glsl", "upSampling").staticResource());
+        atmosphereShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag", "atmosphere").staticResource());
     }
 
     private void initializeFBOs() {
@@ -239,18 +241,18 @@ public class CoreResourceRepository implements LateInitializable {
 
         visibility = (FBO) resources.addResource(new FBOCreationData(false, true)
                 .addColor(0, GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
-                .addColor(1, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false));
+                .addColor(1, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
 
-        postProcessing1 = (FBO) resources.addResource(new FBOCreationData(false, false).addColor());
-        postProcessing2 = (FBO) resources.addResource(new FBOCreationData(false, true).addColor());
+        postProcessing1 = (FBO) resources.addResource(new FBOCreationData(false, false).addColor().staticResource());
+        postProcessing2 = (FBO) resources.addResource(new FBOCreationData(false, true).addColor().staticResource());
 
-        ssgi = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false));
-        ssgiFallback = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false));
+        ssgi = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
+        ssgiFallback = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
 
-        ssao = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false));
-        ssaoBlurred = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false));
+        ssao = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
+        ssaoBlurred = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
 
-        finalFrame = (FBO) resources.addResource(new FBOCreationData(false, false).addColor());
+        finalFrame = (FBO) resources.addResource(new FBOCreationData(false, false).addColor().staticResource());
 
         int Q = 7;
         int w = engine.displayW;
@@ -258,12 +260,12 @@ public class CoreResourceRepository implements LateInitializable {
         for (int i = 0; i < Q; i++) {
             w /= 2;
             h /= 2;
-            downscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false)));
+            downscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource()));
         }
         for (int i = 0; i < (Q / 2 - 1); i++) {
             w *= 4;
             h *= 4;
-            upscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false)));
+            upscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource()));
         }
 
         ssaoBlurredSampler = ssaoBlurred.getColors().getFirst();
@@ -276,7 +278,7 @@ public class CoreResourceRepository implements LateInitializable {
         postProcessing2Sampler = postProcessing2.getColors().getFirst();
         finalFrameSampler = finalFrame.getColors().getFirst();
 
-        shadows = (FBO) resources.addResource(new FBOCreationData(configuration.shadowMapResolution, configuration.shadowMapResolution).setDepthTexture(true));
+        shadows = (FBO) resources.addResource(new FBOCreationData(configuration.shadowMapResolution, configuration.shadowMapResolution).setDepthTexture(true).staticResource());
         shadowsSampler = shadows.getDepthSampler();
     }
 }

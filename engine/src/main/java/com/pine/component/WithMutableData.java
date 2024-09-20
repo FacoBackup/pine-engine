@@ -1,9 +1,7 @@
 package com.pine.component;
 
-import com.pine.inspection.FieldDTO;
-import com.pine.inspection.FieldType;
-import com.pine.inspection.MutableField;
-import com.pine.inspection.NumericFieldRule;
+import com.pine.inspection.*;
+import com.pine.service.resource.resource.ResourceType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -19,6 +17,7 @@ public class WithMutableData {
                 if (isMutableField(field)) {
                     FieldType fieldType = FieldType.getFieldType(field.getType());
                     if (fieldType != null) {
+                        ResourceFieldRule resourceRule = field.getAnnotation(ResourceFieldRule.class);
                         NumericFieldRule rules = field.getAnnotation(NumericFieldRule.class);
                         fieldsAnnotated.add(new FieldDTO(
                                 fieldType,
@@ -28,7 +27,8 @@ public class WithMutableData {
                                 rules != null ? rules.min() : null,
                                 rules != null ? rules.max() : null,
                                 rules != null && rules.isAngle(),
-                                rules != null && rules.isDirectChange()
+                                rules != null && rules.isDirectChange(),
+                                resourceRule != null ? resourceRule.type() : ResourceType.MESH
                         ));
                     }
                 }
