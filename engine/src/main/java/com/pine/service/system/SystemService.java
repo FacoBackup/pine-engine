@@ -5,8 +5,7 @@ import com.pine.PInject;
 import com.pine.PInjector;
 import com.pine.Updatable;
 import com.pine.service.system.impl.DemoRenderSystem;
-import com.pine.service.system.impl.InstancedRenderingSystem;
-import com.pine.service.system.impl.UBOSyncSystem;
+import com.pine.service.system.impl.ShaderDataSyncSystem;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class SystemService implements Updatable {
     public PInjector pInjector;
 
     private List<AbstractSystem> systems = List.of(
-            new UBOSyncSystem(),
+            new ShaderDataSyncSystem(),
             new DemoRenderSystem()
     );
 

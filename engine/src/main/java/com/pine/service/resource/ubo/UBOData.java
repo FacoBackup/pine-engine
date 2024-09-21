@@ -10,19 +10,14 @@ public class UBOData {
     private Integer chunkSize;
     private Integer dataLength;
 
-    private UBOData(String name, GLSLType type) {
+    public UBOData(String name, GLSLType type) {
+        this(name, type, null);
+    }
+
+    public UBOData(String name, GLSLType type, Integer dataLength) {
         this.name = name;
         this.type = type;
-    }
-
-    public static UBOData of(String name, GLSLType type) {
-        return new UBOData(name, type);
-    }
-
-    public static UBOData of(String name, GLSLType type, int dataLength) {
-        var ubo = of(name, type);
-        ubo.setDataLength(dataLength);
-        return ubo;
+        this.dataLength = dataLength;
     }
 
     public String getName() {

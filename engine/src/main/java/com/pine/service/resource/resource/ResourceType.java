@@ -8,7 +8,8 @@ public enum ResourceType {
     AUDIO(List.of("wav")),
     SHADER(List.of("vert", "frag", "glsl")),
     UBO(List.of()),
-    FBO(List.of());
+    FBO(List.of()),
+    SSBO(List.of());
 
     private final List<String> fileExtensions;
 

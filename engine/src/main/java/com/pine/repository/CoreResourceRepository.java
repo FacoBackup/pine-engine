@@ -14,7 +14,7 @@ import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;
-import com.pine.service.resource.ubo.UBO;
+import com.pine.service.resource.ubo.UniformBufferObject;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
 import com.pine.type.CoreUBOName;
@@ -88,13 +88,13 @@ public class CoreResourceRepository  {
     public final List<FBO> upscaleBloom = new ArrayList<>();
     public final List<FBO> downscaleBloom = new ArrayList<>();
 
-    public UBO cameraViewUBO;
-    public UBO frameCompositionUBO;
-    public UBO lensPostProcessingUBO;
-    public UBO ssaoUBO;
-    public UBO uberUBO;
-    public UBO lightsUBO;
-    public UBO cameraProjectionUBO;
+    public UniformBufferObject cameraViewUBO;
+    public UniformBufferObject frameCompositionUBO;
+    public UniformBufferObject lensPostProcessingUBO;
+    public UniformBufferObject ssaoUBO;
+    public UniformBufferObject uberUBO;
+    public UniformBufferObject lightsUBO;
+    public UniformBufferObject cameraProjectionUBO;
 
     public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(52);
     public final FloatBuffer cameraProjectionUBOState = MemoryUtil.memAllocFloat(35);
@@ -131,80 +131,80 @@ public class CoreResourceRepository  {
 
     private void initializeUBOs() {
 
-        cameraViewUBO = (UBO) resources.addResource(new UBOCreationData(
+        cameraViewUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 CoreUBOName.CAMERA_VIEW.getBlockName(),
-                UBOData.of("viewProjection", GLSLType.MAT_4),
-                UBOData.of("viewMatrix", GLSLType.MAT_4),
-                UBOData.of("invViewMatrix", GLSLType.MAT_4),
-                UBOData.of("placement", GLSLType.VEC_4)).staticResource());
+                new UBOData("viewProjection", GLSLType.MAT_4),
+                new UBOData("viewMatrix", GLSLType.MAT_4),
+                new UBOData("invViewMatrix", GLSLType.MAT_4),
+                new UBOData("placement", GLSLType.VEC_4)).staticResource());
 
-        cameraProjectionUBO = (UBO) resources.addResource(new UBOCreationData(
+        cameraProjectionUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 CoreUBOName.CAMERA_PROJECTION.getBlockName(),
-                UBOData.of("projectionMatrix", GLSLType.MAT_4),
-                UBOData.of("invProjectionMatrix", GLSLType.MAT_4),
-                UBOData.of("bufferResolution", GLSLType.VEC_2),
-                UBOData.of("logDepthFC", GLSLType.FLOAT),
-                UBOData.of("logC", GLSLType.FLOAT)).staticResource());
+                new UBOData("projectionMatrix", GLSLType.MAT_4),
+                new UBOData("invProjectionMatrix", GLSLType.MAT_4),
+                new UBOData("bufferResolution", GLSLType.VEC_2),
+                new UBOData("logDepthFC", GLSLType.FLOAT),
+                new UBOData("logC", GLSLType.FLOAT)).staticResource());
 
-        frameCompositionUBO = (UBO) resources.addResource(new UBOCreationData(
+        frameCompositionUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 CoreUBOName.FRAME_COMPOSITION.getBlockName(),
-                UBOData.of("inverseFilterTextureSize", GLSLType.VEC_2),
-                UBOData.of("useFXAA", GLSLType.BOOL),
-                UBOData.of("filmGrainEnabled", GLSLType.BOOL),
-                UBOData.of("FXAASpanMax", GLSLType.FLOAT),
-                UBOData.of("FXAAReduceMin", GLSLType.FLOAT),
-                UBOData.of("FXAAReduceMul", GLSLType.FLOAT),
-                UBOData.of("filmGrainStrength", GLSLType.FLOAT)).staticResource());
+                new UBOData("inverseFilterTextureSize", GLSLType.VEC_2),
+                new UBOData("useFXAA", GLSLType.BOOL),
+                new UBOData("filmGrainEnabled", GLSLType.BOOL),
+                new UBOData("FXAASpanMax", GLSLType.FLOAT),
+                new UBOData("FXAAReduceMin", GLSLType.FLOAT),
+                new UBOData("FXAAReduceMul", GLSLType.FLOAT),
+                new UBOData("filmGrainStrength", GLSLType.FLOAT)).staticResource());
 
-        lensPostProcessingUBO = (UBO) resources.addResource(new UBOCreationData(
+        lensPostProcessingUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 CoreUBOName.LENS_PP.getBlockName(),
-                UBOData.of("textureSizeXDOF", GLSLType.FLOAT),
-                UBOData.of("textureSizeYDOF", GLSLType.FLOAT),
-                UBOData.of("distortionIntensity", GLSLType.FLOAT),
-                UBOData.of("chromaticAberrationIntensity", GLSLType.FLOAT),
-                UBOData.of("distortionEnabled", GLSLType.BOOL),
-                UBOData.of("chromaticAberrationEnabled", GLSLType.BOOL),
-                UBOData.of("bloomEnabled", GLSLType.BOOL),
-                UBOData.of("focusDistanceDOF", GLSLType.FLOAT),
-                UBOData.of("apertureDOF", GLSLType.FLOAT),
-                UBOData.of("focalLengthDOF", GLSLType.FLOAT),
-                UBOData.of("samplesDOF", GLSLType.FLOAT),
-                UBOData.of("vignetteEnabled", GLSLType.BOOL),
-                UBOData.of("vignetteStrength", GLSLType.FLOAT),
-                UBOData.of("gamma", GLSLType.FLOAT),
-                UBOData.of("exposure", GLSLType.FLOAT)
+                new UBOData("textureSizeXDOF", GLSLType.FLOAT),
+                new UBOData("textureSizeYDOF", GLSLType.FLOAT),
+                new UBOData("distortionIntensity", GLSLType.FLOAT),
+                new UBOData("chromaticAberrationIntensity", GLSLType.FLOAT),
+                new UBOData("distortionEnabled", GLSLType.BOOL),
+                new UBOData("chromaticAberrationEnabled", GLSLType.BOOL),
+                new UBOData("bloomEnabled", GLSLType.BOOL),
+                new UBOData("focusDistanceDOF", GLSLType.FLOAT),
+                new UBOData("apertureDOF", GLSLType.FLOAT),
+                new UBOData("focalLengthDOF", GLSLType.FLOAT),
+                new UBOData("samplesDOF", GLSLType.FLOAT),
+                new UBOData("vignetteEnabled", GLSLType.BOOL),
+                new UBOData("vignetteStrength", GLSLType.FLOAT),
+                new UBOData("gamma", GLSLType.FLOAT),
+                new UBOData("exposure", GLSLType.FLOAT)
         ).staticResource());
 
-        ssaoUBO = (UBO) resources.addResource(new UBOCreationData(
+        ssaoUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 CoreUBOName.SSAO.getBlockName(),
-                UBOData.of("settings", GLSLType.VEC_4),
-                UBOData.of("samples", GLSLType.VEC_4, 64),
-                UBOData.of("noiseScale", GLSLType.VEC_2)
+                new UBOData("settings", GLSLType.VEC_4),
+                new UBOData("samples", GLSLType.VEC_4, 64),
+                new UBOData("noiseScale", GLSLType.VEC_2)
         ).staticResource());
 
-        uberUBO = (UBO) resources.addResource(new UBOCreationData(
+        uberUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 CoreUBOName.UBER.getBlockName(),
-                UBOData.of("shadowMapsQuantity", GLSLType.FLOAT),
-                UBOData.of("shadowMapResolution", GLSLType.FLOAT),
-                UBOData.of("lightQuantity", GLSLType.INT),
-                UBOData.of("SSRFalloff", GLSLType.FLOAT),
-                UBOData.of("stepSizeSSR", GLSLType.FLOAT),
-                UBOData.of("maxSSSDistance", GLSLType.FLOAT),
-                UBOData.of("SSSDepthThickness", GLSLType.FLOAT),
-                UBOData.of("SSSEdgeAttenuation", GLSLType.FLOAT),
-                UBOData.of("skylightSamples", GLSLType.FLOAT),
-                UBOData.of("SSSDepthDelta", GLSLType.FLOAT),
-                UBOData.of("SSAOFalloff", GLSLType.FLOAT),
-                UBOData.of("maxStepsSSR", GLSLType.INT),
-                UBOData.of("maxStepsSSS", GLSLType.INT),
-                UBOData.of("hasSkylight", GLSLType.BOOL),
-                UBOData.of("hasAmbientOcclusion", GLSLType.BOOL)
+                new UBOData("shadowMapsQuantity", GLSLType.FLOAT),
+                new UBOData("shadowMapResolution", GLSLType.FLOAT),
+                new UBOData("lightQuantity", GLSLType.INT),
+                new UBOData("SSRFalloff", GLSLType.FLOAT),
+                new UBOData("stepSizeSSR", GLSLType.FLOAT),
+                new UBOData("maxSSSDistance", GLSLType.FLOAT),
+                new UBOData("SSSDepthThickness", GLSLType.FLOAT),
+                new UBOData("SSSEdgeAttenuation", GLSLType.FLOAT),
+                new UBOData("skylightSamples", GLSLType.FLOAT),
+                new UBOData("SSSDepthDelta", GLSLType.FLOAT),
+                new UBOData("SSAOFalloff", GLSLType.FLOAT),
+                new UBOData("maxStepsSSR", GLSLType.INT),
+                new UBOData("maxStepsSSS", GLSLType.INT),
+                new UBOData("hasSkylight", GLSLType.BOOL),
+                new UBOData("hasAmbientOcclusion", GLSLType.BOOL)
         ).staticResource());
 
-        lightsUBO = (UBO) resources.addResource(new UBOCreationData(
+        lightsUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 CoreUBOName.LIGHTS.getBlockName(),
-                UBOData.of("lightPrimaryBuffer", GLSLType.MAT_4, MAX_LIGHTS),
-                UBOData.of("lightSecondaryBuffer", GLSLType.MAT_4, MAX_LIGHTS)
+                new UBOData("lightPrimaryBuffer", GLSLType.MAT_4, MAX_LIGHTS),
+                new UBOData("lightSecondaryBuffer", GLSLType.MAT_4, MAX_LIGHTS)
         ).staticResource());
     }
 
