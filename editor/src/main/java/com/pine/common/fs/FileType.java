@@ -1,7 +1,7 @@
 package com.pine.common.fs;
 
-import jakarta.annotation.Nullable;
-import org.springframework.lang.NonNull;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -20,7 +20,7 @@ public enum FileType {
         this.extension = extension;
     }
 
-    @NonNull
+    @NotNull
     public static FileType valueOfEnum(String extension) {
         for (FileType ft : FileType.values()) {
             if (Objects.equals(ft.extension, extension)) {

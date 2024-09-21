@@ -49,6 +49,6 @@ public abstract class WithMutableData {
     }
 
     private static boolean isMutableField(Field field) {
-        return !Modifier.isTransient(field.getModifiers()) && !Modifier.isFinal(field.getModifiers()) && field.isAnnotationPresent(MutableField.class);
+        return !Modifier.isTransient(field.getModifiers()) && field.isAnnotationPresent(MutableField.class);
     }
 }

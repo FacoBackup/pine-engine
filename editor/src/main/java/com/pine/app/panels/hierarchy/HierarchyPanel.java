@@ -1,20 +1,28 @@
 package com.pine.app.panels.hierarchy;
 
-import com.pine.InjectBean;
+import com.pine.PInject;
 import com.pine.app.EditorWindow;
 import com.pine.app.repository.EntitySelectionRepository;
 import com.pine.component.AbstractComponent;
+import com.pine.component.EntityComponent;
+import com.pine.component.MetadataComponent;
 import com.pine.service.world.WorldService;
+import com.pine.service.world.request.HierarchyRequest;
+import com.pine.tasks.RequestProcessingTask;
 import com.pine.ui.panel.AbstractWindowPanel;
 import com.pine.ui.view.FragmentView;
 import com.pine.ui.view.TreeView;
 
 public class HierarchyPanel extends AbstractWindowPanel {
 
-    @InjectBean
+    @PInject
     public EntitySelectionRepository selectionRepository;
 
-    private WorldService world;
+    @PInject
+    public WorldService world;
+
+    @PInject
+    public RequestProcessingTask requestProcessingTask;
 
     @Override
     protected String getDefinition() {
@@ -29,7 +37,6 @@ public class HierarchyPanel extends AbstractWindowPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        world = ((EditorWindow) document.getWindow()).getEngine().getWorld();
 
         var headerContainer = (FragmentView) document.getElementById("hierarchyHeader");
         headerContainer.appendChild(new HierarchyHeaderPanel());
@@ -40,7 +47,10 @@ public class HierarchyPanel extends AbstractWindowPanel {
             if (!multiSelect) {
                 selectionRepository.clearSelection();
             }
-            selectionRepository.addSelected(((AbstractComponent) branch.data).getEntityId());
+            selectionRepository.addSelected(((EntityComponent) branch.data).getEntityId());
+        });
+        hierarchyTree.setOnDrop((target, drop) -> {
+            requestProcessingTask.addRequest(new HierarchyRequest(((MetadataComponent) target.data).getEntityId(), ((MetadataComponent) drop.data).getEntityId()));
         });
     }
 

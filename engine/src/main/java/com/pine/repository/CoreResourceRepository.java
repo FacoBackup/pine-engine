@@ -1,9 +1,8 @@
 package com.pine.repository;
 
 import com.pine.Engine;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
-import com.pine.injection.LateInitializable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.service.loader.impl.response.MeshLoaderResponse;
@@ -28,15 +27,15 @@ import java.util.List;
 
 import static com.pine.Engine.MAX_LIGHTS;
 
-@EngineInjectable
-public class CoreResourceRepository implements LateInitializable {
-    @EngineDependency
+@PBean
+public class CoreResourceRepository  {
+    @PInject
     public Engine engine;
-    @EngineDependency
+    @PInject
     public ResourceService resources;
-    @EngineDependency
+    @PInject
     public ConfigurationRepository configuration;
-    @EngineDependency
+    @PInject
     public ResourceLoaderService resourceLoader;
 
     public Mesh planeMesh;
@@ -106,8 +105,7 @@ public class CoreResourceRepository implements LateInitializable {
     public final FloatBuffer lightsUBOState = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
     public final FloatBuffer lightsUBOState2 = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
 
-    @Override
-    public void lateInitialize() {
+    public void initialize() {
         var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         if (planeResponse != null) {
             planeMesh = (Mesh) resources.getById(planeResponse.getMeshes().getFirst().id());
@@ -236,8 +234,8 @@ public class CoreResourceRepository implements LateInitializable {
     }
 
     private void initializeFBOs() {
-        final int halfResW = engine.displayW / 2;
-        final int halfResH = engine.displayH / 2;
+        final int halfResW = engine.getDisplayW() / 2;
+        final int halfResH = engine.getDisplayH() / 2;
 
         visibility = (FBO) resources.addResource(new FBOCreationData(false, true)
                 .addSampler(0, GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
@@ -255,8 +253,8 @@ public class CoreResourceRepository implements LateInitializable {
         finalFrame = (FBO) resources.addResource(new FBOCreationData(false, false).addSampler().staticResource());
 
         int Q = 7;
-        int w = engine.displayW;
-        int h = engine.displayH;
+        int w = engine.getDisplayW();
+        int h = engine.getDisplayH();
         for (int i = 0; i < Q; i++) {
             w /= 2;
             h /= 2;

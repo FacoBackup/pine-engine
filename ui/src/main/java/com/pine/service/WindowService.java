@@ -1,26 +1,26 @@
 package com.pine.service;
 
-import com.pine.Loggable;
+import com.pine.*;
 import com.pine.repository.WindowInstance;
 import com.pine.repository.WindowRepository;
 import com.pine.window.AbstractWindow;
-import jakarta.annotation.PostConstruct;
 import org.lwjgl.glfw.GLFW;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Service
-public class WindowService implements Loggable {
+@PBean
+public class WindowService implements Loggable, Initializable {
     public static boolean shouldStop = false;
     public static Long runningWindow;
 
-    @Autowired
-    private WindowRepository windowRepository;
+    @PInject
+    public WindowRepository windowRepository;
 
-    @PostConstruct
-    public void init() {
+    @PInject
+    public PInjector injector;
+
+    @Override
+    public void onInitialize() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shouldStop = true));
     }
 
@@ -35,6 +35,7 @@ public class WindowService implements Loggable {
         } catch (Exception e) {
             throw new RuntimeException("Could not instantiate window class " + windowClass, e);
         }
+        injector.inject(window);
         final var instances = windowRepository.getInstances();
         final String key = window.getClass().getCanonicalName();
         instances.put(key,
@@ -61,7 +62,7 @@ public class WindowService implements Loggable {
                 runningWindow = window.getHandle();
             } else if (runningWindow == window.getHandle()) {
                 shouldRun = !GLFW.glfwWindowShouldClose(window.getHandle());
-                if(shouldRun) {
+                if (shouldRun) {
                     window.render();
                 }
             }

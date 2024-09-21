@@ -1,7 +1,8 @@
 package com.pine.window;
 
-import com.pine.ContextService;
-import com.pine.InjectBean;
+import com.pine.Initializable;
+import com.pine.PInject;
+import com.pine.PInjector;
 import com.pine.Renderable;
 import com.pine.service.WindowService;
 import com.pine.ui.ViewDocument;
@@ -22,24 +23,26 @@ import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractWindow implements Renderable {
+public abstract class AbstractWindow implements Renderable, Initializable {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
     protected int displayW = 1920;
     protected int displayH = 1080;
-    protected final ViewDocument viewDocument = new ViewDocument(this);
+    protected ViewDocument viewDocument;
     protected final DockPanel root = new DockPanel();
     private boolean isVisible = true;
 
-    @InjectBean
+    @PInject
     public WindowService windowService;
 
-    public AbstractWindow() {
-        ContextService.injectDependencies(this);
-    }
+    @PInject
+    public PInjector injector;
 
+    @Override
     final public void onInitialize() {
+        viewDocument = new ViewDocument(this, injector);
+
         initializeWindow();
         onInitialization();
         initializeView();
@@ -211,5 +214,9 @@ public abstract class AbstractWindow implements Renderable {
 
     protected boolean isFullScreen() {
         return true;
+    }
+
+    public ViewDocument getViewDocument() {
+        return viewDocument;
     }
 }

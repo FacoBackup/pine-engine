@@ -1,21 +1,21 @@
 package com.pine.service.loader;
 
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.repository.ResourceLoaderRepository;
 import com.pine.service.MessageService;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
-@EngineInjectable
+@PBean
 public class ResourceLoaderService  {
-    @EngineDependency
+    @PInject
     public ResourceLoaderRepository repository;
 
-    @EngineDependency
+    @PInject
     public MessageService messageService;
 
     @Nullable

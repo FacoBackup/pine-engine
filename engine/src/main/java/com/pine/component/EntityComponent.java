@@ -10,4 +10,6 @@ public interface EntityComponent {
     String getComponentName();
 
     void addComponent(EntityComponent instance);
+
+    String getLabel();
 }

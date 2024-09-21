@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class AbstractView implements View {
+    protected final String internalIdPartial;
     protected ViewDocument document;
     protected final String internalId;
     protected final String id;
@@ -22,7 +23,8 @@ public class AbstractView implements View {
     public AbstractView(View parent, String id) {
         this.parent = parent;
         this.id = id;
-        this.internalId = "##" + UUID.randomUUID().toString().replaceAll("-", "");
+        this.internalIdPartial = UUID.randomUUID().toString().replaceAll("-", "");
+        this.internalId = "##" + internalIdPartial;
     }
 
     @Override

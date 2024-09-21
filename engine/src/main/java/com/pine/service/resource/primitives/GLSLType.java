@@ -1,6 +1,6 @@
 package com.pine.service.resource.primitives;
 
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 import org.lwjgl.opengl.GL46;
 
 public enum GLSLType {

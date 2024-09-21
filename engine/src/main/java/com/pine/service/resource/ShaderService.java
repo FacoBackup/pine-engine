@@ -1,8 +1,8 @@
 package com.pine.service.resource;
 
 import com.pine.FSUtil;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;
@@ -23,15 +23,15 @@ import java.util.regex.Pattern;
 
 import static com.pine.Engine.GLSL_VERSION;
 
-@EngineInjectable
+@PBean
 public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
     private Shader currentShader;
 
-    @EngineDependency
+    @PInject
     public UBOService uboService;
 
-    @EngineDependency
+    @PInject
     public CoreResourceRepository coreResources;
 
     @Override

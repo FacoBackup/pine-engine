@@ -1,6 +1,6 @@
 package com.pine.service.system.impl;
 
-import com.pine.injection.EngineDependency;
+import com.pine.PInject;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.UBOService;
 import com.pine.service.system.AbstractSystem;
@@ -8,10 +8,10 @@ import com.pine.service.system.AbstractSystem;
 import static com.pine.Engine.MAX_LIGHTS;
 
 public class UBOSyncSystem extends AbstractSystem {
-    @EngineDependency
+    @PInject
     public UBOService uboService;
 
-    @EngineDependency
+    @PInject
     public CoreResourceRepository resources;
 
     @Override

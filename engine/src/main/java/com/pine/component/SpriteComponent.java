@@ -1,12 +1,12 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.service.resource.primitives.texture.Texture;
 
 import java.util.Set;
 
-@EngineInjectable
+@PBean
 public class SpriteComponent extends AbstractComponent<SpriteComponent> {
     @MutableField(label = "Texture")
     public Texture texture;

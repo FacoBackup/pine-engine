@@ -1,6 +1,7 @@
 package com.pine.app.panels.files;
 
 import com.pine.Icon;
+import com.pine.PInject;
 import com.pine.app.EditorWindow;
 import com.pine.common.fs.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
@@ -15,7 +16,9 @@ public class FilePanel extends AbstractPanel {
     private final ImVec4 color = new ImVec4();
     private String iconCodepoint;
     private FilesContext context;
-    private ResourceLoaderService loader;
+
+    @PInject
+    public ResourceLoaderService loader;
 
     public FilePanel(FileInfoDTO item) {
         super();
@@ -25,7 +28,6 @@ public class FilePanel extends AbstractPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        loader = ((EditorWindow) document.getWindow()).getEngine().getResourceLoaderService();
         context = (FilesContext) getContext();
         iconCodepoint = item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint;
         if (item.isDirectory()) {

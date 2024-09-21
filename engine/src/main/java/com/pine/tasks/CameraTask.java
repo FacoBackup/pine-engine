@@ -2,25 +2,25 @@ package com.pine.tasks;
 
 import com.pine.EngineUtils;
 import com.pine.Loggable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.camera.Camera;
 import org.joml.Quaternionf;
 
-@EngineInjectable
+@PBean
 public class CameraTask extends AbstractTask implements Loggable {
     private static final double LOG_2 = Math.log(2);
 
-    @EngineDependency
+    @PInject
     public CameraRepository repository;
 
-    @EngineDependency
+    @PInject
     public CoreResourceRepository coreResourceRepository;
 
-    @EngineDependency
+    @PInject
     public RuntimeRepository runtimeRepository;
 
     @Override

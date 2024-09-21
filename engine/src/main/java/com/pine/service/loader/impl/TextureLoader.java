@@ -1,17 +1,17 @@
 package com.pine.service.loader.impl;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.service.loader.AbstractResourceLoader;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.loader.impl.response.TextureLoaderResponse;
 import com.pine.service.resource.resource.ResourceType;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import java.util.Collections;
 
-@EngineInjectable
+@PBean
 public class TextureLoader extends AbstractResourceLoader {
 
     @Override

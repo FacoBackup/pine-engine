@@ -1,13 +1,13 @@
 package com.pine.service.resource;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.service.resource.primitives.audio.Audio;
 import com.pine.service.resource.primitives.audio.AudioDTO;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 
-@EngineInjectable
+@PBean
 public class AudioService extends AbstractResourceService<Audio, AudioDTO, AudioDTO> {
 
     @Override

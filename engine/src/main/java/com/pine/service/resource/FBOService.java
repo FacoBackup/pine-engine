@@ -1,8 +1,8 @@
 package com.pine.service.resource;
 
 import com.pine.Engine;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
@@ -11,11 +11,11 @@ import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
-@EngineInjectable
+@PBean
 public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, FBOCreationData> {
     private FBO current;
 
-    @EngineDependency
+    @PInject
     public Engine engine;
 
     @Override
@@ -39,8 +39,8 @@ public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, F
 
     @Override
     protected IResource addInternal(FBOCreationData data) {
-        int w = engine.displayW;
-        int h = engine.displayH;
+        int w = engine.getDisplayW();
+        int h = engine.getDisplayH();
         if (data.getW() != null) {
             w = data.getW();
         }

@@ -1,11 +1,10 @@
 package com.pine.repository;
 
-import org.springframework.stereotype.Repository;
-
+import com.pine.PBean;
 import java.util.HashMap;
 import java.util.Map;
 
-@Repository
+@PBean
 public class WindowRepository {
     private final Map<String, WindowInstance> instances = new HashMap<>();
 

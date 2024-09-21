@@ -1,9 +1,9 @@
 package com.pine.repository;
 
+import com.pine.PBean;
 import com.pine.Updatable;
-import com.pine.injection.EngineInjectable;
 
-@EngineInjectable
+@PBean
 public class ClockRepository implements Updatable {
     public final long startupTime = System.currentTimeMillis();
     public long since = 0;

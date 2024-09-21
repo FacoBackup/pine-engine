@@ -1,8 +1,8 @@
-package com.pine.injection;
+package com.pine;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EngineDependency {
+public @interface PBean {
 }

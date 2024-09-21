@@ -1,8 +1,5 @@
-package com.pine.injection;
+package com.pine;
 
-import com.pine.Engine;
-import com.pine.Initializable;
-import com.pine.Loggable;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
@@ -13,23 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EngineInjector implements Loggable, Initializable {
+public class PInjector implements Loggable {
     private final List<Object> injectables = new ArrayList<>();
-    private final Engine engine;
-
-
-    public EngineInjector(Engine engine) {
-        this.engine = engine;
-    }
+    private final String rootPackageName;
 
     /**
      * Scans classpath for EngineInjectable, injects dependencies and initializes them
      */
-    @Override
-    public void onInitialize() {
+    public PInjector(String rootPackageName){
+        this.rootPackageName = rootPackageName;
         injectables.add(this);
-        injectables.add(engine);
-
         collectInjectables();
         initializeInjectables();
     }
@@ -40,7 +30,7 @@ public class EngineInjector implements Loggable, Initializable {
         }
 
         for (var in : injectables) {
-            if (in instanceof Initializable && in != this) {
+            if (in instanceof Initializable) {
                 ((Initializable) in).onInitialize();
             }
         }
@@ -52,8 +42,8 @@ public class EngineInjector implements Loggable, Initializable {
     }
 
     private void collectInjectables() {
-        Reflections reflections = new Reflections(Engine.class.getPackageName(), Scanners.TypesAnnotated);
-        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(EngineInjectable.class);
+        Reflections reflections = new Reflections(rootPackageName, Scanners.TypesAnnotated);
+        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(PBean.class);
         for (Class<?> clazz : annotatedClasses) {
             try {
                 injectables.add(clazz.getConstructor().newInstance());
@@ -71,7 +61,7 @@ public class EngineInjector implements Loggable, Initializable {
     public void inject(Object instance) {
         Field[] fields = instance.getClass().getFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(EngineDependency.class)) {
+            if (field.isAnnotationPresent(PInject.class)) {
                 try {
                     boolean isInjected;
                     Class<?> type = field.getType();
@@ -139,5 +129,9 @@ public class EngineInjector implements Loggable, Initializable {
 
     public void addInjectables(List<Object> injectables) {
         this.injectables.addAll(injectables);
+    }
+
+    public Object getBean(Class<?> clazz) {
+        return injectables.stream().filter(a -> a.getClass() == clazz).findFirst().orElse(null);
     }
 }

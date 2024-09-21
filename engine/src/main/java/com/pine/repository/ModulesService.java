@@ -1,10 +1,10 @@
 package com.pine.repository;
 
 import com.pine.Initializable;
-import com.pine.injection.EngineDependency;
+import com.pine.PBean;
+import com.pine.PInject;
+import com.pine.PInjector;
 import com.pine.injection.EngineExternalModule;
-import com.pine.injection.EngineInjectable;
-import com.pine.injection.EngineInjector;
 import com.pine.service.system.SystemService;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,14 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@EngineInjectable
+@PBean
 public class ModulesService {
 
-    @EngineDependency
+    @PInject
     public SystemService systemService;
 
-    @EngineDependency
-    public EngineInjector injector;
+    @PInject
+    public PInjector injector;
 
     private final Map<String, EngineExternalModule> modules = new HashMap<>();
 

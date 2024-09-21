@@ -1,11 +1,11 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.inspection.MutableField;
 
 import java.util.Set;
 
-@EngineInjectable
+@PBean
 public class CullingComponent extends AbstractComponent<CullingComponent> {
 
     @MutableField(label = "Max distance from camera")

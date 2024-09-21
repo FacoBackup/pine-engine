@@ -1,13 +1,13 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import org.joml.Vector3f;
 
 import java.util.Collections;
 import java.util.Set;
 
-@EngineInjectable
+@PBean
 public class MetadataComponent extends AbstractComponent<MetadataComponent> {
     public final Vector3f pickerId = new Vector3f();
     @MutableField(label = "Name")

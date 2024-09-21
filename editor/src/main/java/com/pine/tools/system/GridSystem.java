@@ -2,7 +2,7 @@ package com.pine.tools.system;
 
 import com.pine.Engine;
 import com.pine.EngineUtils;
-import com.pine.injection.EngineDependency;
+import com.pine.PInject;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ShaderService;
@@ -17,22 +17,22 @@ import org.lwjgl.opengl.GL46;
 
 
 public class GridSystem extends AbstractSystem {
-    @EngineDependency
+    @PInject
     public Engine engine;
 
-    @EngineDependency
+    @PInject
     public ToolsConfigurationModule engineConfig;
 
-    @EngineDependency
+    @PInject
     public ShaderService shaderService;
 
-    @EngineDependency
+    @PInject
     public MeshService meshService;
 
-    @EngineDependency
+    @PInject
     public CoreResourceRepository coreResourceRepository;
 
-    @EngineDependency
+    @PInject
     public ToolsResourceRepository toolsResourceRepository;
 
     private final float[] buffer = new float[4];

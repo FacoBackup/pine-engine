@@ -5,9 +5,9 @@ import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.resource.resource.ResourceType;
-import jakarta.annotation.Nullable;
 import org.lwjgl.BufferUtils;
 
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
