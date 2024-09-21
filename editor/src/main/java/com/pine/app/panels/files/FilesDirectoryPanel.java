@@ -1,9 +1,9 @@
 package com.pine.app.panels.files;
 
+import com.pine.common.fs.FileInfoDTO;
 import com.pine.ui.panel.AbstractPanel;
 import com.pine.ui.view.TableView;
 import com.pine.ui.view.table.TableHeader;
-import com.pine.common.fs.FileInfoDTO;
 
 import java.util.List;
 

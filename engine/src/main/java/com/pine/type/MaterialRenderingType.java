@@ -6,6 +6,5 @@ public enum MaterialRenderingType {
     ANISOTROPIC,
     SHEEN,
     CLEAR_COAT,
-    TRANSPARENCY,
-    SKY
+    TRANSPARENCY
 }

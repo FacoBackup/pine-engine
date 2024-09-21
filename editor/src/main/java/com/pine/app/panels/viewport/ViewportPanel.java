@@ -2,14 +2,17 @@ package com.pine.app.panels.viewport;
 
 import com.pine.Engine;
 import com.pine.app.EditorWindow;
-import com.pine.ui.panel.AbstractWindowPanel;
 import com.pine.repository.RuntimeRepository;
+import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FBOCreationData;
+import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 
 public class ViewportPanel extends AbstractWindowPanel {
     private RuntimeRepository repo;
     private Engine engine;
+    private FBO fbo;
 
     @Override
     public void onInitialize() {
@@ -18,6 +21,7 @@ public class ViewportPanel extends AbstractWindowPanel {
         repo = engine.getRuntimeRepository();
         padding.x = 0;
         padding.y = 0;
+        this.fbo = (FBO) engine.getResourceService().addResource(new FBOCreationData(false, false).addSampler());
     }
 
     @Override
@@ -27,12 +31,13 @@ public class ViewportPanel extends AbstractWindowPanel {
 
     @Override
     public void tick() {
+        engine.setTargetFBO(fbo);
         engine.render();
     }
 
     @Override
     public void renderInternal() {
-        ImGui.image(engine.getFinalFrame(), size.x , size.y - FRAME_SIZE);
+        ImGui.image(engine.getTargetFBO().getMainSampler(), size.x , size.y - FRAME_SIZE);
     }
 
     @Override

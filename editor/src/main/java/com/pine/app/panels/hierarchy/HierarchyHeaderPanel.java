@@ -1,15 +1,10 @@
 package com.pine.app.panels.hierarchy;
 
 import com.pine.app.EditorWindow;
+import com.pine.component.InstancedMeshComponent;
+import com.pine.service.world.request.AddEntityRequest;
 import com.pine.ui.panel.AbstractPanel;
 import com.pine.ui.view.ButtonView;
-import com.pine.app.panels.files.FilesContext;
-import com.pine.InjectBean;
-import com.pine.common.fs.FSService;
-import com.pine.Engine;
-import com.pine.component.InstancedMeshComponent;
-import com.pine.service.world.WorldService;
-import com.pine.service.world.request.AddEntityRequest;
 
 import java.util.List;
 

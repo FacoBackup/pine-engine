@@ -5,7 +5,6 @@ import com.pine.Updatable;
 import com.pine.injection.EngineDependency;
 import com.pine.injection.EngineInjectable;
 import com.pine.repository.ClockRepository;
-import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.resource.*;
 
 import java.util.ArrayList;

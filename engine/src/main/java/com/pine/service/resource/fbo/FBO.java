@@ -15,9 +15,10 @@ public class FBO extends AbstractResource {
     private final int FBO;
     private Integer RBO = null;
     private Integer depthSampler = null;
-    private final List<Integer> colors = new ArrayList<>();
+    private final List<Integer> samplers = new ArrayList<>();
     private final List<Integer> attachments = new ArrayList<>();
     private final float[] resolution = new float[2];
+    private int mainSampler;
 
     public FBO(int width, int height) {
         super(null);
@@ -52,8 +53,8 @@ public class FBO extends AbstractResource {
         return resolution;
     }
 
-    public List<Integer> getColors() {
-        return colors;
+    public List<Integer> getSamplers() {
+        return samplers;
     }
 
     public void depthTexture() {
@@ -113,7 +114,10 @@ public class FBO extends AbstractResource {
         GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, precision, w, h, 0, format, type, (FloatBuffer) null);
         GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0 + attachment, GL46.GL_TEXTURE_2D, texture, 0);
 
-        colors.add(texture);
+        samplers.add(texture);
+        if (samplers.size() == 1) {
+            mainSampler = texture;
+        }
         attachments.add(GL46.GL_COLOR_ATTACHMENT0 + attachment);
         GL46.glDrawBuffers(attachments.stream().mapToInt(i -> i).toArray());
 
@@ -137,5 +141,9 @@ public class FBO extends AbstractResource {
     @Override
     public ResourceType getResourceType() {
         return ResourceType.FBO;
+    }
+
+    public int getMainSampler() {
+        return mainSampler;
     }
 }

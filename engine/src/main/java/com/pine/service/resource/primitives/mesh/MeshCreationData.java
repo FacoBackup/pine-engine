@@ -4,8 +4,6 @@ import com.pine.service.resource.resource.ResourceCreationData;
 import com.pine.service.resource.resource.ResourceType;
 import jakarta.annotation.Nullable;
 
-import java.util.Objects;
-
 public final class MeshCreationData extends ResourceCreationData {
     private final float[] vertices;
     private final int[] indices;

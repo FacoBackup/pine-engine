@@ -1,16 +1,20 @@
 package com.pine;
 
 import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjector;
 import com.pine.injection.EngineExternalModule;
-import com.pine.repository.*;
-import com.pine.service.world.request.AbstractRequest;
+import com.pine.injection.EngineInjector;
+import com.pine.repository.ClockRepository;
+import com.pine.repository.CoreResourceRepository;
+import com.pine.repository.ModulesService;
+import com.pine.repository.RuntimeRepository;
 import com.pine.service.MessageService;
-import com.pine.tasks.RequestProcessingTask;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.system.SystemService;
 import com.pine.service.world.WorldService;
+import com.pine.service.world.request.AbstractRequest;
+import com.pine.tasks.RequestProcessingTask;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -24,6 +28,7 @@ public class Engine {
 
     @SuppressWarnings("unused")
     private final EngineInjector engineInjector = new EngineInjector(this);
+    private FBO targetFBO;
 
     @EngineDependency
     public ModulesService modules;
@@ -33,6 +38,9 @@ public class Engine {
 
     @EngineDependency
     public RuntimeRepository runtimeRepository;
+
+    @EngineDependency
+    public ResourceService resourceService;
 
     @EngineDependency
     public CoreResourceRepository coreResourceRepository;
@@ -86,15 +94,26 @@ public class Engine {
         return worldService;
     }
 
-    public int getFinalFrame() {
-        return coreResourceRepository.finalFrameSampler;
-    }
-
     public void addModules(List<EngineExternalModule> modules) {
         this.modules.addModules(modules);
     }
 
     public void addRequest(AbstractRequest request) {
         requestTask.addRequest(request);
+    }
+
+    public ResourceService getResourceService() {
+        return resourceService;
+    }
+
+    public FBO getTargetFBO() {
+        return targetFBO;
+    }
+
+    public void setTargetFBO(FBO fbo) {
+        if(this.targetFBO != null){
+            this.targetFBO.clear();
+        }
+        this.targetFBO = fbo;
     }
 }

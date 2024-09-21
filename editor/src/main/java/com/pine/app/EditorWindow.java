@@ -1,6 +1,7 @@
 package com.pine.app;
 
 import com.pine.Engine;
+import com.pine.InjectBean;
 import com.pine.app.panels.console.ConsolePanel;
 import com.pine.app.panels.files.FilesPanel;
 import com.pine.app.panels.hierarchy.HierarchyPanel;
@@ -9,7 +10,6 @@ import com.pine.app.panels.viewport.ViewportPanel;
 import com.pine.app.repository.EntitySelectionRepository;
 import com.pine.app.service.ProjectDTO;
 import com.pine.app.service.ProjectService;
-import com.pine.InjectBean;
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;

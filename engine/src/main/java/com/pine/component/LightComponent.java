@@ -1,9 +1,10 @@
 package com.pine.component;
 
 import com.pine.injection.EngineInjectable;
+import com.pine.inspection.Color;
 import com.pine.inspection.MutableField;
 import com.pine.type.LightType;
-import org.joml.Matrix4f;
+import org.joml.Vector2f;
 
 import java.util.Set;
 
@@ -12,30 +13,45 @@ public class LightComponent extends AbstractComponent<LightComponent> {
     // TODO - BREAK INTO SEPARATED COMPONENT TYPES
     @MutableField(label="Screen Space Shadows")
     public boolean screenSpaceShadows = false;
-
-    @MutableField(label="Shadow Bias")
-    public double shadowBias = 0.0001;
-
-    public int shadowSamples = 3;
-    public double zNear = 1;
-    public double zFar = 10000;
-    public double cutoff = 50;
-    public double shadowAttenuationMinDistance = 50;
-    public double[] attenuation = {0, 0};
-    public double smoothing = 0.5;
-    public double radius = 45;
-    public double size = 35;
-    public double areaRadius = 1;
-    public double planeAreaWidth = 1;
-    public double planeAreaHeight = 1;
-    public int intensity = 1;
-    public LightType type = LightType.DIRECTIONAL;
-    public int[] color = {255, 255, 255};
-    public double[] fixedColor = {1, 1, 1};
+    @MutableField(label="Shadow map")
     public boolean shadowMap = true;
-    public int[] atlasFace = {0, 0};
-    public transient final Matrix4f lightView = new Matrix4f();
-    public transient final Matrix4f lightProjection = new Matrix4f();
+    @MutableField(label="Shadow map Bias")
+    public double shadowBias = 0.0001;
+    @MutableField(label = "SSS samples")
+    public int shadowSamples = 3;
+    @MutableField(label = "Directional Light ZNear")
+    public double zNear = 1;
+    @MutableField(label = "Directional Light ZFar")
+    public double zFar = 10000;
+    @MutableField(label = "Shadow map cutoff")
+    public double cutoff = 50;
+    @MutableField(label = "Shadow map attenuation min distance")
+    public double shadowAttenuationMinDistance = 50;
+    @MutableField(label = "Attenuation")
+    public final Vector2f attenuation = new Vector2f();
+    @MutableField(label = "Fallout smoothing")
+    public double smoothing = 0.5;
+    @MutableField(label = "Impact radius")
+    public double radius = 45;
+    @MutableField(label = "Directional light Size")
+    public double size = 35;
+    @MutableField(label = "Area light Radius")
+    public double areaRadius = 1;
+    @MutableField(label = "Area light Width")
+    public double planeAreaWidth = 1;
+    @MutableField(label = "Area light Height")
+    public double planeAreaHeight = 1;
+    @MutableField(label = "Intensity")
+    public int intensity = 1;
+
+    @EnumSelection(enumType = LightType.class)
+    @MutableField(label = "Light type")
+    public LightType type = LightType.DIRECTIONAL;
+
+    @MutableField(label = "Area light radius")
+    public final Color color = new Color();
+
+    public final transient Vector2f atlasFace = new Vector2f();
 
     public LightComponent(Integer entityId) {
         super(entityId);

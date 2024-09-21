@@ -1,6 +1,7 @@
 package com.pine.component;
 
 import com.pine.injection.EngineInjectable;
+import com.pine.inspection.MutableField;
 import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;
 
@@ -8,18 +9,29 @@ import java.util.Set;
 
 @EngineInjectable
 public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> {
-    
-    public float elapsedTime = 0;
-    public Vector3f sunDirection = new Vector3f(0, 1, 1);
+
+    @MutableField(label = "Time of day")
+    public float elapsedTime = 0; // sunDirection = (new Vector3f((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 1.0f)).normalize();
+    @MutableField(label = "Max samples")
     public int maxSamples = 10;
+    @MutableField(label = "Mie height")
     public int mieHeight = 1000;
+    @MutableField(label = "Rayleigh Height")
     public int rayleighHeight = 8000;
+    @MutableField(label = "Atmosphere Radius")
     public float atmosphereRadius = 1;
+    @MutableField(label = "Planet Radius")
     public float planetRadius = 1;
+    @MutableField(label = "Intensity")
     public float intensity = 20;
+    @EnumSelection(enumType= AtmosphereType.class)
+    @MutableField(label = "Rendering Type")
     public AtmosphereType renderingType = AtmosphereType.COMBINED;
-    public float[] betaRayleigh = {1.0f, 1.0f, 1.0f};
-    public float[] betaMie = {1.0f, 1.0f, 1.0f};
+    @MutableField(label = "Beta Rayleigh")
+    public final Vector3f betaRayleigh = new Vector3f(1.0f, 1.0f, 1.0f);
+    @MutableField(label = "Beta Mie")
+    public final Vector3f betaMie = new Vector3f(1.0f, 1.0f, 1.0f);
+    @MutableField(label = "Threshold")
     public float threshold = 0;
 
     public AtmosphereComponent() {
@@ -32,12 +44,7 @@ public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> 
 
     @Override
     protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of(TransformationComponent.class);
-    }
-
-    public void setElapsedTime(float elapsedTime) {
-        this.elapsedTime = elapsedTime;
-        sunDirection = (new Vector3f((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 1.0f)).normalize();
+        return Set.of();
     }
 
     @Override

@@ -1,11 +1,15 @@
 package com.pine.service.world;
 
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
 import com.pine.component.EntityComponent;
 import com.pine.component.TransformationComponent;
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
 import com.pine.repository.WorldRepository;
 import jakarta.annotation.Nullable;
+
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.pine.repository.WorldRepository.EMPTY_MAP;
 
 
 @EngineInjectable
@@ -31,5 +35,9 @@ public class WorldService {
 
     public Object getTransformationComponentUnchecked(int entityId) {
         return worldRepository.entities.get(entityId).get(TRANSFORMATION_CLASS);
+    }
+
+    public ConcurrentHashMap<String, EntityComponent> getComponents(Integer entity) {
+        return worldRepository.entities.getOrDefault(entity, EMPTY_MAP);
     }
 }

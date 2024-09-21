@@ -2,8 +2,6 @@ package com.pine.app.component.impl;
 
 import com.pine.app.component.AbstractFormField;
 import com.pine.inspection.FieldDTO;
-import com.pine.ui.View;
-import imgui.ImGui;
 
 import java.util.function.BiConsumer;
 

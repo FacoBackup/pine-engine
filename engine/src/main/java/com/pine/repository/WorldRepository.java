@@ -2,10 +2,10 @@ package com.pine.repository;
 
 import com.google.gson.JsonElement;
 import com.pine.Initializable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
 import com.pine.service.serialization.SerializableRepository;
 import com.pine.service.world.WorldHierarchyTree;
 
@@ -16,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @EngineInjectable
 public class WorldRepository extends SerializableRepository implements Initializable {
+    public static final ConcurrentHashMap<String, EntityComponent> EMPTY_MAP = new ConcurrentHashMap<>();
     public static final int ROOT_ID = 0;
     private static final MetadataComponent ROOT = new MetadataComponent(ROOT_ID);
     public final Map<Integer, ConcurrentHashMap<String, EntityComponent>> entities = new ConcurrentHashMap<>();

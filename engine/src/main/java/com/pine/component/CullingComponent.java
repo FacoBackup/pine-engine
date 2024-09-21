@@ -1,13 +1,19 @@
 package com.pine.component;
 
 import com.pine.injection.EngineInjectable;
+import com.pine.inspection.MutableField;
 
 import java.util.Set;
 
 @EngineInjectable
 public class CullingComponent extends AbstractComponent<CullingComponent> {
 
+    @MutableField(label = "Max distance from camera")
     public long maxDistanceFromCamera = 300;
+    @MutableField(label = "Frustum culling box width")
+    public long frustumCullingBoxWidth = 300;
+    @MutableField(label = "Frustum culling box height")
+    public long frustumCullingBoxHeight = 300;
 
     public CullingComponent(Integer entityId) {
         super(entityId);

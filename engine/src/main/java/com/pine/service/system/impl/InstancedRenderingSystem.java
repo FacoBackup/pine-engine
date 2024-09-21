@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
-import com.pine.injection.EngineDependency;
 import com.pine.component.InstancedMeshComponent;
+import com.pine.injection.EngineDependency;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ShaderService;

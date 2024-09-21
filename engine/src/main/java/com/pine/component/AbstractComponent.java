@@ -1,14 +1,11 @@
 package com.pine.component;
 
-import com.pine.inspection.FieldDTO;
-import com.pine.inspection.FieldType;
-import com.pine.inspection.MutableField;
+import com.pine.inspection.WithMutableData;
 import com.pine.service.serialization.SerializableResource;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 public abstract class AbstractComponent<T extends EntityComponent> extends WithMutableData implements SerializableResource, EntityComponent {
     private transient final Vector<T> bag = new Vector<>();
@@ -51,5 +48,8 @@ public abstract class AbstractComponent<T extends EntityComponent> extends WithM
         return getComponentName();
     }
 
-
+    @Override
+    public String getLabel() {
+        return getComponentName();
+    }
 }

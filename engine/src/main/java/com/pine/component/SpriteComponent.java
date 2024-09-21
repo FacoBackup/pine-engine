@@ -1,13 +1,18 @@
 package com.pine.component;
 
 import com.pine.injection.EngineInjectable;
+import com.pine.inspection.MutableField;
+import com.pine.service.resource.primitives.texture.Texture;
 
 import java.util.Set;
 
 @EngineInjectable
 public class SpriteComponent extends AbstractComponent<SpriteComponent> {
-    public String textureId;
+    @MutableField(label = "Texture")
+    public Texture texture;
+    @MutableField(label = "Keep same size")
     public boolean keepSameSize = true;
+    @MutableField(label = "Always face camera")
     public boolean alwaysFaceCamera = true;
 
     public SpriteComponent(Integer entityId) {

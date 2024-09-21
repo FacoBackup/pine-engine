@@ -1,10 +1,16 @@
 package com.pine.inspection;
 
+import com.pine.component.SelectableEnum;
 import com.pine.service.resource.resource.IResource;
-import org.joml.*;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public enum FieldType {
     RESOURCE(IResource.class),
+    COLOR(Color.class),
+    OPTIONS(SelectableEnum.class),
     STRING(String.class),
     INT(int.class),
     LONG(long.class),
@@ -28,7 +34,15 @@ public enum FieldType {
 
     public static FieldType getFieldType(Class<?> clazz) {
         for (FieldType ft : FieldType.values()) {
+            // SPECIFIC
             if (ft.getClazz() == clazz) {
+                return ft;
+            }
+        }
+
+        for (FieldType ft : FieldType.values()) {
+            // INSTANCE OF
+            if (ft.getClazz().isInstance(clazz)) {
                 return ft;
             }
         }

@@ -1,8 +1,8 @@
 package com.pine.app.panels.files;
 
-import com.pine.ui.panel.AbstractWindowPanel;
 import com.pine.InjectBean;
 import com.pine.common.fs.FSService;
+import com.pine.ui.panel.AbstractWindowPanel;
 
 public class FilesPanel extends AbstractWindowPanel {
     @InjectBean

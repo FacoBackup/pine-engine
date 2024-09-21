@@ -67,7 +67,7 @@ public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, F
 
     @Override
     protected void removeInternal(FBO resource) {
-        resource.getColors().forEach(GL46::glDeleteTextures);
+        resource.getSamplers().forEach(GL46::glDeleteTextures);
         if (resource.getDepthSampler() != null) {
             GL46.glDeleteTextures(resource.getDepthSampler());
         }

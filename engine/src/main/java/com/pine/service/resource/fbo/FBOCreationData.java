@@ -45,18 +45,18 @@ public class FBOCreationData extends ResourceCreationData {
         return depthTexture;
     }
 
-    public FBOCreationData addColor(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    public FBOCreationData addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         colors.add(new FBOTextureData(w, h, attachment, precision, format, type, linear, repeat));
         return this;
     }
 
-    public FBOCreationData addColor(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    public FBOCreationData addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         colors.add(new FBOTextureData(null, null, attachment, precision, format, type, linear, repeat));
         return this;
     }
 
-    public FBOCreationData addColor() {
-        addColor(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
+    public FBOCreationData addSampler() {
+        addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
         return this;
     }
 

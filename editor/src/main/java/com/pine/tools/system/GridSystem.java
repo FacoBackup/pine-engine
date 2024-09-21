@@ -53,7 +53,7 @@ public class GridSystem extends AbstractSystem {
 
     @Override
     protected FBO getTargetFBO() {
-        return coreResourceRepository.finalFrame;
+        return engine.getTargetFBO();
     }
 
     @Override

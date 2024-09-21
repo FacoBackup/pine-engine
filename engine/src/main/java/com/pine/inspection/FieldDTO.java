@@ -1,12 +1,12 @@
 package com.pine.inspection;
 
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.component.SelectableEnum;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.UUID;
 
 public class FieldDTO {
-    private final ResourceType resourceType;
     private final FieldType type;
     private final String label;
     private final String labelWithId;
@@ -16,10 +16,10 @@ public class FieldDTO {
     private final int min;
     private final boolean angle;
     private final boolean directChange;
+    private final List<SelectableEnum> options;
 
-    public FieldDTO(FieldType type, String label, Field field, Object instance, Integer max, Integer min, boolean isAngle, boolean isDirectChange, ResourceType resourceType) {
+    public FieldDTO(FieldType type, String label, Field field, Object instance, Integer max, Integer min, boolean isAngle, boolean isDirectChange, List<SelectableEnum> options) {
         this.type = type;
-        this.resourceType = resourceType;
         this.label = label ;
         this.labelWithId = label + "#" + UUID.randomUUID().toString().replaceAll("-", "");
         this.field = field;
@@ -28,10 +28,8 @@ public class FieldDTO {
         this.min = min == null ? Integer.MIN_VALUE : min;
         this.angle = isAngle;
         this.directChange = isDirectChange;
-    }
+        this.options = options;
 
-    public ResourceType getResourceType() {
-        return resourceType;
     }
 
     public String getLabelWithId() {
@@ -68,5 +66,9 @@ public class FieldDTO {
 
     public boolean isDirectChange() {
         return directChange;
+    }
+
+    public List<SelectableEnum> getOptions() {
+        return options;
     }
 }

@@ -1,7 +1,6 @@
 package com.pine.component;
 
 import java.util.Set;
-import java.util.Vector;
 
 public interface EntityComponent {
     int getEntityId();

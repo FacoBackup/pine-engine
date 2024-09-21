@@ -1,6 +1,7 @@
 package com.pine.component;
 
 import com.pine.injection.EngineInjectable;
+import com.pine.inspection.MutableField;
 import org.joml.Vector3f;
 
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.Set;
 @EngineInjectable
 public class MetadataComponent extends AbstractComponent<MetadataComponent> {
     public final Vector3f pickerId = new Vector3f();
+    @MutableField(label = "Name")
     public String name = "New Entity";
     public final long creationDate = System.currentTimeMillis();
 

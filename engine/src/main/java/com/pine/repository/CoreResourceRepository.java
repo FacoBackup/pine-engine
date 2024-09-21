@@ -240,19 +240,19 @@ public class CoreResourceRepository implements LateInitializable {
         final int halfResH = engine.displayH / 2;
 
         visibility = (FBO) resources.addResource(new FBOCreationData(false, true)
-                .addColor(0, GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
-                .addColor(1, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
+                .addSampler(0, GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
+                .addSampler(1, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
 
-        postProcessing1 = (FBO) resources.addResource(new FBOCreationData(false, false).addColor().staticResource());
-        postProcessing2 = (FBO) resources.addResource(new FBOCreationData(false, true).addColor().staticResource());
+        postProcessing1 = (FBO) resources.addResource(new FBOCreationData(false, false).addSampler().staticResource());
+        postProcessing2 = (FBO) resources.addResource(new FBOCreationData(false, true).addSampler().staticResource());
 
-        ssgi = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
-        ssgiFallback = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
+        ssgi = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
+        ssgiFallback = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
 
-        ssao = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
-        ssaoBlurred = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addColor(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
+        ssao = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
+        ssaoBlurred = (FBO) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
 
-        finalFrame = (FBO) resources.addResource(new FBOCreationData(false, false).addColor().staticResource());
+        finalFrame = (FBO) resources.addResource(new FBOCreationData(false, false).addSampler().staticResource());
 
         int Q = 7;
         int w = engine.displayW;
@@ -260,23 +260,23 @@ public class CoreResourceRepository implements LateInitializable {
         for (int i = 0; i < Q; i++) {
             w /= 2;
             h /= 2;
-            downscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource()));
+            downscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource()));
         }
         for (int i = 0; i < (Q / 2 - 1); i++) {
             w *= 4;
             h *= 4;
-            upscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addColor(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource()));
+            upscaleBloom.add((FBO) resources.addResource(new FBOCreationData(w, h).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource()));
         }
 
-        ssaoBlurredSampler = ssaoBlurred.getColors().getFirst();
-        ssaoSampler = ssao.getColors().getFirst();
-        ssgiSampler = ssgi.getColors().getFirst();
-        ssgiFallbackSampler = ssgiFallback.getColors().getFirst();
-        sceneDepthVelocity = visibility.getColors().getFirst();
-        entityIDSampler = visibility.getColors().get(1);
-        postProcessing1Sampler = postProcessing1.getColors().getFirst();
-        postProcessing2Sampler = postProcessing2.getColors().getFirst();
-        finalFrameSampler = finalFrame.getColors().getFirst();
+        ssaoBlurredSampler = ssaoBlurred.getSamplers().getFirst();
+        ssaoSampler = ssao.getSamplers().getFirst();
+        ssgiSampler = ssgi.getSamplers().getFirst();
+        ssgiFallbackSampler = ssgiFallback.getSamplers().getFirst();
+        sceneDepthVelocity = visibility.getSamplers().getFirst();
+        entityIDSampler = visibility.getSamplers().get(1);
+        postProcessing1Sampler = postProcessing1.getSamplers().getFirst();
+        postProcessing2Sampler = postProcessing2.getSamplers().getFirst();
+        finalFrameSampler = finalFrame.getSamplers().getFirst();
 
         shadows = (FBO) resources.addResource(new FBOCreationData(configuration.shadowMapResolution, configuration.shadowMapResolution).setDepthTexture(true).staticResource());
         shadowsSampler = shadows.getDepthSampler();
