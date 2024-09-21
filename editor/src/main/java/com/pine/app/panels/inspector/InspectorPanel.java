@@ -12,6 +12,7 @@ import com.pine.inspection.WithMutableData;
 import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AddComponentRequest;
+import com.pine.service.world.request.UpdateFieldRequest;
 import com.pine.tasks.RequestProcessingTask;
 import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
@@ -59,8 +60,8 @@ public class InspectorPanel extends AbstractWindowPanel {
             if (selected != null) {
                 for (var component : worldService.getComponents(selected).values()) {
                     FormPanel formPanel;
-                    formPanels.add(formPanel = new FormPanel((WithMutableData) component, (d, dd) -> {
-
+                    formPanels.add(formPanel = new FormPanel((WithMutableData) component, (dto, newValue) -> {
+                        requestProcessingTask.addRequest(new UpdateFieldRequest(dto, newValue));
                     }));
                     appendChild(formPanel);
                 }

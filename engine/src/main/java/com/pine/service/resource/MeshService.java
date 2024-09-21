@@ -1,10 +1,12 @@
 package com.pine.service.resource;
 
 import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
+import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
@@ -15,6 +17,10 @@ public class MeshService extends AbstractResourceService<MeshPrimitiveResource, 
     private MeshPrimitiveResource currentMesh;
     private MeshRuntimeData drawCommand;
     private boolean isInWireframeMode = false;
+
+    @PInject
+    public ResourceService resourceService;
+
 
     @Override
     protected void bindInternal(MeshPrimitiveResource instance, MeshRuntimeData data) {
@@ -141,5 +147,16 @@ public class MeshService extends AbstractResourceService<MeshPrimitiveResource, 
             return;
         }
         GL46.glDrawElements(glTriangles, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+    }
+
+    public MeshPrimitiveResource createTerrain(String heightMapTexture) {
+        IResource byId = resourceService.getOrCreateResource(heightMapTexture);
+        if(byId instanceof TextureResource){
+            var t = (TextureResource) byId;
+//            t.getWidth();
+//            t.getHeight();
+            // TODO - COMPUTE TERRAIN
+        }
+        return null;
     }
 }

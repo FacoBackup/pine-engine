@@ -5,10 +5,12 @@ import com.pine.PInject;
 import com.pine.component.*;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.CoreResourceRepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.CompositeDrawDTO;
 import com.pine.repository.rendering.RuntimeDrawDTO;
+import com.pine.service.resource.MeshService;
+import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.world.WorldService;
@@ -36,13 +38,16 @@ public class RenderingTask extends AbstractTask {
     public InstancedSceneComponent instancedComponents;
 
     @PInject
+    public ResourceService resourceService;
+
+    @PInject
     public WorldService worldService;
 
     @PInject
-    public CoreResourceRepository coreResourceRepository;
+    public CameraRepository camera;
 
     @PInject
-    public CameraRepository camera;
+    public MeshService meshService;
 
     @PInject
     public RenderingRepository renderingRepository;
@@ -58,60 +63,95 @@ public class RenderingTask extends AbstractTask {
 
         temp.clear();
         for (var scene : scenes.getBag()) {
-            boolean culled = isCulled(scene.getEntityId());
-            if (culled) {
-                continue;
-            }
-
-            if (scene.requests.size() != scene.compositeScene.primitives.size()) {
-                scene.requests.clear();
-                for (var primitive : scene.compositeScene.primitives) {
-                    primitive.transformation.parentTransformationId = scene.getEntityId();
-                    scene.requests.add(new RuntimeDrawDTO(primitive.primitive, DEFAULT_RENDER_REQUEST, primitive.transformation));
-                }
-            }
-            temp.addAll(scene.requests);
+            prepareComposite(scene);
         }
 
         for (var scene : instancedComponents.getBag()) {
-            boolean culled = isCulled(scene.getEntityId());
-            if (culled) {
-                continue;
-            }
-
-            if (scene.runtimeData == null) {
-                scene.runtimeData = new MeshRuntimeData(DEFAULT_RENDERING_MODE);
-            }
-            scene.runtimeData.instanceCount = scene.numberOfInstances;
-
-            if (scene.request == null) {
-                List<SimpleTransformation> transformations = new ArrayList<>();
-                CompositeDrawDTO composite = new CompositeDrawDTO(scene.primitive, scene.runtimeData, transformations);
-                for (var primitive : scene.compositeScene.primitives) {
-                    primitive.transformation.parentTransformationId = scene.getEntityId();
-                    transformations.add(primitive.transformation);
-                }
-                scene.request = composite;
-            }
-            temp.add(scene.request);
+            prepareInstanced(scene);
         }
 
         for (var scene : terrains.getBag()) {
-            boolean culled = isCulled(scene.getEntityId());
-            if (culled) {
-                continue;
-            }
-
-            if (scene.request == null) {
-                TransformationComponent transformation = worldService.getTransformationComponentUnchecked(scene.getEntityId());
-                scene.request = new RuntimeDrawDTO(coreResourceRepository.cubeMesh, DEFAULT_RENDER_REQUEST, transformation.toSimpleTransformation());
-            }
-            temp.add(scene.request);
+            prepareTerrain(scene);
         }
 
         List<RuntimeDrawDTO> aux = renderingRepository.requests;
         renderingRepository.requests = temp;
         temp = aux;
+    }
+
+    private void prepareComposite(SceneComponent scene) {
+        boolean culled = isCulled(scene.getEntityId());
+        if (culled) {
+            return;
+        }
+
+        if (scene.requests.size() != scene.compositeScene.primitives.size()) {
+            scene.requests.clear();
+            for (var primitive : scene.compositeScene.primitives) {
+                if (primitive.primitive == null) {
+                    continue;
+                }
+                primitive.transformation.parentTransformationId = scene.getEntityId();
+                var mesh = primitive.primitive.resource = primitive.primitive.resource == null ? (MeshPrimitiveResource) resourceService.getOrCreateResource(primitive.primitive.id) : primitive.primitive.resource;
+                if (mesh != null) {
+                    scene.requests.add(new RuntimeDrawDTO(mesh, DEFAULT_RENDER_REQUEST, primitive.transformation));
+                }
+            }
+        }
+        temp.addAll(scene.requests);
+    }
+
+    private void prepareTerrain(TerrainComponent scene) {
+        if (scene.heightMapTexture == null) {
+            return;
+        }
+
+        boolean culled = isCulled(scene.getEntityId());
+        if (culled) {
+            return;
+        }
+
+        if (scene.request == null) {
+            TransformationComponent transformation = worldService.getTransformationComponentUnchecked(scene.getEntityId());
+            if (scene.meshInstance == null) {
+                scene.meshInstance = meshService.createTerrain(scene.heightMapTexture.id);
+            }
+            if (scene.meshInstance != null) {
+                scene.request = new RuntimeDrawDTO(scene.meshInstance, DEFAULT_RENDER_REQUEST, transformation.toSimpleTransformation());
+            }
+        }
+        temp.add(scene.request);
+    }
+
+    private void prepareInstanced(InstancedSceneComponent scene) {
+        if (scene.primitive == null) {
+            return;
+        }
+
+        boolean culled = isCulled(scene.getEntityId());
+        if (culled) {
+            return;
+        }
+
+        if (scene.runtimeData == null) {
+            scene.runtimeData = new MeshRuntimeData(DEFAULT_RENDERING_MODE);
+        }
+        scene.runtimeData.instanceCount = scene.numberOfInstances;
+
+        var mesh = scene.primitive.resource = scene.primitive.resource == null ? (MeshPrimitiveResource) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
+        if (scene.request == null && mesh != null) {
+            List<SimpleTransformation> transformations = new ArrayList<>();
+            CompositeDrawDTO composite = new CompositeDrawDTO(mesh, scene.runtimeData, transformations);
+            for (var primitive : scene.compositeScene.primitives) {
+                primitive.transformation.parentTransformationId = scene.getEntityId();
+                transformations.add(primitive.transformation);
+            }
+            scene.request = composite;
+        }
+        if (scene.request != null) {
+            scene.request.primitive = mesh;
+            temp.add(scene.request);
+        }
     }
 
     private boolean isCulled(int entityId) {

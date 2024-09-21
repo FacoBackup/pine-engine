@@ -6,7 +6,7 @@ import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import org.joml.Vector3f;
 
 public class RuntimeDrawDTO {
-    public final MeshPrimitiveResource primitive;
+    public MeshPrimitiveResource primitive;
     public final MeshRuntimeData runtimeData;
     // TODO - MATERIAL
 

@@ -42,7 +42,9 @@ public class RequestProcessingTask extends AbstractTask {
         }
         for (var request : requests) {
             RequestMessage message = request.run(worldRepository, world);
-            messageService.onMessage(message.message(), message.isError());
+            if (message != null) {
+                messageService.onMessage(message.message(), message.isError());
+            }
         }
         requests.clear();
         worldRepository.worldTree.branches.clear();

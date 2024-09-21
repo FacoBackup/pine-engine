@@ -31,12 +31,10 @@ public class FormPanel extends AbstractPanel {
                     appendChild(new ResourceField(field, changeHandler));
                     break;
                 }
-                case LONG:
                 case INT: {
                     appendChild(new IntField(field, changeHandler));
                     break;
                 }
-                case DOUBLE:
                 case FLOAT: {
                     appendChild(new FloatField(field, changeHandler));
                     break;
@@ -58,6 +56,10 @@ public class FormPanel extends AbstractPanel {
                 }
                 case OPTIONS: {
                     appendChild(new OptionsField(field, changeHandler));
+                    break;
+                }
+                case SCENE: {
+                    appendChild(new SceneField(field, changeHandler));
                     break;
                 }
             }

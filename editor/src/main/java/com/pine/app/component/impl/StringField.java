@@ -13,12 +13,14 @@ public class StringField extends AbstractFormField {
 
     public StringField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
+        value.set(dto.getValue());
     }
 
     @Override
     public void renderInternal() {
+        ImGui.text(dto.getLabel());
         if(ImGui.inputText(dto.getLabel(), value, ImGuiInputTextFlags.EnterReturnsTrue)){
-            changerHandler.accept(dto, value);
+            changerHandler.accept(dto, value.get());
         }
     }
 }

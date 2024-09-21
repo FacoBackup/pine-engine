@@ -10,9 +10,9 @@ import java.util.Set;
 public class CullingComponent extends AbstractComponent<CullingComponent> {
 
     @MutableField(label = "Max distance from camera")
-    public long maxDistanceFromCamera = 300;
+    public int maxDistanceFromCamera = 300;
     @MutableField(label = "Frustum box size")
-    public final Vector3f frustumBoxDimensions = new Vector3f();
+    public final Vector3f frustumBoxDimensions = new Vector3f(1);
 
     public CullingComponent(Integer entityId) {
         super(entityId);

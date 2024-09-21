@@ -2,8 +2,12 @@ package com.pine.component;
 
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
+import com.pine.inspection.ResourceField;
+import com.pine.inspection.ResourceRef;
 import com.pine.repository.rendering.RuntimeDrawDTO;
+import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.texture.TextureResource;
+import com.pine.service.resource.resource.ResourceType;
 
 import java.util.Set;
 
@@ -11,10 +15,16 @@ import java.util.Set;
 public class TerrainComponent extends AbstractComponent<TerrainComponent> {
     @MutableField(label = "Casts shadows")
     public boolean castsShadows = true;
-    @MutableField(label = "Casts shadows")
-    public TextureResource heightMapTexture;
+
+    @ResourceField(type = ResourceType.TEXTURE)
+    @MutableField(label = "Height map")
+    public ResourceRef<TextureResource> heightMapTexture;
+
+    public transient MeshPrimitiveResource meshInstance;
+
     @MutableField(label = "Height Scale")
     public float heightScale = 1;
+
     public transient RuntimeDrawDTO request;
 
     public TerrainComponent(Integer entityId) {

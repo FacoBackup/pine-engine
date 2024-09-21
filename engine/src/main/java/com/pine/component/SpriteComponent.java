@@ -2,14 +2,19 @@ package com.pine.component;
 
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
+import com.pine.inspection.ResourceField;
+import com.pine.inspection.ResourceRef;
 import com.pine.service.resource.primitives.texture.TextureResource;
+import com.pine.service.resource.resource.ResourceType;
 
 import java.util.Set;
 
 @PBean
 public class SpriteComponent extends AbstractComponent<SpriteComponent> {
+    @ResourceField(type = ResourceType.TEXTURE)
     @MutableField(label = "Texture")
-    public TextureResource texture;
+    public ResourceRef<TextureResource> heightMapTexture;
+
     @MutableField(label = "Keep same size")
     public boolean keepSameSize = true;
     @MutableField(label = "Always face camera")
