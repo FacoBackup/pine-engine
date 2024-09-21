@@ -15,6 +15,7 @@ import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.world.WorldService;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,11 +81,6 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void prepareComposite(SceneComponent scene) {
-        boolean culled = isCulled(scene.getEntityId());
-        if (culled) {
-            return;
-        }
-
         if (scene.requests.size() != scene.compositeScene.primitives.size()) {
             scene.requests.clear();
             for (var primitive : scene.compositeScene.primitives) {
@@ -98,7 +94,15 @@ public class RenderingTask extends AbstractTask {
                 }
             }
         }
-        temp.addAll(scene.requests);
+
+        CullingComponent culling = worldService.getCullingComponentUnchecked(scene.getEntityId());
+        for (var r : scene.requests) {
+            boolean culled = isCulled(r.transformation.translation, culling.maxDistanceFromCamera, culling.frustumBoxDimensions);
+            if (culled) {
+                continue;
+            }
+            temp.add(r);
+        }
     }
 
     private void prepareTerrain(TerrainComponent scene) {
@@ -128,15 +132,9 @@ public class RenderingTask extends AbstractTask {
             return;
         }
 
-        boolean culled = isCulled(scene.getEntityId());
-        if (culled) {
-            return;
-        }
-
         if (scene.runtimeData == null) {
             scene.runtimeData = new MeshRuntimeData(DEFAULT_RENDERING_MODE);
         }
-        scene.runtimeData.instanceCount = scene.numberOfInstances;
 
         var mesh = scene.primitive.resource = scene.primitive.resource == null ? (MeshPrimitiveResource) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
         if (scene.request == null && mesh != null) {
@@ -148,8 +146,19 @@ public class RenderingTask extends AbstractTask {
             }
             scene.request = composite;
         }
-        if (scene.request != null) {
+
+        int realNumberOfInstances = 0;
+        CullingComponent culling = worldService.getCullingComponentUnchecked(scene.getEntityId());
+        for (var r : scene.compositeScene.primitives) {
+            r.isCulled = isCulled(r.transformation.translation, culling.maxDistanceFromCamera, culling.frustumBoxDimensions);
+            if (!r.isCulled) {
+                realNumberOfInstances++;
+            }
+        }
+
+        if (scene.request != null && mesh != null) {
             scene.request.primitive = mesh;
+            scene.runtimeData.instanceCount = realNumberOfInstances * mesh.vertexCount;
             temp.add(scene.request);
         }
     }
@@ -157,18 +166,22 @@ public class RenderingTask extends AbstractTask {
     private boolean isCulled(int entityId) {
         TransformationComponent t = worldService.getTransformationComponentUnchecked(entityId);
         CullingComponent c = worldService.getCullingComponentUnchecked(entityId);
+        return isCulled(t.translation, c.maxDistanceFromCamera, c.frustumBoxDimensions);
+    }
+
+    private boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f frustumBoxDimensions) {
         distanceAux.set(camera.currentCamera.position);
-        if (Math.abs(distanceAux.sub(t.translation).length()) > c.maxDistanceFromCamera) {
+        if (Math.abs(distanceAux.sub(translation).length()) > maxDistanceFromCamera) {
             return true;
         }
 
-        auxCubeMin.x = t.translation.x - c.frustumBoxDimensions.x;
-        auxCubeMin.y = t.translation.y - c.frustumBoxDimensions.y;
-        auxCubeMin.z = t.translation.x - c.frustumBoxDimensions.z;
+        auxCubeMin.x = translation.x - frustumBoxDimensions.x;
+        auxCubeMin.y = translation.y - frustumBoxDimensions.y;
+        auxCubeMin.z = translation.x - frustumBoxDimensions.z;
 
-        auxCubeMax.x = t.translation.x + c.frustumBoxDimensions.x;
-        auxCubeMax.y = t.translation.y + c.frustumBoxDimensions.y;
-        auxCubeMax.z = t.translation.x + c.frustumBoxDimensions.z;
+        auxCubeMax.x = translation.x + frustumBoxDimensions.x;
+        auxCubeMax.y = translation.y + frustumBoxDimensions.y;
+        auxCubeMax.z = translation.x + frustumBoxDimensions.z;
 
         return !camera.frustum.isCubeInFrustum(auxCubeMin, auxCubeMax);
     }

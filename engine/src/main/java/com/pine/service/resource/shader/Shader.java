@@ -61,6 +61,7 @@ public class Shader extends AbstractResource {
     }
 
     public UniformDTO addUniformDeclaration(String name, GLSLType type) {
+        GL46.glUseProgram(program);
         UniformDTO uniformDTO = new UniformDTO(type, name, GL46.glGetUniformLocation(program, name));
         uniforms.put(name, uniformDTO);
         return uniformDTO;

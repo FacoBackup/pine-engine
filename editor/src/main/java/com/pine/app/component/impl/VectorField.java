@@ -54,9 +54,9 @@ public class VectorField extends AbstractFormField {
     public void renderInternal() {
         ImGui.text(dto.getLabel());
         switch (dto.getType()) {
-            case VECTOR2 -> ImGui.dragFloat2("", values, .01f, dto.getMin(), dto.getMax());
-            case VECTOR3 -> ImGui.dragFloat3("", values, .01f, dto.getMin(), dto.getMax());
-            case VECTOR4, QUATERNION -> ImGui.dragFloat4("", values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR2 -> ImGui.dragFloat2(internalId, values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR3 -> ImGui.dragFloat3(internalId, values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR4, QUATERNION -> ImGui.dragFloat4(internalId, values, .01f, dto.getMin(), dto.getMax());
         }
     }
 }

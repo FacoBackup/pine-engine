@@ -139,67 +139,45 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         Integer uLocation = uniformDTO.getLocation();
         switch (uniformDTO.getType()) {
             case GLSLType.FLOAT:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform1fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform1fv(uLocation, (FloatBuffer) data);
                 break;
             case GLSLType.VEC_2:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform2fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform2fv(uLocation, (FloatBuffer) data);
                 break;
 
             case GLSLType.VEC_3:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform3fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform3fv(uLocation, (FloatBuffer) data);
                 break;
             case GLSLType.VEC_4:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform4fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform4fv(uLocation, (FloatBuffer) data);
                 break;
             case GLSLType.IVEC_2:
-                if (data instanceof IntBuffer) {
-                    GL46.glUniform2iv(uLocation, (IntBuffer) data);
-                }
+                GL46.glUniform2iv(uLocation, (IntBuffer) data);
                 break;
             case GLSLType.IVEC_3:
-                if (data instanceof IntBuffer) {
-                    GL46.glUniform3iv(uLocation, (IntBuffer) data);
-                }
+                GL46.glUniform3iv(uLocation, (IntBuffer) data);
                 break;
             case GLSLType.BOOL:
-                if (data instanceof IntBuffer) {
-                    GL46.glUniform1iv(uLocation, (IntBuffer) data);
-                }
+                GL46.glUniform1iv(uLocation, (IntBuffer) data);
                 break;
             case GLSLType.MAT_3:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniformMatrix3fv(uLocation, false, (FloatBuffer) data);
-                }
+                GL46.glUniformMatrix3fv(uLocation, false, (FloatBuffer) data);
                 break;
 
             case GLSLType.MAT_4:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniformMatrix4fv(uLocation, false, (FloatBuffer) data);
-                }
+                GL46.glUniformMatrix4fv(uLocation, false, (FloatBuffer) data);
                 break;
             case GLSLType.SAMPLER_CUBE:
-                if (data instanceof Integer) {
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, (Integer) data);
-                    GL46.glUniform1i(uLocation, currentSamplerIndex);
-                    currentSamplerIndex++;
-                }
+                GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
+                GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, (Integer) data);
+                GL46.glUniform1i(uLocation, currentSamplerIndex);
+                currentSamplerIndex++;
                 break;
             case GLSLType.SAMPLER_2_D:
-                if (data instanceof Integer) {
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, (Integer) data);
-                    GL46.glUniform1i(uLocation, currentSamplerIndex);
-                    currentSamplerIndex++;
-                }
+                GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
+                GL46.glBindTexture(GL46.GL_TEXTURE_2D, (Integer) data);
+                GL46.glUniform1i(uLocation, currentSamplerIndex);
+                currentSamplerIndex++;
                 break;
         }
     }
