@@ -1,9 +1,9 @@
 package com.pine.service.resource;
 
 import com.pine.Loggable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.Updatable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
 import com.pine.repository.ClockRepository;
 import com.pine.service.resource.resource.*;
 
@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@EngineInjectable
+@PBean
 public class ResourceService implements Loggable, Updatable {
     public static final int MAX_TIMEOUT = 5 * 60 * 1000;
 
-    @EngineDependency
+    @PInject
     public List<AbstractResourceService> implementations;
 
-    @EngineDependency
+    @PInject
     public ClockRepository clock;
 
     private final Map<String, IResource> resources = new HashMap<>();

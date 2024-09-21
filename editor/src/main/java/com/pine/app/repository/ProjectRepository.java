@@ -1,9 +1,9 @@
 package com.pine.app.repository;
 
+import com.pine.PBean;
 import com.pine.app.service.ProjectDTO;
-import org.springframework.stereotype.Repository;
 
-@Repository
+@PBean
 public class ProjectRepository {
     private ProjectDTO currentProject;
 

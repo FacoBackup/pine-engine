@@ -1,6 +1,5 @@
 package com.pine.ui.panel;
 
-import com.pine.ContextService;
 import com.pine.ui.ViewTag;
 import com.pine.ui.view.AbstractView;
 import com.pine.window.WindowRuntimeException;
@@ -19,7 +18,6 @@ public abstract class AbstractPanel extends AbstractView {
 
     public AbstractPanel() {
         super(null, null);
-        ContextService.injectDependencies(this);
     }
 
     @Override

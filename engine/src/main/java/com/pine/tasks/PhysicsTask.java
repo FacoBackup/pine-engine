@@ -1,8 +1,8 @@
 package com.pine.tasks;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 
-@EngineInjectable
+@PBean
 public class PhysicsTask extends AbstractTask {
     @Override
     protected int getTickIntervalMilliseconds() {

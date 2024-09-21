@@ -3,20 +3,20 @@ package com.pine.repository;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.service.serialization.SerializableRepository;
 
-@EngineInjectable
+@PBean
 public class EngineRepository extends SerializableRepository {
 
-    @EngineDependency
+    @PInject
     public CameraRepository cameraRepository;
 
-    @EngineDependency
+    @PInject
     public ResourceLoaderRepository resourceLoaderRepository;
 
-    @EngineDependency
+    @PInject
     public WorldRepository worldRepository;
 
     @Override

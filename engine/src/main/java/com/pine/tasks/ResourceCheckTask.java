@@ -1,7 +1,7 @@
 package com.pine.tasks;
 
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.repository.ResourceLoaderRepository;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 import static com.pine.service.resource.ResourceService.MAX_TIMEOUT;
 
-@EngineInjectable
+@PBean
 public class ResourceCheckTask extends AbstractTask {
-    @EngineDependency
+    @PInject
     public ResourceLoaderRepository repository;
 
     @Override

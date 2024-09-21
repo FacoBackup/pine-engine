@@ -1,7 +1,7 @@
 package com.pine.app;
 
 import com.pine.Engine;
-import com.pine.InjectBean;
+import com.pine.PInject;
 import com.pine.app.panels.console.ConsolePanel;
 import com.pine.app.panels.files.FilesPanel;
 import com.pine.app.panels.hierarchy.HierarchyPanel;
@@ -30,17 +30,18 @@ import static com.pine.common.messages.MessageCollector.MESSAGE_DURATION;
 
 public class EditorWindow extends AbstractWindow {
 
-    @InjectBean
+    @PInject
     public ProjectService projectService;
 
-    @InjectBean
+    @PInject
     public EntitySelectionRepository selectionRepository;
 
-    private Engine engine;
+    @PInject
+    public Engine engine;
 
     @Override
     public void onInitialization() {
-        engine = new Engine(displayW, displayH, (String message, Boolean isError) -> {
+        engine.prepare(displayW, displayH, (String message, Boolean isError) -> {
             MessageCollector.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
         });
         engine.addModules(List.of(new ToolsModule(), new ToolsConfigurationModule(selectionRepository.getSelected())));
@@ -100,7 +101,7 @@ public class EditorWindow extends AbstractWindow {
                 messages[i] = null;
                 continue;
             }
-            ImVec2 viewportDimensions = viewDocument.getViewportDimensions();
+            ImVec2 viewportDimensions = getViewDocument().getViewportDimensions();
             ImGui.setNextWindowPos(5, viewportDimensions.y - 40 * (i + 1));
             ImGui.setNextWindowSize(viewportDimensions.x * .35F, 35);
             ImGui.pushStyleColor(ImGuiCol.Border, message.severity().getColor());

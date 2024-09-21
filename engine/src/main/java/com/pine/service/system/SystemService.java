@@ -1,18 +1,18 @@
 package com.pine.service.system;
 
+import com.pine.PBean;
+import com.pine.PInject;
+import com.pine.PInjector;
 import com.pine.Updatable;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
-import com.pine.injection.EngineInjector;
 import com.pine.service.system.impl.InstancedRenderingSystem;
 import com.pine.service.system.impl.UBOSyncSystem;
 
 import java.util.List;
 
-@EngineInjectable
+@PBean
 public class SystemService implements Updatable {
-    @EngineDependency
-    public EngineInjector engineInjector;
+    @PInject
+    public PInjector pInjector;
 
     private List<AbstractSystem> systems = List.of(
             new UBOSyncSystem(),
@@ -26,7 +26,7 @@ public class SystemService implements Updatable {
     public void setSystems(List<AbstractSystem> systems) {
         for (var sys : systems) {
             if (!this.systems.contains(sys)) {
-                engineInjector.inject(sys);
+                pInjector.inject(sys);
                 sys.onInitialize();
             }
         }
@@ -41,9 +41,9 @@ public class SystemService implements Updatable {
     }
 
 
-    public void manualInitialization() {
+    public void initialize() {
         for (var sys : systems) {
-            engineInjector.inject(sys);
+            pInjector.inject(sys);
             sys.onInitialize();
         }
     }

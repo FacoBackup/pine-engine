@@ -1,9 +1,8 @@
 package com.pine.common.fs;
 
 import com.pine.Loggable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
+import com.pine.PBean;
+import com.pine.PInject;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,20 +12,22 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@PBean
 public class FSService implements Loggable {
-    @Autowired
-    private FSRepository repository;
+    @PInject
+    public FSRepository repository;
+
 
     public List<FileInfoDTO> readFiles(final String path) {
         return repository.readFiles(path);
     }
 
-    @Async
     public void refreshFiles(String directory, Runnable afterProcessing) {
-        repository.getFilesByDirectory().clear();
-        repository.readFilesForcefully(directory);
-        afterProcessing.run();
+        new Thread(() -> {
+            repository.getFilesByDirectory().clear();
+            repository.readFilesForcefully(directory);
+            afterProcessing.run();
+        }).start();
     }
 
     public static String getUserRootPath() {

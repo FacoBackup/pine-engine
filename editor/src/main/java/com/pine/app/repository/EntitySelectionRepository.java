@@ -1,11 +1,11 @@
 package com.pine.app.repository;
 
-import org.springframework.stereotype.Repository;
+import com.pine.PBean;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@Repository
+@PBean
 public class EntitySelectionRepository {
     private Integer mainSelection = null;
     private final LinkedList<Integer> selected = new LinkedList<>();

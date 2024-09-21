@@ -1,22 +1,22 @@
 package com.pine.service.world;
 
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.component.EntityComponent;
 import com.pine.component.TransformationComponent;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
 import com.pine.repository.WorldRepository;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.pine.repository.WorldRepository.EMPTY_MAP;
 
 
-@EngineInjectable
+@PBean
 public class WorldService {
     private static final String TRANSFORMATION_CLASS = TransformationComponent.class.getSimpleName();
 
-    @EngineDependency
+    @PInject
     public WorldRepository worldRepository;
 
     @Nullable

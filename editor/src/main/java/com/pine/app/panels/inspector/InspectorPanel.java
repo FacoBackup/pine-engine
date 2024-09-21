@@ -1,6 +1,6 @@
 package com.pine.app.panels.inspector;
 
-import com.pine.InjectBean;
+import com.pine.PInject;
 import com.pine.app.EditorWindow;
 import com.pine.app.component.FormPanel;
 import com.pine.app.repository.EntitySelectionRepository;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class InspectorPanel extends AbstractWindowPanel {
-    @InjectBean
+    @PInject
     public EntitySelectionRepository selectionRepository;
     // INJECT METADATA COMPONENT
 

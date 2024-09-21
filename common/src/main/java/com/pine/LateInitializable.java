@@ -1,4 +1,4 @@
-package com.pine.injection;
+package com.pine;
 
 public interface LateInitializable {
     /**

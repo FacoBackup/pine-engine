@@ -1,7 +1,7 @@
 package com.pine.service.camera;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 
-@EngineInjectable
+@PBean
 public class CameraService {
 }

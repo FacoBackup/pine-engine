@@ -1,8 +1,8 @@
 package com.pine.repository;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 
-@EngineInjectable
+@PBean
 public class ConfigurationRepository {
     public int shadowMapResolution = 4096;
 }

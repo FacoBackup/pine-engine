@@ -1,13 +1,14 @@
 package com.pine.ui;
 
 import com.pine.Loggable;
+import com.pine.PInjector;
 import com.pine.ui.theme.ThemeUtil;
 import com.pine.ui.view.AbstractView;
 import com.pine.window.AbstractWindow;
 import com.pine.window.WindowRuntimeException;
 import imgui.ImGui;
 import imgui.ImVec2;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
@@ -16,11 +17,13 @@ import java.util.Map;
 public class ViewDocument implements Loggable {
     private final Map<String, View> views = new HashMap<>();
     private final AbstractWindow window;
+    private final PInjector injector;
     private boolean darkMode = true;
     private final float[] backgroundColor = new float[]{.0f, .0f, .0f};
 
-    public ViewDocument(AbstractWindow window) {
+    public ViewDocument(AbstractWindow window, PInjector injector) {
         this.window = window;
+        this.injector = injector;
     }
 
     public void initialize() {
@@ -42,6 +45,7 @@ public class ViewDocument implements Loggable {
     }
 
     final public void appendChild(View child, View parent) {
+        injector.inject(child);
         parent.getChildren().add(child);
         if (child.getId() != null) {
             views.put(child.getId(), child);

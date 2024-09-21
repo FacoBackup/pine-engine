@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 
-@EngineInjectable
+@PBean
 public class UBOService extends AbstractResourceService<UBO, EmptyRuntimeData, UBOCreationData> {
     private UBO currentUBO;
 

@@ -1,16 +1,16 @@
 package com.pine.tools.system;
 
 import com.pine.Engine;
+import com.pine.PInject;
 import com.pine.component.CullingComponent;
-import com.pine.injection.EngineDependency;
 import com.pine.service.resource.fbo.FBO;
 import com.pine.service.system.AbstractSystem;
 
 public class CullingVisualizationSystem extends AbstractSystem {
-    @EngineDependency
+    @PInject
     public Engine engine;
 
-    @EngineDependency
+    @PInject
     public CullingComponent cullingComponents;
 
     @Override

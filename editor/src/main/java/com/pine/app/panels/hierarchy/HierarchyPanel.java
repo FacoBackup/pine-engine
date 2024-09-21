@@ -1,6 +1,6 @@
 package com.pine.app.panels.hierarchy;
 
-import com.pine.InjectBean;
+import com.pine.PInject;
 import com.pine.app.EditorWindow;
 import com.pine.app.repository.EntitySelectionRepository;
 import com.pine.component.AbstractComponent;
@@ -11,7 +11,7 @@ import com.pine.ui.view.TreeView;
 
 public class HierarchyPanel extends AbstractWindowPanel {
 
-    @InjectBean
+    @PInject
     public EntitySelectionRepository selectionRepository;
 
     private WorldService world;

@@ -1,7 +1,7 @@
 package com.pine.app.panels.files;
 
 import com.pine.Engine;
-import com.pine.InjectBean;
+import com.pine.PInject;
 import com.pine.app.EditorWindow;
 import com.pine.common.fs.FSService;
 import com.pine.common.fs.FileInfoDTO;
@@ -13,7 +13,7 @@ import com.pine.ui.view.InputView;
 import java.io.File;
 
 public class FilesHeaderPanel extends AbstractPanel {
-    @InjectBean
+    @PInject
     public FSService fsService;
     private Engine engine;
     private ButtonView importFile;

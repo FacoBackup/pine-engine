@@ -1,8 +1,8 @@
 package com.pine.common.fs;
 
 import com.pine.Loggable;
+import com.pine.PBean;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.stereotype.Repository;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Repository
+@PBean
 public class FSRepository implements Loggable {
     private final Map<String, List<FileInfoDTO>> filesByDirectory = new HashMap<>();
 

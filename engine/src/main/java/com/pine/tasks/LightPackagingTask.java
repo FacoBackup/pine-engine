@@ -1,20 +1,20 @@
 package com.pine.tasks;
 
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.component.AtmosphereComponent;
 import com.pine.component.LightComponent;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
 import com.pine.repository.CoreResourceRepository;
 
-@EngineInjectable
+@PBean
 public class LightPackagingTask extends AbstractTask {
-    @EngineDependency
+    @PInject
     public CoreResourceRepository coreResourceRepository;
 
-    @EngineDependency
+    @PInject
     public LightComponent lights;
 
-    @EngineDependency
+    @PInject
     public AtmosphereComponent atmospheres;
 
     @Override

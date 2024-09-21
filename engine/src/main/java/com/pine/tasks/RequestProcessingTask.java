@@ -1,10 +1,10 @@
 package com.pine.tasks;
 
 import com.pine.AbstractTree;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
 import com.pine.repository.WorldRepository;
 import com.pine.service.MessageService;
 import com.pine.service.world.WorldHierarchyTree;
@@ -19,15 +19,15 @@ import java.util.Vector;
 
 import static com.pine.repository.WorldRepository.ROOT_ID;
 
-@EngineInjectable
+@PBean
 public class RequestProcessingTask extends AbstractTask {
-    @EngineDependency
+    @PInject
     public WorldRepository worldRepository;
 
-    @EngineDependency
+    @PInject
     public WorldService world;
 
-    @EngineDependency
+    @PInject
     public MessageService messageService;
 
     private final List<AbstractRequest> requests = new ArrayList<>();

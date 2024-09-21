@@ -1,7 +1,7 @@
 package com.pine.ui;
 
 import com.pine.ui.view.*;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 public enum ViewTag {
     TEXT("text", TextView.class, false),

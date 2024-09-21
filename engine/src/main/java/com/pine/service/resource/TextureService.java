@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
 import com.pine.service.resource.primitives.texture.Texture;
 import com.pine.service.resource.primitives.texture.TextureCreationData;
@@ -8,7 +8,7 @@ import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 
-@EngineInjectable
+@PBean
 public class TextureService extends AbstractResourceService<Texture, EmptyRuntimeData, TextureCreationData> {
 
     @Override

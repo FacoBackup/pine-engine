@@ -1,9 +1,9 @@
 package com.pine.repository;
 
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 
-@EngineInjectable
+@PBean
 public class RuntimeRepository  {
 
     public boolean fasterPressed = false;

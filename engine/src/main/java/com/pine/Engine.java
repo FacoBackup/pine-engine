@@ -1,8 +1,6 @@
 package com.pine;
 
-import com.pine.injection.EngineDependency;
 import com.pine.injection.EngineExternalModule;
-import com.pine.injection.EngineInjector;
 import com.pine.repository.ClockRepository;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.repository.ModulesService;
@@ -19,64 +17,54 @@ import com.pine.tasks.RequestProcessingTask;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+@PBean
 public class Engine {
     public static final String GLSL_VERSION = "#version 410";
     public static final int MAX_LIGHTS = 310;
 
-    public final int displayW;
-    public final int displayH;
+    private int displayW;
+    private int displayH;
 
-    @SuppressWarnings("unused")
-    private final EngineInjector engineInjector = new EngineInjector(this);
     private FBO targetFBO;
 
-    @EngineDependency
+    @PInject
     public ModulesService modules;
 
-    @EngineDependency
+    @PInject
     public ClockRepository clock;
 
-    @EngineDependency
+    @PInject
     public RuntimeRepository runtimeRepository;
 
-    @EngineDependency
+    @PInject
     public ResourceService resourceService;
 
-    @EngineDependency
-    public CoreResourceRepository coreResourceRepository;
-
-    @EngineDependency
+    @PInject
     public SystemService systemsService;
 
-    @EngineDependency
+    @PInject
     public ResourceService resourcesService;
 
-    @EngineDependency
+    @PInject
     public ResourceLoaderService resourceLoaderService;
 
-    @EngineDependency
+    @PInject
+    public CoreResourceRepository coreResourceRepository;
+
+    @PInject
     public WorldService worldService;
 
-    @EngineDependency
+    @PInject
     public MessageService messageService;
 
-    @EngineDependency
+    @PInject
     public RequestProcessingTask requestTask;
-
-    public Engine(int displayW, int displayH, BiConsumer<String, Boolean> onMessage) {
-        this.displayW = displayW;
-        this.displayH = displayH;
-        engineInjector.onInitialize();
-        this.messageService.setMessageCallback(onMessage);
-        systemsService.manualInitialization();
-    }
 
     public void render() {
         clock.tick();
         resourcesService.tick();
         systemsService.tick();
     }
-
 
     public void shutdown() {
         resourcesService.shutdown();
@@ -111,9 +99,25 @@ public class Engine {
     }
 
     public void setTargetFBO(FBO fbo) {
-        if(this.targetFBO != null){
+        if (this.targetFBO != null) {
             this.targetFBO.clear();
         }
         this.targetFBO = fbo;
+    }
+
+    public void prepare(int displayW, int displayH, BiConsumer<String, Boolean> onMessage) {
+        this.displayW = displayW;
+        this.displayH = displayH;
+        this.messageService.setMessageCallback(onMessage);
+        coreResourceRepository.initialize();
+        systemsService.initialize();
+    }
+
+    public int getDisplayH() {
+        return displayH;
+    }
+
+    public int getDisplayW() {
+        return displayW;
     }
 }

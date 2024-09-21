@@ -2,7 +2,7 @@ package com.pine.service.resource.primitives.mesh;
 
 import com.pine.service.resource.resource.ResourceCreationData;
 import com.pine.service.resource.resource.ResourceType;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 
 public final class MeshCreationData extends ResourceCreationData {
     private final float[] vertices;

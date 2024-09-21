@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
+import com.pine.PInject;
 import com.pine.component.InstancedMeshComponent;
-import com.pine.injection.EngineDependency;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ShaderService;
@@ -22,19 +22,19 @@ public class InstancedRenderingSystem extends AbstractSystem {
     private static final int BASE_ATTRIB_LOCATION = 3;
     private static final MeshRuntimeData DRAW_COMMAND = new MeshRuntimeData(MeshRenderingMode.TRIANGLES, 0);
 
-    @EngineDependency
+    @PInject
     public InstancedMeshComponent instancedMeshes;
 
-    @EngineDependency
+    @PInject
     public WorldService worldService;
 
-    @EngineDependency
+    @PInject
     public CoreResourceRepository coreResourceRepository;
 
-    @EngineDependency
+    @PInject
     public ShaderService shaderService;
 
-    @EngineDependency
+    @PInject
     public MeshService meshService;
 
     private UniformDTO baseModelMatrix;

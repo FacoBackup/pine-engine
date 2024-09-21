@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
@@ -10,7 +10,7 @@ import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
-@EngineInjectable
+@PBean
 public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, MeshCreationData> {
     private Mesh currentMesh;
     private MeshRuntimeData drawCommand;

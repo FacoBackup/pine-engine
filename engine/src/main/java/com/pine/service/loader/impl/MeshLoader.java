@@ -1,7 +1,7 @@
 package com.pine.service.loader.impl;
 
-import com.pine.injection.EngineDependency;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.service.loader.AbstractResourceLoader;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
@@ -12,7 +12,7 @@ import com.pine.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.resource.ResourceType;
-import jakarta.annotation.Nullable;
+import javax.annotation.Nullable;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@EngineInjectable
+@PBean
 public class MeshLoader extends AbstractResourceLoader {
 
-    @EngineDependency
+    @PInject
     public ResourceService resources;
 
     @Override

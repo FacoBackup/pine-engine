@@ -1,13 +1,13 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;
 
 import java.util.Set;
 
-@EngineInjectable
+@PBean
 public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> {
 
     @MutableField(label = "Time of day")

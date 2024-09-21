@@ -1,10 +1,10 @@
 package com.pine.service;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 
 import java.util.function.BiConsumer;
 
-@EngineInjectable
+@PBean
 public class MessageService {
     private BiConsumer<String, Boolean> messageCallback;
 

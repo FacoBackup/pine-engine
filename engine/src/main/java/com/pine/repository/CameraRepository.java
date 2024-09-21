@@ -3,7 +3,7 @@ package com.pine.repository;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.pine.Initializable;
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.service.camera.Camera;
 import com.pine.service.serialization.SerializableRepository;
 import org.joml.Quaternionf;
@@ -12,7 +12,7 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.Map;
 
-@EngineInjectable
+@PBean
 public class CameraRepository extends SerializableRepository implements Initializable {
     private static final Gson GSON = new Gson();
 

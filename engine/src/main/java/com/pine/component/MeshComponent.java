@@ -1,10 +1,10 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 
 import java.util.Set;
 
-@EngineInjectable
+@PBean
 public class MeshComponent extends AbstractComponent<MeshComponent> {
     public boolean castsShadows = true;
     public boolean contributeToProbes = true;

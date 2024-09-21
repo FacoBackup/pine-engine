@@ -1,6 +1,6 @@
 package com.pine.component;
 
-import com.pine.injection.EngineInjectable;
+import com.pine.PBean;
 import com.pine.service.resource.primitives.mesh.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@EngineInjectable
+@PBean
 public class InstancedMeshComponent extends AbstractComponent<InstancedMeshComponent> {
 
     public static class TransformationDTO {

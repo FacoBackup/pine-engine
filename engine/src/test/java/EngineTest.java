@@ -2,22 +2,20 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.pine.Engine;
-import com.pine.core.service.system.SystemService;
+import com.pine.service.system.SystemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.Objects;
 
-import static com.pine.core.service.serialization.SerializableRepository.CLASS_KEY;
-import static com.pine.core.service.serialization.SerializableRepository.DATA_KEY;
+import static com.pine.service.serialization.SerializableRepository.CLASS_KEY;
+import static com.pine.service.serialization.SerializableRepository.DATA_KEY;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class EngineTest {
     private static String serialized;
 

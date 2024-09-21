@@ -2,10 +2,10 @@ package com.pine.app.service;
 
 import com.google.gson.Gson;
 import com.pine.Loggable;
+import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.app.repository.ProjectRepository;
 import com.pine.common.fs.FSService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -13,17 +13,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@PBean
 public class ProjectService implements Loggable {
 
     private static final String CONFIG_NAME = "project.pine";
     private static final Gson GSON = new Gson();
 
-    @Autowired
-    private ProjectRepository repository;
+    @PInject
+    public ProjectRepository repository;
 
-    @Autowired
-    private FSService fsService;
+    @PInject
+    public FSService fsService;
 
     public ProjectDTO getCurrentProject() {
         return repository.getCurrentProject();
