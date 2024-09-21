@@ -1,0 +1,51 @@
+package com.pine.service.loader;
+
+import com.pine.injection.EngineDependency;
+import com.pine.injection.EngineInjectable;
+import com.pine.repository.ResourceLoaderRepository;
+import com.pine.service.MessageService;
+import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
+import com.pine.service.loader.impl.info.LoadRequest;
+import com.pine.service.loader.impl.response.AbstractLoaderResponse;
+import jakarta.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+
+@EngineInjectable
+public class ResourceLoaderService  {
+    @EngineDependency
+    public ResourceLoaderRepository repository;
+
+    @EngineDependency
+    public MessageService messageService;
+
+    @Nullable
+    public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
+        var dto = new LoadRequest(path, isStaticResource, extraInfo);
+        final String extension = path.substring(path.lastIndexOf(".") + 1);
+        for (AbstractResourceLoader i : repository.resourceLoaders) {
+            if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
+                return process(extraInfo, i, dto);
+            }
+        }
+        messageService.onMessage("No loader was found for extension " + path.split("\\.")[1], true);
+        return null;
+    }
+
+    @NotNull
+    private AbstractLoaderResponse process(@Nullable AbstractLoaderExtraInfo extraInfo, AbstractResourceLoader i, LoadRequest dto) {
+        AbstractLoaderResponse metadata;
+        if (extraInfo != null && extraInfo.getResourceType() == i.getResourceType()) {
+            metadata = i.load(dto, extraInfo);
+        } else {
+            metadata = i.load(dto, null);
+        }
+
+        if (metadata.isLoaded()) {
+            if (extraInfo == null || !extraInfo.isSilentOperation()) {
+                messageService.onMessage("File was successfully loaded", false);
+            }
+            repository.loadedResources.add(metadata);
+        }
+        return metadata;
+    }
+}

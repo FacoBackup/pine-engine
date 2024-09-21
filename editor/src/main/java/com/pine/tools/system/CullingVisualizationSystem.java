@@ -1,0 +1,25 @@
+package com.pine.tools.system;
+
+import com.pine.Engine;
+import com.pine.component.CullingComponent;
+import com.pine.injection.EngineDependency;
+import com.pine.service.resource.fbo.FBO;
+import com.pine.service.system.AbstractSystem;
+
+public class CullingVisualizationSystem extends AbstractSystem {
+    @EngineDependency
+    public Engine engine;
+
+    @EngineDependency
+    public CullingComponent cullingComponents;
+
+    @Override
+    protected FBO getTargetFBO() {
+        return engine.getTargetFBO();
+    }
+
+    @Override
+    protected void renderInternal() {
+        // TODO - RENDER CULLING BOXES
+    }
+}

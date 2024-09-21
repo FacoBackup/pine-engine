@@ -8,24 +8,21 @@
         <version>3.3.2</version>
         <relativePath/>
     </parent>
+
     <groupId>com.pine</groupId>
     <artifactId>pineengine</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>pine-engine</name>
     <description>pine-engine</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+
+    <modules>
+        <module>engine</module>
+        <module>editor</module>
+        <module>ui</module>
+        <module>common</module>
+    </modules>
+
     <properties>
         <java.version>22</java.version>
         <lwjgl.version>3.3.4</lwjgl.version>
