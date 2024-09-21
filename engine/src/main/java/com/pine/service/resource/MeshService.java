@@ -1,7 +1,7 @@
 package com.pine.service.resource;
 
 import com.pine.PBean;
-import com.pine.service.resource.primitives.mesh.Mesh;
+import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
@@ -11,26 +11,29 @@ import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, MeshCreationData> {
-    private Mesh currentMesh;
+public class MeshService extends AbstractResourceService<MeshPrimitiveResource, MeshRuntimeData, MeshCreationData> {
+    private MeshPrimitiveResource currentMesh;
     private MeshRuntimeData drawCommand;
     private boolean isInWireframeMode = false;
 
     @Override
-    protected void bindInternal(Mesh instance, MeshRuntimeData data) {
+    protected void bindInternal(MeshPrimitiveResource instance, MeshRuntimeData data) {
         currentMesh = instance;
         drawCommand = data;
         draw();
     }
 
     @Override
-    protected void bindInternal(Mesh instance) {
+    protected void bindInternal(MeshPrimitiveResource instance) {
         currentMesh = instance;
         drawCommand = null;
         draw();
     }
 
     private void draw() {
+        if(currentMesh == null){
+            return;
+        }
         if (isInWireframeMode && (drawCommand == null || drawCommand.mode != MeshRenderingMode.WIREFRAME)) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
             isInWireframeMode = false;
@@ -68,11 +71,11 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
 
     @Override
     public IResource addInternal(MeshCreationData data) {
-        return new Mesh(getId(), data);
+        return new MeshPrimitiveResource(getId(), data);
     }
 
     @Override
-    public void removeInternal(Mesh id) {
+    public void removeInternal(MeshPrimitiveResource id) {
         // TODO - remove last used and unbind if is bound for some reason (probably will never happen)
     }
 

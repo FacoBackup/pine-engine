@@ -3,7 +3,7 @@ package com.pine.service.resource.primitives.mesh;
 import com.pine.service.resource.resource.IResourceRuntimeData;
 
 public final class MeshRuntimeData implements IResourceRuntimeData {
-    public final MeshRenderingMode mode;
+    public MeshRenderingMode mode;
     public int instanceCount;
 
     public MeshRuntimeData(MeshRenderingMode mode) {

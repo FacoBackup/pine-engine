@@ -2,6 +2,7 @@ package com.pine.component;
 
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
+import org.joml.Vector3f;
 
 import java.util.Set;
 
@@ -10,10 +11,8 @@ public class CullingComponent extends AbstractComponent<CullingComponent> {
 
     @MutableField(label = "Max distance from camera")
     public long maxDistanceFromCamera = 300;
-    @MutableField(label = "Frustum culling box width")
-    public long frustumCullingBoxWidth = 300;
-    @MutableField(label = "Frustum culling box height")
-    public long frustumCullingBoxHeight = 300;
+    @MutableField(label = "Frustum box size")
+    public final Vector3f frustumBoxDimensions = new Vector3f();
 
     public CullingComponent(Integer entityId) {
         super(entityId);

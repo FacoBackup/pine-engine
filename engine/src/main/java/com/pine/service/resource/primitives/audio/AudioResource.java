@@ -3,8 +3,8 @@ package com.pine.service.resource.primitives.audio;
 import com.pine.service.resource.resource.AbstractResource;
 import com.pine.service.resource.resource.ResourceType;
 
-public class Audio extends AbstractResource {
-    public Audio(String id) {
+public class AudioResource extends AbstractResource {
+    public AudioResource(String id) {
         super(id);
         // TODO
     }

@@ -10,7 +10,7 @@ import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.primitives.GLSLType;
-import com.pine.service.resource.primitives.mesh.Mesh;
+import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;
@@ -38,9 +38,9 @@ public class CoreResourceRepository  {
     @PInject
     public ResourceLoaderService resourceLoader;
 
-    public Mesh planeMesh;
-    public Mesh quadMesh;
-    public Mesh cubeMesh;
+    public MeshPrimitiveResource planeMesh;
+    public MeshPrimitiveResource quadMesh;
+    public MeshPrimitiveResource cubeMesh;
 
     public Shader spriteShader;
     public Shader visibilityShader;
@@ -63,7 +63,7 @@ public class CoreResourceRepository  {
     public Shader upSamplingShader;
     public Shader atmosphereShader;
     public Shader terrainShader;
-    public Shader demoInstancedShader;
+    public Shader demoShader;
 
     public FBO finalFrame;
     public int finalFrameSampler;
@@ -108,16 +108,16 @@ public class CoreResourceRepository  {
     public void initialize() {
         var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         if (planeResponse != null) {
-            planeMesh = (Mesh) resources.getById(planeResponse.getMeshes().getFirst().id());
+            planeMesh = (MeshPrimitiveResource) resources.getById(planeResponse.getMeshes().getFirst().id());
             resources.makeStatic(planeMesh);
         }
 
         var cubeResponse = (MeshLoaderResponse) resourceLoader.load("cube.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         if (cubeResponse != null) {
-            cubeMesh = (Mesh) resources.getById(cubeResponse.getMeshes().getFirst().id());
+            cubeMesh = (MeshPrimitiveResource) resources.getById(cubeResponse.getMeshes().getFirst().id());
             resources.makeStatic(cubeMesh);
         }
-        quadMesh = (Mesh) resources.addResource(new MeshCreationData(
+        quadMesh = (MeshPrimitiveResource) resources.addResource(new MeshCreationData(
                 new float[]{-1, -1, (float) -4.371138828673793e-8, 1, -1, (float) -4.371138828673793e-8, -1, 1, 4.371138828673793e-8F, 1, 1, 4.371138828673793e-8F},
                 new int[]{0, 1, 3, 0, 3, 2},
                 null,
@@ -209,7 +209,7 @@ public class CoreResourceRepository  {
     }
 
     private void initializeShaders() {
-        demoInstancedShader = (Shader) resources.addResource(new ShaderCreationData("shaders/DEMO_INSTANCED.vert", "shaders/DEMO_INSTANCED.frag", "terrain").staticResource());
+        demoShader = (Shader) resources.addResource(new ShaderCreationData("shaders/DEMO.vert", "shaders/DEMO.frag", "terrain").staticResource());
         terrainShader = (Shader) resources.addResource(new ShaderCreationData("shaders/TERRAIN.vert", "shaders/TERRAIN.frag", "terrain").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite").staticResource());
         visibilityShader = (Shader) resources.addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility").staticResource());

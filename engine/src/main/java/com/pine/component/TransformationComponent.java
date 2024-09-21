@@ -1,6 +1,7 @@
 package com.pine.component;
 
 import com.pine.PBean;
+import com.pine.component.rendering.SimpleTransformation;
 import com.pine.inspection.MutableField;
 import org.joml.Vector3f;
 
@@ -18,6 +19,7 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
     public Vector3f rotationEuler = new Vector3f();
     @MutableField(label = "Pivot point")
     public Vector3f pivotPoint = new Vector3f();
+    private SimpleTransformation simple;
 
     public TransformationComponent(Integer entityId) {
         super(entityId);
@@ -35,5 +37,15 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
     @Override
     public String getComponentName() {
         return "Transformation";
+    }
+
+    public SimpleTransformation toSimpleTransformation() {
+        if (this.simple == null) {
+            simple = new SimpleTransformation();
+            simple.translation = translation;
+            simple.rotation = rotationEuler;
+            simple.scale = scaling;
+        }
+        return simple;
     }
 }
