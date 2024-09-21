@@ -17,7 +17,7 @@ public class UBOData {
     public UBOData(String name, GLSLType type, Integer dataLength) {
         this.name = name;
         this.type = type;
-        this.dataLength = dataLength;
+        this.dataLength = dataLength == null ? 0 : dataLength;
     }
 
     public String getName() {

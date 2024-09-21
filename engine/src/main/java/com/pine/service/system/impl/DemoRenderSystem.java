@@ -4,13 +4,15 @@ import com.pine.PInject;
 import com.pine.Engine;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.repository.RenderingRepository;
-import com.pine.repository.rendering.PrimitiveRenderingRequest;
+import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.MeshService;
+import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -27,17 +29,14 @@ public class DemoRenderSystem extends AbstractSystem {
     public ShaderService shaderService;
 
     @PInject
+    public SSBOService ssboService;
+
+    @PInject
     public MeshService meshService;
 
     @PInject
     public CoreResourceRepository coreResourceRepository;
-    private UniformDTO translation;
-    private UniformDTO rotation;
-    private UniformDTO scale;
-
-    private final FloatBuffer translationB = MemoryUtil.memAllocFloat(3);
-    private final FloatBuffer rotationB = MemoryUtil.memAllocFloat(3);
-    private final FloatBuffer scaleB = MemoryUtil.memAllocFloat(3);
+    private UniformDTO transformationIndex;
 
     @Override
     protected FBO getTargetFBO() {
@@ -47,28 +46,23 @@ public class DemoRenderSystem extends AbstractSystem {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        rotation = coreResourceRepository.demoShader.addUniformDeclaration("rotation", GLSLType.VEC_3);
-        scale = coreResourceRepository.demoShader.addUniformDeclaration("scale", GLSLType.VEC_3);
-        translation = coreResourceRepository.demoShader.addUniformDeclaration("translation", GLSLType.VEC_3);
+        transformationIndex = coreResourceRepository.demoShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
     }
 
     @Override
     protected void renderInternal() {
+        ssboService.bind(coreResourceRepository.transformationSSBO);
         shaderService.bind(coreResourceRepository.demoShader);
-        List<PrimitiveRenderingRequest> requests = renderingRepository.requests;
+        List<PrimitiveRenderRequest> requests = renderingRepository.requests;
+        int instancedOffset = 0;
         for (int i = 0; i < requests.size(); i++) {
             var request = requests.get(i);
-
-            request.transformation.translation.get(translationB);
-            request.transformation.rotation.get(rotationB);
-            request.transformation.scale.get(scaleB);
-
-            shaderService.bindUniform(translation, translationB);
-            shaderService.bindUniform(rotation, rotationB);
-            shaderService.bindUniform(scale, scaleB);
-
+            shaderService.bindUniform(transformationIndex, (i + instancedOffset) * 3);
             meshService.bind(request.primitive, request.runtimeData);
+            meshService.unbind();
+            instancedOffset += request.transformations.size();
         }
         shaderService.unbind();
+        ssboService.unbind();
     }
 }

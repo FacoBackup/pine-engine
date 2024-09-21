@@ -8,12 +8,12 @@ import org.lwjgl.opengl.GL46;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Shader extends AbstractResource {
+public class ShaderResource extends AbstractResource {
     private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;
 
-    public Shader(String id, ShaderCreationData dto) {
+    public ShaderResource(String id, ShaderCreationData dto) {
         super(id);
         try {
             program = GL46.glCreateProgram();
@@ -54,7 +54,7 @@ public class Shader extends AbstractResource {
 
         if (!compiled) {
             String error = GL46.glGetShaderInfoLog(shader);
-            System.err.println("Shader compilation error: " + error);
+            getLogger().error("Shader compilation error: {}", error);
         }
 
         return shader;

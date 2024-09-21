@@ -6,7 +6,7 @@ import com.pine.inspection.MutableField;
 import com.pine.inspection.NumericFieldRule;
 import com.pine.inspection.ResourceField;
 import com.pine.inspection.ResourceRef;
-import com.pine.repository.rendering.CompositeDrawDTO;
+import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.resource.ResourceType;
@@ -32,7 +32,7 @@ public class InstancedSceneComponent extends AbstractComponent<InstancedSceneCom
     public int numberOfInstances = 10;
 
     public transient MeshRuntimeData runtimeData;
-    public transient CompositeDrawDTO request;
+    public transient PrimitiveRenderRequest request;
 
     public InstancedSceneComponent(Integer entityId) {
         super(entityId);

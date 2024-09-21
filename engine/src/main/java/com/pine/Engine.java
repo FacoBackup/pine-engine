@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 
 @PBean
 public class Engine {
-    public static final String GLSL_VERSION = "#version 410";
+    public static final String GLSL_VERSION = "#version 430";
     public static final int MAX_LIGHTS = 310;
 
     private int displayW;

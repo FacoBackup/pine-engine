@@ -13,7 +13,6 @@ import java.nio.FloatBuffer;
 
 @PBean
 public class SSBOService extends AbstractResourceService<ShaderStorageBufferObject, EmptyRuntimeData, SSBOCreationData> {
-    private ShaderStorageBufferObject currentSSBO;
 
     @Override
     protected void bindInternal(ShaderStorageBufferObject instance, EmptyRuntimeData data) {
@@ -22,8 +21,7 @@ public class SSBOService extends AbstractResourceService<ShaderStorageBufferObje
 
     @Override
     protected void bindInternal(ShaderStorageBufferObject instance) {
-        currentSSBO = instance;
-        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, currentSSBO.getBuffer());
+        GL46.glBindBufferBase(GL46.GL_SHADER_STORAGE_BUFFER, instance.getBindingPoint(), instance.getBuffer());
     }
 
     @Override
@@ -46,9 +44,8 @@ public class SSBOService extends AbstractResourceService<ShaderStorageBufferObje
         return ResourceType.SSBO;
     }
 
-    public void updateBuffer(ShaderStorageBufferObject ubo, FloatBuffer data, int offset) {
-        currentSSBO = ubo;
-        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, currentSSBO.getBuffer());
+    public void updateBuffer(ShaderStorageBufferObject ssbo, FloatBuffer data, int offset) {
+        bindInternal(ssbo);
         GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, data);
         unbind();
     }

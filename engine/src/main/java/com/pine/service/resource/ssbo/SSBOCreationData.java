@@ -1,22 +1,28 @@
 package com.pine.service.resource.ssbo;
 
-import com.pine.service.resource.resource.ResourceCreationData;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.service.resource.ubo.UBOCreationData;
-import com.pine.service.resource.ubo.UBOData;
-
-import java.util.List;
-import java.util.Objects;
 
 public final class SSBOCreationData extends UBOCreationData {
     private final int bindingPoint;
+    private final long expectedSize;
 
-    public SSBOCreationData(String blockName, int bindingPoint, SSBOData... data) {
-        super(blockName, data);
+    public SSBOCreationData(String blockName, int bindingPoint, long expectedSize) {
+        super(blockName);
         this.bindingPoint = bindingPoint;
+        this.expectedSize = expectedSize;
     }
 
     public int getBindingPoint() {
         return bindingPoint;
+    }
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.SSBO;
+    }
+
+    public long getExpectedSize() {
+        return expectedSize;
     }
 }

@@ -3,7 +3,7 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.component.rendering.CompositeScene;
 import com.pine.inspection.MutableField;
-import com.pine.repository.rendering.PrimitiveRenderingRequest;
+import com.pine.repository.rendering.PrimitiveRenderRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.Set;
 public class SceneComponent extends AbstractComponent<SceneComponent> {
     @MutableField(label = "Scene members")
     public final CompositeScene compositeScene = new CompositeScene(false);
-    public final transient List<PrimitiveRenderingRequest> requests = new ArrayList<>();
+    public final transient List<PrimitiveRenderRequest> requests = new ArrayList<>();
 
     public SceneComponent(Integer entityId) {
         super(entityId);

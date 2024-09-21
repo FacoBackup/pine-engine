@@ -13,6 +13,4 @@ public class ScenePrimitive {
     public int maxDistanceFromCamera = 300;
     public int frustumCullingBoxWidth = 1;
     public int frustumCullingBoxHeight = 1;
-
-    public boolean isCulled = false;
 }

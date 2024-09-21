@@ -12,8 +12,10 @@ import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
-import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.ShaderResource;
 import com.pine.service.resource.shader.ShaderCreationData;
+import com.pine.service.resource.ssbo.SSBOCreationData;
+import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import com.pine.service.resource.ubo.UniformBufferObject;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
@@ -28,7 +30,11 @@ import java.util.List;
 import static com.pine.Engine.MAX_LIGHTS;
 
 @PBean
-public class CoreResourceRepository  {
+public class CoreResourceRepository {
+    public static final int TRANSFORMATION_PER_ENTITY = 9;
+    private static final int MAX_ENTITIES = 2000;
+    private static final int BUFFER_SIZE = TRANSFORMATION_PER_ENTITY * MAX_ENTITIES;
+
     @PInject
     public Engine engine;
     @PInject
@@ -42,28 +48,28 @@ public class CoreResourceRepository  {
     public MeshPrimitiveResource quadMesh;
     public MeshPrimitiveResource cubeMesh;
 
-    public Shader spriteShader;
-    public Shader visibilityShader;
-    public Shader toScreenShader;
-    public Shader downscaleShader;
-    public Shader bilateralBlurShader;
-    public Shader bokehShader;
-    public Shader irradianceShader;
-    public Shader prefilteredShader;
-    public Shader ssgiShader;
-    public Shader mbShader;
-    public Shader ssaoShader;
-    public Shader boxBlurShader;
-    public Shader directShadowsShader;
-    public Shader omniDirectShadowsShader;
-    public Shader compositionShader;
-    public Shader bloomShader;
-    public Shader lensShader;
-    public Shader gaussianShader;
-    public Shader upSamplingShader;
-    public Shader atmosphereShader;
-    public Shader terrainShader;
-    public Shader demoShader;
+    public ShaderResource spriteShader;
+    public ShaderResource visibilityShader;
+    public ShaderResource toScreenShader;
+    public ShaderResource downscaleShader;
+    public ShaderResource bilateralBlurShader;
+    public ShaderResource bokehShader;
+    public ShaderResource irradianceShader;
+    public ShaderResource prefilteredShader;
+    public ShaderResource ssgiShader;
+    public ShaderResource mbShader;
+    public ShaderResource ssaoShader;
+    public ShaderResource boxBlurShader;
+    public ShaderResource directShadowsShader;
+    public ShaderResource omniDirectShadowsShader;
+    public ShaderResource compositionShader;
+    public ShaderResource bloomShader;
+    public ShaderResource lensShader;
+    public ShaderResource gaussianShader;
+    public ShaderResource upSamplingShader;
+    public ShaderResource atmosphereShader;
+    public ShaderResource terrainShader;
+    public ShaderResource demoShader;
 
     public FBO finalFrame;
     public int finalFrameSampler;
@@ -88,6 +94,8 @@ public class CoreResourceRepository  {
     public final List<FBO> upscaleBloom = new ArrayList<>();
     public final List<FBO> downscaleBloom = new ArrayList<>();
 
+    public ShaderStorageBufferObject transformationSSBO;
+
     public UniformBufferObject cameraViewUBO;
     public UniformBufferObject frameCompositionUBO;
     public UniformBufferObject lensPostProcessingUBO;
@@ -96,6 +104,7 @@ public class CoreResourceRepository  {
     public UniformBufferObject lightsUBO;
     public UniformBufferObject cameraProjectionUBO;
 
+    public final FloatBuffer transformationSSBOState = MemoryUtil.memAllocFloat(BUFFER_SIZE);
     public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(52);
     public final FloatBuffer cameraProjectionUBOState = MemoryUtil.memAllocFloat(35);
     public final FloatBuffer frameCompositionUBOState = MemoryUtil.memAllocFloat(1);
@@ -126,7 +135,19 @@ public class CoreResourceRepository  {
 
         initializeFBOs();
         initializeUBOs();
+        initializeSSBOs();
         initializeShaders();
+    }
+
+    private void initializeSSBOs() {
+        for (int i = 0; i < BUFFER_SIZE; i++) {
+            transformationSSBOState.put(i, 0);
+        }
+        transformationSSBO = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(
+                CoreUBOName.CAMERA_VIEW.getBlockName(),
+                10,
+                (long) BUFFER_SIZE * GLSLType.FLOAT.getSize()
+        ));
     }
 
     private void initializeUBOs() {
@@ -209,28 +230,28 @@ public class CoreResourceRepository  {
     }
 
     private void initializeShaders() {
-        demoShader = (Shader) resources.addResource(new ShaderCreationData("shaders/DEMO.vert", "shaders/DEMO.frag", "terrain").staticResource());
-        terrainShader = (Shader) resources.addResource(new ShaderCreationData("shaders/TERRAIN.vert", "shaders/TERRAIN.frag", "terrain").staticResource());
-        spriteShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite").staticResource());
-        visibilityShader = (Shader) resources.addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility").staticResource());
-        toScreenShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen").staticResource());
-        downscaleShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILINEAR_DOWNSCALE.glsl", "downscale").staticResource());
-        bilateralBlurShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILATERAL_BLUR.glsl", "bilateralBlur").staticResource());
-        bokehShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOKEH.frag", "bokeh").staticResource());
-        irradianceShader = (Shader) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/IRRADIANCE_MAP.frag", "irradiance").staticResource());
-        prefilteredShader = (Shader) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/PREFILTERED_MAP.frag", "prefiltered").staticResource());
-        ssgiShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSGI.frag", "ssgi").staticResource());
-        mbShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/MOTION_BLUR.frag", "mb").staticResource());
-        ssaoShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSAO.frag", "ssao").staticResource());
-        boxBlurShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOX-BLUR.frag", "boxBlur").staticResource());
-        directShadowsShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag", "directShadows").staticResource());
-        omniDirectShadowsShader = (Shader) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag", "omniDirectShadows").staticResource());
-        compositionShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/FRAME_COMPOSITION.frag", "composition").staticResource());
-        bloomShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BRIGHTNESS_FILTER.frag", "bloom").staticResource());
-        lensShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/LENS_POST_PROCESSING.frag", "lens").staticResource());
-        gaussianShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/GAUSSIAN.frag", "gaussian").staticResource());
-        upSamplingShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/UPSAMPLE_TENT.glsl", "upSampling").staticResource());
-        atmosphereShader = (Shader) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag", "atmosphere").staticResource());
+        demoShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/DEMO.vert", "shaders/DEMO.frag", "terrain").staticResource());
+        terrainShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/TERRAIN.vert", "shaders/TERRAIN.frag", "terrain").staticResource());
+        spriteShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/SPRITE.vert", "shaders/SPRITE.frag", "sprite").staticResource());
+        visibilityShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/V_BUFFER.vert", "shaders/V_BUFFER.frag", "visibility").staticResource());
+        toScreenShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/TO_SCREEN.frag", "toScreen").staticResource());
+        downscaleShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILINEAR_DOWNSCALE.glsl", "downscale").staticResource());
+        bilateralBlurShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BILATERAL_BLUR.glsl", "bilateralBlur").staticResource());
+        bokehShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOKEH.frag", "bokeh").staticResource());
+        irradianceShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/IRRADIANCE_MAP.frag", "irradiance").staticResource());
+        prefilteredShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/CUBEMAP.vert", "shaders/PREFILTERED_MAP.frag", "prefiltered").staticResource());
+        ssgiShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSGI.frag", "ssgi").staticResource());
+        mbShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/MOTION_BLUR.frag", "mb").staticResource());
+        ssaoShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/SSAO.frag", "ssao").staticResource());
+        boxBlurShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BOX-BLUR.frag", "boxBlur").staticResource());
+        directShadowsShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/DIRECTIONAL_SHADOWS.frag", "directShadows").staticResource());
+        omniDirectShadowsShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/SHADOWS.vert", "shaders/OMNIDIRECTIONAL_SHADOWS.frag", "omniDirectShadows").staticResource());
+        compositionShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/FRAME_COMPOSITION.frag", "composition").staticResource());
+        bloomShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/BRIGHTNESS_FILTER.frag", "bloom").staticResource());
+        lensShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/LENS_POST_PROCESSING.frag", "lens").staticResource());
+        gaussianShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/GAUSSIAN.frag", "gaussian").staticResource());
+        upSamplingShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/UPSAMPLE_TENT.glsl", "upSampling").staticResource());
+        atmosphereShader = (ShaderResource) resources.addResource(new ShaderCreationData("shaders/QUAD.vert", "shaders/ATMOSPHERE.frag", "atmosphere").staticResource());
     }
 
     private void initializeFBOs() {

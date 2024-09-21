@@ -1,12 +1,12 @@
 package com.pine.repository;
 
 import com.pine.PBean;
-import com.pine.repository.rendering.PrimitiveRenderingRequest;
+import com.pine.repository.rendering.PrimitiveRenderRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @PBean
 public class RenderingRepository {
-    public List<PrimitiveRenderingRequest> requests = new ArrayList<>();
+    public List<PrimitiveRenderRequest> requests = new ArrayList<>();
 }

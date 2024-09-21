@@ -17,41 +17,23 @@ public class ShaderStorageBufferObject extends AbstractResource {
         return ResourceType.SSBO;
     }
 
-    private final List<SSBOItem> items = new ArrayList<>();
-    private final List<String> keys = new ArrayList<>();
+    private final int bindingPoint;
     private final int buffer;
-    private final String blockName;
 
     public ShaderStorageBufferObject(String id, SSBOCreationData dto) {
         super(id);
-        int bufferSize = UBOService.calculateAllocation(dto.data());
-        for (int i = 0; i < dto.data().size(); i++) {
-            UBOData data = dto.data().get(i);
-            items.add(new SSBOItem(data.getOffset(), data.getDataSize(), data.getChunkSize()));
-            keys.add(data.getName());
-        }
-
-        this.blockName = dto.blockName();
         buffer = GL46.glCreateBuffers();
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, buffer);
-        GL46.glBufferData(GL46.GL_SHADER_STORAGE_BUFFER, bufferSize, GL46.GL_DYNAMIC_COPY);
-        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, 0);
-        GL46.glBindBufferBase(GL46.GL_SHADER_STORAGE_BUFFER, dto.getBindingPoint(), buffer);
+        GL46.glBufferData(GL46.GL_SHADER_STORAGE_BUFFER, dto.getExpectedSize(), GL46.GL_DYNAMIC_COPY);
+        GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, GL46.GL_NONE);
+        bindingPoint = dto.getBindingPoint();
     }
 
     public int getBuffer() {
         return buffer;
     }
 
-    public List<SSBOItem> getItems() {
-        return items;
-    }
-
-    public List<String> getKeys() {
-        return keys;
-    }
-
-    public String getBlockName() {
-        return blockName;
+    public int getBindingPoint() {
+        return bindingPoint;
     }
 }

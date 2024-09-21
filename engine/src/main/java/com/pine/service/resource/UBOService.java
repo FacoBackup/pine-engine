@@ -65,7 +65,8 @@ public class UBOService extends AbstractResourceService<UniformBufferObject, Emp
     }
 
     public static int calculateAllocation(List<UBOData> dataArray) {
-        int chunk = 16;
+        final int CHUNK_SIZE = 16;
+        int chunk = CHUNK_SIZE;
         int offset = 0;
         int[] size;
 
@@ -75,25 +76,24 @@ public class UBOService extends AbstractResourceService<UniformBufferObject, Emp
             if (data.getDataLength() == null || data.getDataLength() == 0) {
                 size = data.getType().getSizes();
             } else {
-                size = new int[]{data.getDataLength() * 16 * 4, data.getDataLength() * 16 * 4};
+                int maxSize = data.getDataLength() * CHUNK_SIZE * 4;
+                size = new int[]{maxSize, maxSize};
             }
 
             int tsize = chunk - size[0];
 
-            if (tsize < 0 && chunk < 16) {
+            if (tsize < 0 && chunk < CHUNK_SIZE) {
                 offset += chunk;
-                if (i > 0) {
-                    UBOData current = dataArray.get(i - 1);
-                    current.setChunkSize(current.getChunkSize() + chunk);
-                }
-                chunk = 16;
+                UBOData current = dataArray.get(i - 1);
+                current.setChunkSize(current.getChunkSize() + chunk);
+                chunk = CHUNK_SIZE;
             } else if (tsize == 0) {
-                if (data.getType() == GLSLType.VEC_3 && chunk == 16) {
+                if (data.getType() == GLSLType.VEC_3 && chunk == CHUNK_SIZE) {
                     chunk -= size[1];
                 } else {
-                    chunk = 16;
+                    chunk = CHUNK_SIZE;
                 }
-            } else if (tsize >= 0 || chunk != 16) {
+            } else if (tsize >= 0 || chunk != CHUNK_SIZE) {
                 chunk -= size[1];
             }
 

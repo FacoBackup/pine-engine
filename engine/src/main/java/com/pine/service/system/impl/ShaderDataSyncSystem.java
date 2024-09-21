@@ -20,6 +20,8 @@ public class ShaderDataSyncSystem extends AbstractSystem {
 
     @Override
     protected void renderInternal() {
+        ssboService.updateBuffer(resources.transformationSSBO, resources.transformationSSBOState, 0);
+
         uboService.updateBuffer(resources.cameraViewUBO, resources.cameraViewUBOState, 0);
         uboService.updateBuffer(resources.frameCompositionUBO, resources.frameCompositionUBOState, 0);
         uboService.updateBuffer(resources.lensPostProcessingUBO, resources.lensPostProcessingUBOState, 0);

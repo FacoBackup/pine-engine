@@ -8,7 +8,7 @@ import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.ShaderResource;
 import com.pine.service.resource.shader.ShaderCreationData;
 import com.pine.service.resource.shader.ShaderRuntimeData;
 import com.pine.service.resource.shader.UniformDTO;
@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 import static com.pine.Engine.GLSL_VERSION;
 
 @PBean
-public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
+public class ShaderService extends AbstractResourceService<ShaderResource, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
-    private Shader currentShader;
+    private ShaderResource currentShader;
 
     @PInject
     public UBOService uboService;
@@ -35,7 +35,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     public CoreResourceRepository coreResources;
 
     @Override
-    protected void bindInternal(Shader instance, ShaderRuntimeData data) {
+    protected void bindInternal(ShaderResource instance, ShaderRuntimeData data) {
         bindProgram(instance);
         var uniforms = instance.getUniforms();
         for (var entry : data.getUniformData().entrySet()) {
@@ -44,7 +44,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     }
 
     @Override
-    protected void bindInternal(Shader instance) {
+    protected void bindInternal(ShaderResource instance) {
         bindProgram(instance);
     }
 
@@ -64,8 +64,8 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         return create(getId(), data);
     }
 
-    private Shader create(String id, ShaderCreationData data) {
-        var instance = new Shader(id, data);
+    private ShaderResource create(String id, ShaderCreationData data) {
+        var instance = new ShaderResource(id, data);
         if (instance.isValid()) {
             if (data.fragment().contains(CoreUBOName.CAMERA_VIEW.getBlockName()) || data.vertex().contains(CoreUBOName.CAMERA_VIEW.getBlockName()))
                 uboService.bindWithShader(coreResources.cameraViewUBO, instance.getProgram());
@@ -112,7 +112,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     }
 
     @Override
-    protected void removeInternal(Shader shader) {
+    protected void removeInternal(ShaderResource shader) {
         GL46.glDeleteProgram(shader.getProgram());
         if (shader == currentShader) {
             currentShader = null;
@@ -124,7 +124,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         return ResourceType.SHADER;
     }
 
-    public void bindProgram(Shader shader) {
+    public void bindProgram(ShaderResource shader) {
         if (currentShader == shader) {
             return;
         }

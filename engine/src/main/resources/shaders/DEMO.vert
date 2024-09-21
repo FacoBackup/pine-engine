@@ -1,19 +1,25 @@
 layout(location = 0) in vec3 position;
 
+#include "./TRANSFORMATION_SSBO.glsl"
+
 #include "./CAMERA_VIEW_INFO.glsl"
 
-uniform vec3 translation;
-uniform vec3 rotation;
-uniform vec3 scale;
+uniform int transformationIndex;
 
-mat4 createModelMatrix(vec3 translation, vec3 scale, vec3 rotation) ;
+mat4 createModelMatrix(vec3 translation, vec3 scale, vec3 rotation);
+
+out float instance;
 
 void main(){
-
-    gl_Position = viewProjection * createModelMatrix(translation, scale, rotation) * vec4(position, 1.0);
+    int actualIndex = (transformationIndex + gl_InstanceID) * 9;
+    instance = float(gl_InstanceID);
+    vec3 translation = vec3(transformation[actualIndex], transformation[actualIndex + 1], transformation[actualIndex + 2]);
+    vec3 rotation = vec3(transformation[actualIndex + 3], transformation[actualIndex + 4], transformation[actualIndex + 5]);
+    vec3 scale  = vec3(transformation[actualIndex + 6], transformation[actualIndex + 7], transformation[actualIndex + 8]);
+    gl_Position = viewProjection * createModelMatrix(translation, rotation, scale) * vec4(position, 1.0);
 }
 
-mat4 createModelMatrix(vec3 translation, vec3 scale, vec3 rotation) {
+mat4 createModelMatrix(vec3 translation, vec3 rotation, vec3 scale) {
     // Create translation matrix
     mat4 translationMatrix = mat4(1.0);
     translationMatrix[3] = vec4(translation, 1.0);

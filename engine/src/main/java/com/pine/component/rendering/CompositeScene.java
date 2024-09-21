@@ -26,7 +26,7 @@ public class CompositeScene {
             newScene.contributeToProbes = comp.contributeToProbes;
             newScene.primitive = comp.primitive;
             float offset = primitives.size() + 1;
-            newScene.transformation.translation.set(offset, offset, offset);
+            newScene.transformation.translation.set(offset * 2, offset * 2, 0.);
         }
         primitives.add(newScene);
     }
