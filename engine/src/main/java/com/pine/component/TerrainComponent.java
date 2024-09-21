@@ -4,7 +4,7 @@ import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceField;
 import com.pine.inspection.ResourceRef;
-import com.pine.repository.rendering.RuntimeDrawDTO;
+import com.pine.repository.rendering.PrimitiveRenderingRequest;
 import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.resource.ResourceType;
@@ -25,7 +25,7 @@ public class TerrainComponent extends AbstractComponent<TerrainComponent> {
     @MutableField(label = "Height Scale")
     public float heightScale = 1;
 
-    public transient RuntimeDrawDTO request;
+    public transient PrimitiveRenderingRequest request;
 
     public TerrainComponent(Integer entityId) {
         super(entityId);

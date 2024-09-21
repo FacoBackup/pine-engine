@@ -7,7 +7,7 @@ import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.CompositeDrawDTO;
-import com.pine.repository.rendering.RuntimeDrawDTO;
+import com.pine.repository.rendering.PrimitiveRenderingRequest;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
@@ -15,7 +15,6 @@ import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.world.WorldService;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class RenderingTask extends AbstractTask {
     @PInject
     public RenderingRepository renderingRepository;
 
-    private List<RuntimeDrawDTO> temp = new ArrayList<>();
+    private List<PrimitiveRenderingRequest> temp = new ArrayList<>();
     private final Vector3f distanceAux = new Vector3f();
     private final Vector3f auxCubeMax = new Vector3f();
     private final Vector3f auxCubeMin = new Vector3f();
@@ -75,7 +74,7 @@ public class RenderingTask extends AbstractTask {
             prepareTerrain(scene);
         }
 
-        List<RuntimeDrawDTO> aux = renderingRepository.requests;
+        List<PrimitiveRenderingRequest> aux = renderingRepository.requests;
         renderingRepository.requests = temp;
         temp = aux;
     }
@@ -90,7 +89,7 @@ public class RenderingTask extends AbstractTask {
                 primitive.transformation.parentTransformationId = scene.getEntityId();
                 var mesh = primitive.primitive.resource = primitive.primitive.resource == null ? (MeshPrimitiveResource) resourceService.getOrCreateResource(primitive.primitive.id) : primitive.primitive.resource;
                 if (mesh != null) {
-                    scene.requests.add(new RuntimeDrawDTO(mesh, DEFAULT_RENDER_REQUEST, primitive.transformation));
+                    scene.requests.add(new PrimitiveRenderingRequest(mesh, DEFAULT_RENDER_REQUEST, primitive.transformation));
                 }
             }
         }
@@ -121,7 +120,7 @@ public class RenderingTask extends AbstractTask {
                 scene.meshInstance = meshService.createTerrain(scene.heightMapTexture.id);
             }
             if (scene.meshInstance != null) {
-                scene.request = new RuntimeDrawDTO(scene.meshInstance, DEFAULT_RENDER_REQUEST, transformation.toSimpleTransformation());
+                scene.request = new PrimitiveRenderingRequest(scene.meshInstance, DEFAULT_RENDER_REQUEST, transformation.toSimpleTransformation());
             }
         }
         temp.add(scene.request);

@@ -4,7 +4,7 @@ import com.pine.PInject;
 import com.pine.Engine;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.repository.RenderingRepository;
-import com.pine.repository.rendering.RuntimeDrawDTO;
+import com.pine.repository.rendering.PrimitiveRenderingRequest;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FBO;
@@ -55,7 +55,7 @@ public class DemoRenderSystem extends AbstractSystem {
     @Override
     protected void renderInternal() {
         shaderService.bind(coreResourceRepository.demoShader);
-        List<RuntimeDrawDTO> requests = renderingRepository.requests;
+        List<PrimitiveRenderingRequest> requests = renderingRepository.requests;
         for (int i = 0; i < requests.size(); i++) {
             var request = requests.get(i);
 
