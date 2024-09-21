@@ -27,7 +27,8 @@ public class HierarchyRequest extends AbstractRequest {
         }
         Integer currentParent = repository.childParent.get(child);
         if (currentParent != null) {
-            repository.parentChildren.get(currentParent).remove(child);
+            LinkedList<Integer> previousParent = repository.parentChildren.get(currentParent);
+            previousParent.remove((Integer) child);
         }
 
         LinkedList<Integer> parentList = repository.parentChildren.getOrDefault(parent, new LinkedList<>());

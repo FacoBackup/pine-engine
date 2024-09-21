@@ -45,10 +45,10 @@ public class LightComponent extends AbstractComponent<LightComponent> {
     public int intensity = 1;
 
     @EnumSelection(enumType = LightType.class)
-    @MutableField(label = "Light type")
+    @MutableField(label = "Type")
     public LightType type = LightType.DIRECTIONAL;
 
-    @MutableField(label = "Area light radius")
+    @MutableField(label = "Color")
     public final Color color = new Color();
 
     public final transient Vector2f atlasFace = new Vector2f();

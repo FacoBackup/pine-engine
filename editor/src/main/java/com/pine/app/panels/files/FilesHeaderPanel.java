@@ -15,7 +15,8 @@ import java.io.File;
 public class FilesHeaderPanel extends AbstractPanel {
     @PInject
     public FSService fsService;
-    private Engine engine;
+    @PInject
+    public Engine engine;
     private ButtonView importFile;
     private FilesContext filesContext;
 
@@ -35,7 +36,6 @@ public class FilesHeaderPanel extends AbstractPanel {
     public void onInitialize() {
         super.onInitialize();
         filesContext = (FilesContext) getContext();
-        engine = ((EditorWindow) document.getWindow()).getEngine();
         importFile = (ButtonView) document.getElementById("import");
         var addDir = (ButtonView) document.getElementById("addDir");
         var goUp = (ButtonView) document.getElementById("goUp");

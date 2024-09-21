@@ -5,10 +5,10 @@ import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 
 public class AddComponentRequest extends AbstractRequest {
-    private final Class<EntityComponent> componentClass;
+    private final Class<? extends EntityComponent> componentClass;
     private final int entityId;
 
-    public AddComponentRequest(Class<EntityComponent> componentClass, int entityId) {
+    public AddComponentRequest(Class<? extends EntityComponent> componentClass, int entityId) {
         this.componentClass = componentClass;
         this.entityId = entityId;
     }

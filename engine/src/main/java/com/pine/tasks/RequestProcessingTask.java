@@ -53,10 +53,10 @@ public class RequestProcessingTask extends AbstractTask {
     }
 
     private void updateTree(Integer entityId, Vector<AbstractTree<MetadataComponent, EntityComponent>> branch) {
-        LinkedList<Integer> children = worldRepository.parentChildren.get(entityId);
         WorldHierarchyTree current = new WorldHierarchyTree(world.getComponent(entityId, MetadataComponent.class));
         branch.add(current);
         current.extraData.addAll(worldRepository.entities.get(entityId).values());
+        LinkedList<Integer> children = worldRepository.parentChildren.get(entityId);
         if (children != null) {
             for (Integer childId : children) {
                 updateTree(childId, current.branches);

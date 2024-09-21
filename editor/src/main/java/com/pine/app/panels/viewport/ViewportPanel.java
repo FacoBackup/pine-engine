@@ -1,6 +1,7 @@
 package com.pine.app.panels.viewport;
 
 import com.pine.Engine;
+import com.pine.PInject;
 import com.pine.app.EditorWindow;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.fbo.FBO;
@@ -10,14 +11,15 @@ import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 
 public class ViewportPanel extends AbstractWindowPanel {
+    @PInject
+    public Engine engine;
+
     private RuntimeRepository repo;
-    private Engine engine;
     private FBO fbo;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        engine = ((EditorWindow) document.getWindow()).getEngine();
         repo = engine.getRuntimeRepository();
         padding.x = 0;
         padding.y = 0;
