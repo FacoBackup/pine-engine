@@ -1,8 +1,8 @@
 package com.pine.repository.rendering;
 
 import com.pine.component.rendering.SimpleTransformation;
-import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
+import com.pine.service.resource.primitives.mesh.Primitive;
 
 import java.util.Collections;
 import java.util.List;

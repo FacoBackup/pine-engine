@@ -1,10 +1,7 @@
 package com.pine;
 
 import com.pine.injection.EngineExternalModule;
-import com.pine.repository.ClockRepository;
-import com.pine.repository.CoreResourceRepository;
-import com.pine.repository.ModulesService;
-import com.pine.repository.RuntimeRepository;
+import com.pine.repository.*;
 import com.pine.service.MessageService;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.resource.ResourceService;
@@ -29,36 +26,41 @@ public class Engine {
 
     @PInject
     public ModulesService modules;
-
     @PInject
     public ClockRepository clock;
-
-    @PInject
-    public RuntimeRepository runtimeRepository;
-
-    @PInject
-    public ResourceService resourceService;
-
     @PInject
     public SystemService systemsService;
-
     @PInject
     public ResourceService resourcesService;
-
-    @PInject
-    public ResourceLoaderService resourceLoaderService;
-
-    @PInject
-    public CoreResourceRepository coreResourceRepository;
-
-    @PInject
-    public WorldService worldService;
-
     @PInject
     public MessageService messageService;
-
     @PInject
     public RequestProcessingTask requestTask;
+    @PInject
+    public CoreShaderRepository shaderRepository;
+    @PInject
+    public CoreSSBORepository ssboRepository;
+    @PInject
+    public CoreUBORepository uboRepository;
+    @PInject
+    public CoreFBORepository fboRepository;
+    @PInject
+    public CoreComputeRepository computeRepository;
+    @PInject
+    public CorePrimitiveRepository primitiveRepository;
+
+    public void prepare(int displayW, int displayH, BiConsumer<String, Boolean> onMessage) {
+        this.displayW = displayW;
+        this.displayH = displayH;
+        this.messageService.setMessageCallback(onMessage);
+        ssboRepository.initialize();
+        uboRepository.initialize();
+        fboRepository.initialize();
+        shaderRepository.initialize();
+        computeRepository.initialize();
+        primitiveRepository.initialize();
+        systemsService.initialize();
+    }
 
     public void render() {
         clock.tick();
@@ -70,18 +72,6 @@ public class Engine {
         resourcesService.shutdown();
     }
 
-    public RuntimeRepository getRuntimeRepository() {
-        return runtimeRepository;
-    }
-
-    public ResourceLoaderService getResourceLoaderService() {
-        return resourceLoaderService;
-    }
-
-    public WorldService getWorld() {
-        return worldService;
-    }
-
     public void addModules(List<EngineExternalModule> modules) {
         this.modules.addModules(modules);
     }
@@ -90,13 +80,6 @@ public class Engine {
         requestTask.addRequest(request);
     }
 
-    public ResourceService getResourceService() {
-        return resourceService;
-    }
-
-    public FrameBufferObject getTargetFBO() {
-        return targetFBO;
-    }
 
     public void setTargetFBO(FrameBufferObject fbo) {
         if (this.targetFBO != null) {
@@ -105,12 +88,8 @@ public class Engine {
         this.targetFBO = fbo;
     }
 
-    public void prepare(int displayW, int displayH, BiConsumer<String, Boolean> onMessage) {
-        this.displayW = displayW;
-        this.displayH = displayH;
-        this.messageService.setMessageCallback(onMessage);
-        coreResourceRepository.initialize();
-        systemsService.initialize();
+    public FrameBufferObject getTargetFBO() {
+        return targetFBO;
     }
 
     public int getDisplayH() {

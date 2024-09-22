@@ -5,14 +5,14 @@ import com.pine.PInject;
 import com.pine.component.*;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.CoreResourceRepository;
+import com.pine.repository.CoreSSBORepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ResourceService;
-import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
+import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.world.WorldService;
 import org.joml.Vector3f;
 
@@ -53,7 +53,7 @@ public class RenderingTask extends AbstractTask {
     public RenderingRepository renderingRepository;
 
     @PInject
-    public CoreResourceRepository coreResourceRepository;
+    public CoreSSBORepository ssboRepository;
 
     private List<PrimitiveRenderRequest> temp = new ArrayList<>();
     private final Vector3f distanceAux = new Vector3f();
@@ -103,9 +103,9 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void fillTransformations(Vector3f transformation) {
-        coreResourceRepository.transformationSSBOState.put(offset, transformation.x);
-        coreResourceRepository.transformationSSBOState.put(offset + 1, transformation.y);
-        coreResourceRepository.transformationSSBOState.put(offset + 2, transformation.z);
+        ssboRepository.transformationSSBOState.put(offset, transformation.x);
+        ssboRepository.transformationSSBOState.put(offset + 1, transformation.y);
+        ssboRepository.transformationSSBOState.put(offset + 2, transformation.z);
         offset += 3;
     }
 

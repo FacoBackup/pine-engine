@@ -3,7 +3,7 @@ package com.pine.tools.system;
 import com.pine.Engine;
 import com.pine.EngineUtils;
 import com.pine.PInject;
-import com.pine.repository.CoreResourceRepository;
+import com.pine.repository.CoreFBORepository;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -22,15 +22,6 @@ public class GridSystem extends AbstractSystem {
 
     @PInject
     public ToolsConfigurationModule engineConfig;
-
-    @PInject
-    public ShaderService shaderService;
-
-    @PInject
-    public MeshService meshService;
-
-    @PInject
-    public CoreResourceRepository coreResourceRepository;
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
@@ -65,9 +56,9 @@ public class GridSystem extends AbstractSystem {
         buffer[3] = engineConfig.gridOpacity;
 
         GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
-        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, coreResourceRepository.sceneDepthVelocity);
+        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.sceneDepthVelocity);
 
-        meshService.bind(coreResourceRepository.planeMesh);
+        meshService.bind(primitiveRepository.planeMesh);
         shaderService.unbind();
         meshService.unbind();
     }

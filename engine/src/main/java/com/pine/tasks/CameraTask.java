@@ -5,7 +5,7 @@ import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.CoreResourceRepository;
+import com.pine.repository.CoreUBORepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.camera.Camera;
 import org.joml.Quaternionf;
@@ -18,7 +18,7 @@ public class CameraTask extends AbstractTask implements Loggable {
     public CameraRepository repository;
 
     @PInject
-    public CoreResourceRepository coreResourceRepository;
+    public CoreUBORepository uboRepository;
 
     @PInject
     public RuntimeRepository runtimeRepository;
@@ -141,13 +141,13 @@ public class CameraTask extends AbstractTask implements Loggable {
     }
 
     private void updateUBOBuffer() {
-        var V = coreResourceRepository.cameraViewUBOState;
+        var V = uboRepository.cameraViewUBOState;
         EngineUtils.copyWithOffset(V, repository.currentCamera.viewProjectionMatrix, 0);
         EngineUtils.copyWithOffset(V, repository.currentCamera.viewMatrix, 16);
         EngineUtils.copyWithOffset(V, repository.currentCamera.invViewMatrix, 32);
         EngineUtils.copyWithOffset(V, repository.currentCamera.position, 48);
 
-        var P = coreResourceRepository.cameraProjectionUBOState;
+        var P = uboRepository.cameraProjectionUBOState;
         EngineUtils.copyWithOffset(P, repository.currentCamera.projectionMatrix, 0);
         EngineUtils.copyWithOffset(P, repository.currentCamera.invProjectionMatrix, 16);
 

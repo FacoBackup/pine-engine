@@ -4,6 +4,7 @@ import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.common.fs.FSService;
 import com.pine.common.fs.FileInfoDTO;
+import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.ui.panel.AbstractPanel;
 import com.pine.ui.view.ButtonView;
@@ -15,7 +16,8 @@ public class FilesHeaderPanel extends AbstractPanel {
     @PInject
     public FSService fsService;
     @PInject
-    public Engine engine;
+    public ResourceLoaderService resourceLoader;
+
     private ButtonView importFile;
     private FilesContext filesContext;
 
@@ -61,7 +63,7 @@ public class FilesHeaderPanel extends AbstractPanel {
     private void importFile() {
         FileInfoDTO file = filesContext.getSelectedFile();
         if (file != null && !file.isDirectory()) {
-            engine.getResourceLoaderService().load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+            resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
         }
     }
 

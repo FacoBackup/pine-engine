@@ -7,8 +7,8 @@ import com.pine.inspection.NumericFieldRule;
 import com.pine.inspection.ResourceField;
 import com.pine.inspection.ResourceRef;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
-import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
+import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
 
 import java.util.Set;

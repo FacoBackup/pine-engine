@@ -2,16 +2,14 @@ package com.pine.service.resource;
 
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.service.resource.compute.ComputeCreationData;
 import com.pine.service.resource.compute.Compute;
+import com.pine.service.resource.compute.ComputeCreationData;
 import com.pine.service.resource.compute.ComputeRuntimeData;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.service.resource.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;
-
-import java.nio.IntBuffer;
 
 @PBean
 public class ComputeService extends AbstractResourceService<Compute, ComputeRuntimeData, ComputeCreationData> {

@@ -3,7 +3,7 @@ package com.pine.service.resource;
 import com.pine.FSUtil;
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.repository.CoreResourceRepository;
+import com.pine.repository.CoreUBORepository;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
@@ -26,7 +26,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     public UBOService uboService;
 
     @PInject
-    public CoreResourceRepository coreResources;
+    public CoreUBORepository uboRepository;
 
     @Override
     protected void bindInternal(Shader instance, ShaderRuntimeData data) {
@@ -66,19 +66,19 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     public IShader bindWithUBO(String code, IShader instance) {
         if (instance.isValid()) {
             if (code.contains(BlockPoint.CAMERA_VIEW.getBlockName()))
-                uboService.bindWithShader(coreResources.cameraViewUBO, instance.getProgram());
+                uboService.bindWithShader(uboRepository.cameraViewUBO, instance.getProgram());
             if (code.contains(BlockPoint.CAMERA_PROJECTION.getBlockName()))
-                uboService.bindWithShader(coreResources.cameraProjectionUBO, instance.getProgram());
+                uboService.bindWithShader(uboRepository.cameraProjectionUBO, instance.getProgram());
             if (code.contains(BlockPoint.FRAME_COMPOSITION.getBlockName()))
-                uboService.bindWithShader(coreResources.frameCompositionUBO, instance.getProgram());
+                uboService.bindWithShader(uboRepository.frameCompositionUBO, instance.getProgram());
             if (code.contains(BlockPoint.LENS_PP.getBlockName()))
-                uboService.bindWithShader(coreResources.lensPostProcessingUBO, instance.getProgram());
+                uboService.bindWithShader(uboRepository.lensPostProcessingUBO, instance.getProgram());
             if (code.contains(BlockPoint.SSAO.getBlockName()))
-                uboService.bindWithShader(coreResources.ssaoUBO, instance.getProgram());
+                uboService.bindWithShader(uboRepository.ssaoUBO, instance.getProgram());
             if (code.contains(BlockPoint.UBER.getBlockName()))
-                uboService.bindWithShader(coreResources.uberUBO, instance.getProgram());
+                uboService.bindWithShader(uboRepository.uberUBO, instance.getProgram());
             if (code.contains(BlockPoint.LIGHTS.getBlockName()))
-                uboService.bindWithShader(coreResources.lightsUBO, instance.getProgram());
+                uboService.bindWithShader(uboRepository.lightsUBO, instance.getProgram());
             return instance;
         }
         return null;
