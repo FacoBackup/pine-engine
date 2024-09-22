@@ -132,7 +132,7 @@ public class CameraTask extends AbstractTask implements Loggable {
         float deltaX = (mouseX - repository.lastMouseX) * repository.sensitivity;
         float deltaY = (repository.lastMouseY - mouseY) * repository.sensitivity;
 
-        repository.yaw += deltaX;
+        repository.yaw -= deltaX;
         repository.pitch += deltaY;
         repository.pitch = Math.max(-89.0f, Math.min(89.0f, repository.pitch));
 

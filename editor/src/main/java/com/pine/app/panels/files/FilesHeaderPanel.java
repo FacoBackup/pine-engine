@@ -1,6 +1,5 @@
 package com.pine.app.panels.files;
 
-import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.common.fs.FSService;
 import com.pine.common.fs.FileInfoDTO;

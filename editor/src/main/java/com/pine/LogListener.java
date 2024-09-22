@@ -2,10 +2,8 @@ package com.pine;
 
 import org.apache.commons.io.input.TailerListenerAdapter;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 
 public class LogListener extends TailerListenerAdapter {
     public enum LogLevel {

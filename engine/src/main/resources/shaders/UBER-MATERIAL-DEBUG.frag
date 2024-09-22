@@ -1,4 +1,4 @@
-precision highp float;
+
 uniform int shadingModel;
 
 #include "./ATTRIBUTES.glsl"

@@ -2,6 +2,7 @@ package com.pine.component;
 
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
+import com.pine.inspection.NumericFieldRule;
 import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;
 
@@ -11,7 +12,9 @@ import java.util.Set;
 public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> {
 
     @MutableField(label = "Time of day")
-    public float elapsedTime = 0; // sunDirection = (new Vector3f((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 1.0f)).normalize();
+    public float elapsedTime = 0;
+
+    @NumericFieldRule(max = 20, min = 1, isDirectChange = false, isAngle = false)
     @MutableField(label = "Max samples")
     public int maxSamples = 10;
     @MutableField(label = "Mie height")
@@ -22,15 +25,22 @@ public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> 
     public float atmosphereRadius = 1;
     @MutableField(label = "Planet Radius")
     public float planetRadius = 1;
+
+    @NumericFieldRule(max = 20, min = 1, isDirectChange = false, isAngle = false)
     @MutableField(label = "Intensity")
-    public float intensity = 20;
-    @EnumSelection(enumType= AtmosphereType.class)
+    public float intensity = 10;
+
+    @EnumSelection(enumType = AtmosphereType.class)
     @MutableField(label = "Rendering Type")
     public AtmosphereType renderingType = AtmosphereType.COMBINED;
+
     @MutableField(label = "Beta Rayleigh")
-    public final Vector3f betaRayleigh = new Vector3f(1.0f, 1.0f, 1.0f);
+    public final Vector3f betaRayleigh = new Vector3f(1);
+
     @MutableField(label = "Beta Mie")
-    public final Vector3f betaMie = new Vector3f(1.0f, 1.0f, 1.0f);
+    public final Vector3f betaMie = new Vector3f(1);
+
+    @NumericFieldRule(max = 10, min = -1, isDirectChange = false, isAngle = false)
     @MutableField(label = "Threshold")
     public float threshold = 0;
 

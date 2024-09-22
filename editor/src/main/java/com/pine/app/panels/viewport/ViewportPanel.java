@@ -2,13 +2,13 @@ package com.pine.app.panels.viewport;
 
 import com.pine.Engine;
 import com.pine.PInject;
-import com.pine.inspection.ResourceRef;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ResourceService;
-import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.fbo.FBOCreationData;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
+import imgui.ImVec2;
 import imgui.flag.ImGuiKey;
 
 public class ViewportPanel extends AbstractWindowPanel {
@@ -22,6 +22,9 @@ public class ViewportPanel extends AbstractWindowPanel {
     public ResourceService resourceService;
 
     private FrameBufferObject fbo;
+    private final ImVec2 sizeVec = new ImVec2();
+    private final ImVec2 INV_X = new ImVec2(1, 0);
+    private final ImVec2 INV_Y = new ImVec2(0, 1);
 
     @Override
     public void onInitialize() {
@@ -44,7 +47,9 @@ public class ViewportPanel extends AbstractWindowPanel {
 
     @Override
     public void renderInternal() {
-        ImGui.image(engine.getTargetFBO().getMainSampler(), size.x , size.y - FRAME_SIZE);
+        sizeVec.x = size.x;
+        sizeVec.y = size.y - FRAME_SIZE;
+        ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
     }
 
     @Override

@@ -29,7 +29,7 @@ public class VectorField extends AbstractFormField {
                 values[2] = cast.z;
                 break;
             }
-            case QUATERNION:{
+            case QUATERNION: {
                 var cast = (Quaternionf) dto.getValue();
                 values[0] = cast.x;
                 values[1] = cast.y;
@@ -52,10 +52,15 @@ public class VectorField extends AbstractFormField {
     @Override
     public void renderInternal() {
         ImGui.text(dto.getLabel());
+        boolean updated = false;
         switch (dto.getType()) {
-            case VECTOR2 -> ImGui.dragFloat2(internalId, values, .01f, dto.getMin(), dto.getMax());
-            case VECTOR3 -> ImGui.dragFloat3(internalId, values, .01f, dto.getMin(), dto.getMax());
-            case VECTOR4, QUATERNION -> ImGui.dragFloat4(internalId, values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR2 -> updated = ImGui.dragFloat2(internalId, values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR3 -> updated = ImGui.dragFloat3(internalId, values, .01f, dto.getMin(), dto.getMax());
+            case VECTOR4, QUATERNION ->
+                    updated = ImGui.dragFloat4(internalId, values, .01f, dto.getMin(), dto.getMax());
+        }
+        if (updated) {
+            changerHandler.accept(dto, values);
         }
     }
 }

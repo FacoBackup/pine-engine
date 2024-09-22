@@ -13,7 +13,7 @@ import com.pine.app.service.ProjectService;
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;
-import com.pine.component.InstancedSceneComponent;
+import com.pine.component.AtmosphereComponent;
 import com.pine.service.world.request.AddEntityRequest;
 import com.pine.tools.ToolsConfigurationModule;
 import com.pine.tools.ToolsModule;
@@ -47,7 +47,7 @@ public class EditorWindow extends AbstractWindow {
             MessageCollector.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
         });
         engine.addModules(List.of(new ToolsModule(), new ToolsConfigurationModule(selectionRepository.getSelected())));
-        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
+        engine.requestTask.addRequest(new AddEntityRequest(List.of(AtmosphereComponent.class)));
     }
 
     @Override

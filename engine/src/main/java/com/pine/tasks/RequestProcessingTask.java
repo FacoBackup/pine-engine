@@ -1,6 +1,7 @@
 package com.pine.tasks;
 
 import com.pine.AbstractTree;
+import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.component.EntityComponent;
@@ -12,15 +13,13 @@ import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AbstractRequest;
 import com.pine.service.world.request.RequestMessage;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 
 import static com.pine.repository.WorldRepository.ROOT_ID;
 
 @PBean
-public class RequestProcessingTask extends AbstractTask {
+public class RequestProcessingTask extends AbstractTask implements Loggable {
     @PInject
     public WorldRepository worldRepository;
 
@@ -30,27 +29,31 @@ public class RequestProcessingTask extends AbstractTask {
     @PInject
     public MessageService messageService;
 
-    private final List<AbstractRequest> requests = new ArrayList<>();
+    private final Vector<AbstractRequest> requests = new Vector<>();
 
     @Override
     protected void tickInternal() {
-        if (requests.isEmpty()) {
-            return;
-        }
-        if (worldRepository.entities.isEmpty()) {
-            worldRepository.initialize();
-        }
-        for (var request : requests) {
-            RequestMessage message = request.run(worldRepository, world);
-            if (message != null) {
-                messageService.onMessage(message.message(), message.isError());
+        try {
+            if (requests.isEmpty()) {
+                return;
             }
-        }
-        requests.clear();
-        worldRepository.worldTree.branches.clear();
+            if (worldRepository.entities.isEmpty()) {
+                worldRepository.initialize();
+            }
+            for (var request : requests) {
+                RequestMessage message = request.run(worldRepository, world);
+                if (message != null) {
+                    messageService.onMessage(message.message(), message.isError());
+                }
+            }
+            requests.clear();
+            worldRepository.worldTree.branches.clear();
 
-        for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {
-            updateTree(childId, worldRepository.worldTree.branches);
+            for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {
+                updateTree(childId, worldRepository.worldTree.branches);
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage(), e);
         }
     }
 

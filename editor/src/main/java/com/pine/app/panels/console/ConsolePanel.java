@@ -5,8 +5,6 @@ import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
 import imgui.ImVec4;
 
-import java.util.List;
-
 import static com.pine.LogListener.getLogMessages;
 
 public class ConsolePanel extends AbstractWindowPanel {

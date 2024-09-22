@@ -1,4 +1,4 @@
-precision highp float;
+
 
 #define CLAMP_MIN .1
 #define CLAMP_MAX .9

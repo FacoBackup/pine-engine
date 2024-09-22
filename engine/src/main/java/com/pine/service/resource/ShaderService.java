@@ -134,7 +134,6 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
             case GLSLType.VEC_2:
                 GL46.glUniform2fv(uLocation, (FloatBuffer) data);
                 break;
-
             case GLSLType.VEC_3:
                 GL46.glUniform3fv(uLocation, (FloatBuffer) data);
                 break;

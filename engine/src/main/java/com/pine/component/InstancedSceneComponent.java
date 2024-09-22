@@ -44,7 +44,7 @@ public class InstancedSceneComponent extends AbstractComponent<InstancedSceneCom
 
     @Override
     protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of(TransformationComponent.class, CullingComponent.class);
+        return Set.of(CullingComponent.class);
     }
 
     @Override

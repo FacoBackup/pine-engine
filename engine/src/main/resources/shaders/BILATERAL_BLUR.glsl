@@ -1,4 +1,4 @@
-precision highp float;
+
 #define PI 3.14159265359
 in vec2 texCoords;
 

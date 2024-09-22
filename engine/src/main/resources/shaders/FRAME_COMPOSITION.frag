@@ -1,4 +1,4 @@
-precision highp float;
+
 uniform CompositionSettings{
     vec2 inverseFilterTextureSize;
     bool useFXAA;

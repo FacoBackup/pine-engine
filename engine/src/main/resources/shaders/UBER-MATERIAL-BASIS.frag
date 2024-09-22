@@ -1,4 +1,4 @@
-precision highp float;
+
 
 #include "./ATTRIBUTES.glsl"
 

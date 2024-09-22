@@ -1,4 +1,4 @@
-precision highp float;
+
 in vec2 texCoords;
 #define A  0.15
 #define B  0.50

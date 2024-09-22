@@ -1,4 +1,4 @@
-precision highp float;
+
 
 in vec2 texCoords;
 uniform sampler2D sceneColor;

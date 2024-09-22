@@ -1,4 +1,4 @@
-precision highp float;
+
 
 // THANKS TO  https://www.shadertoy.com/view/3sjBRR
 #define GOLDEN_ANGLE 2.40
