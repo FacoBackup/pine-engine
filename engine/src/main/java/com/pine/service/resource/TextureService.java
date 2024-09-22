@@ -2,22 +2,22 @@ package com.pine.service.resource;
 
 import com.pine.PBean;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
-import com.pine.service.resource.primitives.texture.Texture;
+import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.primitives.texture.TextureCreationData;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 
 @PBean
-public class TextureService extends AbstractResourceService<Texture, EmptyRuntimeData, TextureCreationData> {
+public class TextureService extends AbstractResourceService<TextureResource, EmptyRuntimeData, TextureCreationData> {
 
     @Override
-    protected void bindInternal(Texture instance, EmptyRuntimeData data) {
+    protected void bindInternal(TextureResource instance, EmptyRuntimeData data) {
 
     }
 
     @Override
-    protected void bindInternal(Texture instance) {
+    protected void bindInternal(TextureResource instance) {
 
     }
 
@@ -32,7 +32,7 @@ public class TextureService extends AbstractResourceService<Texture, EmptyRuntim
     }
 
     @Override
-    public void removeInternal(Texture id) {
+    public void removeInternal(TextureResource id) {
 
     }
 

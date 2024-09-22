@@ -8,7 +8,7 @@ import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.ShaderResource;
 import com.pine.service.resource.shader.ShaderCreationData;
 import com.pine.service.resource.shader.ShaderRuntimeData;
 import com.pine.service.resource.shader.UniformDTO;
@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 import static com.pine.Engine.GLSL_VERSION;
 
 @PBean
-public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
+public class ShaderService extends AbstractResourceService<ShaderResource, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
-    private Shader currentShader;
+    private ShaderResource currentShader;
 
     @PInject
     public UBOService uboService;
@@ -35,7 +35,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     public CoreResourceRepository coreResources;
 
     @Override
-    protected void bindInternal(Shader instance, ShaderRuntimeData data) {
+    protected void bindInternal(ShaderResource instance, ShaderRuntimeData data) {
         bindProgram(instance);
         var uniforms = instance.getUniforms();
         for (var entry : data.getUniformData().entrySet()) {
@@ -44,7 +44,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     }
 
     @Override
-    protected void bindInternal(Shader instance) {
+    protected void bindInternal(ShaderResource instance) {
         bindProgram(instance);
     }
 
@@ -64,8 +64,8 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         return create(getId(), data);
     }
 
-    private Shader create(String id, ShaderCreationData data) {
-        var instance = new Shader(id, data);
+    private ShaderResource create(String id, ShaderCreationData data) {
+        var instance = new ShaderResource(id, data);
         if (instance.isValid()) {
             if (data.fragment().contains(CoreUBOName.CAMERA_VIEW.getBlockName()) || data.vertex().contains(CoreUBOName.CAMERA_VIEW.getBlockName()))
                 uboService.bindWithShader(coreResources.cameraViewUBO, instance.getProgram());
@@ -112,7 +112,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     }
 
     @Override
-    protected void removeInternal(Shader shader) {
+    protected void removeInternal(ShaderResource shader) {
         GL46.glDeleteProgram(shader.getProgram());
         if (shader == currentShader) {
             currentShader = null;
@@ -124,7 +124,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         return ResourceType.SHADER;
     }
 
-    public void bindProgram(Shader shader) {
+    public void bindProgram(ShaderResource shader) {
         if (currentShader == shader) {
             return;
         }
@@ -139,67 +139,45 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         Integer uLocation = uniformDTO.getLocation();
         switch (uniformDTO.getType()) {
             case GLSLType.FLOAT:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform1fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform1fv(uLocation, (FloatBuffer) data);
                 break;
             case GLSLType.VEC_2:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform2fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform2fv(uLocation, (FloatBuffer) data);
                 break;
 
             case GLSLType.VEC_3:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform3fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform3fv(uLocation, (FloatBuffer) data);
                 break;
             case GLSLType.VEC_4:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniform4fv(uLocation, (FloatBuffer) data);
-                }
+                GL46.glUniform4fv(uLocation, (FloatBuffer) data);
                 break;
             case GLSLType.IVEC_2:
-                if (data instanceof IntBuffer) {
-                    GL46.glUniform2iv(uLocation, (IntBuffer) data);
-                }
+                GL46.glUniform2iv(uLocation, (IntBuffer) data);
                 break;
             case GLSLType.IVEC_3:
-                if (data instanceof IntBuffer) {
-                    GL46.glUniform3iv(uLocation, (IntBuffer) data);
-                }
+                GL46.glUniform3iv(uLocation, (IntBuffer) data);
                 break;
             case GLSLType.BOOL:
-                if (data instanceof IntBuffer) {
-                    GL46.glUniform1iv(uLocation, (IntBuffer) data);
-                }
+                GL46.glUniform1iv(uLocation, (IntBuffer) data);
                 break;
             case GLSLType.MAT_3:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniformMatrix3fv(uLocation, false, (FloatBuffer) data);
-                }
+                GL46.glUniformMatrix3fv(uLocation, false, (FloatBuffer) data);
                 break;
 
             case GLSLType.MAT_4:
-                if (data instanceof FloatBuffer) {
-                    GL46.glUniformMatrix4fv(uLocation, false, (FloatBuffer) data);
-                }
+                GL46.glUniformMatrix4fv(uLocation, false, (FloatBuffer) data);
                 break;
             case GLSLType.SAMPLER_CUBE:
-                if (data instanceof Integer) {
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, (Integer) data);
-                    GL46.glUniform1i(uLocation, currentSamplerIndex);
-                    currentSamplerIndex++;
-                }
+                GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
+                GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, (Integer) data);
+                GL46.glUniform1i(uLocation, currentSamplerIndex);
+                currentSamplerIndex++;
                 break;
             case GLSLType.SAMPLER_2_D:
-                if (data instanceof Integer) {
-                    GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
-                    GL46.glBindTexture(GL46.GL_TEXTURE_2D, (Integer) data);
-                    GL46.glUniform1i(uLocation, currentSamplerIndex);
-                    currentSamplerIndex++;
-                }
+                GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
+                GL46.glBindTexture(GL46.GL_TEXTURE_2D, (Integer) data);
+                GL46.glUniform1i(uLocation, currentSamplerIndex);
+                currentSamplerIndex++;
                 break;
         }
     }

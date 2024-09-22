@@ -20,7 +20,7 @@ public class FieldDTO {
 
     public FieldDTO(FieldType type, String label, Field field, Object instance, Integer max, Integer min, boolean isAngle, boolean isDirectChange, List<SelectableEnum> options) {
         this.type = type;
-        this.label = label ;
+        this.label = label;
         this.labelWithId = label + "#" + UUID.randomUUID().toString().replaceAll("-", "");
         this.field = field;
         this.instance = instance;
@@ -70,5 +70,13 @@ public class FieldDTO {
 
     public List<SelectableEnum> getOptions() {
         return options;
+    }
+
+    public Object getValue() {
+        try {
+            return field.get(instance);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

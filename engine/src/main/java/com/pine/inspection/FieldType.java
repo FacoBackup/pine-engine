@@ -1,6 +1,7 @@
 package com.pine.inspection;
 
 import com.pine.component.SelectableEnum;
+import com.pine.component.rendering.CompositeScene;
 import com.pine.service.resource.resource.IResource;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
@@ -8,14 +9,13 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public enum FieldType {
-    RESOURCE(IResource.class),
+    SCENE(CompositeScene.class),
+    RESOURCE(ResourceRef.class),
     COLOR(Color.class),
     OPTIONS(SelectableEnum.class),
     STRING(String.class),
     INT(int.class),
-    LONG(long.class),
     FLOAT(float.class),
-    DOUBLE(double.class),
     BOOLEAN(boolean.class),
     VECTOR2(Vector2f.class),
     VECTOR3(Vector3f.class),

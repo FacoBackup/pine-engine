@@ -1,6 +1,7 @@
 package com.pine.app.component.impl;
 
 import com.pine.app.component.AbstractFormField;
+import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import imgui.ImGui;
 
@@ -11,6 +12,10 @@ public class ColorField extends AbstractFormField {
 
     public ColorField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
+        var cast = (Color) dto.getValue();
+        values[0] = cast.x;
+        values[1] = cast.y;
+        values[2] = cast.z;
     }
 
     @Override

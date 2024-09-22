@@ -13,10 +13,10 @@ public class CullingVisualizationSystem extends AbstractSystem {
     @PInject
     public CullingComponent cullingComponents;
 
-    @Override
-    protected FBO getTargetFBO() {
-        return engine.getTargetFBO();
-    }
+//    @Override
+//    protected FBO getTargetFBO() {
+//        return engine.getTargetFBO();
+//    }
 
     @Override
     protected void renderInternal() {

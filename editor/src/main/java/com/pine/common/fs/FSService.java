@@ -17,7 +17,6 @@ public class FSService implements Loggable {
     @PInject
     public FSRepository repository;
 
-
     public List<FileInfoDTO> readFiles(final String path) {
         return repository.readFiles(path);
     }

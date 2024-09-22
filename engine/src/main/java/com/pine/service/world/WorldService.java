@@ -2,6 +2,7 @@ package com.pine.service.world;
 
 import com.pine.PBean;
 import com.pine.PInject;
+import com.pine.component.CullingComponent;
 import com.pine.component.EntityComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.repository.WorldRepository;
@@ -15,6 +16,7 @@ import static com.pine.repository.WorldRepository.EMPTY_MAP;
 @PBean
 public class WorldService {
     private static final String TRANSFORMATION_CLASS = TransformationComponent.class.getSimpleName();
+    private static final String CULLING_COMPONENT = CullingComponent.class.getSimpleName();
 
     @PInject
     public WorldRepository worldRepository;
@@ -33,11 +35,15 @@ public class WorldService {
         return worldRepository.worldTree;
     }
 
-    public Object getTransformationComponentUnchecked(int entityId) {
-        return worldRepository.entities.get(entityId).get(TRANSFORMATION_CLASS);
+    public TransformationComponent getTransformationComponentUnchecked(int entityId) {
+        return (TransformationComponent) worldRepository.entities.get(entityId).get(TRANSFORMATION_CLASS);
     }
 
     public ConcurrentHashMap<String, EntityComponent> getComponents(Integer entity) {
         return worldRepository.entities.getOrDefault(entity, EMPTY_MAP);
+    }
+
+    public CullingComponent getCullingComponentUnchecked(int entityId) {
+        return (CullingComponent) worldRepository.entities.get(entityId).get(CULLING_COMPONENT);
     }
 }

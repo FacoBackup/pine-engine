@@ -5,12 +5,11 @@ import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.Updatable;
 import com.pine.repository.ClockRepository;
+import com.pine.service.loader.ResourceLoaderService;
+import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.resource.resource.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @PBean
@@ -22,6 +21,9 @@ public class ResourceService implements Loggable, Updatable {
 
     @PInject
     public ClockRepository clock;
+
+    @PInject
+    public ResourceLoaderService loader;
 
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();
@@ -113,5 +115,27 @@ public class ResourceService implements Loggable, Updatable {
 
     public void makeStatic(IResource resource) {
         resource.makeStatic();
+    }
+
+    public IResource getOrCreateResource(String id) {
+        IResource found = getById(id);
+        if(found != null) {
+            return found;
+        }
+
+        for(var history : loader.repository.loadedResources){
+            for(var record : history.getRecords()){
+                if(Objects.equals(record.id, id)) {
+                    AbstractLoaderResponse load = loader.load(history.getFilePath(), false, null);
+                    if (load != null) {
+                        return getById(id);
+                    } else {
+                        getLogger().error("Could not load resource: {}", history.getFilePath());
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

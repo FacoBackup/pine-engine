@@ -2,8 +2,7 @@ package com.pine.app.panels.hierarchy;
 
 import com.pine.Engine;
 import com.pine.PInject;
-import com.pine.app.EditorWindow;
-import com.pine.component.InstancedMeshComponent;
+import com.pine.component.InstancedSceneComponent;
 import com.pine.service.world.request.AddEntityRequest;
 import com.pine.ui.panel.AbstractPanel;
 import com.pine.ui.view.ButtonView;
@@ -30,7 +29,7 @@ public class HierarchyHeaderPanel extends AbstractPanel {
         super.onInitialize();
         var addEntity = (ButtonView) document.getElementById("addEntity");
         addEntity.setOnClick(() -> {
-            engine.addRequest(new AddEntityRequest(List.of(InstancedMeshComponent.class)));
+            engine.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
         });
     }
 }

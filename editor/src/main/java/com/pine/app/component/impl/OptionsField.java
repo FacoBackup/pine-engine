@@ -11,6 +11,7 @@ public class OptionsField extends AbstractFormField {
     private SelectableEnum selected;
     public OptionsField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
+        selected = (SelectableEnum) dto.getValue();
     }
 
     @Override

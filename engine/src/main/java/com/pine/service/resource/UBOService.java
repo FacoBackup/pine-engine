@@ -2,26 +2,29 @@ package com.pine.service.resource;
 
 import com.pine.PBean;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
+import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.ubo.UBO;
+import com.pine.service.resource.ubo.UBOData;
+import com.pine.service.resource.ubo.UniformBufferObject;
 import com.pine.service.resource.ubo.UBOCreationData;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 @PBean
-public class UBOService extends AbstractResourceService<UBO, EmptyRuntimeData, UBOCreationData> {
-    private UBO currentUBO;
+public class UBOService extends AbstractResourceService<UniformBufferObject, EmptyRuntimeData, UBOCreationData> {
+    private UniformBufferObject currentUBO;
 
     @Override
-    protected void bindInternal(UBO instance, EmptyRuntimeData data) {
+    protected void bindInternal(UniformBufferObject instance, EmptyRuntimeData data) {
         bindInternal(instance);
     }
 
     @Override
-    protected void bindInternal(UBO instance) {
+    protected void bindInternal(UniformBufferObject instance) {
         currentUBO = instance;
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
     }
@@ -33,11 +36,11 @@ public class UBOService extends AbstractResourceService<UBO, EmptyRuntimeData, U
 
     @Override
     protected IResource addInternal(UBOCreationData data) {
-        return new UBO(getId(), data);
+        return new UniformBufferObject(getId(), data);
     }
 
     @Override
-    protected void removeInternal(UBO data) {
+    protected void removeInternal(UniformBufferObject data) {
         GL46.glDeleteBuffers(data.getBuffer());
     }
 
@@ -46,7 +49,7 @@ public class UBOService extends AbstractResourceService<UBO, EmptyRuntimeData, U
         return ResourceType.UBO;
     }
 
-    public void bindWithShader(UBO ubo, int shaderProgram) {
+    public void bindWithShader(UniformBufferObject ubo, int shaderProgram) {
         bindInternal(ubo);
         GL46.glUseProgram(shaderProgram);
         int index = GL46.glGetUniformBlockIndex(shaderProgram, currentUBO.getBlockName());
@@ -54,10 +57,53 @@ public class UBOService extends AbstractResourceService<UBO, EmptyRuntimeData, U
         unbind();
     }
 
-    public void updateBuffer(UBO ubo, FloatBuffer data, int offset) {
+    public void updateBuffer(UniformBufferObject ubo, FloatBuffer data, int offset) {
         currentUBO = ubo;
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
         GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, data);
         unbind();
+    }
+
+    public static int calculateAllocation(List<UBOData> dataArray) {
+        final int CHUNK_SIZE = 16;
+        int chunk = CHUNK_SIZE;
+        int offset = 0;
+        int[] size;
+
+        for (int i = 0; i < dataArray.size(); i++) {
+            UBOData data = dataArray.get(i);
+
+            if (data.getDataLength() == null || data.getDataLength() == 0) {
+                size = data.getType().getSizes();
+            } else {
+                int maxSize = data.getDataLength() * CHUNK_SIZE * 4;
+                size = new int[]{maxSize, maxSize};
+            }
+
+            int tsize = chunk - size[0];
+
+            if (tsize < 0 && chunk < CHUNK_SIZE) {
+                offset += chunk;
+                UBOData current = dataArray.get(i - 1);
+                current.setChunkSize(current.getChunkSize() + chunk);
+                chunk = CHUNK_SIZE;
+            } else if (tsize == 0) {
+                if (data.getType() == GLSLType.VEC_3 && chunk == CHUNK_SIZE) {
+                    chunk -= size[1];
+                } else {
+                    chunk = CHUNK_SIZE;
+                }
+            } else if (tsize >= 0 || chunk != CHUNK_SIZE) {
+                chunk -= size[1];
+            }
+
+            data.setOffset(offset);
+            data.setChunkSize(size[1]);
+            data.setDataSize(size[1]);
+
+            offset += size[1];
+        }
+
+        return offset;
     }
 }

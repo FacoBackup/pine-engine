@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.pine.Initializable;
 import com.pine.PBean;
 import com.pine.service.camera.Camera;
+import com.pine.service.camera.Frustum;
 import com.pine.service.serialization.SerializableRepository;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -28,6 +29,7 @@ public class CameraRepository extends SerializableRepository implements Initiali
     transient public String defaultOrthographicCamera;
     public final Map<String, Camera> cameras = new HashMap<>();
     transient public Camera currentCamera = null;
+    transient public final Frustum frustum = new Frustum();
     transient public final Vector3f toApplyTranslation = new Vector3f();
 
     @Override

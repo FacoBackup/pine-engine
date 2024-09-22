@@ -88,6 +88,7 @@ public class CameraTask extends AbstractTask implements Loggable {
         repository.toApplyTranslation.x = 0;
         repository.toApplyTranslation.y = 0;
         repository.toApplyTranslation.z = 0;
+        repository.frustum.extractPlanes(camera.viewProjectionMatrix);
     }
 
     public void updateView() {

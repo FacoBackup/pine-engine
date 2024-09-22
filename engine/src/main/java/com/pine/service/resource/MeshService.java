@@ -1,52 +1,61 @@
 package com.pine.service.resource;
 
 import com.pine.PBean;
-import com.pine.service.resource.primitives.mesh.Mesh;
+import com.pine.PInject;
+import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
+import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, MeshCreationData> {
-    private Mesh currentMesh;
+public class MeshService extends AbstractResourceService<MeshPrimitiveResource, MeshRuntimeData, MeshCreationData> {
+    private MeshPrimitiveResource currentMesh;
     private MeshRuntimeData drawCommand;
     private boolean isInWireframeMode = false;
 
+    @PInject
+    public ResourceService resourceService;
+
+
     @Override
-    protected void bindInternal(Mesh instance, MeshRuntimeData data) {
+    protected void bindInternal(MeshPrimitiveResource instance, MeshRuntimeData data) {
         currentMesh = instance;
         drawCommand = data;
         draw();
     }
 
     @Override
-    protected void bindInternal(Mesh instance) {
+    protected void bindInternal(MeshPrimitiveResource instance) {
         currentMesh = instance;
         drawCommand = null;
         draw();
     }
 
     private void draw() {
+        if(currentMesh == null){
+            return;
+        }
         if (isInWireframeMode && (drawCommand == null || drawCommand.mode != MeshRenderingMode.WIREFRAME)) {
             GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
             isInWireframeMode = false;
         }
 
         if (drawCommand == null) {
-            triangles();
+            draw(GL46.GL_TRIANGLES);
             return;
         }
         switch (drawCommand.mode) {
-            case LINE_LOOP -> lineLoop();
+            case LINE_LOOP -> draw(GL46.GL_LINE_LOOP);
             case WIREFRAME -> wireframe();
-            case TRIANGLE_FAN -> triangleFan();
-            case TRIANGLE_STRIP -> triangleStrip();
-            case LINES -> lines();
-            default -> triangles();
+            case TRIANGLE_FAN -> draw(GL46.GL_TRIANGLE_FAN);
+            case TRIANGLE_STRIP -> draw(GL46.GL_TRIANGLE_STRIP);
+            case LINES ->         draw(GL46.GL_LINES);
+            default -> draw(GL46.GL_TRIANGLES);
         }
     }
 
@@ -68,11 +77,11 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
 
     @Override
     public IResource addInternal(MeshCreationData data) {
-        return new Mesh(getId(), data);
+        return new MeshPrimitiveResource(getId(), data);
     }
 
     @Override
-    public void removeInternal(Mesh id) {
+    public void removeInternal(MeshPrimitiveResource id) {
         // TODO - remove last used and unbind if is bound for some reason (probably will never happen)
     }
 
@@ -96,47 +105,27 @@ public class MeshService extends AbstractResourceService<Mesh, MeshRuntimeData, 
     private void wireframe() {
         GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
         isInWireframeMode = true;
-        triangles();
-    }
-
-    private void triangles() {
-        bindResources();
         draw(GL46.GL_TRIANGLES);
-        GL46.glBindVertexArray(GL46.GL_NONE);
     }
 
-    /**
-     * Draws the mesh as a line loop.
-     */
-    private void lineLoop() {
+    private void draw(int mode) {
         bindResources();
-        draw(GL46.GL_LINE_LOOP);
-        GL46.glBindVertexArray(GL46.GL_NONE);
-    }
 
-    private void triangleStrip() {
-        bindResources();
-        draw(GL46.GL_TRIANGLE_STRIP);
-        GL46.glBindVertexArray(GL46.GL_NONE);
-    }
-
-    private void triangleFan() {
-        bindResources();
-        draw(GL46.GL_TRIANGLE_FAN);
-        GL46.glBindVertexArray(GL46.GL_NONE);
-    }
-
-    private void lines() {
-        bindResources();
-        draw(GL46.GL_LINES);
-        GL46.glBindVertexArray(GL46.GL_NONE);
-    }
-
-    private void draw(int glTriangles) {
         if (drawCommand != null && drawCommand.instanceCount > 0) {
-            GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, drawCommand.instanceCount, GL46.GL_UNSIGNED_INT, 0, drawCommand.instanceCount);
+            GL46.glDrawElementsInstanced(mode, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0, drawCommand.instanceCount );
             return;
         }
-        GL46.glDrawElements(glTriangles, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glDrawElements(mode, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+    }
+
+    public MeshPrimitiveResource createTerrain(String heightMapTexture) {
+        IResource byId = resourceService.getOrCreateResource(heightMapTexture);
+        if(byId instanceof TextureResource){
+            var t = (TextureResource) byId;
+//            t.getWidth();
+//            t.getHeight();
+            // TODO - COMPUTE TERRAIN
+        }
+        return null;
     }
 }
