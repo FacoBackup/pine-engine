@@ -55,6 +55,7 @@ public class ViewportPanel extends AbstractWindowPanel {
     private final float[] rotationCache = new float[3];
     private final float[] scaleCache = new float[3];
     private TransformationComponent selected;
+    private GizmoPanel gizmo;
 
     @Override
     public void onInitialize() {
@@ -62,6 +63,8 @@ public class ViewportPanel extends AbstractWindowPanel {
         padding.x = 0;
         padding.y = 0;
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
+        appendChild(new GizmoConfigPanel(position, sizeVec));
+        appendChild(gizmo = new GizmoPanel(position, sizeVec));
     }
 
     @Override
@@ -91,86 +94,8 @@ public class ViewportPanel extends AbstractWindowPanel {
             return;
         }
 
-        ImGui.setNextWindowPos(position);
-        ImGui.setNextWindowSize(size.x, size.y * .2f);
-        ImGui.begin("##gizmoOptions", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize);
-        if (ImGui.isKeyPressed(ImGuiKey.T))
-            editorRepository.gizmoOperation = Operation.TRANSLATE;
-        if (ImGui.isKeyPressed(ImGuiKey.R))
-            editorRepository.gizmoOperation = Operation.ROTATE;
-        if (ImGui.isKeyPressed(ImGuiKey.Y))
-            editorRepository.gizmoOperation = Operation.SCALE;
-
-        if (ImGui.radioButton("Translate", editorRepository.gizmoOperation == Operation.TRANSLATE))
-            editorRepository.gizmoOperation = Operation.TRANSLATE;
-        ImGui.sameLine();
-        if (ImGui.radioButton("Rotate", editorRepository.gizmoOperation == Operation.ROTATE))
-            editorRepository.gizmoOperation = Operation.ROTATE;
-        ImGui.sameLine();
-        if (ImGui.radioButton("Scale", editorRepository.gizmoOperation == Operation.SCALE))
-            editorRepository.gizmoOperation = Operation.SCALE;
-
-        if (editorRepository.gizmoOperation != Operation.SCALE) {
-            ImGui.sameLine();
-            if (ImGui.radioButton("Local", editorRepository.gizmoMode == Mode.LOCAL))
-                editorRepository.gizmoMode = Mode.LOCAL;
-            ImGui.sameLine();
-            if (ImGui.radioButton("World", editorRepository.gizmoMode == Mode.WORLD))
-                editorRepository.gizmoMode = Mode.WORLD;
-        }
-
-        if (ImGui.isKeyPressed(ImGuiKey.F))
-            editorRepository.gizmoUseSnap = !editorRepository.gizmoUseSnap;
-
-        ImGui.sameLine();
-        ImGui.checkbox("Snap" + internalId, editorRepository.gizmoUseSnap);
-        ImGui.sameLine();
-        float[] snap = switch (editorRepository.gizmoOperation) {
-            case Operation.TRANSLATE -> {
-                ImGui.inputFloat3("Snap", editorRepository.gizmoSnapTranslate);
-                yield editorRepository.gizmoSnapTranslate;
-            }
-            case Operation.ROTATE -> {
-                ImGui.inputFloat("Angle Snap", editorRepository.gizmoSnapRotate);
-                yield editorRepository.gizmoSnapRotate.getData();
-            }
-            case Operation.SCALE -> {
-                ImGui.inputFloat("Scale Snap", editorRepository.gizmoSnapScale);
-                yield editorRepository.gizmoSnapScale.getData();
-            }
-            default -> null;
-        };
-
-        translationCache[0] = selected.translation.x;
-        translationCache[1] = selected.translation.y;
-        translationCache[2] = selected.translation.z;
-
-        rotationCache[0] = selected.rotation.x;
-        rotationCache[1] = selected.rotation.y;
-        rotationCache[2] = selected.rotation.z;
-
-        scaleCache[0] = selected.scale.x;
-        scaleCache[1] = selected.scale.y;
-        scaleCache[2] = selected.scale.z;
-
-        cameraRepository.currentCamera.viewMatrix.get(viewMatrixCache);
-        cameraRepository.currentCamera.projectionMatrix.get(projectionMatrixCache);
-
-        ImGuizmo.recomposeMatrixFromComponents(translationCache, rotationCache, scaleCache, cacheMatrix);
-        ImGui.end();
-
-        ImGuizmo.setOrthographic(false);
-        ImGuizmo.setDrawList();
-        ImGuizmo.setRect(position.x, position.y, sizeVec.x, sizeVec.y);
-        ImGuizmo.manipulate(
-                viewMatrixCache,
-                projectionMatrixCache,
-                editorRepository.gizmoOperation,
-                editorRepository.gizmoMode,
-                cacheMatrix,
-                cacheMatrix,
-                editorRepository.gizmoUseSnap || snap == null ? snap : null);
-
+        gizmo.setSelected(selected);
+        super.renderInternal();
     }
 
     @Override

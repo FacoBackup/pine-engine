@@ -23,45 +23,42 @@ public class FormPanel extends AbstractPanel {
     public void onInitialize() {
         for (FieldDTO field : data.getFieldsAnnotated()) {
             switch (field.getType()) {
-                case STRING: {
+                case STRING:
                     appendChild(new StringField(field, changeHandler));
                     break;
-                }
-                case RESOURCE: {
+                case RESOURCE:
                     appendChild(new ResourceField(field, changeHandler));
                     break;
-                }
-                case INT: {
+                case INT:
                     appendChild(new IntField(field, changeHandler));
                     break;
-                }
-                case FLOAT: {
+                case FLOAT:
                     appendChild(new FloatField(field, changeHandler));
                     break;
-                }
-                case BOOLEAN: {
+                case BOOLEAN:
                     appendChild(new BooleanField(field, changeHandler));
                     break;
-                }
                 case VECTOR2:
-                case VECTOR3:
-                case VECTOR4:
-                case QUATERNION: {
-                    appendChild(new VectorField(field, changeHandler));
+                    appendChild(new Vector2Field(field, changeHandler));
                     break;
-                }
-                case COLOR: {
+                case VECTOR3:
+                    appendChild(new Vector3Field(field, changeHandler));
+                    break;
+                case VECTOR4:
+                    appendChild(new Vector4Field(field, changeHandler));
+                    break;
+                case QUATERNION:
+                    appendChild(new QuaternionField(field, changeHandler));
+                    break;
+                case COLOR:
                     appendChild(new ColorField(field, changeHandler));
                     break;
-                }
-                case OPTIONS: {
+                case OPTIONS:
                     appendChild(new OptionsField(field, changeHandler));
                     break;
-                }
-                case SCENE: {
+                case SCENE:
                     appendChild(new SceneField(field, changeHandler));
                     break;
-                }
             }
         }
         this.title = data.getLabel() + internalId;
