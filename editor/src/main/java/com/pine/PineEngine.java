@@ -1,6 +1,6 @@
 package com.pine;
 
-import com.pine.app.EditorWindow;
+import com.pine.EditorWindow;
 import com.pine.service.WindowService;
 import org.apache.commons.io.input.Tailer;
 

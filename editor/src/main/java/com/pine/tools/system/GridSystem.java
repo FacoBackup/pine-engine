@@ -8,7 +8,7 @@ import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import com.pine.tools.ExecutionEnvironment;
-import com.pine.tools.ToolsConfigurationModule;
+import com.pine.repository.EditorRepository;
 import com.pine.tools.repository.ToolsResourceRepository;
 import org.lwjgl.opengl.GL46;
 
@@ -18,7 +18,7 @@ public class GridSystem extends AbstractSystem {
     public Engine engine;
 
     @PInject
-    public ToolsConfigurationModule engineConfig;
+    public EditorRepository engineConfig;
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
