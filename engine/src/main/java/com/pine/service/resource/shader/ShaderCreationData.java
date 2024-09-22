@@ -4,14 +4,15 @@ import com.pine.service.resource.resource.ResourceCreationData;
 import com.pine.service.resource.resource.ResourceType;
 
 public final class ShaderCreationData extends ResourceCreationData {
+    public static final String LOCAL_SHADER = "shaders/";
     private final String vertex;
     private final String fragment;
-    private final String absoluteId;
+    private final boolean localResource;
 
-    public ShaderCreationData(String vertex, String fragment, String absoluteId) {
+    public ShaderCreationData(String vertex, String fragment) {
         this.vertex = vertex;
         this.fragment = fragment;
-        this.absoluteId = absoluteId;
+        this.localResource = vertex.contains(LOCAL_SHADER);
     }
 
     @Override
@@ -27,7 +28,7 @@ public final class ShaderCreationData extends ResourceCreationData {
         return fragment;
     }
 
-    public String absoluteId() {
-        return absoluteId;
+    public boolean isLocalResource() {
+        return localResource;
     }
 }

@@ -1,5 +1,5 @@
 precision highp float;
-#include "./CAMERA_VIEW_INFO.glsl"
+#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 uniform Settings{
     vec4 settings;

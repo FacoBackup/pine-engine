@@ -8,7 +8,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class MeshPrimitiveResource extends AbstractResource {
+public class Primitive extends AbstractResource {
     public final int vertexCount;
     public final int triangleCount;
     public final int VAO;
@@ -17,7 +17,7 @@ public class MeshPrimitiveResource extends AbstractResource {
     public final VertexBuffer uvVBO;
     public final VertexBuffer normalVBO;
 
-    public MeshPrimitiveResource(String id, MeshCreationData dto) {
+    public Primitive(String id, MeshCreationData dto) {
         super(id);
         this.triangleCount = dto.indices().length / 3;
         this.vertexCount = dto.indices().length;

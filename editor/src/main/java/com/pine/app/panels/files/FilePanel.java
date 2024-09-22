@@ -2,7 +2,6 @@ package com.pine.app.panels.files;
 
 import com.pine.Icon;
 import com.pine.PInject;
-import com.pine.app.EditorWindow;
 import com.pine.common.fs.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;

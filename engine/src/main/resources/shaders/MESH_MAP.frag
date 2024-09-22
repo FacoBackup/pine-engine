@@ -1,4 +1,4 @@
-precision mediump float;
+
 
 in vec3 id;
 out vec4 fragColor;

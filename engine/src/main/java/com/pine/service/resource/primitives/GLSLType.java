@@ -1,8 +1,8 @@
 package com.pine.service.resource.primitives;
 
-import javax.annotation.Nullable;
-
 import org.lwjgl.opengl.GL46;
+
+import javax.annotation.Nullable;
 
 public enum GLSLType {
     VEC_2("vec2", GL46.GL_FLOAT_VEC2, new int[]{8, 8}, 8, 8),

@@ -1,6 +1,5 @@
 package com.pine.service.world.request;
 
-import com.pine.component.EntityComponent;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.repository.WorldRepository;

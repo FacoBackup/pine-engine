@@ -1,20 +1,26 @@
 package com.pine.service.resource.resource;
 
+import java.util.Collections;
 import java.util.List;
 
 public enum ResourceType {
     MESH(List.of("gltf", "glb")),
     TEXTURE(List.of("png", "jpeg", "jpg")),
     AUDIO(List.of("wav")),
-    SHADER(List.of("vert", "frag", "glsl")),
-    UBO(List.of()),
-    FBO(List.of()),
-    SSBO(List.of());
+    SHADER(List.of("vert", "frag")),
+    UBO(),
+    FBO(),
+    SSBO(),
+    COMPUTE();
 
     private final List<String> fileExtensions;
 
     ResourceType(List<String> fileExtensions) {
         this.fileExtensions = fileExtensions;
+    }
+
+    ResourceType() {
+        this.fileExtensions = Collections.emptyList();
     }
 
     public List<String> getFileExtensions() {

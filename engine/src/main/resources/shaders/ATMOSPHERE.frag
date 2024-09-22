@@ -6,7 +6,7 @@ precision highp float;
 #define ONLY_RAYLEIGH 1
 #define COMBINED  2
 
-#include "./CAMERA_VIEW_INFO.glsl"
+#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 
 in vec2 texCoords;

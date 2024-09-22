@@ -1,14 +1,8 @@
 package com.pine.service.resource.ssbo;
 
-import com.pine.service.resource.UBOService;
 import com.pine.service.resource.resource.AbstractResource;
 import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.ubo.UBOCreationData;
-import com.pine.service.resource.ubo.UBOData;
 import org.lwjgl.opengl.GL46;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ShaderStorageBufferObject extends AbstractResource {
 

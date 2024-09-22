@@ -1,9 +1,7 @@
 package com.pine.app.panels.hierarchy;
 
 import com.pine.PInject;
-import com.pine.app.EditorWindow;
 import com.pine.app.repository.EntitySelectionRepository;
-import com.pine.component.AbstractComponent;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
 import com.pine.service.world.WorldService;

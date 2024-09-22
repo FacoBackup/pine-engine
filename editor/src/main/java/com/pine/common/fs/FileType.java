@@ -1,8 +1,8 @@
 package com.pine.common.fs;
 
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public enum FileType {

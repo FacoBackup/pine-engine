@@ -1,6 +1,6 @@
 layout (location = 0) in vec3 position;
 
-#include "./CAMERA_VIEW_INFO.glsl"
+#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 out vec3 worldPosition;
 out vec3 cameraPosition;

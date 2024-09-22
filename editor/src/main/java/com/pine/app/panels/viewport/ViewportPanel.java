@@ -2,9 +2,10 @@ package com.pine.app.panels.viewport;
 
 import com.pine.Engine;
 import com.pine.PInject;
-import com.pine.app.EditorWindow;
+import com.pine.inspection.ResourceRef;
 import com.pine.repository.RuntimeRepository;
-import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
@@ -14,16 +15,20 @@ public class ViewportPanel extends AbstractWindowPanel {
     @PInject
     public Engine engine;
 
-    private RuntimeRepository repo;
-    private FBO fbo;
+    @PInject
+    public RuntimeRepository repo;
+
+    @PInject
+    public ResourceService resourceService;
+
+    private FrameBufferObject fbo;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
-        repo = engine.getRuntimeRepository();
         padding.x = 0;
         padding.y = 0;
-        this.fbo = (FBO) engine.getResourceService().addResource(new FBOCreationData(false, false).addSampler());
+        this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
     }
 
     @Override

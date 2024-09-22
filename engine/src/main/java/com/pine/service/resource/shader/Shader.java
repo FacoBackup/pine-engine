@@ -1,6 +1,5 @@
 package com.pine.service.resource.shader;
 
-import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
@@ -8,26 +7,30 @@ import org.lwjgl.opengl.GL46;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ShaderResource extends AbstractResource {
+import static com.pine.Engine.GLSL_VERSION;
+
+public class Shader extends AbstractResource implements IShader {
     private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;
 
-    public ShaderResource(String id, ShaderCreationData dto) {
+    public Shader(String id, ShaderCreationData dto) {
         super(id);
         try {
             program = GL46.glCreateProgram();
-            prepareShaders(dto.vertex(), dto.fragment());
+            prepareShaders(GLSL_VERSION + "\n" + dto.vertex(), GLSL_VERSION + "\n" + dto.fragment());
         } catch (Exception ex) {
             getLogger().error("Error while creating shader", ex);
             valid = false;
         }
     }
 
+    @Override
     public boolean isValid() {
         return valid;
     }
 
+    @Override
     public int getProgram() {
         return program;
     }
@@ -41,32 +44,13 @@ public class ShaderResource extends AbstractResource {
 
         GL46.glLinkProgram(program);
         GL46.glFlush();
-
-        getLogger().info("Shader status {}", GL46.glGetError());
-    }
-
-    private int compileShader(String shaderCode, int shaderType) {
-        int shader = GL46.glCreateShader(shaderType);
-        GL46.glShaderSource(shader, shaderCode);
-        GL46.glCompileShader(shader);
-
-        boolean compiled = GL46.glGetShaderi(shader, GL46.GL_COMPILE_STATUS) != 0;
-
-        if (!compiled) {
-            String error = GL46.glGetShaderInfoLog(shader);
-            getLogger().error("Shader compilation error: {}", error);
+        int error = GL46.glGetError();
+        if(error != 0) {
+            getLogger().error("Shader status {} {}", error, GL46.glGetString(error));
         }
-
-        return shader;
     }
 
-    public UniformDTO addUniformDeclaration(String name, GLSLType type) {
-        GL46.glUseProgram(program);
-        UniformDTO uniformDTO = new UniformDTO(type, name, GL46.glGetUniformLocation(program, name));
-        uniforms.put(name, uniformDTO);
-        return uniformDTO;
-    }
-
+    @Override
     public Map<String, UniformDTO> getUniforms() {
         return uniforms;
     }

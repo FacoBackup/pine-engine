@@ -7,8 +7,8 @@ public final class SSBOCreationData extends UBOCreationData {
     private final int bindingPoint;
     private final long expectedSize;
 
-    public SSBOCreationData(String blockName, int bindingPoint, long expectedSize) {
-        super(blockName);
+    public SSBOCreationData(int bindingPoint, long expectedSize) {
+        super(null);
         this.bindingPoint = bindingPoint;
         this.expectedSize = expectedSize;
     }

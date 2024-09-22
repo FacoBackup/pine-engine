@@ -1,6 +1,6 @@
 package com.pine.type;
 
-public enum CoreUBOName {
+public enum BlockPoint {
     CAMERA_VIEW("CameraViewInfo"),
     FRAME_COMPOSITION("CompositionSettings"),
     LENS_PP("LensEffects"),
@@ -11,7 +11,7 @@ public enum CoreUBOName {
 
     private final String blockName;
 
-    CoreUBOName(String blockName) {
+    BlockPoint(String blockName) {
         this.blockName = blockName;
     }
 

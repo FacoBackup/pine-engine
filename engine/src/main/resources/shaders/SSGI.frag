@@ -6,7 +6,7 @@ precision highp float;
 #define DEPTH_THRESHOLD 1.2
 #define PI2 6.2831853
 
-#include "./CAMERA_VIEW_INFO.glsl"
+#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 in vec2 texCoords;
 

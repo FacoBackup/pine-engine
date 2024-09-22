@@ -2,13 +2,10 @@ package com.pine.app.component.impl;
 
 import com.pine.PInject;
 import com.pine.app.component.AbstractFormField;
-import com.pine.component.EntityComponent;
-import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.ResourceRef;
 import com.pine.repository.ResourceLoaderRepository;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
-import com.pine.service.world.request.AddComponentRequest;
 import imgui.ImGui;
 import imgui.type.ImInt;
 
