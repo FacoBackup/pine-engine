@@ -7,7 +7,7 @@ import com.pine.inspection.NumericFieldRule;
 import com.pine.inspection.ResourceField;
 import com.pine.inspection.ResourceRef;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
-import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
+import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.resource.ResourceType;
 
@@ -25,7 +25,7 @@ public class InstancedSceneComponent extends AbstractComponent<InstancedSceneCom
 
     @ResourceField(type = ResourceType.TEXTURE)
     @MutableField(label = "Primitive instance")
-    public ResourceRef<MeshPrimitiveResource> primitive;
+    public ResourceRef<Primitive> primitive;
 
     @NumericFieldRule(min = 1, max = 200, isAngle = false, isDirectChange = false)
     @MutableField(label = "Number of instances")

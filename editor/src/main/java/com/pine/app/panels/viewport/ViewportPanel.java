@@ -3,7 +3,7 @@ package com.pine.app.panels.viewport;
 import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.repository.RuntimeRepository;
-import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
@@ -14,7 +14,7 @@ public class ViewportPanel extends AbstractWindowPanel {
     public Engine engine;
 
     private RuntimeRepository repo;
-    private FBO fbo;
+    private FrameBufferObject fbo;
 
     @Override
     public void onInitialize() {
@@ -22,7 +22,7 @@ public class ViewportPanel extends AbstractWindowPanel {
         repo = engine.getRuntimeRepository();
         padding.x = 0;
         padding.y = 0;
-        this.fbo = (FBO) engine.getResourceService().addResource(new FBOCreationData(false, false).addSampler());
+        this.fbo = (FrameBufferObject) engine.getResourceService().addResource(new FBOCreationData(false, false).addSampler());
     }
 
     @Override

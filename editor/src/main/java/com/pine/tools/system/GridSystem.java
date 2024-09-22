@@ -6,7 +6,7 @@ import com.pine.PInject;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ShaderService;
-import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
@@ -52,7 +52,7 @@ public class GridSystem extends AbstractSystem {
     }
 
     @Override
-    protected FBO getTargetFBO() {
+    protected FrameBufferObject getTargetFBO() {
         return engine.getTargetFBO();
     }
 

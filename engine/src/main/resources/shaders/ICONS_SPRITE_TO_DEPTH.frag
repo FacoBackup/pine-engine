@@ -1,4 +1,4 @@
-precision mediump float;
+
 
 #define IMAGE_QUANTITY 7.
 

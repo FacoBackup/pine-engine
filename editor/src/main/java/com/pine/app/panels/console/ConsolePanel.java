@@ -25,6 +25,9 @@ public class ConsolePanel extends AbstractWindowPanel {
         LogListener.LogEntry[] messages = getLogMessages();
         for(int i = 0; i < Math.min(max, LogListener.getFilledMessages()); i++){
             var log = messages[i];
+            if(log == null){
+                break;
+            }
             if (log.level() == LogListener.LogLevel.ERROR) {
                 ImGui.textColored(ERROR, log.line());
             } else if (log.level() == LogListener.LogLevel.WARN) {

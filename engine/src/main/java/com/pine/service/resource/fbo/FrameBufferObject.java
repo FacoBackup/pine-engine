@@ -9,7 +9,7 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FBO extends AbstractResource {
+public class FrameBufferObject extends AbstractResource {
     public final int width;
     public final int height;
     private final int FBO;
@@ -20,7 +20,7 @@ public class FBO extends AbstractResource {
     private final float[] resolution = new float[2];
     private int mainSampler;
 
-    public FBO(int width, int height) {
+    public FrameBufferObject(int width, int height) {
         super(null);
         this.width = width;
         this.height = height;
@@ -92,17 +92,17 @@ public class FBO extends AbstractResource {
 
     }
 
-    public FBO texture() {
+    public FrameBufferObject texture() {
         texture(this.width, this.height, 0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
         return this;
     }
 
-    public FBO texture(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    public FrameBufferObject texture(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         texture(this.width, this.height, attachment, precision, format, type, linear, repeat);
         return this;
     }
 
-    public FBO texture(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    public FrameBufferObject texture(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         use();
         int texture = GL46.glGenTextures();
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, texture);

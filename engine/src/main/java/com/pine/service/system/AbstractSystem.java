@@ -2,7 +2,7 @@ package com.pine.service.system;
 
 
 import com.pine.Initializable;
-import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FrameBufferObject;
 
 public abstract class AbstractSystem implements Initializable {
     final public void render() {
@@ -10,7 +10,7 @@ public abstract class AbstractSystem implements Initializable {
             return;
         }
 
-        FBO fbo = getTargetFBO();
+        FrameBufferObject fbo = getTargetFBO();
         if (fbo != null) {
             fbo.startMapping(shouldClearFBO());
             renderInternal();
@@ -20,7 +20,7 @@ public abstract class AbstractSystem implements Initializable {
         }
     }
 
-    protected FBO getTargetFBO() {
+    protected FrameBufferObject getTargetFBO() {
         return null;
     }
 

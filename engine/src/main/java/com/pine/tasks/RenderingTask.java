@@ -10,7 +10,7 @@ import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ResourceService;
-import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
+import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.world.WorldService;
@@ -79,21 +79,25 @@ public class RenderingTask extends AbstractTask {
         }
 
         offset = 0;
+        int requestCount = 0;
         for (PrimitiveRenderRequest request : temp) {
             if (request.transformations.isEmpty()) {
                 fillTransformations(request.transformation.translation);
                 fillTransformations(request.transformation.rotation);
                 fillTransformations(request.transformation.scale);
+                requestCount++;
             } else {
                 for (SimpleTransformation st : request.transformations) {
                     fillTransformations(st.translation);
                     fillTransformations(st.rotation);
                     fillTransformations(st.scale);
+                    requestCount++;
                 }
             }
         }
 
         List<PrimitiveRenderRequest> aux = renderingRepository.requests;
+        renderingRepository.requestCount = requestCount;
         renderingRepository.requests = temp;
         temp = aux;
     }
@@ -113,7 +117,7 @@ public class RenderingTask extends AbstractTask {
                     continue;
                 }
                 primitive.transformation.parentTransformationId = scene.getEntityId();
-                var mesh = primitive.primitive.resource = primitive.primitive.resource == null ? (MeshPrimitiveResource) resourceService.getOrCreateResource(primitive.primitive.id) : primitive.primitive.resource;
+                var mesh = primitive.primitive.resource = primitive.primitive.resource == null ? (Primitive) resourceService.getOrCreateResource(primitive.primitive.id) : primitive.primitive.resource;
                 if (mesh != null) {
                     scene.requests.add(new PrimitiveRenderRequest(mesh, DEFAULT_RENDER_REQUEST, primitive.transformation));
                 }
@@ -161,7 +165,7 @@ public class RenderingTask extends AbstractTask {
             scene.runtimeData = new MeshRuntimeData(DEFAULT_RENDERING_MODE);
         }
 
-        var mesh = scene.primitive.resource = scene.primitive.resource == null ? (MeshPrimitiveResource) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
+        var mesh = scene.primitive.resource = scene.primitive.resource == null ? (Primitive) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
 
         if (scene.compositeScene.primitives.size() > scene.numberOfInstances) {
             scene.compositeScene.primitives = scene.compositeScene.primitives.subList(0, scene.numberOfInstances);

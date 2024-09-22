@@ -1,12 +1,12 @@
 package com.pine.component.rendering;
 
 import com.pine.inspection.ResourceRef;
-import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
+import com.pine.service.resource.primitives.mesh.Primitive;
 
 public class ScenePrimitive {
     public boolean castsShadows = true;
     public boolean contributeToProbes = true;
-    public ResourceRef<MeshPrimitiveResource> primitive;
+    public ResourceRef<Primitive> primitive;
 
     public final SimpleTransformation transformation = new SimpleTransformation();
 

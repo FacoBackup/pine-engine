@@ -9,7 +9,7 @@ import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.service.resource.shader.*;
-import com.pine.type.CoreUBOName;
+import com.pine.type.BlockPoint;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
 
@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @PBean
-public class ShaderService extends AbstractResourceService<ShaderResource, ShaderRuntimeData, ShaderCreationData> {
+public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
 
     @PInject
@@ -29,7 +29,7 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
     public CoreResourceRepository coreResources;
 
     @Override
-    protected void bindInternal(ShaderResource instance, ShaderRuntimeData data) {
+    protected void bindInternal(Shader instance, ShaderRuntimeData data) {
         bindProgram(instance);
         var uniforms = instance.getUniforms();
         for (var entry : data.getUniformData().entrySet()) {
@@ -38,7 +38,7 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
     }
 
     @Override
-    protected void bindInternal(ShaderResource instance) {
+    protected void bindInternal(Shader instance) {
         bindProgram(instance);
     }
 
@@ -57,27 +57,27 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
         return create(getId(), data);
     }
 
-    private ShaderResource create(String id, ShaderCreationData data) {
-        var instance = new ShaderResource(id, data);
-        return (ShaderResource) bindWithUBO(data.vertex() + "\n" + data.fragment(), instance);
+    private Shader create(String id, ShaderCreationData data) {
+        var instance = new Shader(id, data);
+        return (Shader) bindWithUBO(data.vertex() + "\n" + data.fragment(), instance);
     }
 
     @Nullable
-    public Shader bindWithUBO(String code, Shader instance) {
+    public IShader bindWithUBO(String code, IShader instance) {
         if (instance.isValid()) {
-            if (code.contains(CoreUBOName.CAMERA_VIEW.getBlockName()))
+            if (code.contains(BlockPoint.CAMERA_VIEW.getBlockName()))
                 uboService.bindWithShader(coreResources.cameraViewUBO, instance.getProgram());
-            if (code.contains(CoreUBOName.CAMERA_PROJECTION.getBlockName()))
+            if (code.contains(BlockPoint.CAMERA_PROJECTION.getBlockName()))
                 uboService.bindWithShader(coreResources.cameraProjectionUBO, instance.getProgram());
-            if (code.contains(CoreUBOName.FRAME_COMPOSITION.getBlockName()))
+            if (code.contains(BlockPoint.FRAME_COMPOSITION.getBlockName()))
                 uboService.bindWithShader(coreResources.frameCompositionUBO, instance.getProgram());
-            if (code.contains(CoreUBOName.LENS_PP.getBlockName()))
+            if (code.contains(BlockPoint.LENS_PP.getBlockName()))
                 uboService.bindWithShader(coreResources.lensPostProcessingUBO, instance.getProgram());
-            if (code.contains(CoreUBOName.SSAO.getBlockName()))
+            if (code.contains(BlockPoint.SSAO.getBlockName()))
                 uboService.bindWithShader(coreResources.ssaoUBO, instance.getProgram());
-            if (code.contains(CoreUBOName.UBER.getBlockName()))
+            if (code.contains(BlockPoint.UBER.getBlockName()))
                 uboService.bindWithShader(coreResources.uberUBO, instance.getProgram());
-            if (code.contains(CoreUBOName.LIGHTS.getBlockName()))
+            if (code.contains(BlockPoint.LIGHTS.getBlockName()))
                 uboService.bindWithShader(coreResources.lightsUBO, instance.getProgram());
             return instance;
         }
@@ -110,7 +110,7 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
     }
 
     @Override
-    protected void removeInternal(ShaderResource shader) {
+    protected void removeInternal(Shader shader) {
         GL46.glDeleteProgram(shader.getProgram());
     }
 
@@ -119,7 +119,7 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
         return ResourceType.SHADER;
     }
 
-    public void bindProgram(Shader shader) {
+    public void bindProgram(IShader shader) {
         this.currentSamplerIndex = 0;
         GL46.glUseProgram(shader.getProgram());
     }
@@ -147,13 +147,13 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
             case GLSLType.IVEC_3:
                 GL46.glUniform3iv(uLocation, (IntBuffer) data);
                 break;
+            case GLSLType.INT:
             case GLSLType.BOOL:
                 GL46.glUniform1iv(uLocation, (IntBuffer) data);
                 break;
             case GLSLType.MAT_3:
                 GL46.glUniformMatrix3fv(uLocation, false, (FloatBuffer) data);
                 break;
-
             case GLSLType.MAT_4:
                 GL46.glUniformMatrix4fv(uLocation, false, (FloatBuffer) data);
                 break;

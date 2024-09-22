@@ -9,4 +9,5 @@ import java.util.List;
 @PBean
 public class RenderingRepository {
     public List<PrimitiveRenderRequest> requests = new ArrayList<>();
+    public int requestCount = 0;
 }

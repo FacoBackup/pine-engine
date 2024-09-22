@@ -1,5 +1,5 @@
 
-precision mediump float;
+
 in vec2 texCoords;
 
 uniform sampler2D iconSampler;

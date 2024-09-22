@@ -2,7 +2,7 @@ package com.pine.service.resource.compute;
 
 import com.pine.service.resource.resource.AbstractResource;
 import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.IShader;
 import com.pine.service.resource.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;
 
@@ -11,12 +11,12 @@ import java.util.Map;
 
 import static com.pine.Engine.GLSL_VERSION;
 
-public class ComputeResource extends AbstractResource implements Shader {
+public class Compute extends AbstractResource implements IShader {
     private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;
 
-    public ComputeResource(String id, ComputeCreationData dto) {
+    public Compute(String id, ComputeCreationData dto) {
         super(id);
         try {
             program = GL46.glCreateProgram();
@@ -45,7 +45,10 @@ public class ComputeResource extends AbstractResource implements Shader {
         GL46.glLinkProgram(program);
         GL46.glFlush();
 
-        getLogger().info("Shader status {}", GL46.glGetError());
+        int error = GL46.glGetError();
+        if(error != 0) {
+            getLogger().error("Shader status {} {}", error, GL46.glGetString(error));
+        }
     }
 
     @Override

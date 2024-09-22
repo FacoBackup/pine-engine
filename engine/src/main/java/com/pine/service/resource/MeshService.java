@@ -3,7 +3,7 @@ package com.pine.service.resource;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
-import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
+import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.texture.TextureResource;
@@ -13,8 +13,8 @@ import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class MeshService extends AbstractResourceService<MeshPrimitiveResource, MeshRuntimeData, MeshCreationData> {
-    private MeshPrimitiveResource currentMesh;
+public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeData, MeshCreationData> {
+    private Primitive currentMesh;
     private MeshRuntimeData drawCommand;
     private boolean isInWireframeMode = false;
 
@@ -23,14 +23,14 @@ public class MeshService extends AbstractResourceService<MeshPrimitiveResource, 
 
 
     @Override
-    protected void bindInternal(MeshPrimitiveResource instance, MeshRuntimeData data) {
+    protected void bindInternal(Primitive instance, MeshRuntimeData data) {
         currentMesh = instance;
         drawCommand = data;
         draw();
     }
 
     @Override
-    protected void bindInternal(MeshPrimitiveResource instance) {
+    protected void bindInternal(Primitive instance) {
         currentMesh = instance;
         drawCommand = null;
         draw();
@@ -77,11 +77,11 @@ public class MeshService extends AbstractResourceService<MeshPrimitiveResource, 
 
     @Override
     public IResource addInternal(MeshCreationData data) {
-        return new MeshPrimitiveResource(getId(), data);
+        return new Primitive(getId(), data);
     }
 
     @Override
-    public void removeInternal(MeshPrimitiveResource id) {
+    public void removeInternal(Primitive id) {
         // TODO - remove last used and unbind if is bound for some reason (probably will never happen)
     }
 
@@ -118,7 +118,7 @@ public class MeshService extends AbstractResourceService<MeshPrimitiveResource, 
         GL46.glDrawElements(mode, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
     }
 
-    public MeshPrimitiveResource createTerrain(String heightMapTexture) {
+    public Primitive createTerrain(String heightMapTexture) {
         IResource byId = resourceService.getOrCreateResource(heightMapTexture);
         if(byId instanceof TextureResource){
             var t = (TextureResource) byId;

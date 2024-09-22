@@ -8,7 +8,7 @@ import com.pine.repository.RuntimeRepository;
 import com.pine.service.MessageService;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.resource.ResourceService;
-import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AbstractRequest;
@@ -19,13 +19,13 @@ import java.util.function.BiConsumer;
 
 @PBean
 public class Engine {
-    public static final String GLSL_VERSION = "#version 430";
+    public static final String GLSL_VERSION = "#version 460 core";
     public static final int MAX_LIGHTS = 310;
 
     private int displayW;
     private int displayH;
 
-    private FBO targetFBO;
+    private FrameBufferObject targetFBO;
 
     @PInject
     public ModulesService modules;
@@ -94,11 +94,11 @@ public class Engine {
         return resourceService;
     }
 
-    public FBO getTargetFBO() {
+    public FrameBufferObject getTargetFBO() {
         return targetFBO;
     }
 
-    public void setTargetFBO(FBO fbo) {
+    public void setTargetFBO(FrameBufferObject fbo) {
         if (this.targetFBO != null) {
             this.targetFBO.clear();
         }

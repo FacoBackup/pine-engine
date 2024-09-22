@@ -3,7 +3,7 @@ package com.pine.service.resource;
 import com.pine.Engine;
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
 import com.pine.service.resource.resource.AbstractResourceService;
@@ -12,8 +12,8 @@ import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, FBOCreationData> {
-    private FBO current;
+public class FBOService extends AbstractResourceService<FrameBufferObject, EmptyRuntimeData, FBOCreationData> {
+    private FrameBufferObject current;
 
     @PInject
     public Engine engine;
@@ -26,13 +26,13 @@ public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, F
     }
 
     @Override
-    protected void bindInternal(FBO instance, EmptyRuntimeData data) {
+    protected void bindInternal(FrameBufferObject instance, EmptyRuntimeData data) {
         current = instance;
         current.use();
     }
 
     @Override
-    protected void bindInternal(FBO instance) {
+    protected void bindInternal(FrameBufferObject instance) {
         current = instance;
         current.use();
     }
@@ -47,7 +47,7 @@ public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, F
         if (data.getH() != null) {
             h = data.getH();
         }
-        var fbo = new FBO(w, h);
+        var fbo = new FrameBufferObject(w, h);
         data.getColors().forEach(color -> {
             if (color.w() == null || color.h() == null) {
                 fbo.texture(color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
@@ -66,7 +66,7 @@ public class FBOService extends AbstractResourceService<FBO, EmptyRuntimeData, F
     }
 
     @Override
-    protected void removeInternal(FBO resource) {
+    protected void removeInternal(FrameBufferObject resource) {
         resource.getSamplers().forEach(GL46::glDeleteTextures);
         if (resource.getDepthSampler() != null) {
             GL46.glDeleteTextures(resource.getDepthSampler());

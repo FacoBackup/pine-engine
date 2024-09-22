@@ -1,4 +1,4 @@
-precision mediump float;
+
 
 in vec3 worldPosition;
 in vec3 cameraPosition;
