@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <!-- Console appender with colored output based on log level -->
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %highlight{%-5level}{FATAL=bright red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %logger{36} - %msg%n"/>
         </Console>
     </Appenders>
 
     <Loggers>
-        <!-- Root logger logs everything at INFO level and above -->
         <Root level="info">
             <AppenderRef ref="Console"/>
         </Root>

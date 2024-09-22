@@ -2,6 +2,7 @@ package com.pine.service.system.impl;
 
 import com.pine.PInject;
 import com.pine.repository.CoreResourceRepository;
+import com.pine.service.resource.ComputeService;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.UBOService;
 import com.pine.service.system.AbstractSystem;
@@ -18,9 +19,15 @@ public class ShaderDataSyncSystem extends AbstractSystem {
     @PInject
     public CoreResourceRepository resources;
 
+    @PInject
+    public ComputeService computeService;
+
     @Override
     protected void renderInternal() {
+
         ssboService.updateBuffer(resources.transformationSSBO, resources.transformationSSBOState, 0);
+
+        computeService.bind(resources.transformationCompute);
 
         uboService.updateBuffer(resources.cameraViewUBO, resources.cameraViewUBOState, 0);
         uboService.updateBuffer(resources.frameCompositionUBO, resources.frameCompositionUBOState, 0);

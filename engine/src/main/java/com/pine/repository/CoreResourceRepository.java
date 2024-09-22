@@ -7,6 +7,8 @@ import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.compute.ComputeCreationData;
+import com.pine.service.resource.compute.ComputeResource;
 import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.primitives.GLSLType;
@@ -115,6 +117,8 @@ public class CoreResourceRepository {
     public final FloatBuffer lightsUBOState = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
     public final FloatBuffer lightsUBOState2 = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
 
+    public ComputeResource transformationCompute;
+
     public void initialize() {
         var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
         if (planeResponse != null) {
@@ -138,6 +142,11 @@ public class CoreResourceRepository {
         initializeUBOs();
         initializeSSBOs();
         initializeShaders();
+        initializeCompute();
+    }
+
+    private void initializeCompute(){
+        transformationCompute = (ComputeResource) resources.addResource(new ComputeCreationData(LOCAL_SHADER + "compute/TRANSFORMATION.glsl").staticResource());
     }
 
     private void initializeSSBOs() {
