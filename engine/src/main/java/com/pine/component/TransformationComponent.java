@@ -17,8 +17,7 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
     public Vector3f scale = new Vector3f(1);
     @MutableField(label = "Rotation")
     public Vector3f rotation = new Vector3f();
-    @MutableField(label = "Pivot point")
-    public Vector3f pivotPoint = new Vector3f();
+
     private SimpleTransformation simple;
 
     public TransformationComponent(Integer entityId) {

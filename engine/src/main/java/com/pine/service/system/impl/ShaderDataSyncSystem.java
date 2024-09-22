@@ -13,32 +13,41 @@ import static com.pine.Engine.MAX_LIGHTS;
 public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
 
     private UniformDTO entityCount;
-    private final IntBuffer countBuffer = MemoryUtil.memAllocInt(1);
+    private UniformDTO lightCount;
+    private final IntBuffer entityCountBuffer = MemoryUtil.memAllocInt(1);
+    private final IntBuffer lightCountBuffer = MemoryUtil.memAllocInt(1);
 
     @Override
     public void onInitialize() {
-       entityCount = computeRepository.transformationCompute.addUniformDeclaration("entityCount", GLSLType.INT);
+        entityCount = computeRepository.transformationCompute.addUniformDeclaration("entityCount", GLSLType.INT);
+        lightCount = computeRepository.transformationCompute.addUniformDeclaration("lightCount", GLSLType.INT);
     }
 
     @Override
     protected void renderInternal() {
         updateUBOs();
-        ssboService.updateBuffer(ssboRepository.transformationSSBO, ssboRepository.transformationSSBOState, 0);
 
-        if(renderingRepository.needsLightUpdate){
-            ssboService.updateBuffer(ssboRepository.lightDescriptionSSBO, ssboRepository.lightSSBOState, MAX_LIGHTS * 16);
-            renderingRepository.needsLightUpdate = false;
+        if (renderingRepository.infoUpdated) {
+            renderingRepository.infoUpdated = false;
+
+            ssboService.updateBuffer(ssboRepository.transformationSSBO, ssboRepository.transformationSSBOState, 0);
+            ssboService.updateBuffer(ssboRepository.lightDescriptionSSBO, ssboRepository.lightSSBOState, 0);
+
+            ssboService.bind(ssboRepository.lightDescriptionSSBO);
+            ssboService.bind(ssboRepository.transformationSSBO);
+            ssboService.bind(ssboRepository.modelSSBO);
+
+            computeService.bind(computeRepository.transformationCompute);
+
+            entityCountBuffer.put(0, renderingRepository.requestCount);
+            lightCountBuffer.put(0, renderingRepository.lightCount);
+
+            computeService.bindUniform(entityCount, entityCountBuffer);
+            computeService.bindUniform(lightCount, lightCountBuffer);
+
+            computeService.compute();
+            ssboService.unbind();
         }
-
-        ssboService.bind(ssboRepository.lightDescriptionSSBO);
-        ssboService.bind(ssboRepository.transformationSSBO);
-        ssboService.bind(ssboRepository.modelSSBO);
-
-        computeService.bind(computeRepository.transformationCompute);
-        countBuffer.put(0, renderingRepository.requestCount);
-        computeService.bindUniform(entityCount, countBuffer);
-        computeService.compute();
-        ssboService.unbind();
     }
 
     private void updateUBOs() {

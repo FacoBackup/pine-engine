@@ -21,7 +21,6 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
         transformationIndex = shaderRepository.depthPrePassShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
     }
 
-
     @Override
     protected FrameBufferObject getTargetFBO() {
         return fboRepository.visibility;

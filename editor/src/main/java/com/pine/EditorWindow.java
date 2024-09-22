@@ -2,6 +2,7 @@ package com.pine;
 
 import com.pine.Engine;
 import com.pine.PInject;
+import com.pine.component.InstancedSceneComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.panels.console.ConsolePanel;
 import com.pine.panels.files.FilesPanel;
@@ -47,7 +48,7 @@ public class EditorWindow extends AbstractWindow {
             MessageCollector.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
         });
         engine.addModules(List.of(new ToolsModule()));
-        engine.requestTask.addRequest(new AddEntityRequest(List.of(AtmosphereComponent.class, TransformationComponent.class)));
+        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, AtmosphereComponent.class, TransformationComponent.class)));
     }
 
     @Override

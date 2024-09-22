@@ -75,6 +75,11 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
     }
 
     @Override
+    protected boolean isRenderable() {
+        return !atmospheres.getBag().isEmpty();
+    }
+
+    @Override
     protected void renderInternal() {
         shaderService.bind(shaderRepository.atmosphereShader);
         cameraRepository.currentCamera.invSkyboxProjectionMatrix.get(invSkyProjectionMatrixB);
