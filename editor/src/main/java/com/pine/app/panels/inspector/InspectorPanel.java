@@ -2,21 +2,16 @@ package com.pine.app.panels.inspector;
 
 import com.pine.Icon;
 import com.pine.PInject;
-import com.pine.app.EditorWindow;
 import com.pine.app.component.FormPanel;
 import com.pine.app.repository.EntitySelectionRepository;
-import com.pine.component.AbstractComponent;
 import com.pine.component.EntityComponent;
-import com.pine.component.MetadataComponent;
 import com.pine.inspection.WithMutableData;
-import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AddComponentRequest;
 import com.pine.service.world.request.UpdateFieldRequest;
 import com.pine.tasks.RequestProcessingTask;
 import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
-import imgui.type.ImInt;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

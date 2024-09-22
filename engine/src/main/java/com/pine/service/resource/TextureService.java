@@ -2,8 +2,8 @@ package com.pine.service.resource;
 
 import com.pine.PBean;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
-import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.primitives.texture.TextureCreationData;
+import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;

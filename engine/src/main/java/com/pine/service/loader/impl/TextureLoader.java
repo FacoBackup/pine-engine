@@ -7,8 +7,8 @@ import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.loader.impl.response.TextureLoaderResponse;
 import com.pine.service.resource.resource.ResourceType;
-import javax.annotation.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 
 @PBean

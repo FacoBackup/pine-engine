@@ -4,7 +4,6 @@ import com.pine.service.resource.resource.ResourceCreationData;
 import com.pine.service.resource.resource.ResourceType;
 
 import java.util.List;
-import java.util.Objects;
 
 public class UBOCreationData extends ResourceCreationData {
     private final List<UBOData> data;

@@ -2,7 +2,6 @@ package com.pine.inspection;
 
 import com.pine.component.SelectableEnum;
 import com.pine.component.rendering.CompositeScene;
-import com.pine.service.resource.resource.IResource;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;

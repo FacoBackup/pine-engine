@@ -2,7 +2,6 @@ package com.pine.app.panels.viewport;
 
 import com.pine.Engine;
 import com.pine.PInject;
-import com.pine.app.EditorWindow;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.fbo.FBOCreationData;

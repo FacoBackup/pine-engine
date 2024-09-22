@@ -8,25 +8,19 @@ import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.shader.ShaderResource;
-import com.pine.service.resource.shader.ShaderCreationData;
-import com.pine.service.resource.shader.ShaderRuntimeData;
-import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.resource.shader.*;
 import com.pine.type.CoreUBOName;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
 
-import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.pine.Engine.GLSL_VERSION;
-
 @PBean
 public class ShaderService extends AbstractResourceService<ShaderResource, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
-    private ShaderResource currentShader;
 
     @PInject
     public UBOService uboService;
@@ -51,35 +45,39 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
     @Override
     public void unbind() {
         GL46.glUseProgram(GL46.GL_NONE);
-        currentShader = null;
     }
 
     @Override
     protected IResource addInternal(ShaderCreationData data) {
-        if (data.absoluteId() != null) {
-            String vertex = GLSL_VERSION + "\n" + processShader(data.vertex());
-            String frag = GLSL_VERSION + "\n" + processShader(data.fragment());
-            return create(data.absoluteId(), new ShaderCreationData(vertex, frag, null));
+        if (data.isLocalResource()) {
+            String vertex = processShader(data.vertex());
+            String frag = processShader(data.fragment());
+            return create(getId(), new ShaderCreationData(vertex, frag));
         }
         return create(getId(), data);
     }
 
     private ShaderResource create(String id, ShaderCreationData data) {
         var instance = new ShaderResource(id, data);
+        return (ShaderResource) bindWithUBO(data.vertex() + "\n" + data.fragment(), instance);
+    }
+
+    @Nullable
+    public Shader bindWithUBO(String code, Shader instance) {
         if (instance.isValid()) {
-            if (data.fragment().contains(CoreUBOName.CAMERA_VIEW.getBlockName()) || data.vertex().contains(CoreUBOName.CAMERA_VIEW.getBlockName()))
+            if (code.contains(CoreUBOName.CAMERA_VIEW.getBlockName()))
                 uboService.bindWithShader(coreResources.cameraViewUBO, instance.getProgram());
-            if (data.fragment().contains(CoreUBOName.CAMERA_PROJECTION.getBlockName()) || data.vertex().contains(CoreUBOName.CAMERA_PROJECTION.getBlockName()))
+            if (code.contains(CoreUBOName.CAMERA_PROJECTION.getBlockName()))
                 uboService.bindWithShader(coreResources.cameraProjectionUBO, instance.getProgram());
-            if (data.fragment().contains(CoreUBOName.FRAME_COMPOSITION.getBlockName()) || data.vertex().contains(CoreUBOName.FRAME_COMPOSITION.getBlockName()))
+            if (code.contains(CoreUBOName.FRAME_COMPOSITION.getBlockName()))
                 uboService.bindWithShader(coreResources.frameCompositionUBO, instance.getProgram());
-            if (data.fragment().contains(CoreUBOName.LENS_PP.getBlockName()) || data.vertex().contains(CoreUBOName.LENS_PP.getBlockName()))
+            if (code.contains(CoreUBOName.LENS_PP.getBlockName()))
                 uboService.bindWithShader(coreResources.lensPostProcessingUBO, instance.getProgram());
-            if (data.fragment().contains(CoreUBOName.SSAO.getBlockName()) || data.vertex().contains(CoreUBOName.SSAO.getBlockName()))
+            if (code.contains(CoreUBOName.SSAO.getBlockName()))
                 uboService.bindWithShader(coreResources.ssaoUBO, instance.getProgram());
-            if (data.fragment().contains(CoreUBOName.UBER.getBlockName()) || data.vertex().contains(CoreUBOName.UBER.getBlockName()))
+            if (code.contains(CoreUBOName.UBER.getBlockName()))
                 uboService.bindWithShader(coreResources.uberUBO, instance.getProgram());
-            if (data.fragment().contains(CoreUBOName.LIGHTS.getBlockName()) || data.vertex().contains(CoreUBOName.LIGHTS.getBlockName()))
+            if (code.contains(CoreUBOName.LIGHTS.getBlockName()))
                 uboService.bindWithShader(coreResources.lightsUBO, instance.getProgram());
             return instance;
         }
@@ -88,17 +86,17 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
 
     public String processShader(String file) {
         String input = new String(FSUtil.loadResource(file));
-        return process(input);
+        return processIncludes(input);
     }
 
-    private String process(String input) {
-        final String pattern = "#include \"./(\\w+\\.glsl)\"";
+    public String processIncludes(String input) {
+        final String pattern = "#include \".+\"";
         final Pattern regex = Pattern.compile(pattern);
         final Matcher matcher = regex.matcher(input);
 
         final var resultBuilder = new StringBuilder();
         while (matcher.find()) {
-            String fileName = "shaders" + File.separator + matcher.group(1);
+            String fileName = ShaderCreationData.LOCAL_SHADER + matcher.group(0).replaceAll("#include \"(./|../)", "").replaceAll("\"", "");
             String replacement = new String(FSUtil.loadResource(fileName));
             matcher.appendReplacement(resultBuilder, replacement);
         }
@@ -106,7 +104,7 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
 
         String finalResult = resultBuilder.toString();
         if (finalResult.contains("#include ")) {
-            finalResult = process(finalResult);
+            finalResult = processIncludes(finalResult);
         }
         return finalResult;
     }
@@ -114,9 +112,6 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
     @Override
     protected void removeInternal(ShaderResource shader) {
         GL46.glDeleteProgram(shader.getProgram());
-        if (shader == currentShader) {
-            currentShader = null;
-        }
     }
 
     @Override
@@ -124,14 +119,9 @@ public class ShaderService extends AbstractResourceService<ShaderResource, Shade
         return ResourceType.SHADER;
     }
 
-    public void bindProgram(ShaderResource shader) {
-        if (currentShader == shader) {
-            return;
-        }
-
+    public void bindProgram(Shader shader) {
         this.currentSamplerIndex = 0;
         GL46.glUseProgram(shader.getProgram());
-        currentShader = shader;
     }
 
     public void bindUniform(UniformDTO uniformDTO, Object data) {

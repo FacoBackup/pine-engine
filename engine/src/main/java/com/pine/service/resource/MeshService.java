@@ -2,8 +2,8 @@ package com.pine.service.resource;
 
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
+import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.texture.TextureResource;

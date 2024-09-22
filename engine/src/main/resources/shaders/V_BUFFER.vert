@@ -1,6 +1,6 @@
 layout (location = 0) in vec3 position;
 
-#include "./CAMERA_PROJECTION_INFO.glsl"
+#include "./buffer_objects/CAMERA_PROJECTION_INFO.glsl"
 
 uniform mat4 viewProjection;
 uniform mat4 previousViewProjection;

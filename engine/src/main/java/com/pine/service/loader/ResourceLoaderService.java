@@ -7,9 +7,9 @@ import com.pine.service.MessageService;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @PBean

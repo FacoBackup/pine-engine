@@ -6,9 +6,9 @@ import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
 import com.pine.service.resource.ubo.UniformBufferObject;
-import com.pine.service.resource.ubo.UBOCreationData;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;

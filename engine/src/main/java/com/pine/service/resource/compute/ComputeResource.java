@@ -1,7 +1,9 @@
-package com.pine.service.resource.shader;
+package com.pine.service.resource.compute;
 
 import com.pine.service.resource.resource.AbstractResource;
 import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;
 
 import java.util.HashMap;
@@ -9,16 +11,16 @@ import java.util.Map;
 
 import static com.pine.Engine.GLSL_VERSION;
 
-public class ShaderResource extends AbstractResource implements Shader {
+public class ComputeResource extends AbstractResource implements Shader {
     private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;
 
-    public ShaderResource(String id, ShaderCreationData dto) {
+    public ComputeResource(String id, ComputeCreationData dto) {
         super(id);
         try {
             program = GL46.glCreateProgram();
-            prepareShaders(GLSL_VERSION + "\n" + dto.vertex(), GLSL_VERSION + "\n" + dto.fragment());
+            prepareShaders(GLSL_VERSION + "\n" + dto.code());
         } catch (Exception ex) {
             getLogger().error("Error while creating shader", ex);
             valid = false;
@@ -35,12 +37,10 @@ public class ShaderResource extends AbstractResource implements Shader {
         return program;
     }
 
-    private void prepareShaders(final String vertex, final String fragment) {
-        int vertexShader = compileShader(vertex, GL46.GL_VERTEX_SHADER);
-        int fragmentShader = compileShader(fragment, GL46.GL_FRAGMENT_SHADER);
+    private void prepareShaders(final String code) {
+        int computeShader = compileShader(code, GL46.GL_COMPUTE_SHADER);
 
-        GL46.glAttachShader(program, vertexShader);
-        GL46.glAttachShader(program, fragmentShader);
+        GL46.glAttachShader(program, computeShader);
 
         GL46.glLinkProgram(program);
         GL46.glFlush();
@@ -55,7 +55,7 @@ public class ShaderResource extends AbstractResource implements Shader {
 
     @Override
     public ResourceType getResourceType() {
-        return ResourceType.SHADER;
+        return ResourceType.COMPUTE;
     }
 }
 

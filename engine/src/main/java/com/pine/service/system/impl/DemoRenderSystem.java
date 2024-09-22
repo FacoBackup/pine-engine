@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
-import com.pine.PInject;
 import com.pine.Engine;
+import com.pine.PInject;
 import com.pine.repository.CoreResourceRepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
@@ -12,10 +12,7 @@ import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
-import org.lwjgl.opengl.GL46;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.FloatBuffer;
 import java.util.List;
 
 public class DemoRenderSystem extends AbstractSystem {

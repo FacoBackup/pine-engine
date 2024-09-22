@@ -1,7 +1,7 @@
 #define SIZE .15
 layout (location = 0) in vec3 position;
 
-#include "./CAMERA_VIEW_INFO.glsl"
+#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 uniform mat4 transformMatrix;
 uniform vec3 translation;

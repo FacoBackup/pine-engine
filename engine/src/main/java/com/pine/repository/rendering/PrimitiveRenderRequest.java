@@ -4,7 +4,6 @@ import com.pine.component.rendering.SimpleTransformation;
 import com.pine.service.resource.primitives.mesh.MeshPrimitiveResource;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
