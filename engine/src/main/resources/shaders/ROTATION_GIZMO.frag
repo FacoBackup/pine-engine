@@ -1,4 +1,4 @@
-precision highp float;
+
 // THANKS TO https://www.shadertoy.com/view/stS3Rz
 #define PI          3.14159265359
 #define PI2         6.28318530718

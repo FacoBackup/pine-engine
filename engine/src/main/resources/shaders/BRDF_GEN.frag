@@ -1,5 +1,5 @@
 
-precision highp float;
+
 in vec2 texCoords;
 out vec4 fragColor;
 // THANKS TO https://www.shadertoy.com/view/3lXXDB

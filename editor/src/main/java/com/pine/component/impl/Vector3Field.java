@@ -1,0 +1,34 @@
+package com.pine.component.impl;
+
+import com.pine.component.AbstractFormField;
+import com.pine.inspection.FieldDTO;
+import imgui.ImGui;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+
+import java.util.function.BiConsumer;
+
+public class Vector3Field extends AbstractFormField {
+    private final float[] values = new float[3];
+    private final Vector3f valVec3;
+
+    public Vector3Field(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
+        super(dto, changerHandler);
+        valVec3 = (Vector3f) dto.getValue();
+    }
+
+    @Override
+    public void renderInternal() {
+
+        values[0] = valVec3.x;
+        values[1] = valVec3.y;
+        values[2] = valVec3.z;
+
+        ImGui.text(dto.getLabel());
+        if (ImGui.dragFloat3(internalId, values, .01f, dto.getMin(), dto.getMax())) {
+            changerHandler.accept(dto, values);
+        }
+    }
+}

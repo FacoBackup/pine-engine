@@ -61,6 +61,9 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
 
     @Override
     public void unbind() {
+        if(currentMesh == null){
+            return;
+        }
         GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, GL46.GL_NONE);
         currentMesh.vertexVBO.disable();
 

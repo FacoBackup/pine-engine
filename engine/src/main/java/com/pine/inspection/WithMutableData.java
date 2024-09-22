@@ -25,8 +25,8 @@ public abstract class WithMutableData {
                                 field.getAnnotation(MutableField.class).label(),
                                 field,
                                 this,
-                                rules != null ? rules.min() : null,
                                 rules != null ? rules.max() : null,
+                                rules != null ? rules.min() : null,
                                 rules != null && rules.isAngle(),
                                 rules != null && rules.isDirectChange(),
                                 getOptions(field)

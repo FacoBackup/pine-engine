@@ -1,0 +1,33 @@
+package com.pine.component.impl;
+
+import com.pine.component.AbstractFormField;
+import com.pine.inspection.FieldDTO;
+import imgui.ImGui;
+import org.joml.Quaternionf;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+
+import java.util.function.BiConsumer;
+
+public class QuaternionField extends AbstractFormField {
+    private final float[] values = new float[4];
+    private final Quaternionf valQuat;
+
+    public QuaternionField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
+        super(dto, changerHandler);
+        valQuat = (Quaternionf) dto.getValue();
+    }
+
+    @Override
+    public void renderInternal() {
+        values[0] = valQuat.x;
+        values[1] = valQuat.y;
+        values[2] = valQuat.z;
+        values[3] = valQuat.w;
+        ImGui.text(dto.getLabel());
+        if (ImGui.dragFloat4(internalId, values, .01f, dto.getMin(), dto.getMax())) {
+            changerHandler.accept(dto, values);
+        }
+    }
+}

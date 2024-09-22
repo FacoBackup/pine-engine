@@ -1,5 +1,5 @@
 
-precision highp float;
+
 
 in vec2 texCoords;
 

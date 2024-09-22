@@ -4,7 +4,9 @@ import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.PInjector;
 import com.pine.Updatable;
+import com.pine.service.system.impl.AtmosphereSystem;
 import com.pine.service.system.impl.DemoRenderSystem;
+import com.pine.service.system.impl.DepthPrePassSystem;
 import com.pine.service.system.impl.ShaderDataSyncSystem;
 
 import java.util.List;
@@ -16,6 +18,8 @@ public class SystemService implements Updatable {
 
     private List<AbstractSystem> systems = List.of(
             new ShaderDataSyncSystem(),
+            new DepthPrePassSystem(),
+            new AtmosphereSystem(),
             new DemoRenderSystem()
     );
 

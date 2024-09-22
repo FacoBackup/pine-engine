@@ -1,4 +1,4 @@
-precision highp float;
+
 #include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 uniform Settings{

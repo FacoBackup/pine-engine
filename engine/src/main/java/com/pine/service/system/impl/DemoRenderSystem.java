@@ -27,7 +27,6 @@ public class DemoRenderSystem extends AbstractSystem {
 
     @Override
     protected void renderInternal() {
-        ssboService.bind(ssboRepository.transformationSSBO);
         ssboService.bind(ssboRepository.modelSSBO);
         shaderService.bind(shaderRepository.demoShader);
 
@@ -35,13 +34,12 @@ public class DemoRenderSystem extends AbstractSystem {
         int instancedOffset = 0;
         for (int i = 0; i < requests.size(); i++) {
             var request = requests.get(i);
-            transformationIndexBuffer.put(0, (i + instancedOffset) * 3);
+            transformationIndexBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, transformationIndexBuffer);
             meshService.bind(request.primitive, request.runtimeData);
             meshService.unbind();
             instancedOffset += request.transformations.size();
         }
         shaderService.unbind();
-        ssboService.unbind();
     }
 }

@@ -25,7 +25,7 @@ public class SceneComponent extends AbstractComponent<SceneComponent> {
 
     @Override
     protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of(TransformationComponent.class, CullingComponent.class);
+        return Set.of(CullingComponent.class);
     }
 
     @Override
