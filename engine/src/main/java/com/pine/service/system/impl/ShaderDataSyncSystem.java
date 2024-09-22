@@ -13,7 +13,7 @@ import static com.pine.Engine.MAX_LIGHTS;
 public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
 
     private UniformDTO entityCount;
-    private final IntBuffer entityCountBuffer = MemoryUtil.memAllocInt(1);
+    private final IntBuffer countBuffer = MemoryUtil.memAllocInt(1);
 
     @Override
     public void onInitialize() {
@@ -25,11 +25,18 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
         updateUBOs();
         ssboService.updateBuffer(ssboRepository.transformationSSBO, ssboRepository.transformationSSBOState, 0);
 
+        if(renderingRepository.needsLightUpdate){
+            ssboService.updateBuffer(ssboRepository.lightDescriptionSSBO, ssboRepository.lightSSBOState, MAX_LIGHTS * 16);
+            renderingRepository.needsLightUpdate = false;
+        }
+
+        ssboService.bind(ssboRepository.lightDescriptionSSBO);
         ssboService.bind(ssboRepository.transformationSSBO);
         ssboService.bind(ssboRepository.modelSSBO);
+
         computeService.bind(computeRepository.transformationCompute);
-        entityCountBuffer.put(0, renderingRepository.requestCount);
-        computeService.bindUniform(entityCount, entityCountBuffer);
+        countBuffer.put(0, renderingRepository.requestCount);
+        computeService.bindUniform(entityCount, countBuffer);
         computeService.compute();
         ssboService.unbind();
     }
@@ -41,7 +48,5 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
         uboService.updateBuffer(uboRepository.lensPostProcessingUBO, uboRepository.lensPostProcessingUBOState, 0);
         uboService.updateBuffer(uboRepository.ssaoUBO, uboRepository.ssaoUBOState, 0);
         uboService.updateBuffer(uboRepository.uberUBO, uboRepository.uberUBOState, 0);
-        uboService.updateBuffer(uboRepository.lightsUBO, uboRepository.lightsUBOState, 0);
-        uboService.updateBuffer(uboRepository.lightsUBO, uboRepository.lightsUBOState2, MAX_LIGHTS * 16);
     }
 }

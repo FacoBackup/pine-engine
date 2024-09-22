@@ -13,8 +13,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
-import static com.pine.Engine.MAX_LIGHTS;
-
 @PBean
 public class CoreUBORepository implements CoreRepository {
     @PInject
@@ -37,8 +35,6 @@ public class CoreUBORepository implements CoreRepository {
     public final FloatBuffer lensPostProcessingUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer ssaoUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer uberUBOState = MemoryUtil.memAllocFloat(1);
-    public final FloatBuffer lightsUBOState = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
-    public final FloatBuffer lightsUBOState2 = MemoryUtil.memAllocFloat(MAX_LIGHTS * 16);
 
     @Override
     public void initialize() {
@@ -110,12 +106,6 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("maxStepsSSS", GLSLType.INT),
                 new UBOData("hasSkylight", GLSLType.BOOL),
                 new UBOData("hasAmbientOcclusion", GLSLType.BOOL)
-        ).staticResource());
-
-        lightsUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                BlockPoint.LIGHTS.getBlockName(),
-                new UBOData("lightPrimaryBuffer", GLSLType.MAT_4, MAX_LIGHTS),
-                new UBOData("lightSecondaryBuffer", GLSLType.MAT_4, MAX_LIGHTS)
         ).staticResource());
     }
 }

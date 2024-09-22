@@ -10,7 +10,6 @@ import java.util.Set;
 
 @PBean
 public class LightComponent extends AbstractComponent<LightComponent> {
-    // TODO - BREAK INTO SEPARATED COMPONENT TYPES
     @MutableField(label="Screen Space Shadows")
     public boolean screenSpaceShadows = false;
     @MutableField(label="Shadow map")
@@ -43,11 +42,9 @@ public class LightComponent extends AbstractComponent<LightComponent> {
     public float planeAreaHeight = 1;
     @MutableField(label = "Intensity")
     public int intensity = 1;
-
     @EnumSelection(enumType = LightType.class)
     @MutableField(label = "Type")
     public LightType type = LightType.DIRECTIONAL;
-
     @MutableField(label = "Color")
     public final Color color = new Color();
 

@@ -57,11 +57,11 @@ uniform UberShaderSettings {
     bool hasSkylight;
     bool hasAmbientOcclusion;
 };
-
-uniform Lights {
-    mat4 lightPrimaryBuffer[MAX_LIGHTS];
-    mat4 lightSecondaryBuffer[MAX_LIGHTS];
-};
+// TODO - USE SSBO
+//uniform Lights {
+//    mat4 lightPrimaryBuffer[MAX_LIGHTS];
+//    mat4 lightSecondaryBuffer[MAX_LIGHTS];
+//};
 
 #include "./SCENE_DEPTH_UTILS.glsl"
 

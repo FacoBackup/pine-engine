@@ -1,7 +1,13 @@
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 #include "../buffer_objects/TRANSFORMATION_SSBO.glsl"
+
+#include "../buffer_objects/LIGHT_DESCRIPTION_SSBO.glsl"
+
+#include "../buffer_objects/LIGHT_METADATA_SSBO.glsl"
+
 #include "../buffer_objects/MODEL_SSBO.glsl"
+
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 uniform int entityCount;
@@ -16,6 +22,8 @@ void main() {
         vec3 scale  = vec3(transformation[actualIndex + 6], transformation[actualIndex + 7], transformation[actualIndex + 8]);
         modelView[i] = viewProjection * createModelMatrix(translation, rotation, scale);
     }
+
+    // TODO - UPDATE LIGHTS SSBO
 }
 
 mat4 createModelMatrix(vec3 translation, vec3 rotation, vec3 scale) {
