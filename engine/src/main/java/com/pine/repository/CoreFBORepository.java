@@ -52,7 +52,7 @@ public class CoreFBORepository implements CoreRepository {
 
         visibility = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
                 .addSampler(0, GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
-                .addSampler(1, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
+                .addSampler(1, GL46.GL_R32I, GL46.GL_RED_INTEGER, GL46.GL_INT, false, false).staticResource());
 
         postProcessing1 = (FrameBufferObject) resources.addResource(new FBOCreationData(false, false).addSampler().staticResource());
         postProcessing2 = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true).addSampler().staticResource());

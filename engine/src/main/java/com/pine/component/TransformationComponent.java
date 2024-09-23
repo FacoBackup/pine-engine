@@ -40,7 +40,7 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
 
     public SimpleTransformation toSimpleTransformation() {
         if (this.simple == null) {
-            simple = new SimpleTransformation();
+            simple = new SimpleTransformation(getEntityId());
             simple.translation = translation;
             simple.rotation = rotation;
             simple.scale = scale;

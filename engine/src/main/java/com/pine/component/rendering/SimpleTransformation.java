@@ -7,4 +7,10 @@ public class SimpleTransformation {
     public Vector3f rotation = new Vector3f();
     public Vector3f scale = new Vector3f(1);
     public int parentTransformationId = -1;
+    public final int parentEntityId;
+    public int renderIndex;
+
+    public SimpleTransformation(int parentEntityId) {
+        this.parentEntityId = parentEntityId;
+    }
 }

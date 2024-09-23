@@ -4,9 +4,6 @@ import com.pine.component.AbstractFormField;
 import com.pine.inspection.FieldDTO;
 import imgui.ImGui;
 import org.joml.Quaternionf;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.function.BiConsumer;
 

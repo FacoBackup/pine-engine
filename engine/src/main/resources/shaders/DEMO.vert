@@ -4,10 +4,10 @@ layout(location = 0) in vec3 position;
 
 uniform int transformationIndex;
 
-out float instance;
+out float renderId;
 
 void main(){
-    int actualIndex = (transformationIndex + gl_InstanceID);
-    instance = modelView[0];
-    gl_Position = modelView[actualIndex] * vec4(position, 1.0);
+    int index = (transformationIndex + gl_InstanceID);
+    renderId = float(index);
+    gl_Position = modelView[index] * vec4(position, 1.0);
 }

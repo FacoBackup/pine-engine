@@ -8,8 +8,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 
-import static com.pine.Engine.MAX_LIGHTS;
-
 public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
 
     private UniformDTO entityCount;

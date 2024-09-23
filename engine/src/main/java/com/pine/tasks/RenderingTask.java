@@ -147,12 +147,14 @@ public class RenderingTask extends AbstractTask {
                 fillTransformations(request.transformation.translation);
                 fillTransformations(request.transformation.rotation);
                 fillTransformations(request.transformation.scale);
+                request.transformation.renderIndex = requestCount;
                 requestCount++;
             } else {
                 for (SimpleTransformation st : request.transformations) {
                     fillTransformations(st.translation);
                     fillTransformations(st.rotation);
                     fillTransformations(st.scale);
+                    st.renderIndex = requestCount;
                     requestCount++;
                 }
             }
@@ -242,7 +244,7 @@ public class RenderingTask extends AbstractTask {
             PrimitiveRenderRequest composite;
             if (scene.request == null) {
                 transformations = new ArrayList<>();
-                composite = new PrimitiveRenderRequest(mesh, scene.runtimeData, transformations);
+                composite = new PrimitiveRenderRequest(mesh, scene.runtimeData, transformations, scene.getEntityId());
             } else {
                 composite = scene.request;
                 transformations = scene.request.transformations;

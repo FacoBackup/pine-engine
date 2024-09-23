@@ -1,9 +1,9 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.PInject;
-import com.pine.repository.EntitySelectionRepository;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
+import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.HierarchyRequest;
 import com.pine.tasks.RequestProcessingTask;

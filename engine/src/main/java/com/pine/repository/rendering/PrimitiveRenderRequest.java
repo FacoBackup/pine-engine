@@ -15,10 +15,10 @@ public class PrimitiveRenderRequest {
     public final SimpleTransformation transformation;
     public final List<SimpleTransformation> transformations;
 
-
-    public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, List<SimpleTransformation> transformations) {
-        this(primitive, runtimeData, new SimpleTransformation(), transformations);
+    public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, List<SimpleTransformation> transformations, int entityId) {
+        this(primitive, runtimeData, new SimpleTransformation(entityId), transformations);
     }
+
     public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, SimpleTransformation transformation) {
         this(primitive, runtimeData, transformation, Collections.emptyList());
     }

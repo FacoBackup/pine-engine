@@ -2,10 +2,10 @@ package com.pine.panels.inspector;
 
 import com.pine.Icon;
 import com.pine.PInject;
-import com.pine.component.FormPanel;
-import com.pine.repository.EntitySelectionRepository;
 import com.pine.component.EntityComponent;
+import com.pine.component.FormPanel;
 import com.pine.inspection.WithMutableData;
+import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AddComponentRequest;
 import com.pine.service.world.request.UpdateFieldRequest;

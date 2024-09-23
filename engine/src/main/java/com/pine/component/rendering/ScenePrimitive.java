@@ -8,9 +8,13 @@ public class ScenePrimitive {
     public boolean contributeToProbes = true;
     public ResourceRef<Primitive> primitive;
 
-    public final SimpleTransformation transformation = new SimpleTransformation();
+    public final SimpleTransformation transformation;
 
     public int maxDistanceFromCamera = 300;
     public int frustumCullingBoxWidth = 1;
     public int frustumCullingBoxHeight = 1;
+
+    public ScenePrimitive(SimpleTransformation transformation) {
+        this.transformation = transformation;
+    }
 }

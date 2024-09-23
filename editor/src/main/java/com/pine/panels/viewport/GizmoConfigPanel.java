@@ -1,23 +1,14 @@
 package com.pine.panels.viewport;
 
-import com.pine.Engine;
 import com.pine.PInject;
-import com.pine.component.TransformationComponent;
-import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.EntitySelectionRepository;
-import com.pine.repository.RuntimeRepository;
-import com.pine.service.resource.ResourceService;
-import com.pine.service.world.WorldService;
 import com.pine.ui.panel.AbstractPanel;
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiWindowFlags;
-import org.joml.Vector2f;
 
 public class GizmoConfigPanel extends AbstractPanel {
     @PInject

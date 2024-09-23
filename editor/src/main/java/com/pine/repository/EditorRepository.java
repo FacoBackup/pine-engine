@@ -1,15 +1,10 @@
 package com.pine.repository;
 
 import com.pine.PBean;
-import com.pine.injection.EngineExternalModule;
-import com.pine.repository.GizmoOperation;
-import com.pine.repository.GizmoOperationMode;
 import com.pine.tools.ExecutionEnvironment;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
-
-import java.util.LinkedList;
 
 @PBean
 public class EditorRepository {

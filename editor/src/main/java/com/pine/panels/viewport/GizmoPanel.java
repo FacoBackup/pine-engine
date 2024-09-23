@@ -1,7 +1,7 @@
 package com.pine.panels.viewport;
 
 import com.pine.PInject;
-import com.pine.component.TransformationComponent;
+import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.ui.panel.AbstractPanel;
@@ -22,7 +22,7 @@ public class GizmoPanel extends AbstractPanel {
     private final float[] translationCache = new float[3];
     private final float[] rotationCache = new float[3];
     private final float[] scaleCache = new float[3];
-    private TransformationComponent selected;
+    private SimpleTransformation selected;
     private final ImVec2 size;
     private final ImVec2 position;
 
@@ -88,7 +88,7 @@ public class GizmoPanel extends AbstractPanel {
         ImGuizmo.recomposeMatrixFromComponents(translationCache, rotationCache, scaleCache, cacheMatrix);
     }
 
-    public void setSelected(TransformationComponent selected) {
+    public void setSelected(SimpleTransformation selected) {
         this.selected = selected;
     }
 }

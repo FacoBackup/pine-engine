@@ -2,25 +2,17 @@ package com.pine.panels.viewport;
 
 import com.pine.Engine;
 import com.pine.PInject;
-import com.pine.component.TransformationComponent;
-import com.pine.repository.*;
+import com.pine.component.rendering.SimpleTransformation;
+import com.pine.repository.EntitySelectionRepository;
+import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.world.WorldService;
 import com.pine.ui.panel.AbstractWindowPanel;
-import imgui.*;
-import imgui.extension.imguizmo.flag.Operation;
+import imgui.ImGui;
+import imgui.ImVec2;
 import imgui.flag.ImGuiKey;
-import imgui.extension.imguizmo.ImGuizmo;
-import imgui.extension.imguizmo.flag.Mode;
-import imgui.flag.ImGuiStyleVar;
-import imgui.flag.ImGuiWindowFlags;
-import org.joml.Matrix4f;
-
-import java.util.Objects;
-
-import static java.lang.foreign.MemorySegment.NULL;
 
 public class ViewportPanel extends AbstractWindowPanel {
     @PInject
@@ -33,29 +25,15 @@ public class ViewportPanel extends AbstractWindowPanel {
     public ResourceService resourceService;
 
     @PInject
-    public EditorRepository editorRepository;
-
-    @PInject
-    public CameraRepository cameraRepository;
-
-    @PInject
     public EntitySelectionRepository entitySelectionRepository;
-
-    @PInject
-    public WorldService world;
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     private final ImVec2 INV_X = new ImVec2(1, 0);
     private final ImVec2 INV_Y = new ImVec2(0, 1);
-    private final float[] cacheMatrix = new float[16];
-    private final float[] viewMatrixCache = new float[16];
-    private final float[] projectionMatrixCache = new float[16];
-    private final float[] translationCache = new float[3];
-    private final float[] rotationCache = new float[3];
-    private final float[] scaleCache = new float[3];
-    private TransformationComponent selected;
+    private SimpleTransformation selected;
     private GizmoPanel gizmo;
+    private GizmoConfigPanel gizmoPanel;
 
     @Override
     public void onInitialize() {
@@ -63,7 +41,7 @@ public class ViewportPanel extends AbstractWindowPanel {
         padding.x = 0;
         padding.y = 0;
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
-        appendChild(new GizmoConfigPanel(position, sizeVec));
+        appendChild(gizmoPanel = new GizmoConfigPanel(position, sizeVec));
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
     }
 
@@ -83,19 +61,16 @@ public class ViewportPanel extends AbstractWindowPanel {
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
-        Integer mainSelection = entitySelectionRepository.getMainSelection();
-        if (mainSelection != null && (selected == null || !Objects.equals(mainSelection, selected.getEntityId()))) {
-            selected = world.getTransformationComponentUnchecked(mainSelection);
-        } else if (mainSelection == null) {
-            selected = null;
+        if (selected != entitySelectionRepository.getPrimitiveSelected()) {
+            selected = entitySelectionRepository.getPrimitiveSelected();
         }
 
+        gizmoPanel.renderInternal();
         if (selected == null) {
             return;
         }
-
         gizmo.setSelected(selected);
-        super.renderInternal();
+        gizmo.renderInternal();
     }
 
     @Override
