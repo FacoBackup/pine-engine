@@ -1,7 +1,17 @@
-
 uniform int shadingModel;
 
-#include "./ATTRIBUTES.glsl"
+#include "../enum/LIGHT_TYPE.glsl"
+#include "../util/STRONG_BLUR.glsl"
+#include "../util/RAY_MARCHER.glsl"
+#include "../util/SSS.glsl"
+#include "../util/BRDF_FUNCTIONS.glsl"
+#include "../uber/COMPUTE_DIRECTIONAL_LIGHTS.glsl"
+#include "../uber/COMPUTE_POINT_LIGHTS.glsl"
+#include "../uber/COMPUTE_SPOTLIGHT.glsl"
+#include "../uber/COMPUTE_AREALIGHT.glsl"
+#include "../uber/PB_LIGHT_COMPUTATION.glsl"
+#include "../util/SCENE_DEPTH_UTILS.glsl"
+#include "../uber/ATTRIBUTES.glsl"
 
 //--UNIFORMS--
 
@@ -33,9 +43,9 @@ vec3 randomColor(float seed) {
     float r = rand(vec2(seed));
     float g = rand(vec2(seed + r));
     return vec3(
-        r,
-        g,
-        rand(vec2(seed + g))
+    r,
+    g,
+    rand(vec2(seed + g))
     );
 }
 bool checkDither() {
@@ -63,6 +73,7 @@ bool checkLight(mat4 primaryBuffer, mat4 secondaryBuffer) {
 
     return length(directIllumination) > 0.;
 }
+
 void main() {
     extractData();
     if (checkDither()) discard;

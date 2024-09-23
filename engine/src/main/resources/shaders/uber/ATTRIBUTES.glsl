@@ -11,13 +11,6 @@
 #define DEPTH_THRESHOLD 1.2
 #define PI2 6.2831853
 
-#define DIRECTIONAL 0
-#define SPOT 1
-#define POINT 2
-#define SPHERE 3
-#define DISK 4
-#define PLANE 5
-
 #define UNLIT 0
 #define ISOTROPIC 1
 #define ANISOTROPIC 2
@@ -57,13 +50,6 @@ uniform UberShaderSettings {
     bool hasSkylight;
     bool hasAmbientOcclusion;
 };
-// TODO - USE SSBO
-//uniform Lights {
-//    mat4 lightPrimaryBuffer[MAX_LIGHTS];
-//    mat4 lightSecondaryBuffer[MAX_LIGHTS];
-//};
-
-#include "./SCENE_DEPTH_UTILS.glsl"
 
 uniform sampler2D brdf_sampler;
 uniform sampler2D SSAO;
@@ -230,14 +216,5 @@ vec2 parallaxOcclusionMapping(sampler2D heightMap, float heightScale, int layers
     return finalTexCoords;
 }
 
-#include "./STRONG_BLUR.glsl"
-#include "./RAY_MARCHER.glsl"
-#include "./SSS.glsl"
-#include "./BRDF_FUNCTIONS.glsl"
-#include "./COMPUTE_DIRECTIONAL_LIGHTS.glsl"
-#include "./COMPUTE_POINT_LIGHTS.glsl"
-#include "./COMPUTE_SPOTLIGHT.glsl"
-#include "./COMPUTE_AREALIGHT.glsl"
-#include "./PB_LIGHT_COMPUTATION.glsl"
 
 out vec4 fragColor;

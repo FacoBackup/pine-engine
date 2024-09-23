@@ -1,4 +1,4 @@
-precision lowp float;
+
 
 #define BIGGER_RADIUS .5
 #define SMALLER_RADIUS .43
@@ -10,7 +10,7 @@ in mat4 S;
 uniform sampler2D iconSampler;
 out vec4 finalColor;
 
-#include "./SCENE_DEPTH_UTILS.glsl"
+#include "../util/SCENE_DEPTH_UTILS.glsl"
 
 void main() {
 

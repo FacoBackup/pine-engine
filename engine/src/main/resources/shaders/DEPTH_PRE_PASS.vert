@@ -6,12 +6,12 @@ layout (location = 0) in vec3 position;
 
 uniform int transformationIndex;
 
-out int renderingIndex;
+out flat int renderingIndex;
 out float depthFunc;
 
 void main() {
     depthFunc = logDepthFC;
 
-    int renderingIndex = (transformationIndex + gl_InstanceID);
+    renderingIndex = (transformationIndex + gl_InstanceID);
     gl_Position = modelView[renderingIndex] * vec4(position, 1.0);
 }

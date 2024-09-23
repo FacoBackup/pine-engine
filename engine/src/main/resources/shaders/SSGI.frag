@@ -14,9 +14,9 @@ uniform sampler2D previousFrame;
 uniform vec3 rayMarchSettings;
 out vec4 fragColor;
 
-#include "./SCENE_DEPTH_UTILS.glsl"
+#include "./util/SCENE_DEPTH_UTILS.glsl"
 
-#include "./RAY_MARCHER.glsl"
+#include "./util/RAY_MARCHER.glsl"
 
 float interleavedGradientNoise(vec2 n) {
     float f = 0.06711056 * n.x + 0.00583715 * n.y;

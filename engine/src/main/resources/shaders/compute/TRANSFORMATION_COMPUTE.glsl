@@ -1,6 +1,6 @@
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-#include "../LIGHT_TYPE.glsl"
+#include "../enum/LIGHT_TYPE.glsl"
 
 #include "../buffer_objects/TRANSFORMATION_SSBO.glsl"
 
@@ -12,6 +12,8 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 
+#include "../util/MATH.glsl"
+
 uniform int lightCount;
 uniform int entityCount;
 
@@ -20,7 +22,6 @@ uniform int entityCount;
 #define INFO_PER_ENTITY 9
 #define INFO_PER_LIGHT_METADATA 2
 
-#include "../MATH.glsl"
 
 
 void main() {

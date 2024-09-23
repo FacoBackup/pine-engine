@@ -50,7 +50,10 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
     private void updateUBOs() {
         uboService.updateBuffer(uboRepository.cameraViewUBO, uboRepository.cameraViewUBOState, 0);
         uboService.updateBuffer(uboRepository.cameraProjectionUBO, uboRepository.cameraProjectionUBOState, 0);
+
+        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         uboService.updateBuffer(uboRepository.frameCompositionUBO, uboRepository.frameCompositionUBOState, 0);
+        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         uboService.updateBuffer(uboRepository.lensPostProcessingUBO, uboRepository.lensPostProcessingUBOState, 0);
         uboService.updateBuffer(uboRepository.ssaoUBO, uboRepository.ssaoUBOState, 0);
         uboService.updateBuffer(uboRepository.uberUBO, uboRepository.uberUBOState, 0);

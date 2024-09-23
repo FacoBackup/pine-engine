@@ -1,4 +1,4 @@
-in int renderingIndex;
+flat in int renderingIndex;
 in float depthFunc;
 
 layout (location = 0) out vec4 v_depth_velocity;

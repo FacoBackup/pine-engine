@@ -8,7 +8,7 @@ import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
 import com.pine.service.resource.ubo.UniformBufferObject;
-import com.pine.type.BlockPoint;
+import com.pine.type.UBODeclaration;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -38,23 +38,24 @@ public class CoreUBORepository implements CoreRepository {
 
     @Override
     public void initialize() {
+        // TODO - UNIFY INTO SINGLE UBO
         cameraViewUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                BlockPoint.CAMERA_VIEW.getBlockName(),
+                UBODeclaration.CAMERA_VIEW.getBlockName(),
                 new UBOData("viewProjection", GLSLType.MAT_4),
                 new UBOData("viewMatrix", GLSLType.MAT_4),
                 new UBOData("invViewMatrix", GLSLType.MAT_4),
                 new UBOData("placement", GLSLType.VEC_4)).staticResource());
-
         cameraProjectionUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                BlockPoint.CAMERA_PROJECTION.getBlockName(),
+                UBODeclaration.CAMERA_PROJECTION.getBlockName(),
                 new UBOData("projectionMatrix", GLSLType.MAT_4),
                 new UBOData("invProjectionMatrix", GLSLType.MAT_4),
                 new UBOData("bufferResolution", GLSLType.VEC_2),
                 new UBOData("logDepthFC", GLSLType.FLOAT),
                 new UBOData("logC", GLSLType.FLOAT)).staticResource());
 
+        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         frameCompositionUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                BlockPoint.FRAME_COMPOSITION.getBlockName(),
+                UBODeclaration.FRAME_COMPOSITION.getBlockName(),
                 new UBOData("inverseFilterTextureSize", GLSLType.VEC_2),
                 new UBOData("useFXAA", GLSLType.BOOL),
                 new UBOData("filmGrainEnabled", GLSLType.BOOL),
@@ -63,8 +64,9 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("FXAAReduceMul", GLSLType.FLOAT),
                 new UBOData("filmGrainStrength", GLSLType.FLOAT)).staticResource());
 
+        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         lensPostProcessingUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                BlockPoint.LENS_PP.getBlockName(),
+                UBODeclaration.LENS_PP.getBlockName(),
                 new UBOData("textureSizeXDOF", GLSLType.FLOAT),
                 new UBOData("textureSizeYDOF", GLSLType.FLOAT),
                 new UBOData("distortionIntensity", GLSLType.FLOAT),
@@ -82,15 +84,17 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("exposure", GLSLType.FLOAT)
         ).staticResource());
 
+        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         ssaoUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                BlockPoint.SSAO.getBlockName(),
+                UBODeclaration.SSAO.getBlockName(),
                 new UBOData("settings", GLSLType.VEC_4),
-                new UBOData("samples", GLSLType.VEC_4, 64),
+                new UBOData("samples", GLSLType.VEC_4, 64), // TODO - SAMPLES AS STATIC ARRAY ON SHADER
                 new UBOData("noiseScale", GLSLType.VEC_2)
         ).staticResource());
 
+        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         uberUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                BlockPoint.UBER.getBlockName(),
+                UBODeclaration.UBER.getBlockName(),
                 new UBOData("shadowMapsQuantity", GLSLType.FLOAT),
                 new UBOData("shadowMapResolution", GLSLType.FLOAT),
                 new UBOData("lightQuantity", GLSLType.INT),

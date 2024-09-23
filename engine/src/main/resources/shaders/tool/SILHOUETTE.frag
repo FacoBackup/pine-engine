@@ -1,4 +1,4 @@
-precision lowp float;
+
 uniform sampler2D silhouette;
 
 uniform bool isOutline;

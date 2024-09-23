@@ -1,17 +1,17 @@
 package com.pine.type;
 
-public enum BlockPoint {
+public enum UBODeclaration {
     CAMERA_VIEW("CameraViewInfo"),
     FRAME_COMPOSITION("CompositionSettings"),
+    // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
     LENS_PP("LensEffects"),
     SSAO("Settings"),
     UBER("UberShaderSettings"),
-    LIGHTS("Lights"),
     CAMERA_PROJECTION("CameraProjectionInfo");
 
     private final String blockName;
 
-    BlockPoint(String blockName) {
+    UBODeclaration(String blockName) {
         this.blockName = blockName;
     }
 
