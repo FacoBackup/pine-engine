@@ -1,5 +1,6 @@
 package component.panel;
 
+import com.pine.PInjector;
 import com.pine.ui.ViewDocument;
 import com.pine.ui.panel.AbstractPanel;
 import com.pine.ui.view.*;
@@ -65,7 +66,8 @@ class AbstractPanelTest {
     }
 
     private static AbstractPanel createPanel(String file) throws IOException {
-        final ViewDocument document = new ViewDocument(null);
+        PInjector mock = Mockito.mock(PInjector.class);
+        final ViewDocument document = new ViewDocument(null, mock);
         AbstractPanel spy = Mockito.spy(new AbstractPanel() {
 
             @Override

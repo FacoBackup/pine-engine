@@ -7,7 +7,8 @@ import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.service.world.request.AbstractRequest;
-import com.pine.tasks.RequestProcessingTask;
+import com.pine.service.RequestProcessingService;
+import com.pine.tasks.SyncTask;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -26,15 +27,13 @@ public class Engine {
     @PInject
     public ModulesService modules;
     @PInject
-    public ClockRepository clock;
-    @PInject
     public SystemService systemsService;
     @PInject
     public ResourceService resourcesService;
     @PInject
     public MessageService messageService;
     @PInject
-    public RequestProcessingTask requestTask;
+    public RequestProcessingService requestTask;
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
@@ -47,6 +46,10 @@ public class Engine {
     public CoreComputeRepository computeRepository;
     @PInject
     public CorePrimitiveRepository primitiveRepository;
+    @PInject
+    public WorldRepository worldRepository;
+    @PInject
+    public List<SyncTask> syncTasks;
 
     public void prepare(int displayW, int displayH, BiConsumer<String, Boolean> onMessage) {
         this.displayW = displayW;
@@ -59,12 +62,13 @@ public class Engine {
         computeRepository.initialize();
         primitiveRepository.initialize();
         systemsService.initialize();
+        worldRepository.initialize();
     }
 
     public void render() {
-        clock.tick();
-        resourcesService.tick();
-        systemsService.tick();
+        for(var syncTask : syncTasks) {
+            syncTask.sync();
+        }
     }
 
     public void shutdown() {

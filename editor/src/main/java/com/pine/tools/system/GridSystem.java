@@ -15,9 +15,6 @@ import org.lwjgl.opengl.GL46;
 
 public class GridSystem extends AbstractSystem {
     @PInject
-    public Engine engine;
-
-    @PInject
     public EditorRepository engineConfig;
 
     @PInject
@@ -56,7 +53,5 @@ public class GridSystem extends AbstractSystem {
         EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.sceneDepthVelocity);
 
         meshService.bind(primitiveRepository.planeMesh);
-        shaderService.unbind();
-        meshService.unbind();
     }
 }

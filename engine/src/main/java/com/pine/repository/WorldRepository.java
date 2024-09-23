@@ -15,17 +15,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @PBean
-public class WorldRepository extends SerializableRepository implements Initializable {
+public class WorldRepository extends SerializableRepository  {
     public static final ConcurrentHashMap<String, EntityComponent> EMPTY_MAP = new ConcurrentHashMap<>();
     public static final int ROOT_ID = 0;
-    private static final MetadataComponent ROOT = new MetadataComponent(ROOT_ID);
+    public static final MetadataComponent ROOT = new MetadataComponent(ROOT_ID);
     public final Map<Integer, ConcurrentHashMap<String, EntityComponent>> entities = new ConcurrentHashMap<>();
     public final Map<Integer, Integer> childParent = new ConcurrentHashMap<>();
     public final Map<Integer, LinkedList<Integer>> parentChildren = new ConcurrentHashMap<>();
     public final Map<Integer, Boolean> activeEntities = new ConcurrentHashMap<>();
-    public final WorldHierarchyTree worldTree = new WorldHierarchyTree(ROOT);
     private final LinkedList<Integer> freeIds = new LinkedList<>();
     private int nextId = ROOT_ID + 1;
+    private int worldChangeId = 0;
 
     @PInject
     public List<EntityComponent> components;
@@ -48,7 +48,7 @@ public class WorldRepository extends SerializableRepository implements Initializ
         entities.put(ROOT_ID, rootComponents);
         parentChildren.put(ROOT_ID, new LinkedList<>());
         childParent.put(ROOT_ID, ROOT_ID);
-
+        ROOT.name = "World";
     }
 
     public int genNextId() {
@@ -63,11 +63,6 @@ public class WorldRepository extends SerializableRepository implements Initializ
         return entityId;
     }
 
-    @Override
-    public void onInitialize() {
-        ROOT.name = "World";
-    }
-
     public boolean registerComponent(EntityComponent instance) {
         try {
             entities.get(instance.getEntityId()).put(instance.getClass().getSimpleName(), instance);
@@ -80,5 +75,13 @@ public class WorldRepository extends SerializableRepository implements Initializ
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public int getWorldChangeId() {
+        return worldChangeId;
+    }
+
+    public void registerChange(){
+        worldChangeId++;
     }
 }

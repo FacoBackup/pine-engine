@@ -31,10 +31,6 @@ public class WorldService {
         return null;
     }
 
-    public WorldHierarchyTree getHierarchyTree() {
-        return worldRepository.worldTree;
-    }
-
     public TransformationComponent getTransformationComponentUnchecked(int entityId) {
         return (TransformationComponent) worldRepository.entities.get(entityId).get(TRANSFORMATION_CLASS);
     }

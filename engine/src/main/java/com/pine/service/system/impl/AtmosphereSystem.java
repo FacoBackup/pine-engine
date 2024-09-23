@@ -113,7 +113,5 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
 
             meshService.bind(primitiveRepository.quadMesh);
         }
-        meshService.unbind();
-        shaderService.unbind();
     }
 }

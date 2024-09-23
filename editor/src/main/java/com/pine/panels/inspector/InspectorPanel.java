@@ -9,7 +9,7 @@ import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AddComponentRequest;
 import com.pine.service.world.request.UpdateFieldRequest;
-import com.pine.tasks.RequestProcessingTask;
+import com.pine.service.RequestProcessingService;
 import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
 
@@ -23,7 +23,7 @@ public class InspectorPanel extends AbstractWindowPanel {
     public EntitySelectionRepository selectionRepository;
 
     @PInject
-    public RequestProcessingTask requestProcessingTask;
+    public RequestProcessingService requestProcessingService;
 
     @PInject
     public List<EntityComponent> components;
@@ -56,7 +56,7 @@ public class InspectorPanel extends AbstractWindowPanel {
                 for (var component : worldService.getComponents(selected).values()) {
                     FormPanel formPanel;
                     formPanels.add(formPanel = new FormPanel((WithMutableData) component, (dto, newValue) -> {
-                        requestProcessingTask.addRequest(new UpdateFieldRequest(dto, newValue));
+                        requestProcessingService.addRequest(new UpdateFieldRequest(dto, newValue));
                     }));
                     appendChild(formPanel);
                 }
@@ -73,7 +73,7 @@ public class InspectorPanel extends AbstractWindowPanel {
                     String type = types.get(i);
                     if (ImGui.selectable(type)) {
                         EntityComponent entityComponent = components.get(i - 1);
-                        requestProcessingTask.addRequest(new AddComponentRequest(entityComponent.getClass(), selected));
+                        requestProcessingService.addRequest(new AddComponentRequest(entityComponent.getClass(), selected));
                         selected = null;
                     }
                 }

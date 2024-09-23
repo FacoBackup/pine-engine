@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 @PBean
 public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
+    private Shader currentShader;
 
     @PInject
     public UBOService uboService;
@@ -30,16 +31,22 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
 
     @Override
     protected void bindInternal(Shader instance, ShaderRuntimeData data) {
+        if (currentShader != instance) {
+            unbind();
+        }
+        currentShader = instance;
         bindProgram(instance);
-        var uniforms = instance.getUniforms();
-        for (var entry : data.getUniformData().entrySet()) {
-            bindUniform(uniforms.get(entry.getKey()), entry.getValue());
+        if (data != null) {
+            var uniforms = instance.getUniforms();
+            for (var entry : data.getUniformData().entrySet()) {
+                bindUniform(uniforms.get(entry.getKey()), entry.getValue());
+            }
         }
     }
 
     @Override
     protected void bindInternal(Shader instance) {
-        bindProgram(instance);
+        bindInternal(instance, null);
     }
 
     @Override

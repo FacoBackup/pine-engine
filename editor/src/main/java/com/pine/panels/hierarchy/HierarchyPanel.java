@@ -6,7 +6,8 @@ import com.pine.component.MetadataComponent;
 import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.HierarchyRequest;
-import com.pine.tasks.RequestProcessingTask;
+import com.pine.service.RequestProcessingService;
+import com.pine.tools.repository.WorldTreeTask;
 import com.pine.ui.panel.AbstractWindowPanel;
 import com.pine.ui.view.FragmentView;
 import com.pine.ui.view.TreeView;
@@ -17,10 +18,10 @@ public class HierarchyPanel extends AbstractWindowPanel {
     public EntitySelectionRepository selectionRepository;
 
     @PInject
-    public WorldService world;
+    public WorldTreeTask worldTask;
 
     @PInject
-    public RequestProcessingTask requestProcessingTask;
+    public RequestProcessingService requestProcessingService;
 
     @Override
     protected String getDefinition() {
@@ -40,7 +41,7 @@ public class HierarchyPanel extends AbstractWindowPanel {
         headerContainer.appendChild(new HierarchyHeaderPanel());
 
         var hierarchyTree = (TreeView) document.getElementById("hierarchyTree");
-        hierarchyTree.setTree(world.getHierarchyTree());
+        hierarchyTree.setTree(worldTask.getHierarchyTree());
         hierarchyTree.setOnClick((branch, multiSelect) -> {
             if (!multiSelect) {
                 selectionRepository.clearSelection();
@@ -48,7 +49,7 @@ public class HierarchyPanel extends AbstractWindowPanel {
             selectionRepository.addSelected(((EntityComponent) branch.data).getEntityId());
         });
         hierarchyTree.setOnDrop((target, drop) -> {
-            requestProcessingTask.addRequest(new HierarchyRequest(((MetadataComponent) target.data).getEntityId(), ((MetadataComponent) drop.data).getEntityId()));
+            requestProcessingService.addRequest(new HierarchyRequest(((MetadataComponent) target.data).getEntityId(), ((MetadataComponent) drop.data).getEntityId()));
         });
     }
 

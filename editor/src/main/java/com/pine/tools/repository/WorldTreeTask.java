@@ -1,60 +1,46 @@
-package com.pine.tasks;
+package com.pine.tools.repository;
 
 import com.pine.AbstractTree;
-import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
 import com.pine.repository.WorldRepository;
-import com.pine.service.MessageService;
 import com.pine.service.world.WorldHierarchyTree;
 import com.pine.service.world.WorldService;
-import com.pine.service.world.request.AbstractRequest;
-import com.pine.service.world.request.RequestMessage;
+import com.pine.tasks.AbstractTask;
 
 import java.util.LinkedList;
 import java.util.Vector;
 
+import static com.pine.repository.WorldRepository.ROOT;
 import static com.pine.repository.WorldRepository.ROOT_ID;
 
 @PBean
-public class RequestProcessingTask extends AbstractTask implements Loggable {
+public class WorldTreeTask extends AbstractTask {
+    private final WorldHierarchyTree worldTree = new WorldHierarchyTree(ROOT);
+    private int internalWorldChangeId;
+
     @PInject
     public WorldRepository worldRepository;
 
     @PInject
     public WorldService world;
 
-    @PInject
-    public MessageService messageService;
-
-    private final Vector<AbstractRequest> requests = new Vector<>();
-
     @Override
     protected void tickInternal() {
-        try {
-            if (requests.isEmpty()) {
-                return;
-            }
-            if (worldRepository.entities.isEmpty()) {
-                worldRepository.initialize();
-            }
-            for (var request : requests) {
-                RequestMessage message = request.run(worldRepository, world);
-                if (message != null) {
-                    messageService.onMessage(message.message(), message.isError());
-                }
-            }
-            requests.clear();
-            worldRepository.worldTree.branches.clear();
+        if(worldRepository.getWorldChangeId() != internalWorldChangeId) {
+            internalWorldChangeId = worldRepository.getWorldChangeId();
+            worldTree.branches.clear();
 
             for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {
-                updateTree(childId, worldRepository.worldTree.branches);
+                updateTree(childId, worldTree.branches);
             }
-        } catch (Exception e) {
-            getLogger().error(e.getMessage(), e);
         }
+    }
+
+    public WorldHierarchyTree getHierarchyTree() {
+        return worldTree;
     }
 
     private void updateTree(Integer entityId, Vector<AbstractTree<MetadataComponent, EntityComponent>> branch) {
@@ -67,9 +53,5 @@ public class RequestProcessingTask extends AbstractTask implements Loggable {
                 updateTree(childId, current.branches);
             }
         }
-    }
-
-    public void addRequest(AbstractRequest request) {
-        requests.add(request);
     }
 }

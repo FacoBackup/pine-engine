@@ -44,7 +44,6 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
             computeService.bindUniform(lightCount, lightCountBuffer);
 
             computeService.compute();
-            ssboService.unbind();
         }
     }
 

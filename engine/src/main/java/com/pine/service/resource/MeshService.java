@@ -24,6 +24,9 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
 
     @Override
     protected void bindInternal(Primitive instance, MeshRuntimeData data) {
+        if(currentMesh != instance){
+            unbind();
+        }
         currentMesh = instance;
         drawCommand = data;
         draw();
@@ -31,13 +34,11 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
 
     @Override
     protected void bindInternal(Primitive instance) {
-        currentMesh = instance;
-        drawCommand = null;
-        draw();
+       bindInternal(instance, null);
     }
 
     private void draw() {
-        if(currentMesh == null){
+        if (currentMesh == null) {
             return;
         }
         if (isInWireframeMode && (drawCommand == null || drawCommand.mode != MeshRenderingMode.WIREFRAME)) {
@@ -54,14 +55,14 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
             case WIREFRAME -> wireframe();
             case TRIANGLE_FAN -> draw(GL46.GL_TRIANGLE_FAN);
             case TRIANGLE_STRIP -> draw(GL46.GL_TRIANGLE_STRIP);
-            case LINES ->         draw(GL46.GL_LINES);
+            case LINES -> draw(GL46.GL_LINES);
             default -> draw(GL46.GL_TRIANGLES);
         }
     }
 
     @Override
     public void unbind() {
-        if(currentMesh == null){
+        if (currentMesh == null) {
             return;
         }
         GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, GL46.GL_NONE);
@@ -113,9 +114,8 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
 
     private void draw(int mode) {
         bindResources();
-
         if (drawCommand != null && drawCommand.instanceCount > 0) {
-            GL46.glDrawElementsInstanced(mode, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0, drawCommand.instanceCount );
+            GL46.glDrawElementsInstanced(mode, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0, drawCommand.instanceCount);
             return;
         }
         GL46.glDrawElements(mode, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
@@ -123,7 +123,7 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
 
     public Primitive createTerrain(String heightMapTexture) {
         IResource byId = resourceService.getOrCreateResource(heightMapTexture);
-        if(byId instanceof TextureResource){
+        if (byId instanceof TextureResource) {
             var t = (TextureResource) byId;
 //            t.getWidth();
 //            t.getHeight();

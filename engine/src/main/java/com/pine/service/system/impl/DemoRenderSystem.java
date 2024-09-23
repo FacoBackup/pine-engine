@@ -37,9 +37,7 @@ public class DemoRenderSystem extends AbstractSystem {
             transformationIndexBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, transformationIndexBuffer);
             meshService.bind(request.primitive, request.runtimeData);
-            meshService.unbind();
             instancedOffset += request.transformations.size();
         }
-        shaderService.unbind();
     }
 }

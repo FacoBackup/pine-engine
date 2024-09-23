@@ -8,11 +8,12 @@ import com.pine.service.system.impl.AtmosphereSystem;
 import com.pine.service.system.impl.DemoRenderSystem;
 import com.pine.service.system.impl.DepthPrePassSystem;
 import com.pine.service.system.impl.ShaderDataSyncSystem;
+import com.pine.tasks.SyncTask;
 
 import java.util.List;
 
 @PBean
-public class SystemService implements Updatable {
+public class SystemService implements SyncTask {
     @PInject
     public PInjector pInjector;
 
@@ -38,7 +39,7 @@ public class SystemService implements Updatable {
     }
 
     @Override
-    public void tick() {
+    public void sync() {
         for (var system : systems) {
             system.render();
         }
