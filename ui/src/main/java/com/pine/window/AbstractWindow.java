@@ -8,8 +8,10 @@ import com.pine.service.WindowService;
 import com.pine.ui.ViewDocument;
 import com.pine.ui.panel.DockDTO;
 import com.pine.ui.panel.DockPanel;
+import com.pine.ui.theme.ThemeRepository;
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -37,11 +39,15 @@ public abstract class AbstractWindow implements Renderable, Initializable {
     public WindowService windowService;
 
     @PInject
+    public ThemeRepository themeRepository;
+
+    @PInject
     public PInjector injector;
 
     @Override
     final public void onInitialize() {
         viewDocument = new ViewDocument(this, injector);
+        injector.inject(root);
 
         initializeWindow();
         onInitialization();
@@ -51,7 +57,7 @@ public abstract class AbstractWindow implements Renderable, Initializable {
     protected abstract void onInitialization();
 
     private void initializeView() {
-        viewDocument.initialize();
+        themeRepository.initialize();
         root.setDocument(viewDocument);
         root.initializeDockSpaces(getDockSpaces());
         root.onInitialize();
@@ -141,7 +147,6 @@ public abstract class AbstractWindow implements Renderable, Initializable {
         imGuiGlfw.shutdown();
         disposeImGui();
         disposeWindow();
-
     }
 
     private void disposeImGui() {
@@ -155,22 +160,24 @@ public abstract class AbstractWindow implements Renderable, Initializable {
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
 
-    @Override
-    public void tick() {
-    }
 
     @Override
     final public void render() {
-        tick();
+        themeRepository.tick();
 
         startFrame();
         if (isVisible) {
+            ImGui.pushStyleColor(ImGuiCol.Button, themeRepository.neutralPalette); // Green background
+            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, themeRepository.accentColor); // Hovered background
+            ImGui.pushStyleColor(ImGuiCol.ButtonActive, ImGui.getColorU32(0.1f, 0.6f, 0.1f, 1.0f)); // Active background
+
             root.render();
+            ImGui.popStyleColor(3);
+
             renderInternal();
         }
         endFrame();
     }
-
 
     protected void renderInternal() {
     }
@@ -195,7 +202,7 @@ public abstract class AbstractWindow implements Renderable, Initializable {
     }
 
     private void clearBuffer() {
-        float[] theme = viewDocument.getBackgroundColor();
+        float[] theme = themeRepository.backgroundColor;
         GL46.glClearColor(theme[0], theme[1], theme[2], 1);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }

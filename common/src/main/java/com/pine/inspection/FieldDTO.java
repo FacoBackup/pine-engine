@@ -1,7 +1,5 @@
 package com.pine.inspection;
 
-import com.pine.component.SelectableEnum;
-
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;

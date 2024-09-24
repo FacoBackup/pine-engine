@@ -30,7 +30,6 @@ public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> 
     @MutableField(label = "Intensity")
     public float intensity = 10;
 
-    @EnumSelection(enumType = AtmosphereType.class)
     @MutableField(label = "Rendering Type")
     public AtmosphereType renderingType = AtmosphereType.COMBINED;
 

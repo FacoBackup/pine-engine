@@ -1,6 +1,7 @@
 package com.pine.panels.viewport;
 
 import com.pine.Engine;
+import com.pine.Icon;
 import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.EntitySelectionRepository;
@@ -13,6 +14,8 @@ import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiKey;
+
+import static com.pine.panels.viewport.GizmoConfigPanel.GIZMO_PANEL_SIZE;
 
 public class ViewportPanel extends AbstractWindowPanel {
     @PInject
@@ -59,13 +62,14 @@ public class ViewportPanel extends AbstractWindowPanel {
     @Override
     public void renderInternal() {
         sizeVec.x = size.x;
-        sizeVec.y = size.y - FRAME_SIZE;
+        sizeVec.y = size.y - FRAME_SIZE - GIZMO_PANEL_SIZE;
+
+        gizmoPanel.renderInternal();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
+
         if (selected != entitySelectionRepository.getPrimitiveSelected()) {
             selected = entitySelectionRepository.getPrimitiveSelected();
         }
-
-        gizmoPanel.renderInternal();
         if (selected == null) {
             return;
         }

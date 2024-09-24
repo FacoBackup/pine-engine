@@ -1,7 +1,7 @@
 package com.pine.component.impl;
 
 import com.pine.component.AbstractFormField;
-import com.pine.component.SelectableEnum;
+import com.pine.inspection.SelectableEnum;
 import com.pine.inspection.FieldDTO;
 import imgui.ImGui;
 

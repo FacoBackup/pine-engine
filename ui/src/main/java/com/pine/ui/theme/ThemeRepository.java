@@ -1,57 +1,47 @@
 package com.pine.ui.theme;
 
-import com.pine.FSUtil;
-import com.pine.Icon;
+import com.pine.*;
+import com.pine.inspection.InspectableRepository;
+import com.pine.inspection.MutableField;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 
-public class ThemeUtil {
+@PBean
+public class ThemeRepository implements Updatable, InspectableRepository {
     public static final ImVec4 ACCENT_COLOR = new ImVec4(0.26f, 0.59f, 0.98f, 1);
-    
-    public static void applyTheme(boolean isDarkMode, float[] backgroundColor) {
-        if (!isDarkMode) {
-            ImGui.styleColorsLight();
-        } else {
-            ImGui.styleColorsDark();
+
+    @MutableField(label = "Accent color")
+    public final ImVec4 accentColor = new ImVec4(0.26f, 0.59f, 0.98f, 1);
+    public ImVec4 neutralPalette;
+    public ImVec4 palette0;
+    public ImVec4 palette1;
+    public ImVec4 palette2;
+    public ImVec4 palette3;
+    public ImVec4 palette4;
+    public ImVec4 palette5;
+    public ImVec4 palette6;
+    public final float[] backgroundColor = new float[]{.0f, .0f, .0f};
+    private boolean initialized;
+    public boolean isDarkMode = true;
+    private boolean previousTheme = false;
+
+    @Override
+    public void tick() {
+        if (previousTheme == isDarkMode) {
+            return;
         }
+        previousTheme = isDarkMode;
 
         ImGuiStyle style = ImGui.getStyle();
         ImVec4[] colors = style.getColors();
 
         if (!isDarkMode) {
-            setLightMode(colors);
+            ImGui.styleColorsLight();
+            setLightMode();
         } else {
-            setDarkMode(colors);
-        } 
-
-        colors[ImGuiCol.FrameBgHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.FrameBgActive] = ACCENT_COLOR;
-        colors[ImGuiCol.CheckMark] = ACCENT_COLOR;
-        colors[ImGuiCol.SliderGrabActive] = ACCENT_COLOR;
-        colors[ImGuiCol.Button] = ACCENT_COLOR;
-        colors[ImGuiCol.ButtonHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.Header] = ACCENT_COLOR;
-        colors[ImGuiCol.HeaderHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.HeaderActive] = ACCENT_COLOR;
-        colors[ImGuiCol.ResizeGripHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.ResizeGripActive] = ACCENT_COLOR;
-        colors[ImGuiCol.TextSelectedBg] = ACCENT_COLOR;
-
-        backgroundColor[0] = colors[ImGuiCol.WindowBg].x;
-        backgroundColor[1] = colors[ImGuiCol.WindowBg].y;
-        backgroundColor[2] = colors[ImGuiCol.WindowBg].z;
-
-        style.setColors(colors);
-    }
-
-    private static void setDarkMode(ImVec4[] colors) {
-        var palette0 = new ImVec4(10f / 255f, 10f / 255f, 10f / 255f, 1);
-        var palette1 = new ImVec4(18f / 255f, 18f / 255f, 18f / 255f, 1);
-        var palette2 = new ImVec4(22f / 255f, 22f / 255f, 22f / 255f, 1);
-        var palette3 = new ImVec4(35f / 255f, 35f / 255f, 35f / 255f, 1);
-        var palette4 = new ImVec4(65f / 255f, 65f / 255f, 65f / 255f, 1);
-        var palette5 = new ImVec4(119f / 255f, 119f / 255f, 119f / 255f, 1);
-        var palette6 = new ImVec4(224f / 255f, 224f / 255f, 224f / 255f, 1);
+            ImGui.styleColorsDark();
+            setDarkMode();
+        }
 
         colors[ImGuiCol.Text] = palette6;
         colors[ImGuiCol.TextDisabled] = palette6;
@@ -88,34 +78,57 @@ public class ThemeUtil {
         colors[ImGuiCol.NavWindowingHighlight] = palette2;
         colors[ImGuiCol.NavWindowingDimBg] = palette2;
         colors[ImGuiCol.ModalWindowDimBg] = palette2;
+
+        colors[ImGuiCol.FrameBgHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.FrameBgActive] = ACCENT_COLOR;
+        colors[ImGuiCol.CheckMark] = ACCENT_COLOR;
+        colors[ImGuiCol.SliderGrabActive] = ACCENT_COLOR;
+        colors[ImGuiCol.Button] = ACCENT_COLOR;
+        colors[ImGuiCol.ButtonHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.Header] = ACCENT_COLOR;
+        colors[ImGuiCol.HeaderHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.HeaderActive] = ACCENT_COLOR;
+        colors[ImGuiCol.ResizeGripHovered] = ACCENT_COLOR;
+        colors[ImGuiCol.ResizeGripActive] = ACCENT_COLOR;
+        colors[ImGuiCol.TextSelectedBg] = ACCENT_COLOR;
+
+        backgroundColor[0] = colors[ImGuiCol.WindowBg].x;
+        backgroundColor[1] = colors[ImGuiCol.WindowBg].y;
+        backgroundColor[2] = colors[ImGuiCol.WindowBg].z;
+
+        style.setColors(colors);
     }
 
-    private static void setLightMode(ImVec4[] colors) {
-        colors[ImGuiCol.Text] = new ImVec4(0f, 0f, 0f, 1);
-        colors[ImGuiCol.TextDisabled] = new ImVec4(0.60f, 0.60f, 0.60f, 1);
-        colors[ImGuiCol.WindowBg] = new ImVec4(0.94f, 0.94f, 0.94f, 1);
-        colors[ImGuiCol.PopupBg] = new ImVec4(1, 1, 1, 1);
-        colors[ImGuiCol.Border] = new ImVec4(0.65f, 0.65f, 0.65f, 1);
-        colors[ImGuiCol.BorderShadow] = new ImVec4(1, 1, 1, 1);
-        colors[ImGuiCol.FrameBg] = new ImVec4(1, 1, 1, 1);
-        colors[ImGuiCol.TitleBg] = new ImVec4(0.96f, 0.96f, 0.96f, 1);
-        colors[ImGuiCol.TitleBgCollapsed] = new ImVec4(1, 1, 1, 1);
-        colors[ImGuiCol.TitleBgActive] = new ImVec4(0.82f, 0.82f, 0.82f, 1);
-        colors[ImGuiCol.MenuBarBg] = new ImVec4(0.86f, 0.86f, 0.86f, 1);
-        colors[ImGuiCol.ScrollbarBg] = new ImVec4(0.98f, 0.98f, 0.98f, 1);
-        colors[ImGuiCol.ScrollbarGrab] = new ImVec4(0.69f, 0.69f, 0.69f, 1);
-        colors[ImGuiCol.ScrollbarGrabHovered] = new ImVec4(0.59f, 0.59f, 0.59f, 1);
-        colors[ImGuiCol.ScrollbarGrabActive] = new ImVec4(0.49f, 0.49f, 0.49f, 1);
-        colors[ImGuiCol.SliderGrab] = new ImVec4(0.24f, 0.52f, 0.88f, 1);
-        colors[ImGuiCol.ButtonActive] = new ImVec4(0.06f, 0.53f, 0.98f, 1);
-        colors[ImGuiCol.ResizeGrip] = new ImVec4(1, 1, 1, 1);
-        colors[ImGuiCol.PlotLines] = new ImVec4(0.39f, 0.39f, 0.39f, 1);
-        colors[ImGuiCol.PlotLinesHovered] = new ImVec4(1, 0.43f, 0.35f, 1);
-        colors[ImGuiCol.PlotHistogram] = new ImVec4(0.90f, 0.70f, 0f, 1);
-        colors[ImGuiCol.PlotHistogramHovered] = new ImVec4(1, 0.60f, 0f, 1);
+    private void setDarkMode() {
+        palette0 = new ImVec4(10f / 255f, 10f / 255f, 10f / 255f, 1);
+        palette1 = new ImVec4(18f / 255f, 18f / 255f, 18f / 255f, 1);
+        palette2 = neutralPalette = new ImVec4(22f / 255f, 22f / 255f, 22f / 255f, 1);
+        palette3 = new ImVec4(35f / 255f, 35f / 255f, 35f / 255f, 1);
+        palette4 = new ImVec4(65f / 255f, 65f / 255f, 65f / 255f, 1);
+        palette5 = new ImVec4(119f / 255f, 119f / 255f, 119f / 255f, 1);
+        palette6 = new ImVec4(224f / 255f, 224f / 255f, 224f / 255f, 1);
     }
 
-    public static void applySpacing(){
+    private void setLightMode() {
+        palette0 = new ImVec4(245f / 255f, 245f / 255f, 245f / 255f, 1); // light gray
+        palette1 = new ImVec4(235f / 255f, 235f / 255f, 235f / 255f, 1); // slightly darker gray
+        palette2 = neutralPalette = new ImVec4(225f / 255f, 225f / 255f, 225f / 255f, 1); // medium gray
+        palette3 = new ImVec4(200f / 255f, 200f / 255f, 200f / 255f, 1); // darker gray
+        palette4 = new ImVec4(160f / 255f, 160f / 255f, 160f / 255f, 1); // even darker gray
+        palette5 = new ImVec4(120f / 255f, 120f / 255f, 120f / 255f, 1); // dark gray
+        palette6 = new ImVec4(10f / 255f, 10f / 255f, 10f / 255f, 1); // dark dark really dark, actually not that dark but dark
+    }
+
+    public void initialize() {
+        if (this.initialized) {
+            return;
+        }
+        initialized = true;
+        applySpacing();
+        applyFonts();
+    }
+
+    public void applySpacing() {
         ImGuiStyle style = ImGui.getStyle();
         float borderRadius = 3f;
         float borderWidth = 1;
@@ -137,16 +150,16 @@ public class ThemeUtil {
         style.setTabBorderSize(borderWidth);
         style.setWindowRounding(0);
         style.setChildRounding(borderRadius);
-        style.setFrameRounding(0f);
+        style.setFrameRounding(borderRadius);
         style.setPopupRounding(borderRadius);
         style.setScrollbarRounding(9f);
         style.setGrabRounding(borderRadius);
         style.setLogSliderDeadzone(4f);
         style.setTabRounding(borderRadius);
-        style.setAlpha(borderWidth);
+        style.setAlpha(1);
     }
 
-    public static void applyFonts(){
+    public void applyFonts() {
         final var io = ImGui.getIO();
         io.getFonts().setFreeTypeRenderer(true);
 

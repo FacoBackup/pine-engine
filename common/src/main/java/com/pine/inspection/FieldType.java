@@ -1,15 +1,13 @@
 package com.pine.inspection;
 
-import com.pine.component.SelectableEnum;
-import com.pine.component.rendering.CompositeScene;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public enum FieldType {
-    SCENE(CompositeScene.class),
-    RESOURCE(ResourceRef.class),
+//    SCENE(CompositeScene.class),
+//    RESOURCE(ResourceRef.class),
     COLOR(Color.class),
     OPTIONS(SelectableEnum.class),
     STRING(String.class),

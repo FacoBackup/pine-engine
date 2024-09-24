@@ -1,8 +1,5 @@
 package com.pine.inspection;
 
-import com.pine.component.EnumSelection;
-import com.pine.component.SelectableEnum;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -40,12 +37,12 @@ public abstract class WithMutableData {
 
     public abstract String getLabel();
 
+    @SuppressWarnings("unchecked")
     private List<SelectableEnum> getOptions(Field field) {
-        EnumSelection selection = field.getAnnotation(EnumSelection.class);
-        if (selection == null) {
+        if (!field.getType().isAssignableFrom(SelectableEnum.class)) {
             return Collections.emptyList();
         }
-        return new ArrayList<>(Arrays.asList(selection.enumType().getEnumConstants()));
+        return new ArrayList<>(Arrays.asList(((Class<SelectableEnum>) field.getType()).getEnumConstants()));
     }
 
     private static boolean isMutableField(Field field) {

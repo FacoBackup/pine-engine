@@ -9,7 +9,7 @@ import imgui.flag.ImGuiTableFlags;
 import java.util.Collections;
 import java.util.List;
 
-import static com.pine.ui.theme.ThemeUtil.ACCENT_COLOR;
+import static com.pine.ui.theme.ThemeRepository.ACCENT_COLOR;
 
 public class TableView extends ListView {
     private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.RowBg;

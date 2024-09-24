@@ -26,9 +26,9 @@ public class FormPanel extends AbstractPanel {
                 case STRING:
                     appendChild(new StringField(field, changeHandler));
                     break;
-                case RESOURCE:
-                    appendChild(new ResourceField(field, changeHandler));
-                    break;
+//                case RESOURCE:
+//                    appendChild(new ResourceField(field, changeHandler));
+//                    break;
                 case INT:
                     appendChild(new IntField(field, changeHandler));
                     break;
@@ -56,9 +56,9 @@ public class FormPanel extends AbstractPanel {
                 case OPTIONS:
                     appendChild(new OptionsField(field, changeHandler));
                     break;
-                case SCENE:
-                    appendChild(new SceneField(field, changeHandler));
-                    break;
+//                case SCENE:
+//                    appendChild(new SceneField(field, changeHandler));
+//                    break;
             }
         }
         this.title = data.getLabel() + internalId;

@@ -1,31 +1,40 @@
 package com.pine.tools.types;
 
-public enum DebugShadingModel {
-    ALBEDO(0),
-    NORMAL(1),
-    TANGENT(2),
-    DEPTH(3),
-    AO(4),
-    DETAIL(5),
-    LIGHT_ONLY(6),
-    METALLIC(7),
-    ROUGHNESS(8),
-    G_AO(9),
-    AMBIENT(10),
-    POSITION(11),
-    UV(12),
-    RANDOM(13),
-    OVERDRAW(14),
-    LIGHT_COMPLEXITY(15),
-    LIGHT_QUANTITY(16);
+import com.pine.inspection.SelectableEnum;
+
+public enum DebugShadingModel implements SelectableEnum {
+    ALBEDO("Albedo", 0),
+    NORMAL("Normal", 1),
+    TANGENT("Tangent", 2),
+    DEPTH("Depth", 3),
+    AO("Ambient occlusion", 4),
+    DETAIL("Detail", 5),
+    LIGHT_ONLY("Light only", 6),
+    METALLIC("Metallic", 7),
+    ROUGHNESS("Roughness", 8),
+    G_AO("Generated ambient occlusion", 9),
+    AMBIENT("Ambient", 10),
+    POSITION("Position", 11),
+    UV("UV", 12),
+    RANDOM("Random", 13),
+    OVERDRAW("Overdraw", 14),
+    LIGHT_COMPLEXITY("Lighting complexity", 15),
+    LIGHT_QUANTITY("Light quantity", 16);
 
     private final int id;
+    private final String label;
 
-    DebugShadingModel(int id) {
+    DebugShadingModel(String label, int id) {
         this.id = id;
+        this.label = label;
     }
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
     }
 }

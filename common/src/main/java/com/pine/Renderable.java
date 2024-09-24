@@ -1,7 +1,8 @@
 package com.pine;
 
 public interface Renderable extends Loggable, Initializable {
-    void tick();
+    default void tick() {
+    }
 
     void render();
 

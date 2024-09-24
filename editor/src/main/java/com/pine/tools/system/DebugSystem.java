@@ -1,13 +1,13 @@
 package com.pine.tools.system;
 
 import com.pine.PInject;
+import com.pine.repository.EditorSettingsRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import com.pine.tools.repository.ToolsResourceRepository;
-import com.pine.tools.types.DebugShadingModel;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -16,6 +16,10 @@ import java.nio.IntBuffer;
 import java.util.List;
 
 public class DebugSystem extends AbstractSystem {
+
+    @PInject
+    public EditorSettingsRepository editorSettings;
+
     private UniformDTO transformationIndex;
     private UniformDTO lightCount;
     private UniformDTO elapsedTime;
@@ -154,7 +158,7 @@ public class DebugSystem extends AbstractSystem {
         intBoolBuffer.put(0, 0);
         shaderService.bindUniform(hasAmbientOcclusion, intBoolBuffer);
 
-        intBoolBuffer.put(0, DebugShadingModel.RANDOM.getId());
+        intBoolBuffer.put(0, editorSettings.debugShadingModel.getId());
         shaderService.bindUniform(shadingModel, intBoolBuffer);
 
         shaderService.bindUniform(brdfSampler, fboRepository.brdfSampler);

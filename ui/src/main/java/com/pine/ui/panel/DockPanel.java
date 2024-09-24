@@ -1,6 +1,8 @@
 package com.pine.ui.panel;
 
 import com.pine.Icon;
+import com.pine.PInject;
+import com.pine.ui.theme.ThemeRepository;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
@@ -30,6 +32,9 @@ public class DockPanel extends AbstractPanel {
     private boolean isInitialized = false;
     private List<DockDTO> dockSpaces = Collections.emptyList();
 
+    @PInject
+    public ThemeRepository themeRepository;
+
     @Override
     public void renderInternal() {
         final ImGuiViewport viewport = ImGui.getMainViewport();
@@ -55,8 +60,8 @@ public class DockPanel extends AbstractPanel {
                 ImGui.endMenu();
             }
 
-            if (ImGui.button(document.isDarkMode() ? Icon.MOON.codePoint : Icon.SUN.codePoint)) {
-                document.setDarkMode(!document.isDarkMode());
+            if (ImGui.button(themeRepository.isDarkMode ? Icon.MOON.codePoint : Icon.LIGHTBULB.codePoint, 27, 27)) {
+                themeRepository.isDarkMode = !themeRepository.isDarkMode;
             }
             ImGui.endMenuBar();
         }
@@ -83,7 +88,7 @@ public class DockPanel extends AbstractPanel {
 
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0.0f);
         ImGui.dockSpace(windowId, CENTER, ImGuiDockNodeFlags.PassthruCentralNode);
-        ImGui.popStyleVar();
+        ImGui.popStyleVar(1);
 
         super.renderInternal();
     }

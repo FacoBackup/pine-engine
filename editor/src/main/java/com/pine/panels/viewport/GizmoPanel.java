@@ -3,7 +3,7 @@ package com.pine.panels.viewport;
 import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.EditorRepository;
+import com.pine.repository.EditorSettingsRepository;
 import com.pine.ui.panel.AbstractPanel;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
@@ -11,7 +11,7 @@ import imgui.extension.imguizmo.flag.Operation;
 
 public class GizmoPanel extends AbstractPanel {
     @PInject
-    public EditorRepository editorRepository;
+    public EditorSettingsRepository editorSettingsRepository;
 
     @PInject
     public CameraRepository cameraRepository;
@@ -34,10 +34,10 @@ public class GizmoPanel extends AbstractPanel {
     @Override
     public void renderInternal() {
         recomposeMatrix();
-        float[] snap = switch (editorRepository.gizmoOperation) {
-            case Operation.TRANSLATE -> editorRepository.gizmoSnapTranslate;
-            case Operation.ROTATE -> editorRepository.gizmoSnapRotate.getData();
-            case Operation.SCALE -> editorRepository.gizmoSnapScale.getData();
+        float[] snap = switch (editorSettingsRepository.gizmoOperation) {
+            case Operation.TRANSLATE -> editorSettingsRepository.gizmoSnapTranslate;
+            case Operation.ROTATE -> editorSettingsRepository.gizmoSnapRotate.getData();
+            case Operation.SCALE -> editorSettingsRepository.gizmoSnapScale.getData();
             default -> null;
         };
         ImGuizmo.setOrthographic(cameraRepository.currentCamera.isOrthographic);
@@ -46,11 +46,11 @@ public class GizmoPanel extends AbstractPanel {
         ImGuizmo.manipulate(
                 viewMatrixCache,
                 projectionMatrixCache,
-                editorRepository.gizmoOperation,
-                editorRepository.gizmoMode,
+                editorSettingsRepository.gizmoOperation,
+                editorSettingsRepository.gizmoMode,
                 cacheMatrix,
                 null,
-                editorRepository.gizmoUseSnap || snap == null ? snap : null);
+                editorSettingsRepository.gizmoUseSnap || snap == null ? snap : null);
         decomposeMatrix();
     }
 

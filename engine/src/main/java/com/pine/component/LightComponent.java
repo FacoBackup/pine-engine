@@ -42,7 +42,7 @@ public class LightComponent extends AbstractComponent<LightComponent> {
     public float planeAreaHeight = 1;
     @MutableField(label = "Intensity")
     public int intensity = 1;
-    @EnumSelection(enumType = LightType.class)
+
     @MutableField(label = "Type")
     public LightType type = LightType.DIRECTIONAL;
     @MutableField(label = "Color")
