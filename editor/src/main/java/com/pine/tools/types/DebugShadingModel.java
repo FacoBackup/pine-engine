@@ -1,6 +1,6 @@
 package com.pine.tools.types;
 
-public enum RenderingMode {
+public enum DebugShadingModel {
     ALBEDO(0),
     NORMAL(1),
     TANGENT(2),
@@ -21,7 +21,7 @@ public enum RenderingMode {
 
     private final int id;
 
-    RenderingMode(int id) {
+    DebugShadingModel(int id) {
         this.id = id;
     }
 

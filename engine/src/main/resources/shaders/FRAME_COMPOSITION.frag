@@ -1,19 +1,15 @@
-
-uniform CompositionSettings{
-    vec2 inverseFilterTextureSize;
-    bool useFXAA;
-    bool filmGrainEnabled;
-    float FXAASpanMax;
-    float FXAAReduceMin;
-    float FXAAReduceMul;
-    float filmGrainStrength;
-};
-
-
 in vec2 texCoords;
-uniform sampler2D previousFrame;
+
+uniform vec2 inverseFilterTextureSize;
+uniform bool useFXAA;
+uniform bool filmGrainEnabled;
+uniform float FXAASpanMax;
+uniform float FXAAReduceMin;
+uniform float FXAAReduceMul;
+uniform float filmGrainStrength;
 uniform sampler2D currentFrame;
 uniform float filmGrainSeed;
+
 out vec4 finalColor;
 
 vec4 FXAA(){

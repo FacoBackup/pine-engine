@@ -22,11 +22,8 @@ public class CoreUBORepository implements CoreRepository {
 
 
     public UniformBufferObject cameraViewUBO;
-    public UniformBufferObject frameCompositionUBO;
     public UniformBufferObject lensPostProcessingUBO;
     public UniformBufferObject ssaoUBO;
-    public UniformBufferObject uberUBO;
-    public UniformBufferObject lightsUBO;
     public UniformBufferObject cameraProjectionUBO;
 
     public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(52);
@@ -34,7 +31,6 @@ public class CoreUBORepository implements CoreRepository {
     public final FloatBuffer frameCompositionUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer lensPostProcessingUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer ssaoUBOState = MemoryUtil.memAllocFloat(1);
-    public final FloatBuffer uberUBOState = MemoryUtil.memAllocFloat(1);
 
     @Override
     public void initialize() {
@@ -52,17 +48,6 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("bufferResolution", GLSLType.VEC_2),
                 new UBOData("logDepthFC", GLSLType.FLOAT),
                 new UBOData("logC", GLSLType.FLOAT)).staticResource());
-
-        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
-        frameCompositionUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                UBODeclaration.FRAME_COMPOSITION.getBlockName(),
-                new UBOData("inverseFilterTextureSize", GLSLType.VEC_2),
-                new UBOData("useFXAA", GLSLType.BOOL),
-                new UBOData("filmGrainEnabled", GLSLType.BOOL),
-                new UBOData("FXAASpanMax", GLSLType.FLOAT),
-                new UBOData("FXAAReduceMin", GLSLType.FLOAT),
-                new UBOData("FXAAReduceMul", GLSLType.FLOAT),
-                new UBOData("filmGrainStrength", GLSLType.FLOAT)).staticResource());
 
         // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         lensPostProcessingUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
@@ -92,24 +77,5 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("noiseScale", GLSLType.VEC_2)
         ).staticResource());
 
-        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
-        uberUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                UBODeclaration.UBER.getBlockName(),
-                new UBOData("shadowMapsQuantity", GLSLType.FLOAT),
-                new UBOData("shadowMapResolution", GLSLType.FLOAT),
-                new UBOData("lightQuantity", GLSLType.INT),
-                new UBOData("SSRFalloff", GLSLType.FLOAT),
-                new UBOData("stepSizeSSR", GLSLType.FLOAT),
-                new UBOData("maxSSSDistance", GLSLType.FLOAT),
-                new UBOData("SSSDepthThickness", GLSLType.FLOAT),
-                new UBOData("SSSEdgeAttenuation", GLSLType.FLOAT),
-                new UBOData("skylightSamples", GLSLType.FLOAT),
-                new UBOData("SSSDepthDelta", GLSLType.FLOAT),
-                new UBOData("SSAOFalloff", GLSLType.FLOAT),
-                new UBOData("maxStepsSSR", GLSLType.INT),
-                new UBOData("maxStepsSSS", GLSLType.INT),
-                new UBOData("hasSkylight", GLSLType.BOOL),
-                new UBOData("hasAmbientOcclusion", GLSLType.BOOL)
-        ).staticResource());
     }
 }

@@ -69,7 +69,7 @@ vec3 computeDirectionalLight(inout mat4 primaryBuffer, inout mat4 secondaryBuffe
     if (hasShadowMap){
         vec4 lightSpacePosition  = secondaryBuffer * vec4(worldSpacePosition, 1.0);
         vec2 atlasFace = vec2(primaryBuffer[2][0], primaryBuffer[2][1]);
-        shadows = directionalLightShadows(distanceFromCamera, primaryBuffer[3][1], primaryBuffer[3][0], lightSpacePosition, atlasFace, shadow_atlas, shadowMapsQuantity, shadowMapResolution, primaryBuffer[2][2]);
+        shadows = directionalLightShadows(distanceFromCamera, primaryBuffer[3][1], primaryBuffer[3][0], lightSpacePosition, atlasFace, shadowAtlas, shadowMapsQuantity, shadowMapResolution, primaryBuffer[2][2]);
     }
     if (shadows == 0.) return vec3(0.);
     float occlusion = hasSSS ? screenSpaceShadows(lightPosition) : 1.;

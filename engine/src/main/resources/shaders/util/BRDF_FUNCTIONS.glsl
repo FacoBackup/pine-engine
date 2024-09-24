@@ -63,11 +63,11 @@ vec3 sampleIndirectLight() {
     return diffuseColor + specularColor;
 }
 
-vec3 computeSkylightAmbient(vec3 V) {
+vec3 computeSkylightAmbient(vec3 V, samplerCube skylightSpecular) {
     vec3 specular = vec3(0.);
     vec3 F = fresnelSchlickRoughness(NdotV, F0, roughness);
     vec3 kD = (1.0 - F) * (1.0 - metallic);
-    vec3 prefilteredColor = textureLod(skylight_specular, reflect(-V, N), 0.).rgb;
+    vec3 prefilteredColor = textureLod(skylightSpecular, reflect(-V, N), 0.).rgb;
 
     specular = prefilteredColor;//* (F * brdf.r + brdf.g);
 

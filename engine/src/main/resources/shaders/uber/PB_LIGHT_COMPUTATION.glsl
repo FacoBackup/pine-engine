@@ -14,7 +14,7 @@ vec3 processLight(mat4 primaryBuffer, mat4 secondaryBuffer ) {
     return directIllumination;
 }
 
-vec4 pbLightComputation() {
+vec4 pbLightComputation(int lightCount) {
     if (flatShading) return vec4(albedo + emission, 1.);
     VrN = reflect(-V, N);
     albedoOverPI = albedo / PI;
@@ -24,13 +24,13 @@ vec4 pbLightComputation() {
     if(renderingMode == ANISOTROPIC)
         computeTBN();
     NdotV = clamp(dot(N, V), 0., 1.);
-    brdf = texture(brdf_sampler, vec2(NdotV, roughness)).rg;
+    brdf = texture(brdfSampler, vec2(NdotV, roughness)).rg;
     F0 = mix(F0, albedo, metallic);
 
-    for (int i = 0; i < lightQuantity; i++) {
+    for (int i = 0; i < lightCount; i+=2) {
         directIllumination += processLight(
-            lightPrimaryBuffer[i],
-            lightSecondaryBuffer[i]
+            lightMetadata[i],
+            lightMetadata[i + 1]
         );
     }
 

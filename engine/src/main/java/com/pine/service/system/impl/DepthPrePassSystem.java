@@ -23,7 +23,7 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.visibility;
+        return fboRepository.sceneDepth;
     }
 
     @Override

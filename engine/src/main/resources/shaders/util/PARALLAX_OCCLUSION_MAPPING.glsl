@@ -4,7 +4,7 @@ vec2 parallaxOcclusionMapping(sampler2D heightMap, float heightScale, int layers
     computeTBN();
     mat3 transposed = transpose(TBN);
     if (!hasViewDirectionComputed) {
-        viewDirection = normalize(transposed * (cameraPosition - worldSpacePosition.xyz));
+        viewDirection = normalize(transposed * (placement.xyz - worldSpacePosition.xyz));
         hasViewDirectionComputed = true;
     }
     float fLayers = float(max(layers, 1));

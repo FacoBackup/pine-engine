@@ -8,7 +8,7 @@ public class SimpleTransformation {
     public Vector3f scale = new Vector3f(1);
     public int parentTransformationId = -1;
     public final int parentEntityId;
-    public int renderIndex;
+    public int primitiveIndex;
 
     public SimpleTransformation(int parentEntityId) {
         this.parentEntityId = parentEntityId;

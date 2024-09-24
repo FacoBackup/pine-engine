@@ -1,5 +1,10 @@
+#include "../buffer_objects/LIGHT_METADATA_SSBO.glsl"
+
 uniform int shadingModel;
 
+#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../util/SCENE_DEPTH_UTILS.glsl"
+#include "../uber/ATTRIBUTES.glsl"
 #include "../enum/LIGHT_TYPE.glsl"
 #include "../util/STRONG_BLUR.glsl"
 #include "../util/RAY_MARCHER.glsl"
@@ -10,8 +15,6 @@ uniform int shadingModel;
 #include "../uber/COMPUTE_SPOTLIGHT.glsl"
 #include "../uber/COMPUTE_AREALIGHT.glsl"
 #include "../uber/PB_LIGHT_COMPUTATION.glsl"
-#include "../util/SCENE_DEPTH_UTILS.glsl"
-#include "../uber/ATTRIBUTES.glsl"
 #include "../util/PARALLAX_OCCLUSION_MAPPING.glsl"
 
 #define ALBEDO 0
@@ -61,7 +64,6 @@ bool checkLight(mat4 primaryBuffer, mat4 secondaryBuffer) {
 }
 
 void main() {
-    extractData();
     if (isDecalPass) {
         if (depthData == 0.) discard;
 
@@ -89,13 +91,13 @@ void main() {
         texCoords = naturalTextureUV;
     }
 
-    V = cameraPosition - worldSpacePosition;
+    V = placement.xyz - worldSpacePosition;
     distanceFromCamera = length(V);
     V = normalize(V);
 
     if (shadingModel == LIGHT_ONLY){
         albedo = vec3(1.);
-        fragColor = pbLightComputation();
+        fragColor = pbLightComputation(lightCount);
     }
     else {
         switch (shadingModel) {
@@ -127,12 +129,12 @@ void main() {
                 fragColor = vec4(texCoords, 0., 1.);
                 break;
             case RANDOM:
-                fragColor = vec4(randomColor(length(entityID)), 1.);
+                fragColor = vec4(randomColor(length(renderIndex)), 1.);
                 break;
             case LIGHT_QUANTITY:
             case LIGHT_COMPLEXITY:{
                     bool isLightQuantity = shadingModel == LIGHT_QUANTITY;
-                    float total = isLightQuantity ? float(lightQuantity) : float(MAX_LIGHTS * 3);
+                    float total = isLightQuantity ? float(lightCount) : float(MAX_LIGHTS * 3);
                     float contribution = 0.;
 
                     if (!flatShading) {
@@ -140,17 +142,19 @@ void main() {
                         albedoOverPI = vec3(1.);
                         F0 = mix(F0, albedoOverPI, 0.);
 
-                        for (int i = 0; i < lightQuantity; i++) {
+                        for (int i = 0; i < lightCount; i+=2) {
                             if (checkLight(
-                                lightPrimaryBuffer[i],
-                                lightSecondaryBuffer[i]
+                                lightMetadata[i],
+                                lightMetadata[i + 1]
                             )) contribution++;
                         }
                     }
-                    if (total > 0.)
-                    fragColor = vec4(mix(vec3(1., 0., 0.), vec3(0., .0, 1.), 1. - contribution / total), 1.);
-                    else
-                    fragColor = vec4(0., 0., 1., 1.);
+                    if (total > 0.){
+                        fragColor = vec4(mix(vec3(1., 0., 0.), vec3(0., .0, 1.), 1. - contribution / total), 1.);
+                    }
+                    else {
+                        fragColor = vec4(0., 0., 1., 1.);
+                    }
                     break;
                 }
             case OVERDRAW:{

@@ -19,53 +19,47 @@
 #define TRANSPARENCY 5
 #define SKY 6
 
-in mat4 matAttr;
 in vec2 naturalTextureUV;
 in vec3 naturalNormal;
 in vec3 worldPosition;
 in mat4 invModelMatrix;
+in flat int renderIndex;
 
-// GLOBAL
-uniform mat4 viewMatrix;
-uniform mat4 invViewMatrix;
-uniform vec3 cameraPosition;
+uniform int lightCount;
 uniform float elapsedTime;
 uniform bool isDecalPass;
-
-uniform UberShaderSettings {
-    float shadowMapsQuantity;
-    float shadowMapResolution;
-    int lightQuantity;
-
-    float SSRFalloff;
-    float stepSizeSSR;
-    float maxSSSDistance;
-    float SSSDepthThickness;
-    float SSSEdgeAttenuation;
-    float skylightSamples;
-    float SSSDepthDelta;
-    float SSAOFalloff;
-    int maxStepsSSR;
-    int maxStepsSSS;
-    bool hasSkylight;
-    bool hasAmbientOcclusion;
-};
-
-uniform sampler2D brdf_sampler;
+uniform float shadowMapsQuantity;
+uniform float shadowMapResolution;
+uniform float SSRFalloff;
+uniform float stepSizeSSR;
+uniform float maxSSSDistance;
+uniform float SSSDepthThickness;
+uniform float SSSEdgeAttenuation;
+uniform float SSSDepthDelta;
+uniform float SSAOFalloff;
+uniform int maxStepsSSR;
+uniform int maxStepsSSS;
+uniform bool hasAmbientOcclusion;
+uniform sampler2D brdfSampler;
 uniform sampler2D SSAO;
 uniform sampler2D SSGI;
 uniform sampler2D previousFrame;
-uniform sampler2D shadow_atlas;
-uniform samplerCube shadow_cube;
-uniform samplerCube skylight_specular;
-uniform sampler2D sampler0;
-uniform sampler2D sampler1;
-uniform sampler2D sampler2;
-uniform sampler2D sampler3;
-uniform sampler2D sampler4;
-uniform sampler2D sampler5;
-uniform sampler2D sampler6;
-uniform sampler2D sampler7;
+uniform sampler2D shadowAtlas;
+uniform samplerCube shadowCube;
+
+uniform bool ssrEnabled;
+uniform int renderingMode;
+uniform float anisotropicRotation;
+uniform float anisotropy;
+uniform float clearCoat;
+uniform float sheen;
+uniform float sheenTint;
+uniform bool useAlbedoDecal;
+uniform bool useMetallicDecal;
+uniform bool useRoughnessDecal;
+uniform bool useNormalDecal;
+uniform bool useOcclusionDecal;
+
 
 float naturalAO = 1.;
 float roughness = .5;
@@ -100,54 +94,6 @@ vec3 viewSpacePosition;
 vec3 worldSpacePosition;
 vec3 normalVec;
 float depthData;
-
-// MATERIAL ATTRIBUTES
-bool screenDoorEffect;
-bool ssrEnabled;
-int renderingMode;
-vec3 entityID;
-int materialID;
-float anisotropicRotation;
-float anisotropy;
-float clearCoat;
-float sheen;
-float sheenTint;
-bool useAlbedoDecal;
-bool useMetallicDecal;
-bool useRoughnessDecal;
-bool useNormalDecal;
-bool useOcclusionDecal;
-
-void extractData() {
-    texelSize = 1. / bufferResolution;
-    quadUV = gl_FragCoord.xy * texelSize;
-    depthData = getLogDepth(quadUV);
-
-    screenDoorEffect = matAttr[1][0] == 1.;
-    ssrEnabled = matAttr[1][1] == 1.;
-    renderingMode = int(matAttr[0][3]);
-    entityID = vec3(matAttr[0]);
-    materialID = int(matAttr[1][2]);
-
-
-    if (isDecalPass) {
-        anisotropicRotation = matAttr[1][3];
-        anisotropy = matAttr[2][0];
-        clearCoat = matAttr[2][1];
-        sheen = matAttr[2][2];
-        sheenTint = matAttr[2][3];
-
-        useAlbedoDecal = matAttr[3][0] == 1.;
-        useMetallicDecal = matAttr[3][1] == 1.;
-        useRoughnessDecal = matAttr[3][2] == 1.;
-        useNormalDecal = matAttr[3][3] == 1.;
-        useOcclusionDecal = matAttr[1][2] == 1.;
-    }
-
-    flatShading = renderingMode == UNLIT;
-    alphaTested = renderingMode == TRANSPARENCY;
-}
-
 
 void computeTBN() {
     if (!hasTBNComputed) {

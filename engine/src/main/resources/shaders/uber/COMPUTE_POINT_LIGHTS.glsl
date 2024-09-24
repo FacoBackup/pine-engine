@@ -21,7 +21,7 @@ float pointLightShadow(float distanceFromCamera, float shadowFalloffDistance, ve
     float shadow = 0.0;
     float diskRadius = 0.05;
     for (int i = 0; i < samples; ++i) {
-        float closestDepth = texture(shadow_cube, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+        float closestDepth = texture(shadowCube, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
         if (currentDepth - bias > closestDepth)
         shadow += 1.0;
     }

@@ -142,22 +142,26 @@ public class RenderingTask extends AbstractTask {
     private void collectTransformations() {
         offset = 0;
         int requestCount = 0;
-        for (PrimitiveRenderRequest request : temp) {
+        int instancedOffset = 0;
+        for (int i = 0; i < temp.size(); i++) {
+            PrimitiveRenderRequest request = temp.get(i);
             if (request.transformations.isEmpty()) {
                 fillTransformations(request.transformation.translation);
                 fillTransformations(request.transformation.rotation);
                 fillTransformations(request.transformation.scale);
-                request.transformation.renderIndex = requestCount;
+                request.transformation.primitiveIndex = requestCount;
                 requestCount++;
             } else {
                 for (SimpleTransformation st : request.transformations) {
                     fillTransformations(st.translation);
                     fillTransformations(st.rotation);
                     fillTransformations(st.scale);
-                    st.renderIndex = requestCount;
+                    st.primitiveIndex = requestCount;
                     requestCount++;
                 }
             }
+            request.renderIndex = i + instancedOffset;
+            instancedOffset += request.transformations.size();
         }
         renderingRepository.requestCount = requestCount;
     }

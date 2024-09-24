@@ -22,27 +22,6 @@ public class Camera {
     public final Quaternionf rotationBuffer = new Quaternionf();
 
     public boolean isOrthographic = false;
-    public boolean cameraMotionBlur = false;
-    public boolean bloom = false;
-    public boolean filmGrain = false;
-    public boolean vignetteEnabled = false;
-    public boolean chromaticAberration = false;
-    public boolean distortion = false;
-    public boolean DOF = false;
-    public int size = 50;
-    public int focusDistanceDOF = 10;
-    public double apertureDOF = 1.2;
-    public int focalLengthDOF = 5;
-    public int samplesDOF = 100;
-    public double filmGrainStrength = 1.;
-    public double vignetteStrength = .25;
-    public double bloomThreshold = .75;
-    public int bloomQuality = 8;
-    public int bloomOffset = 0;
-    public double gamma = 2.2;
-    public double exposure = 1.;
-    public int chromaticAberrationStrength = 1;
-    public int distortionStrength = 1;
 
     public float zFar = 5000;
     public float zNear = .1f;

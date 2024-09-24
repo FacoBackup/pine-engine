@@ -3,10 +3,9 @@ package com.pine.service.system;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.PInjector;
-import com.pine.Updatable;
 import com.pine.service.system.impl.AtmosphereSystem;
-import com.pine.service.system.impl.DemoRenderSystem;
 import com.pine.service.system.impl.DepthPrePassSystem;
+import com.pine.service.system.impl.FrameCompositionSystem;
 import com.pine.service.system.impl.ShaderDataSyncSystem;
 import com.pine.tasks.SyncTask;
 
@@ -21,7 +20,7 @@ public class SystemService implements SyncTask {
             new ShaderDataSyncSystem(),
             new DepthPrePassSystem(),
             new AtmosphereSystem(),
-            new DemoRenderSystem()
+            new FrameCompositionSystem()
     );
 
     public List<AbstractSystem> getSystems() {

@@ -12,9 +12,13 @@ public abstract class AbstractSystem implements Initializable {
     @PInject
     public Engine engine;
     @PInject
+    public EngineSettingsRepository settingsRepository;
+    @PInject
     public CameraRepository cameraRepository;
     @PInject
     public RenderingRepository renderingRepository;
+    @PInject
+    public ClockRepository clockRepository;
     @PInject
     public UBOService uboService;
     @PInject

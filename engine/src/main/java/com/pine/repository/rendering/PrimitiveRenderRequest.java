@@ -14,6 +14,7 @@ public class PrimitiveRenderRequest {
 
     public final SimpleTransformation transformation;
     public final List<SimpleTransformation> transformations;
+    public int renderIndex;
 
     public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, List<SimpleTransformation> transformations, int entityId) {
         this(primitive, runtimeData, new SimpleTransformation(entityId), transformations);

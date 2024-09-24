@@ -11,17 +11,16 @@ uniform int transformationIndex;
 uniform mat4 materialAttributes;
 uniform bool isDecalPass;
 
+out flat int renderIndex;
 out vec3 naturalNormal;
 out vec3 worldPosition;
 out vec2 naturalTextureUV;
-out mat4 matAttr;
 out mat4 invModelMatrix;
 
 void main(){
-    int index = (transformationIndex + gl_InstanceID);
-    mat4 modelMatrix = modelMatrices[index];
+    renderIndex = (transformationIndex + gl_InstanceID);
+    mat4 modelMatrix = modelMatrices[renderIndex];
 
-    matAttr = materialAttributes;
     vec4 wPosition = modelMatrix * vec4(position, 1.0);
     invModelMatrix = isDecalPass ? inverse(modelMatrix) : mat4(0.);
     worldPosition = wPosition.xyz;
