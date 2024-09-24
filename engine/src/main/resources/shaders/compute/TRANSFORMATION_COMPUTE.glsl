@@ -30,7 +30,7 @@ void main() {
         vec3 translation = vec3(transformation[actualIndex], transformation[actualIndex + 1], transformation[actualIndex + 2]);
         vec3 rotation = vec3(transformation[actualIndex + 3], transformation[actualIndex + 4], transformation[actualIndex + 5]);
         vec3 scale  = vec3(transformation[actualIndex + 6], transformation[actualIndex + 7], transformation[actualIndex + 8]);
-        modelView[i] = viewProjection * createModelMatrix(translation, rotation, scale);
+        modelMatrices[i] = createModelMatrix(translation, rotation, scale);
     }
 
     for (int i = 0; i < lightCount; i++){

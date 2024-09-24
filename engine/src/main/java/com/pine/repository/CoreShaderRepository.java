@@ -38,7 +38,7 @@ public class CoreShaderRepository implements CoreRepository{
 
     @Override
     public void initialize(){
-        demoShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEMO.vert", LOCAL_SHADER + "DEMO.frag").staticResource());
+        demoShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEMO.vert", LOCAL_SHADER + "UBER-MATERIAL-DEBUG.frag").staticResource());
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SPRITE.vert", LOCAL_SHADER + "SPRITE.frag").staticResource());
         depthPrePassShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEPTH_PRE_PASS.vert", LOCAL_SHADER + "DEPTH_PRE_PASS.frag").staticResource());

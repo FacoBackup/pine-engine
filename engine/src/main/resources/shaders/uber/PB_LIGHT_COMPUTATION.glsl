@@ -15,7 +15,7 @@ vec3 processLight(mat4 primaryBuffer, mat4 secondaryBuffer ) {
 }
 
 vec4 pbLightComputation() {
-    if (flatShading || isSky) return vec4(albedo + emission, 1.);
+    if (flatShading) return vec4(albedo + emission, 1.);
     VrN = reflect(-V, N);
     albedoOverPI = albedo / PI;
     vec3 directIllumination = vec3(0.0);

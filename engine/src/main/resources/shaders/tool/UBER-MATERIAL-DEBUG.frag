@@ -12,27 +12,25 @@ uniform int shadingModel;
 #include "../uber/PB_LIGHT_COMPUTATION.glsl"
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 #include "../uber/ATTRIBUTES.glsl"
+#include "../util/PARALLAX_OCCLUSION_MAPPING.glsl"
 
-//--UNIFORMS--
-
-
-const int ALBEDO = 0;
-const int NORMAL = 1;
-const int TANGENT = 2;
-const int DEPTH = 3;
-const int AO = 4;
-const int DETAIL = 5;
-const int LIGHT_ONLY = 6;
-const int METALLIC = 7;
-const int ROUGHNESS = 8;
-const int G_AO = 9;
-const int AMBIENT = 10;
-const int POSITION = 11;
-const int UV = 12;
-const int RANDOM = 13;
-const int OVERDRAW = 14;
-const int LIGHT_COMPLEXITY = 15;
-const int LIGHT_QUANTITY = 16;
+#define ALBEDO 0
+#define NORMAL 1
+#define TANGENT 2
+#define DEPTH 3
+#define AO 4
+#define DETAIL 5
+#define LIGHT_ONLY 6
+#define METALLIC 7
+#define ROUGHNESS 8
+#define G_AO 9
+#define AMBIENT 10
+#define POSITION 11
+#define UV 12
+#define RANDOM 13
+#define OVERDRAW 14
+#define LIGHT_COMPLEXITY 15
+#define LIGHT_QUANTITY 16
 
 
 float rand(vec2 co) {
@@ -42,19 +40,7 @@ float rand(vec2 co) {
 vec3 randomColor(float seed) {
     float r = rand(vec2(seed));
     float g = rand(vec2(seed + r));
-    return vec3(
-    r,
-    g,
-    rand(vec2(seed + g))
-    );
-}
-bool checkDither() {
-    if (screenDoorEffect) {
-        vec2 a = floor(gl_FragCoord.xy);
-        bool checker = mod(a.x + a.y, 2.) > 0.0;
-        return checker;
-    }
-    return false;
+    return vec3(r, g, rand(vec2(seed + g)));
 }
 
 bool checkLight(mat4 primaryBuffer, mat4 secondaryBuffer) {
@@ -76,7 +62,6 @@ bool checkLight(mat4 primaryBuffer, mat4 secondaryBuffer) {
 
 void main() {
     extractData();
-    if (checkDither()) discard;
     if (isDecalPass) {
         if (depthData == 0.) discard;
 
@@ -102,20 +87,16 @@ void main() {
         viewSpacePosition = viewSpacePositionFromDepth(gl_FragCoord.z, quadUV);
         worldSpacePosition = worldPosition;
         texCoords = naturalTextureUV;
-        if (shadingModel == DETAIL || shadingModel == LIGHT_ONLY)
-        if (!alphaTested && ((!isSky && !screenDoorEffect && abs(depthData - gl_FragCoord.z) > FRAG_DEPTH_THRESHOLD) || (isSky && depthData > 0.))) discard;
     }
+
     V = cameraPosition - worldSpacePosition;
     distanceFromCamera = length(V);
     V = normalize(V);
 
-    //--MATERIAL_SELECTION--
-
-    if (shadingModel == LIGHT_ONLY)
-    albedo = vec3(1.);
-
-    if (shadingModel == DETAIL || shadingModel == LIGHT_ONLY)
-    fragColor = pbLightComputation();
+    if (shadingModel == LIGHT_ONLY){
+        albedo = vec3(1.);
+        fragColor = pbLightComputation();
+    }
     else {
         switch (shadingModel) {
             case ALBEDO:
@@ -137,7 +118,6 @@ void main() {
                 fragColor = vec4(vec3(roughness), 1.);
                 break;
             case AO:
-
                 fragColor = vec4(vec3(hasAmbientOcclusion ? texture(SSAO, quadUV).r : 1.), 1.);
                 break;
             case POSITION:
@@ -166,7 +146,6 @@ void main() {
                                 lightSecondaryBuffer[i]
                             )) contribution++;
                         }
-
                     }
                     if (total > 0.)
                     fragColor = vec4(mix(vec3(1., 0., 0.), vec3(0., .0, 1.), 1. - contribution / total), 1.);
@@ -187,7 +166,6 @@ void main() {
 
                     bool checker = mod(a.x + a.y, checkerVal) > 0.0;
                     if (checker) discard;
-
 
                     break;
                 }

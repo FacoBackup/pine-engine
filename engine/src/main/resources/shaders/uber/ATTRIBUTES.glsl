@@ -67,7 +67,6 @@ uniform sampler2D sampler5;
 uniform sampler2D sampler6;
 uniform sampler2D sampler7;
 
-
 float naturalAO = 1.;
 float roughness = .5;
 float metallic = .5;
@@ -88,7 +87,6 @@ vec3 F0 = vec3(0.04);
 float NdotV;
 vec2 texelSize;
 bool flatShading = false;
-bool isSky;
 bool alphaTested;
 
 vec2 quadUV;
@@ -132,8 +130,6 @@ void extractData() {
     materialID = int(matAttr[1][2]);
 
 
-
-
     if (isDecalPass) {
         anisotropicRotation = matAttr[1][3];
         anisotropy = matAttr[2][0];
@@ -148,7 +144,6 @@ void extractData() {
         useOcclusionDecal = matAttr[1][2] == 1.;
     }
 
-    isSky = renderingMode == SKY;
     flatShading = renderingMode == UNLIT;
     alphaTested = renderingMode == TRANSPARENCY;
 }
@@ -182,39 +177,5 @@ void computeTBN() {
         TBN = mat3(T * invmax, B * invmax, naturalNormal);
     }
 }
-
-vec2 parallaxOcclusionMapping(sampler2D heightMap, float heightScale, int layers) {
-    if (distanceFromCamera > PARALLAX_THRESHOLD) return texCoords;
-    computeTBN();
-    mat3 transposed = transpose(TBN);
-    if (!hasViewDirectionComputed) {
-        viewDirection = normalize(transposed * (cameraPosition - worldSpacePosition.xyz));
-        hasViewDirectionComputed = true;
-    }
-    float fLayers = float(max(layers, 1));
-    float layerDepth = 1.0 / fLayers;
-    float currentLayerDepth = 0.0;
-    vec2 P = viewDirection.xy / viewDirection.z * max(heightScale, .00000001);
-    vec2 deltaTexCoords = P / fLayers;
-
-    vec2 currentUVs = texCoords;
-    float currentDepthMapValue = texture(heightMap, currentUVs).r;
-    while (currentLayerDepth < currentDepthMapValue) {
-        currentUVs -= deltaTexCoords;
-        currentDepthMapValue = texture(heightMap, currentUVs).r;
-        currentLayerDepth += layerDepth;
-    }
-
-    vec2 prevTexCoords = currentUVs + deltaTexCoords;
-    float afterDepth = currentDepthMapValue - currentLayerDepth;
-    float beforeDepth = texture(heightMap, prevTexCoords).r - currentLayerDepth + layerDepth;
-
-
-    float weight = afterDepth / (afterDepth - beforeDepth);
-    vec2 finalTexCoords = prevTexCoords * weight + currentUVs * (1.0 - weight);
-
-    return finalTexCoords;
-}
-
 
 out vec4 fragColor;
