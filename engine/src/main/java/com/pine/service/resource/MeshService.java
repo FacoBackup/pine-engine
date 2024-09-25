@@ -91,7 +91,7 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
 
     @Override
     public ResourceType getResourceType() {
-        return ResourceType.MESH;
+        return ResourceType.PRIMITIVE;
     }
 
     public void bindResources() {

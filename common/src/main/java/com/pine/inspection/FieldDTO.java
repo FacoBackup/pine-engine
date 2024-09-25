@@ -6,32 +6,23 @@ import java.util.UUID;
 
 public class FieldDTO {
     private final FieldType type;
-    private final String label;
-    private final String labelWithId;
+    private final String id;
     private final Field field;
     private final Object instance;
-    private final int max;
-    private final int min;
-    private final boolean angle;
-    private final boolean directChange;
     private final List<SelectableEnum> options;
+    private final MutableField delegate;
 
-    public FieldDTO(FieldType type, String label, Field field, Object instance, Integer max, Integer min, boolean isAngle, boolean isDirectChange, List<SelectableEnum> options) {
+    public FieldDTO(FieldType type, MutableField delegate, Field field, Object instance, List<SelectableEnum> options) {
         this.type = type;
-        this.label = label;
-        this.labelWithId = label + "#" + UUID.randomUUID().toString().replaceAll("-", "");
+        this.delegate = delegate;
+        this.id =  "##" + UUID.randomUUID().toString().replaceAll("-", "");
         this.field = field;
         this.instance = instance;
-        this.max = max == null ? Integer.MAX_VALUE : max;
-        this.min = min == null ? Integer.MIN_VALUE : min;
-        this.angle = isAngle;
-        this.directChange = isDirectChange;
         this.options = options;
-
     }
 
-    public String getLabelWithId() {
-        return labelWithId;
+    public String getId() {
+        return id;
     }
 
     public FieldType getType() {
@@ -39,7 +30,7 @@ public class FieldDTO {
     }
 
     public String getLabel() {
-        return label;
+        return delegate.label();
     }
 
     public Field getField() {
@@ -51,19 +42,19 @@ public class FieldDTO {
     }
 
     public int getMax() {
-        return max;
+        return delegate.max();
     }
 
     public int getMin() {
-        return min;
+        return delegate.min();
     }
 
     public boolean isAngle() {
-        return angle;
+        return delegate.isAngle();
     }
 
     public boolean isDirectChange() {
-        return directChange;
+        return delegate.isDirectChange();
     }
 
     public List<SelectableEnum> getOptions() {

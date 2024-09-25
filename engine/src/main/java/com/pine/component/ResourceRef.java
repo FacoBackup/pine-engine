@@ -1,4 +1,4 @@
-package com.pine.inspection;
+package com.pine.component;
 
 
 public class ResourceRef<T> {

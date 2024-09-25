@@ -13,19 +13,15 @@ public abstract class WithMutableData {
     final public List<FieldDTO> getFieldsAnnotated() {
         if (fieldsAnnotated.isEmpty()) {
             for (var field : getClass().getFields()) {
-                if (isMutableField(field)) {
+                MutableField mutableField = field.getAnnotation(MutableField.class);
+                if (!Modifier.isTransient(field.getModifiers()) && mutableField != null) {
                     FieldType fieldType = FieldType.getFieldType(field.getType());
                     if (fieldType != null) {
-                        NumericFieldRule rules = field.getAnnotation(NumericFieldRule.class);
                         fieldsAnnotated.add(new FieldDTO(
                                 fieldType,
-                                field.getAnnotation(MutableField.class).label(),
+                                mutableField,
                                 field,
                                 this,
-                                rules != null ? rules.max() : null,
-                                rules != null ? rules.min() : null,
-                                rules != null && rules.isAngle(),
-                                rules != null && rules.isDirectChange(),
                                 getOptions(field)
                         ));
                     }
@@ -43,9 +39,5 @@ public abstract class WithMutableData {
             return Collections.emptyList();
         }
         return new ArrayList<>(Arrays.asList(((Class<SelectableEnum>) field.getType()).getEnumConstants()));
-    }
-
-    private static boolean isMutableField(Field field) {
-        return !Modifier.isTransient(field.getModifiers()) && field.isAnnotationPresent(MutableField.class);
     }
 }

@@ -33,6 +33,6 @@ public final class MeshLoaderExtraInfo extends AbstractLoaderExtraInfo {
 
     @Override
     public ResourceType getResourceType() {
-        return ResourceType.MESH;
+        return ResourceType.PRIMITIVE;
     }
 }

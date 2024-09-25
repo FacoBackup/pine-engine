@@ -120,6 +120,6 @@ public class MeshLoader extends AbstractResourceLoader {
 
     @Override
     public ResourceType getResourceType() {
-        return ResourceType.MESH;
+        return ResourceType.PRIMITIVE;
     }
 }

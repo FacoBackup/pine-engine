@@ -3,7 +3,6 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceField;
-import com.pine.inspection.ResourceRef;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.primitives.texture.TextureResource;

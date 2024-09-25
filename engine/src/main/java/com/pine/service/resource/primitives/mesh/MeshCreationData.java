@@ -23,7 +23,7 @@ public final class MeshCreationData extends ResourceCreationData {
 
     @Override
     public ResourceType getResourceType() {
-        return ResourceType.MESH;
+        return ResourceType.PRIMITIVE;
     }
 
     public float[] vertices() {

@@ -13,6 +13,7 @@ import java.util.Set;
 public class SceneComponent extends AbstractComponent<SceneComponent> {
     @MutableField(label = "Scene members")
     public final CompositeScene compositeScene = new CompositeScene(getEntityId());
+
     public final transient List<PrimitiveRenderRequest> requests = new ArrayList<>();
 
     public SceneComponent(Integer entityId) {
@@ -25,7 +26,7 @@ public class SceneComponent extends AbstractComponent<SceneComponent> {
 
     @Override
     protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of(CullingComponent.class);
+        return Set.of();
     }
 
     @Override

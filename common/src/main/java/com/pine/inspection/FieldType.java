@@ -5,9 +5,12 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.List;
+
 public enum FieldType {
-//    SCENE(CompositeScene.class),
-//    RESOURCE(ResourceRef.class),
+    LIST(List.class),
+    COMPOSITE(WithMutableData.class),
+    CUSTOM(null),
     COLOR(Color.class),
     OPTIONS(SelectableEnum.class),
     STRING(String.class),
@@ -32,17 +35,17 @@ public enum FieldType {
     public static FieldType getFieldType(Class<?> clazz) {
         for (FieldType ft : FieldType.values()) {
             // SPECIFIC
-            if (ft.getClazz() == clazz) {
+            if (ft != CUSTOM && ft.getClazz() == clazz) {
                 return ft;
             }
         }
 
         for (FieldType ft : FieldType.values()) {
             // INSTANCE OF
-            if (ft.getClazz().isInstance(clazz)) {
+            if (ft != CUSTOM && ft.getClazz().isInstance(clazz)) {
                 return ft;
             }
         }
-        return null;
+        return CUSTOM;
     }
 }

@@ -63,6 +63,6 @@ public class Primitive extends AbstractResource {
 
     @Override
     public ResourceType getResourceType() {
-        return ResourceType.MESH;
+        return ResourceType.PRIMITIVE;
     }
 }

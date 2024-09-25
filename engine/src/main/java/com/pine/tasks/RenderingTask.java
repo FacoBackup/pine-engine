@@ -180,21 +180,16 @@ public class RenderingTask extends AbstractTask {
                 if (primitive.primitive == null) {
                     continue;
                 }
+                boolean culled = isCulled(primitive.transformation.translation, primitive.maxDistanceFromCamera, primitive.frustumBoxDimensions);
+                if (culled) {
+                    continue;
+                }
                 primitive.transformation.parentTransformationId = scene.getEntityId();
                 var mesh = primitive.primitive.resource = primitive.primitive.resource == null ? (Primitive) resourceService.getOrCreateResource(primitive.primitive.id) : primitive.primitive.resource;
                 if (mesh != null) {
                     scene.requests.add(new PrimitiveRenderRequest(mesh, DEFAULT_RENDER_REQUEST, primitive.transformation));
                 }
             }
-        }
-
-        CullingComponent culling = worldService.getCullingComponentUnchecked(scene.getEntityId());
-        for (var r : scene.requests) {
-            boolean culled = isCulled(r.transformation.translation, culling.maxDistanceFromCamera, culling.frustumBoxDimensions);
-            if (culled) {
-                continue;
-            }
-            temp.add(r);
         }
     }
 
