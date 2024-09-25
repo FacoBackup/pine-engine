@@ -3,6 +3,7 @@ package com.pine.tasks;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.component.*;
+import com.pine.component.light.AbstractLightComponent;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;
@@ -60,7 +61,7 @@ public class RenderingTask extends AbstractTask {
     public CoreSSBORepository ssboRepository;
 
     @PInject
-    public LightComponent lights;
+    public AbstractLightComponent<?> lights;
 
     private List<PrimitiveRenderRequest> temp = new ArrayList<>();
     private final Vector3f distanceAux = new Vector3f();
@@ -95,7 +96,7 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void packageLights() {
-        Vector<LightComponent> bag = lights.getBag();
+        var bag = (Vector<AbstractLightComponent<?>>) lights.getBag();
         int offset = 0;
         for (int i = 0; i < bag.size(); i++) {
             var light = bag.get(i);
@@ -119,18 +120,14 @@ public class RenderingTask extends AbstractTask {
             ssboRepository.lightSSBOState.put(i + offset + 16, light.color.x);
             ssboRepository.lightSSBOState.put(i + offset + 17, light.color.y);
             ssboRepository.lightSSBOState.put(i + offset + 18, light.color.z);
-
             ssboRepository.lightSSBOState.put(i + offset + 19, transform.translation.x);
             ssboRepository.lightSSBOState.put(i + offset + 20, transform.translation.y);
             ssboRepository.lightSSBOState.put(i + offset + 21, transform.translation.z);
-
             ssboRepository.lightSSBOState.put(i + offset + 22, transform.rotation.x);
             ssboRepository.lightSSBOState.put(i + offset + 23, transform.rotation.y);
             ssboRepository.lightSSBOState.put(i + offset + 24, transform.rotation.z);
-
             ssboRepository.lightSSBOState.put(i + offset + 25, light.atlasFace.x);
             ssboRepository.lightSSBOState.put(i + offset + 26, light.atlasFace.y);
-
             ssboRepository.lightSSBOState.put(i + offset + 27, light.attenuation.x);
             ssboRepository.lightSSBOState.put(i + offset + 28, light.attenuation.y);
 
