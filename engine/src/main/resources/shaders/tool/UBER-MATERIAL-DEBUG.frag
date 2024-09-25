@@ -5,16 +5,12 @@ uniform int shadingModel;
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 #include "../uber/ATTRIBUTES.glsl"
-#include "../enum/LIGHT_TYPE.glsl"
 #include "../util/STRONG_BLUR.glsl"
 #include "../util/RAY_MARCHER.glsl"
 #include "../util/SSS.glsl"
 #include "../util/BRDF_FUNCTIONS.glsl"
-#include "../uber/COMPUTE_DIRECTIONAL_LIGHTS.glsl"
-#include "../uber/COMPUTE_POINT_LIGHTS.glsl"
-#include "../uber/COMPUTE_SPOTLIGHT.glsl"
-#include "../uber/COMPUTE_AREALIGHT.glsl"
-#include "../uber/PB_LIGHT_COMPUTATION.glsl"
+#include "../uber/SHADOWS.glsl"
+#include "../uber/LIGHTS.glsl"
 #include "../util/PARALLAX_OCCLUSION_MAPPING.glsl"
 
 #define ALBEDO 0
@@ -44,23 +40,6 @@ vec3 randomColor(float seed) {
     float r = rand(vec2(seed));
     float g = rand(vec2(seed + r));
     return vec3(r, g, rand(vec2(seed + g)));
-}
-
-bool checkLight(mat4 primaryBuffer, mat4 secondaryBuffer) {
-    int type = int(primaryBuffer[0][0]);
-    vec3 directIllumination = vec3(0.);
-    if (type == DIRECTIONAL)
-    directIllumination = computeDirectionalLight(primaryBuffer, secondaryBuffer);
-    else if (type == POINT)
-    directIllumination = computePointLights(primaryBuffer, secondaryBuffer);
-    else if (type == SPOT)
-    directIllumination = computeSpotLights(primaryBuffer, secondaryBuffer);
-    else if (type == SPHERE)
-    directIllumination = computeSphereLight(primaryBuffer, secondaryBuffer);
-    else if (type == DISK)
-    directIllumination = computeDiskLight(primaryBuffer, secondaryBuffer);
-
-    return length(directIllumination) > 0.;
 }
 
 void main() {
@@ -142,11 +121,11 @@ void main() {
                         albedoOverPI = vec3(1.);
                         F0 = mix(F0, albedoOverPI, 0.);
 
-                        for (int i = 0; i < lightCount; i+=2) {
-                            if (checkLight(
-                                lightMetadata[i],
-                                lightMetadata[i + 1]
-                            )) contribution++;
+                        int attributeOffset = 0;
+                        for (int i = 0; i < lightCount; i++) {
+                            if (length(processLight(attributeOffset)) > 0.){
+                                contribution++;
+                            }
                         }
                     }
                     if (total > 0.){

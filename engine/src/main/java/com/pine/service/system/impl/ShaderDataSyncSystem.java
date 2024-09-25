@@ -29,9 +29,8 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
             renderingRepository.infoUpdated = false;
 
             ssboService.updateBuffer(ssboRepository.transformationSSBO, ssboRepository.transformationSSBOState, 0);
-            ssboService.updateBuffer(ssboRepository.lightDescriptionSSBO, ssboRepository.lightSSBOState, 0);
+            ssboService.updateBuffer(ssboRepository.lightMetadataSSBO, ssboRepository.lightSSBOState, 0);
 
-            ssboService.bind(ssboRepository.lightDescriptionSSBO);
             ssboService.bind(ssboRepository.transformationSSBO);
             ssboService.bind(ssboRepository.modelSSBO);
 

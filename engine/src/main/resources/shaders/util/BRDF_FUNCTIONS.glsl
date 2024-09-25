@@ -75,13 +75,6 @@ vec3 computeSkylightAmbient(vec3 V, samplerCube skylightSpecular) {
     return specular;//diffuse + specular;
 }
 
-vec4 precomputeContribution(vec3 lightPosition) {
-    vec3 L = normalize(lightPosition - worldSpacePosition);
-    float NdotL = max(dot(N, L), 0.0);
-    if (NdotL <= 0.) return vec4(0.);
-    return vec4(L, NdotL);
-}
-
 float kelemen(float HdotV) {
     return 1. / (4. * pow(HdotV, 2.) + 1e-5);
 }

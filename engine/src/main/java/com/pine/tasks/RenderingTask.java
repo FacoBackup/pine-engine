@@ -1,27 +1,31 @@
 package com.pine.tasks;
 
+import com.pine.EngineUtils;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.component.*;
-import com.pine.component.light.AbstractLightComponent;
+import com.pine.component.light.*;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
+import com.pine.service.LightService;
 import com.pine.service.resource.MeshService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.world.WorldService;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import static com.pine.repository.CoreSSBORepository.INFO_PER_LIGHT;
+import static com.pine.repository.CoreSSBORepository.MAX_INFO_PER_LIGHT;
 
 
 /**
@@ -61,7 +65,7 @@ public class RenderingTask extends AbstractTask {
     public CoreSSBORepository ssboRepository;
 
     @PInject
-    public AbstractLightComponent<?> lights;
+    public LightService lightService;
 
     private List<PrimitiveRenderRequest> temp = new ArrayList<>();
     private final Vector3f distanceAux = new Vector3f();
@@ -86,54 +90,13 @@ public class RenderingTask extends AbstractTask {
             prepareTerrain(scene);
         }
 
-        packageLights();
+        lightService.packageLights();
 
         collectTransformations();
         List<PrimitiveRenderRequest> aux = renderingRepository.requests;
         renderingRepository.requests = temp;
         temp = aux;
         renderingRepository.infoUpdated = true;
-    }
-
-    private void packageLights() {
-        var bag = (Vector<AbstractLightComponent<?>>) lights.getBag();
-        int offset = 0;
-        for (int i = 0; i < bag.size(); i++) {
-            var light = bag.get(i);
-            TransformationComponent transform = worldService.getTransformationComponentUnchecked(light.getEntityId());
-            ssboRepository.lightSSBOState.put(i + offset, light.screenSpaceShadows ? 1 : 0);
-            ssboRepository.lightSSBOState.put(i + offset + 1, light.shadowMap ? 1 : 0);
-            ssboRepository.lightSSBOState.put(i + offset + 2, light.shadowBias);
-            ssboRepository.lightSSBOState.put(i + offset + 3, light.shadowSamples);
-            ssboRepository.lightSSBOState.put(i + offset + 4, light.zNear);
-            ssboRepository.lightSSBOState.put(i + offset + 5, light.zFar);
-            ssboRepository.lightSSBOState.put(i + offset + 6, light.cutoff);
-            ssboRepository.lightSSBOState.put(i + offset + 7, light.shadowAttenuationMinDistance);
-            ssboRepository.lightSSBOState.put(i + offset + 8, light.smoothing);
-            ssboRepository.lightSSBOState.put(i + offset + 9, light.radius);
-            ssboRepository.lightSSBOState.put(i + offset + 10, light.size);
-            ssboRepository.lightSSBOState.put(i + offset + 11, light.areaRadius);
-            ssboRepository.lightSSBOState.put(i + offset + 12, light.planeAreaWidth);
-            ssboRepository.lightSSBOState.put(i + offset + 13, light.planeAreaHeight);
-            ssboRepository.lightSSBOState.put(i + offset + 14, light.intensity);
-            ssboRepository.lightSSBOState.put(i + offset + 15, light.type.getTypeId());
-            ssboRepository.lightSSBOState.put(i + offset + 16, light.color.x);
-            ssboRepository.lightSSBOState.put(i + offset + 17, light.color.y);
-            ssboRepository.lightSSBOState.put(i + offset + 18, light.color.z);
-            ssboRepository.lightSSBOState.put(i + offset + 19, transform.translation.x);
-            ssboRepository.lightSSBOState.put(i + offset + 20, transform.translation.y);
-            ssboRepository.lightSSBOState.put(i + offset + 21, transform.translation.z);
-            ssboRepository.lightSSBOState.put(i + offset + 22, transform.rotation.x);
-            ssboRepository.lightSSBOState.put(i + offset + 23, transform.rotation.y);
-            ssboRepository.lightSSBOState.put(i + offset + 24, transform.rotation.z);
-            ssboRepository.lightSSBOState.put(i + offset + 25, light.atlasFace.x);
-            ssboRepository.lightSSBOState.put(i + offset + 26, light.atlasFace.y);
-            ssboRepository.lightSSBOState.put(i + offset + 27, light.attenuation.x);
-            ssboRepository.lightSSBOState.put(i + offset + 28, light.attenuation.y);
-
-            offset += INFO_PER_LIGHT;
-        }
-        renderingRepository.lightCount = bag.size();
     }
 
     private void collectTransformations() {

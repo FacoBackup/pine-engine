@@ -1,3 +1,4 @@
+// DIRECTIONAL
 float sampleShadowMap (vec2 coord, float compare, sampler2D shadowMapTexture){
     return step(compare, texture(shadowMapTexture, coord.xy).r);
 }
@@ -54,26 +55,36 @@ float directionalLightShadows(float distanceFromCamera, float shadowFalloffDista
 }
 
 
+// POINT
 
+const vec3 sampleOffsetDirections[20] = vec3[]
+(
+vec3(1, 1, 1), vec3(1, -1, 1), vec3(-1, -1, 1), vec3(-1, 1, 1),
+vec3(1, 1, -1), vec3(1, -1, -1), vec3(-1, -1, -1), vec3(-1, 1, -1),
+vec3(1, 1, 0), vec3(1, -1, 0), vec3(-1, -1, 0), vec3(-1, 1, 0),
+vec3(1, 0, 1), vec3(-1, 0, 1), vec3(1, 0, -1), vec3(-1, 0, -1),
+vec3(0, 1, 1), vec3(0, -1, 1), vec3(0, -1, -1), vec3(0, 1, -1)
+);
+float pointLightShadow(float distanceFromCamera, float shadowFalloffDistance, vec3 lightPos, float bias, float zFar, int samples) {
+    float attenuation = clamp(mix(1., 0., shadowFalloffDistance - distanceFromCamera), 0., 1.);
+    if (attenuation == 1.) return 1.;
 
-vec3 computeDirectionalLight(inout mat4 primaryBuffer, inout mat4 secondaryBuffer){
-    vec3 lightPosition = vec3(primaryBuffer[1][0], primaryBuffer[1][1], primaryBuffer[1][2]);
-    vec3 lightColor = vec3(primaryBuffer[0][1], primaryBuffer[0][2], primaryBuffer[0][3]);
-    vec4 baseContribution = precomputeContribution(lightPosition);
-    if(baseContribution.a == 0.) return vec3(0.);
+    vec3 fragToLight = worldSpacePosition - lightPos;
+    float currentDepth = length(fragToLight) / zFar;
+    if (currentDepth > 1.)
+    currentDepth = 1.;
 
-    bool hasSSS = primaryBuffer[3][2] == 1.;
-    float shadows = 1.;
-    bool hasShadowMap = primaryBuffer[2][2] > 0.;
-
-    if (hasShadowMap){
-        vec4 lightSpacePosition  = secondaryBuffer * vec4(worldSpacePosition, 1.0);
-        vec2 atlasFace = vec2(primaryBuffer[2][0], primaryBuffer[2][1]);
-        shadows = directionalLightShadows(distanceFromCamera, primaryBuffer[3][1], primaryBuffer[3][0], lightSpacePosition, atlasFace, shadowAtlas, shadowMapsQuantity, shadowMapResolution, primaryBuffer[2][2]);
+    float shadow = 0.0;
+    float diskRadius = 0.05;
+    for (int i = 0; i < samples; ++i) {
+        float closestDepth = texture(shadowCube, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+        if (currentDepth - bias > closestDepth)
+        shadow += 1.0;
     }
-    if (shadows == 0.) return vec3(0.);
-    float occlusion = hasSSS ? screenSpaceShadows(lightPosition) : 1.;
-    if (occlusion == 0. ) return vec3(0.);
+    shadow /= float(samples);
 
-    return computeBRDF(baseContribution.rgb, baseContribution.a, lightColor);
+    float response = 1. - shadow;
+    if (response < 1.)
+    return min(1., response + attenuation);
+    return response;
 }

@@ -25,6 +25,7 @@ in vec3 worldPosition;
 in mat4 invModelMatrix;
 in flat int renderIndex;
 
+uniform float pcfSamples;
 uniform int lightCount;
 uniform float elapsedTime;
 uniform bool isDecalPass;

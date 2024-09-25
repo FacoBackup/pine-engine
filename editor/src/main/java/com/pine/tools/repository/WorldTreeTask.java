@@ -29,8 +29,8 @@ public class WorldTreeTask extends AbstractTask {
 
     @Override
     protected void tickInternal() {
-        if(worldRepository.getWorldChangeId() != internalWorldChangeId) {
-            internalWorldChangeId = worldRepository.getWorldChangeId();
+        if(worldRepository.getChangeId() != internalWorldChangeId) {
+            internalWorldChangeId = worldRepository.getChangeId();
             worldTree.branches.clear();
 
             for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {

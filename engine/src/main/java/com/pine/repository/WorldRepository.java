@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @PBean
-public class WorldRepository extends SerializableRepository  {
+public class WorldRepository extends SerializableRepository implements ChangeRecord {
     public static final ConcurrentHashMap<String, EntityComponent> EMPTY_MAP = new ConcurrentHashMap<>();
     public static final int ROOT_ID = 0;
     public static final MetadataComponent ROOT = new MetadataComponent(ROOT_ID);
@@ -77,10 +77,12 @@ public class WorldRepository extends SerializableRepository  {
         }
     }
 
-    public int getWorldChangeId() {
+    @Override
+    public int getChangeId() {
         return worldChangeId;
     }
 
+    @Override
     public void registerChange(){
         worldChangeId++;
     }

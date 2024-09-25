@@ -2,6 +2,7 @@ package com.pine.service.world.request;
 
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
+import com.pine.repository.ChangeRecord;
 import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 import org.joml.Quaternionf;
@@ -56,6 +57,9 @@ public class UpdateFieldRequest extends AbstractRequest {
                     field.normalize();
                 }
                 default -> fieldDTO.getField().set(fieldDTO.getInstance(), newValue);
+            }
+            if(fieldDTO.getInstance() instanceof ChangeRecord){
+                ((ChangeRecord) fieldDTO.getInstance()).registerChange();
             }
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
