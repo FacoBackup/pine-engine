@@ -81,77 +81,77 @@ void main() {
     else {
         switch (shadingModel) {
             case ALBEDO:
-                fragColor = vec4(albedo, 1.);
-                break;
+            fragColor = vec4(albedo, 1.);
+            break;
             case NORMAL:
-                fragColor = vec4(N, 1.);
-                break;
+            fragColor = vec4(N, 1.);
+            break;
             case DEPTH:
-                fragColor = vec4(vec3(depthData), 1.);
-                break;
+            fragColor = vec4(vec3(depthData), 1.);
+            break;
             case G_AO:
-                fragColor = vec4(vec3(naturalAO), 1.);
-                break;
+            fragColor = vec4(vec3(naturalAO), 1.);
+            break;
             case METALLIC:
-                fragColor = vec4(vec3(metallic), 1.);
-                break;
+            fragColor = vec4(vec3(metallic), 1.);
+            break;
             case ROUGHNESS:
-                fragColor = vec4(vec3(roughness), 1.);
-                break;
+            fragColor = vec4(vec3(roughness), 1.);
+            break;
             case AO:
-                fragColor = vec4(vec3(hasAmbientOcclusion ? texture(SSAO, quadUV).r : 1.), 1.);
-                break;
+            fragColor = vec4(vec3(hasAmbientOcclusion ? texture(SSAO, quadUV).r : 1.), 1.);
+            break;
             case POSITION:
-                fragColor = vec4(vec3(worldSpacePosition), 1.);
-                break;
+            fragColor = vec4(vec3(worldSpacePosition), 1.);
+            break;
             case UV:
-                fragColor = vec4(texCoords, 0., 1.);
-                break;
+            fragColor = vec4(texCoords, 0., 1.);
+            break;
             case RANDOM:
-                fragColor = vec4(randomColor(length(renderIndex)), 1.);
-                break;
+            fragColor = vec4(randomColor(length(renderIndex)), 1.);
+            break;
             case LIGHT_QUANTITY:
             case LIGHT_COMPLEXITY:{
-                    bool isLightQuantity = shadingModel == LIGHT_QUANTITY;
-                    float total = isLightQuantity ? float(lightCount) : float(MAX_LIGHTS * 3);
-                    float contribution = 0.;
+                bool isLightQuantity = shadingModel == LIGHT_QUANTITY;
+                float total = isLightQuantity ? float(lightCount) : float(MAX_LIGHTS * 3);
+                float contribution = 0.;
 
-                    if (!flatShading) {
-                        viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
-                        albedoOverPI = vec3(1.);
-                        F0 = mix(F0, albedoOverPI, 0.);
+                if (!flatShading) {
+                    viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
+                    albedoOverPI = vec3(1.);
+                    F0 = mix(F0, albedoOverPI, 0.);
 
-                        int attributeOffset = 0;
-                        for (int i = 0; i < lightCount; i++) {
-                            if (length(processLight(attributeOffset)) > 0.){
-                                contribution++;
-                            }
+                    int attributeOffset = 0;
+                    for (int i = 0; i < lightCount; i++) {
+                        if (length(processLight(attributeOffset)) > 0.){
+                            contribution++;
                         }
                     }
-                    if (total > 0.){
-                        fragColor = vec4(mix(vec3(1., 0., 0.), vec3(0., .0, 1.), 1. - contribution / total), 1.);
-                    }
-                    else {
-                        fragColor = vec4(0., 0., 1., 1.);
-                    }
-                    break;
                 }
-            case OVERDRAW:{
-                    vec2 a = floor(gl_FragCoord.xy);
-                    float checkerVal = 4.;
-
-                    if (!alphaTested && abs(depthData - gl_FragCoord.z) > FRAG_DEPTH_THRESHOLD) {
-                        fragColor = vec4(1., 0., 0., 1.);
-                        checkerVal = 2.;
-                    }
-                    else
+                if (total > 0.){
+                    fragColor = vec4(mix(vec3(1., 0., 0.), vec3(0., .0, 1.), 1. - contribution / total), 1.);
+                }
+                else {
                     fragColor = vec4(0., 0., 1., 1.);
-
-                    bool checker = mod(a.x + a.y, checkerVal) > 0.0;
-                    if (checker) discard;
-
-                    break;
                 }
+                break;
+            }
+            case OVERDRAW:{
+                vec2 a = floor(gl_FragCoord.xy);
+                float checkerVal = 4.;
+
+                if (!alphaTested && abs(depthData - gl_FragCoord.z) > FRAG_DEPTH_THRESHOLD) {
+                    fragColor = vec4(1., 0., 0., 1.);
+                    checkerVal = 2.;
+                }
+                else
+                fragColor = vec4(0., 0., 1., 1.);
+
+                bool checker = mod(a.x + a.y, checkerVal) > 0.0;
+                if (checker) discard;
+
+                break;
+            }
         }
     }
 }

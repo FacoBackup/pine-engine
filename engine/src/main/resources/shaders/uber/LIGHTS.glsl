@@ -31,7 +31,9 @@ struct LightSharedInfo{
     bool shadowMap;
     int pointShadowSamples;
     float zFar;
-} unifiedLightSharedInfo;
+};
+
+LightSharedInfo unifiedLightSharedInfo = LightSharedInfo(mat4(0.), vec3(0.), vec3(0.), vec3(0.), vec2(0.), vec2(0.), 0., 0., 0., 0., 0., 0., false, false, 0, 0.);
 
 vec4 precomputeContribution(vec3 lightPosition) {
     vec3 L = normalize(lightPosition - worldSpacePosition);
@@ -114,7 +116,7 @@ vec3 computeSphereLight(LightSharedInfo info){
 }
 
 vec3 processLight(inout int attributeOffset) {
-    lightMetadata++;
+    attributeOffset++;
     vec3 directIllumination = vec3(0.);
 
     int type = int(lightMetadata[attributeOffset]);
