@@ -3,6 +3,7 @@ package com.pine.ui.panel;
 import com.pine.Icon;
 import com.pine.PInject;
 import com.pine.ui.theme.ThemeRepository;
+import com.pine.ui.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
@@ -16,7 +17,7 @@ import imgui.type.ImInt;
 import java.util.Collections;
 import java.util.List;
 
-public class DockPanel extends AbstractPanel {
+public class DockPanel extends AbstractView {
     private static final int NO_TAB_BAR_FLAG = 1 << 12;
     private static final ImBoolean OPEN = new ImBoolean(true);
     private static final int FLAGS = ImGuiWindowFlags.MenuBar |

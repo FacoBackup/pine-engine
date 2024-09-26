@@ -1,7 +1,6 @@
 package com.pine.ui.view;
 
 import com.pine.AbstractTree;
-import com.pine.ui.View;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiTreeNodeFlags;
@@ -17,10 +16,6 @@ public class TreeView extends AbstractView {
     private AbstractTree<?, ?> tree;
     private BiConsumer<AbstractTree<?, ?>, AbstractTree<?, ?>> onDrop;
     private AbstractTree<?, ?> onDrag;
-
-    public TreeView(View parent, String id) {
-        super(parent, id);
-    }
 
     @Override
     public void renderInternal() {
@@ -52,14 +47,14 @@ public class TreeView extends AbstractView {
         }
 
         if (ImGui.beginDragDropSource()) {
-            ImGui.setDragDropPayload(internalIdPartial, internalIdPartial);
+            ImGui.setDragDropPayload(id, id);
             this.onDrag = target;
             ImGui.text("Dragging Node " + target.getName());
             ImGui.endDragDropSource();
         }
 
         if (ImGui.beginDragDropTarget()) {
-            if (Objects.equals(ImGui.acceptDragDropPayload(internalIdPartial), internalIdPartial)) {
+            if (Objects.equals(ImGui.acceptDragDropPayload(id), id)) {
                 onDrop.accept(target, onDrag);
                 onDrag = null;
             }

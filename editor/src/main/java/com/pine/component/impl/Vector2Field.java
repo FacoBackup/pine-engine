@@ -22,7 +22,7 @@ public class Vector2Field extends AbstractFormField {
         values[1] = valVec2.y;
 
         ImGui.text(dto.getLabel());
-        if (ImGui.dragFloat2(internalId, values, .01f, dto.getMin(), dto.getMax())) {
+        if (ImGui.dragFloat2(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
             changerHandler.accept(dto, values);
         }
     }

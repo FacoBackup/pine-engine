@@ -2,14 +2,14 @@ package com.pine.panels.viewport;
 
 import com.pine.PInject;
 import com.pine.repository.EditorSettingsRepository;
-import com.pine.ui.panel.AbstractPanel;
+import com.pine.ui.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
 
-public class GizmoConfigPanel extends AbstractPanel {
+public class GizmoConfigPanel extends AbstractView {
     public static final int GIZMO_PANEL_SIZE = 35;
     @PInject
     public EditorSettingsRepository editorSettingsRepository;
@@ -53,7 +53,7 @@ public class GizmoConfigPanel extends AbstractPanel {
             editorSettingsRepository.gizmoUseSnap = !editorSettingsRepository.gizmoUseSnap;
 
         ImGui.sameLine();
-        ImGui.checkbox("Snap" + internalId, editorSettingsRepository.gizmoUseSnap);
+        ImGui.checkbox("Snap" + imguiId, editorSettingsRepository.gizmoUseSnap);
         ImGui.sameLine();
 
         switch (editorSettingsRepository.gizmoOperation) {

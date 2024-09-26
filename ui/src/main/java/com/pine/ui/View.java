@@ -20,11 +20,9 @@ public interface View extends Renderable {
 
     List<View> getChildren();
 
-    String getId();
-
     View getParent();
 
-    void appendChild(View child);
+    <T extends View> T appendChild(T child);
 
     ViewDocument getDocument();
 

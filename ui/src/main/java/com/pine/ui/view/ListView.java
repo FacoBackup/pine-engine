@@ -13,10 +13,6 @@ public class ListView extends AbstractView {
     protected final Map<String, View> containers = new HashMap<>();
     private Function<RepeatingViewItem, View> getView;
 
-    public ListView(View parent, String id) {
-        super(parent, id);
-    }
-
     @Override
     public void renderInternal() {
         for (RepeatingViewItem item : data) {

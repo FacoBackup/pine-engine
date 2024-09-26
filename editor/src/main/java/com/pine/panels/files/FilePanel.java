@@ -5,12 +5,12 @@ import com.pine.PInject;
 import com.pine.common.fs.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
-import com.pine.ui.panel.AbstractPanel;
+import com.pine.ui.view.AbstractView;
 import com.pine.ui.view.TableView;
 import imgui.ImGui;
 import imgui.ImVec4;
 
-public class FilePanel extends AbstractPanel {
+public class FilePanel extends AbstractView {
     private final FileInfoDTO item;
     private final ImVec4 color = new ImVec4();
     private String iconCodepoint;

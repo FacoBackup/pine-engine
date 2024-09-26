@@ -3,13 +3,13 @@ package com.pine.component;
 import com.pine.component.impl.*;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.WithMutableData;
-import com.pine.ui.panel.AbstractPanel;
+import com.pine.ui.view.AbstractView;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.function.BiConsumer;
 
-public class FormPanel extends AbstractPanel {
+public class FormPanel extends AbstractView {
     private final BiConsumer<FieldDTO, Object> changeHandler;
     private final WithMutableData data;
     private String title;
@@ -60,7 +60,7 @@ public class FormPanel extends AbstractPanel {
                     break;
             }
         }
-        this.title = data.getLabel() + internalId;
+        this.title = data.getLabel() + imguiId;
     }
 
     @Override

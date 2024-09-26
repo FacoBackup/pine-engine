@@ -10,21 +10,18 @@ import java.util.List;
 import java.util.UUID;
 
 public class AbstractView implements View {
-    protected final String internalIdPartial;
-    protected ViewDocument document;
-    protected final String internalId;
     protected final String id;
+    protected ViewDocument document;
+    protected final String imguiId;
     protected final List<View> children = new ArrayList<>();
     protected View parent;
     protected String innerText;
     protected boolean visible = true;
     private AbstractPanelContext internalContext;
 
-    public AbstractView(View parent, String id) {
-        this.parent = parent;
-        this.id = id;
-        this.internalIdPartial = UUID.randomUUID().toString().replaceAll("-", "");
-        this.internalId = "##" + internalIdPartial;
+    public AbstractView() {
+        this.id = UUID.randomUUID().toString().replaceAll("-", "");
+        this.imguiId = "##" + id;
     }
 
     @Override
@@ -56,18 +53,14 @@ public class AbstractView implements View {
     }
 
     @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
     public View getParent() {
         return parent;
     }
 
     @Override
-    public void appendChild(View child) {
+    public <T extends View> T appendChild(T child) {
         document.appendChild(child, this);
+        return child;
     }
 
     @Override
@@ -103,11 +96,7 @@ public class AbstractView implements View {
     }
 
     @Override
-    public void tick() {
-    }
-
-    @Override
-     public void render() {
+    public void render() {
         tick();
         if (!visible) {
             return;

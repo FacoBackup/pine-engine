@@ -1,6 +1,5 @@
 package com.pine.ui.view;
 
-import com.pine.ui.View;
 import com.pine.ui.view.table.TableHeader;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableBgTarget;
@@ -17,13 +16,10 @@ public class TableView extends ListView {
     private List<TableHeader> headerColumns = Collections.emptyList();
     private static final int ACCENT = ImGui.getColorU32(ACCENT_COLOR);
 
-    public TableView(View parent, String id) {
-        super(parent, id);
-    }
 
     @Override
     public void renderInternal() {
-        ImGui.beginTable(innerText + internalId, maxCells, FLAGS);
+        ImGui.beginTable(innerText + imguiId, maxCells, FLAGS);
         for (var column : headerColumns) {
             if (column.getColumnWidth() > 0) {
                 ImGui.tableSetupColumn(column.getTitle(), column.getFlags(), column.getColumnWidth());

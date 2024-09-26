@@ -84,7 +84,7 @@ public class InspectorPanel extends AbstractWindowPanel {
 
         ImGui.nextColumn();
         if (selected != null) {
-            if (ImGui.beginCombo(internalId, types.getFirst())) {
+            if (ImGui.beginCombo(imguiId, types.getFirst())) {
                 for (int i = 1; i < types.size(); i++) {
                     String type = types.get(i);
                     if (ImGui.selectable(type)) {

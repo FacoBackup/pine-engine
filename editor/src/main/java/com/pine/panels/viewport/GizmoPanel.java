@@ -4,12 +4,12 @@ import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorSettingsRepository;
-import com.pine.ui.panel.AbstractPanel;
+import com.pine.ui.view.AbstractView;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 
-public class GizmoPanel extends AbstractPanel {
+public class GizmoPanel extends AbstractView {
     @PInject
     public EditorSettingsRepository editorSettingsRepository;
 

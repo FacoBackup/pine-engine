@@ -8,8 +8,8 @@ import com.pine.service.RequestProcessingService;
 import com.pine.service.world.request.HierarchyRequest;
 import com.pine.tools.repository.WorldTreeTask;
 import com.pine.ui.panel.AbstractWindowPanel;
-import com.pine.ui.view.FragmentView;
 import com.pine.ui.view.TreeView;
+import imgui.ImGui;
 
 public class HierarchyPanel extends AbstractWindowPanel {
 
@@ -23,23 +23,10 @@ public class HierarchyPanel extends AbstractWindowPanel {
     public RequestProcessingService requestProcessingService;
 
     @Override
-    protected String getDefinition() {
-        return """
-                <group>
-                    <fragment id='hierarchyHeader'/>
-                    <tree id='hierarchyTree'/>
-                </group>
-                """;
-    }
-
-    @Override
     public void onInitialize() {
         super.onInitialize();
-
-        var headerContainer = (FragmentView) document.getElementById("hierarchyHeader");
-        headerContainer.appendChild(new HierarchyHeaderPanel());
-
-        var hierarchyTree = (TreeView) document.getElementById("hierarchyTree");
+        appendChild(new HierarchyHeaderPanel());
+        TreeView hierarchyTree = appendChild(new TreeView());
         hierarchyTree.setTree(worldTask.getHierarchyTree());
         hierarchyTree.setOnClick((branch, multiSelect) -> {
             if (!multiSelect) {
@@ -50,6 +37,13 @@ public class HierarchyPanel extends AbstractWindowPanel {
         hierarchyTree.setOnDrop((target, drop) -> {
             requestProcessingService.addRequest(new HierarchyRequest(((MetadataComponent) target.data).getEntityId(), ((MetadataComponent) drop.data).getEntityId()));
         });
+    }
+
+    @Override
+    public void renderInternal() {
+        ImGui.beginGroup();
+        super.renderInternal();
+        ImGui.endGroup();
     }
 
     @Override

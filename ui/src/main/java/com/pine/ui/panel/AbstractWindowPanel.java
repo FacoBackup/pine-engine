@@ -1,6 +1,7 @@
 package com.pine.ui.panel;
 
 import com.pine.ui.View;
+import com.pine.ui.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
@@ -9,7 +10,7 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.internal.ImGuiWindow;
 import org.joml.Vector2f;
 
-public abstract class AbstractWindowPanel extends AbstractPanel {
+public abstract class AbstractWindowPanel extends AbstractView {
     private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove;
     private static final ImVec2 DEFAULT = new ImVec2(-1, -1);
     private static final ImVec2 MAX_SIZE = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);

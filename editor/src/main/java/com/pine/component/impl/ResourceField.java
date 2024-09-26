@@ -55,11 +55,11 @@ public class ResourceField extends AbstractFormField {
     @Override
     public void renderInternal() {
         ImGui.text(dto.getLabel());
-        if (ImGui.combo(internalId, selected, itemsArr)) {
+        if (ImGui.combo(imguiId, selected, itemsArr)) {
             changerHandler.accept(dto, new ResourceRef(items.get(selected.get()).id));
         }
 
-        if (ImGui.button("Refresh" + internalId + "1")) {
+        if (ImGui.button("Refresh" + imguiId + "1")) {
             refresh();
         }
     }

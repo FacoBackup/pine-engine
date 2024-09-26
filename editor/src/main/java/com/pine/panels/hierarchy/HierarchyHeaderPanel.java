@@ -1,35 +1,32 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.Engine;
+import com.pine.Icon;
 import com.pine.PInject;
 import com.pine.component.InstancedSceneComponent;
 import com.pine.service.world.request.AddEntityRequest;
-import com.pine.ui.panel.AbstractPanel;
-import com.pine.ui.view.ButtonView;
+import com.pine.ui.view.AbstractView;
+import imgui.ImGui;
+import imgui.flag.ImGuiInputTextFlags;
+import imgui.type.ImString;
 
 import java.util.List;
 
-public class HierarchyHeaderPanel extends AbstractPanel {
+public class HierarchyHeaderPanel extends AbstractView {
 
     @PInject
     public Engine engine;
 
-    @Override
-    protected String getDefinition() {
-        return """
-                <inline>
-                    <input id='searchEntity'/>
-                    <button id='addEntity'>[Plus]</button>
-                </inline>
-                """;
-    }
+    private final ImString search = new ImString();
 
     @Override
-    public void onInitialize() {
-        super.onInitialize();
-        var addEntity = (ButtonView) document.getElementById("addEntity");
-        addEntity.setOnClick(() -> {
+    public void renderInternal() {
+        if(ImGui.inputText("##hierarchySearch", search, ImGuiInputTextFlags.EnterReturnsTrue)){
+            // TODO
+        }
+        ImGui.sameLine();
+        if(ImGui.button(Icon.PLUS.codePoint, 35, 35)){
             engine.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
-        });
+        }
     }
 }
