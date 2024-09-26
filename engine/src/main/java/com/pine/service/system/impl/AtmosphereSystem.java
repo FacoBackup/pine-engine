@@ -81,11 +81,6 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
     }
 
     @Override
-    protected boolean shouldClearFBO() {
-        return true;
-    }
-
-    @Override
     protected void renderInternal() {
         GL46.glDisable(GL46.GL_DEPTH_TEST);
         shaderService.bind(shaderRepository.atmosphereShader);
@@ -118,7 +113,7 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
             shaderService.bindUniform(threshold, thresholdB);
             shaderService.bindUniform(samples, samplesB);
 
-            meshService.bind(primitiveRepository.quadMesh);
+            primitiveService.bind(primitiveRepository.quadMesh);
         }
         GL46.glEnable(GL46.GL_DEPTH_TEST);
     }

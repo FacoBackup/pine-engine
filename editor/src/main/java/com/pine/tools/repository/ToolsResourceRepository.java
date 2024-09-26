@@ -6,8 +6,6 @@ import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;
 
-import java.io.File;
-
 import static com.pine.service.resource.shader.ShaderCreationData.LOCAL_SHADER;
 
 public class ToolsResourceRepository implements Initializable {

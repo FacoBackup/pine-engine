@@ -3,17 +3,13 @@ package com.pine;
 import com.pine.common.messages.Message;
 import com.pine.common.messages.MessageCollector;
 import com.pine.common.messages.MessageSeverity;
-import com.pine.component.AtmosphereComponent;
 import com.pine.component.InstancedSceneComponent;
-import com.pine.component.ResourceRef;
 import com.pine.component.TransformationComponent;
-import com.pine.component.light.PointLightComponent;
 import com.pine.panels.console.ConsolePanel;
 import com.pine.panels.files.FilesPanel;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.viewport.ViewportPanel;
-import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.ProjectDTO;
 import com.pine.service.ProjectService;
 import com.pine.service.world.request.AddEntityRequest;
@@ -45,8 +41,8 @@ public class EditorWindow extends AbstractWindow {
             MessageCollector.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
         });
         engine.addModules(List.of(new ToolsModule()));
-        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, TransformationComponent.class)));
-        engine.requestTask.addRequest(new AddEntityRequest(List.of(PointLightComponent.class, TransformationComponent.class)));
+        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class,  TransformationComponent.class)));
+//        engine.requestTask.addRequest(new AddEntityRequest(List.of(PointLightComponent.class, TransformationComponent.class)));
 //        ((InstancedSceneComponent) engine.worldRepository.entities.get(1).get(InstancedSceneComponent.class.getSimpleName())).primitive = new ResourceRef<>(engine.primitiveRepository.planeMesh.getId());
     }
 

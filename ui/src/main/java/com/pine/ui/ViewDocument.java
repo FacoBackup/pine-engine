@@ -1,9 +1,7 @@
 package com.pine.ui;
 
 import com.pine.Loggable;
-import com.pine.PInject;
 import com.pine.PInjector;
-import com.pine.ui.theme.ThemeRepository;
 import com.pine.ui.view.AbstractView;
 import com.pine.window.AbstractWindow;
 import com.pine.window.WindowRuntimeException;

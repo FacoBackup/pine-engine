@@ -1,8 +1,8 @@
 package com.pine.component.impl;
 
 import com.pine.component.AbstractFormField;
-import com.pine.inspection.SelectableEnum;
 import com.pine.inspection.FieldDTO;
+import com.pine.inspection.SelectableEnum;
 import imgui.ImGui;
 
 import java.util.function.BiConsumer;

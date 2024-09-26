@@ -13,7 +13,7 @@ import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeData, MeshCreationData> {
+public class PrimitiveService extends AbstractResourceService<Primitive, MeshRuntimeData, MeshCreationData> {
     private Primitive currentMesh;
     private MeshRuntimeData drawCommand;
     private boolean isInWireframeMode = false;
@@ -24,7 +24,7 @@ public class MeshService extends AbstractResourceService<Primitive, MeshRuntimeD
 
     @Override
     protected void bindInternal(Primitive instance, MeshRuntimeData data) {
-        if(currentMesh != instance){
+        if (currentMesh != null && currentMesh != instance) {
             unbind();
         }
         currentMesh = instance;

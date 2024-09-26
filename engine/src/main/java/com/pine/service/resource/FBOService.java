@@ -27,6 +27,9 @@ public class FBOService extends AbstractResourceService<FrameBufferObject, Empty
 
     @Override
     protected void bindInternal(FrameBufferObject instance, EmptyRuntimeData data) {
+        if (current == instance) {
+            return;
+        }
         current = instance;
         current.use();
     }
@@ -55,6 +58,7 @@ public class FBOService extends AbstractResourceService<FrameBufferObject, Empty
                 fbo.sampler(color.w(), color.h(), color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
             }
         });
+
         if (data.isDepthTexture()) {
             fbo.depthTexture();
         }

@@ -36,7 +36,7 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
             var request = requests.get(i);
             transformationIndexBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, transformationIndexBuffer);
-            meshService.bind(request.primitive, request.runtimeData);
+            primitiveService.bind(request.primitive, request.runtimeData);
             instancedOffset += request.transformations.size();
         }
     }

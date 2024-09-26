@@ -3,7 +3,6 @@ package com.pine.service.resource;
 import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.Updatable;
 import com.pine.repository.ClockRepository;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;

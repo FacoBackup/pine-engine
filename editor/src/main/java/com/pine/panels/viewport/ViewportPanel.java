@@ -1,7 +1,6 @@
 package com.pine.panels.viewport;
 
 import com.pine.Engine;
-import com.pine.Icon;
 import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.EntitySelectionRepository;
@@ -9,7 +8,6 @@ import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.world.WorldService;
 import com.pine.ui.panel.AbstractWindowPanel;
 import imgui.ImGui;
 import imgui.ImVec2;

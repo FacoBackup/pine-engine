@@ -81,6 +81,6 @@ public class FrameCompositionSystem extends AbstractSystem implements Loggable {
 
         floatBuffer.put(0, lookupNoise());
         shaderService.bindUniform(filmGrainSeed, floatBuffer);
-        meshService.bind(primitiveRepository.quadMesh);
+        primitiveService.bind(primitiveRepository.quadMesh);
     }
 }

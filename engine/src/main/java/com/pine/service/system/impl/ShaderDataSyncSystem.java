@@ -11,14 +11,11 @@ import java.nio.IntBuffer;
 public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
 
     private UniformDTO entityCount;
-    private UniformDTO lightCount;
     private final IntBuffer entityCountBuffer = MemoryUtil.memAllocInt(1);
-    private final IntBuffer lightCountBuffer = MemoryUtil.memAllocInt(1);
 
     @Override
     public void onInitialize() {
         entityCount = computeRepository.transformationCompute.addUniformDeclaration("entityCount", GLSLType.INT);
-        lightCount = computeRepository.transformationCompute.addUniformDeclaration("lightCount", GLSLType.INT);
     }
 
     @Override
@@ -37,10 +34,8 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
             computeService.bind(computeRepository.transformationCompute);
 
             entityCountBuffer.put(0, renderingRepository.requestCount);
-            lightCountBuffer.put(0, renderingRepository.lightCount);
 
             computeService.bindUniform(entityCount, entityCountBuffer);
-            computeService.bindUniform(lightCount, lightCountBuffer);
 
             computeService.compute();
         }

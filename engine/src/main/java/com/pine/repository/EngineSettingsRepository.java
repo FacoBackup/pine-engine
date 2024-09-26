@@ -1,7 +1,7 @@
 package com.pine.repository;
 
-import com.pine.inspection.InspectableRepository;
 import com.pine.PBean;
+import com.pine.inspection.InspectableRepository;
 import com.pine.inspection.MutableField;
 
 @PBean

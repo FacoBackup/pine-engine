@@ -31,8 +31,8 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
 
     @Override
     protected void bindInternal(Shader instance, ShaderRuntimeData data) {
-        if (currentShader != instance) {
-            unbind();
+        if (currentShader == instance) {
+            return;
         }
         currentShader = instance;
         bindProgram(instance);

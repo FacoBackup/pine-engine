@@ -3,7 +3,7 @@ package com.pine.repository;
 import com.pine.Engine;
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.service.resource.MeshService;
+import com.pine.service.resource.PrimitiveService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FBOCreationData;
@@ -24,7 +24,7 @@ public class CoreFBORepository implements CoreRepository {
     @PInject
     public ShaderService shaderService;
     @PInject
-    public MeshService meshService;
+    public PrimitiveService primitiveService;
     @PInject
     public ResourceService resources;
     @PInject
@@ -49,6 +49,7 @@ public class CoreFBORepository implements CoreRepository {
     public int brdfSampler;
     public final List<FrameBufferObject> upscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> downscaleBloom = new ArrayList<>();
+    public final List<FrameBufferObject> all = new ArrayList<>();
 
     @Override
     public void initialize() {
@@ -94,10 +95,20 @@ public class CoreFBORepository implements CoreRepository {
         var brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
         shaderService.bind(brdfShader);
         brdfFBO.startMapping(true);
-        meshService.bind(primitiveRepository.quadMesh);
+        primitiveService.bind(primitiveRepository.quadMesh);
         brdfFBO.stop();
-        meshService.unbind();
+        primitiveService.unbind();
         shaderService.unbind();
         brdfSampler = brdfFBO.getSamplers().getFirst();
+
+        all.add(sceneDepth);
+        all.add(tempColorWithDepth);
+        all.add(ssgi);
+        all.add(ssgiFallback);
+        all.add(ssao);
+        all.add(ssaoBlurred);
+        all.add(shadows);
+        all.addAll(upscaleBloom);
+        all.addAll(downscaleBloom);
     }
 }

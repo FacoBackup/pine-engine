@@ -1,7 +1,9 @@
 package com.pine.component.rendering;
 
 import com.pine.component.ResourceRef;
-import com.pine.inspection.*;
+import com.pine.inspection.MutableField;
+import com.pine.inspection.ResourceField;
+import com.pine.inspection.WithMutableData;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
 import org.joml.Vector3f;

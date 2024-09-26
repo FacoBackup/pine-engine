@@ -1,31 +1,24 @@
 package com.pine.tasks;
 
-import com.pine.EngineUtils;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.component.*;
-import com.pine.component.light.*;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.LightService;
-import com.pine.service.resource.MeshService;
+import com.pine.service.resource.PrimitiveService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.world.WorldService;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.pine.repository.CoreSSBORepository.MAX_INFO_PER_LIGHT;
 
 
 /**
@@ -56,7 +49,7 @@ public class RenderingTask extends AbstractTask {
     public CameraRepository camera;
 
     @PInject
-    public MeshService meshService;
+    public PrimitiveService primitiveService;
 
     @PInject
     public RenderingRepository renderingRepository;
@@ -166,7 +159,7 @@ public class RenderingTask extends AbstractTask {
         if (scene.request == null) {
             TransformationComponent transformation = worldService.getTransformationComponentUnchecked(scene.getEntityId());
             if (scene.meshInstance == null) {
-                scene.meshInstance = meshService.createTerrain(scene.heightMapTexture.id);
+                scene.meshInstance = primitiveService.createTerrain(scene.heightMapTexture.id);
             }
             if (scene.meshInstance != null) {
                 scene.request = new PrimitiveRenderRequest(scene.meshInstance, DEFAULT_RENDER_REQUEST, transformation.toSimpleTransformation());

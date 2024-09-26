@@ -28,7 +28,7 @@ public abstract class AbstractSystem implements Initializable {
     @PInject
     public SSBOService ssboService;
     @PInject
-    public MeshService meshService;
+    public PrimitiveService primitiveService;
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject

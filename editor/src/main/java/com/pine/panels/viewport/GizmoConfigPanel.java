@@ -8,7 +8,6 @@ import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
-import imgui.flag.ImGuiWindowFlags;
 
 public class GizmoConfigPanel extends AbstractPanel {
     public static final int GIZMO_PANEL_SIZE = 35;

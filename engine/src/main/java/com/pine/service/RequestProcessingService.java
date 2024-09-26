@@ -7,7 +7,6 @@ import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AbstractRequest;
 import com.pine.service.world.request.RequestMessage;
-import com.pine.tasks.AbstractTask;
 import com.pine.tasks.SyncTask;
 
 import java.util.Vector;

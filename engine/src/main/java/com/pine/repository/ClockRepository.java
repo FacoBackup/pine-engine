@@ -1,7 +1,6 @@
 package com.pine.repository;
 
 import com.pine.PBean;
-import com.pine.Updatable;
 import com.pine.tasks.SyncTask;
 
 @PBean

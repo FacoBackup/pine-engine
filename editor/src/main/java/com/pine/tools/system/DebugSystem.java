@@ -13,7 +13,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.List;
 
 public class DebugSystem extends AbstractSystem {
 
@@ -111,6 +110,7 @@ public class DebugSystem extends AbstractSystem {
     @Override
     protected void renderInternal() {
         ssboService.bind(ssboRepository.modelSSBO);
+        ssboService.bind(ssboRepository.lightMetadataSSBO);
         shaderService.bind(toolsResourceRepository.debugShader);
 
         intBoolBuffer.put(0, renderingRepository.lightCount);
@@ -171,11 +171,15 @@ public class DebugSystem extends AbstractSystem {
 
         shaderService.bindUniform(shadowAtlas, fboRepository.shadowsSampler);
 
-        List<PrimitiveRenderRequest> requests = renderingRepository.requests;
-        for (PrimitiveRenderRequest request : requests) {
-            intBoolBuffer.put(0, request.renderIndex);
+
+        var requests = renderingRepository.requests;
+        int instancedOffset = 0;
+        for (int i = 0; i < requests.size(); i++) {
+            PrimitiveRenderRequest request = requests.get(i);
+            intBoolBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, intBoolBuffer);
-            meshService.bind(request.primitive, request.runtimeData);
+            primitiveService.bind(request.primitive, request.runtimeData);
+            instancedOffset += request.transformations.size();
         }
     }
 }

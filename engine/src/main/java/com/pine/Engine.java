@@ -3,12 +3,13 @@ package com.pine;
 import com.pine.injection.EngineExternalModule;
 import com.pine.repository.*;
 import com.pine.service.MessageService;
+import com.pine.service.RequestProcessingService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.service.world.request.AbstractRequest;
-import com.pine.service.RequestProcessingService;
 import com.pine.tasks.SyncTask;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 import java.util.List;
@@ -76,9 +77,17 @@ public class Engine {
         computeRepository.initialize();
         systemsService.initialize();
         worldRepository.initialize();
+
+        targetFBO = fboRepository.tempColorWithDepth;
     }
 
     public void render() {
+        for (FrameBufferObject fbo : fboRepository.all) {
+            fbo.clear();
+        }
+        if (targetFBO != null) {
+            targetFBO.clear();
+        }
         for (var syncTask : syncTasks) {
             syncTask.sync();
         }
@@ -96,11 +105,7 @@ public class Engine {
         requestTask.addRequest(request);
     }
 
-
-    public void setTargetFBO(FrameBufferObject fbo) {
-        if (this.targetFBO != null) {
-            this.targetFBO.clear();
-        }
+    public void setTargetFBO(@NotNull FrameBufferObject fbo) {
         this.targetFBO = fbo;
     }
 
