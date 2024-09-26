@@ -1,6 +1,6 @@
 package com.pine.service;
 
-import com.pine.ui.view.RepeatingViewItem;
+import com.pine.view.RepeatingViewItem;
 
 import java.io.File;
 import java.util.Date;

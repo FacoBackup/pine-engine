@@ -1,21 +1,16 @@
 package com.pine.panels.console;
 
 import com.pine.LogListener;
-import com.pine.ui.panel.AbstractWindowPanel;
+import com.pine.dock.AbstractDockPanel;
 import imgui.ImGui;
 import imgui.ImVec4;
 
 import static com.pine.LogListener.getLogMessages;
 
-public class ConsolePanel extends AbstractWindowPanel {
+public class ConsolePanel extends AbstractDockPanel {
     private static final ImVec4 ERROR = new ImVec4(0.35f, 0, 0, 1);
     private static final ImVec4 WARN = new ImVec4(1, 0.59f, 0, 1);
     private static final ImVec4 INFO = new ImVec4(0, .5f, 0, 1);
-
-    @Override
-    protected String getTitle() {
-        return "Console";
-    }
 
     @Override
     public void renderInternal() {

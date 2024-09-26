@@ -1,4 +1,4 @@
-package com.pine.ui.view;
+package com.pine.view;
 
 public interface RepeatingViewItem {
     String getKey();

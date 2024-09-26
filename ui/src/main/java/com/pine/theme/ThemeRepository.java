@@ -1,7 +1,6 @@
-package com.pine.ui.theme;
+package com.pine.theme;
 
 import com.pine.FSUtil;
-import com.pine.Icon;
 import com.pine.PBean;
 import com.pine.Updatable;
 import com.pine.inspection.InspectableRepository;
@@ -171,7 +170,7 @@ public class ThemeRepository implements Updatable, InspectableRepository {
 
         io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/fa-regular-400.ttf"), 14, fontConfig, Icon.getRange());
         fontConfig.setMergeMode(true);
-        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/fa-solid-900.ttf"), 14, fontConfig, Icon.getRange());
+        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/fa-solid-900.ttf"), 12, fontConfig, Icon.getRange());
         io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/OpenSans-Regular.ttf"), 16, fontConfig, io.getFonts().getGlyphRangesDefault());
 
         io.getFonts().build();

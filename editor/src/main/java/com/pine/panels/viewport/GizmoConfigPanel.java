@@ -2,28 +2,29 @@ package com.pine.panels.viewport;
 
 import com.pine.PInject;
 import com.pine.repository.EditorSettingsRepository;
-import com.pine.ui.view.AbstractView;
+import com.pine.view.AbstractView;
 import imgui.ImGui;
+import imgui.ImGuiIO;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
 
 public class GizmoConfigPanel extends AbstractView {
-    public static final int GIZMO_PANEL_SIZE = 35;
+    public static final int GIZMO_PANEL_SIZE = 30;
+    private final ImGuiIO io;
     @PInject
     public EditorSettingsRepository editorSettingsRepository;
 
-    private final ImVec2 size;
-    private final ImVec2 position;
-
-    public GizmoConfigPanel(ImVec2 position, ImVec2 size) {
-        this.size = size;
-        this.position = position;
+    public GizmoConfigPanel() {
+        io = ImGui.getIO();
     }
 
     @Override
     public void renderInternal() {
+        int framerate = (int) io.getFramerate();
+        ImGui.text(1000 / framerate + "ms | " + framerate + "fps");
+        ImGui.sameLine();
         if (ImGui.isKeyPressed(ImGuiKey.T))
             editorSettingsRepository.gizmoOperation = Operation.TRANSLATE;
         if (ImGui.isKeyPressed(ImGuiKey.R))

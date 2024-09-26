@@ -3,7 +3,7 @@ package com.pine.component;
 import com.pine.component.impl.*;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.WithMutableData;
-import com.pine.ui.view.AbstractView;
+import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 

@@ -1,4 +1,4 @@
-package com.pine.common.fs;
+package com.pine.repository;
 
 import com.pine.Loggable;
 import com.pine.PBean;

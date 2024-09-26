@@ -1,15 +1,13 @@
 package com.pine.panels.files;
 
 import com.pine.PInject;
-import com.pine.common.fs.FSService;
-import com.pine.ui.panel.AbstractWindowPanel;
+import com.pine.service.FSService;
+import com.pine.dock.AbstractDockPanel;
 import imgui.ImGui;
 
-public class FilesPanel extends AbstractWindowPanel {
+public class FilesPanel extends AbstractDockPanel {
     @PInject
     public FSService service;
-    private FilesHeaderPanel header;
-    private FilesDirectoryPanel directory;
 
     public FilesPanel() {
         super();
@@ -22,8 +20,8 @@ public class FilesPanel extends AbstractWindowPanel {
         refreshFiles();
         getContext().subscribe(this::refreshFiles);
 
-        header = appendChild(new FilesHeaderPanel());
-        directory = appendChild(new FilesDirectoryPanel());
+        appendChild(new FilesHeaderPanel());
+        appendChild(new FilesDirectoryPanel());
     }
 
     @Override
@@ -31,11 +29,6 @@ public class FilesPanel extends AbstractWindowPanel {
         ImGui.beginGroup();
         super.renderInternal();
         ImGui.endGroup();
-    }
-
-    @Override
-    protected String getTitle() {
-        return "Files";
     }
 
     private void refreshFiles() {

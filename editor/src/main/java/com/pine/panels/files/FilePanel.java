@@ -1,12 +1,12 @@
 package com.pine.panels.files;
 
-import com.pine.Icon;
+import com.pine.theme.Icon;
 import com.pine.PInject;
-import com.pine.common.fs.FileInfoDTO;
+import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
-import com.pine.ui.view.AbstractView;
-import com.pine.ui.view.TableView;
+import com.pine.view.AbstractView;
+import com.pine.view.TableView;
 import imgui.ImGui;
 import imgui.ImVec4;
 

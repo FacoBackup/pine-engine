@@ -4,7 +4,7 @@ import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorSettingsRepository;
-import com.pine.ui.view.AbstractView;
+import com.pine.view.AbstractView;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;

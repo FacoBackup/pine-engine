@@ -1,43 +1,47 @@
-package com.pine.ui.panel;
+package com.pine.dock;
 
-import com.pine.ui.View;
-import com.pine.ui.view.AbstractView;
+import com.pine.Loggable;
+import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.internal.ImGuiWindow;
 import org.joml.Vector2f;
 
-public abstract class AbstractWindowPanel extends AbstractView {
-    private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove;
+public final class DockWrapperPanel extends AbstractView implements Loggable {
+    private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.MenuBar;
     private static final ImVec2 DEFAULT = new ImVec2(-1, -1);
     private static final ImVec2 MAX_SIZE = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);
     private static final ImVec2 PIVOT = new ImVec2(0.5f, 0.5f);
     public static final float FRAME_SIZE = 25;
-    protected static final ImVec2 MIN_SIZE = new ImVec2(300, 300);
+    private static final ImVec2 MIN_SIZE = new ImVec2(300, 300);
 
-    private ImGuiWindow window;
-    protected final ImVec2 initialSize = DEFAULT.clone();
-    protected final ImVec2 padding = DEFAULT.clone();
-    protected final ImVec2 position = DEFAULT.clone();
-    /**
-     * Window Size; Updated every frame
-     */
+    private final ImVec2 initialSize = DEFAULT.clone();
+    public final ImVec2 padding = DEFAULT.clone();
+    public final ImVec2 position = DEFAULT.clone();
+    public final Vector2f size = new Vector2f();
     private final ImVec2 sizeInternal = DEFAULT.clone();
-    protected final Vector2f size = new Vector2f();
     private int stylePushCount;
-    private AbstractWindowPanel mainWindow;
 
-    protected abstract String getTitle();
+    private final DockWrapperPanel mainWindow;
+    private final DockDTO dock;
+    private AbstractDockPanel view;
+
+    public DockWrapperPanel(DockWrapperPanel mainWindow, DockDTO dock) {
+        this.mainWindow = mainWindow;
+        this.dock = dock;
+        padding.set(dock.getDescription().getPaddingX(), dock.getDescription().getPaddingY());
+    }
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
-        View first = getParent().getChildren().stream().findFirst().orElse(null);
-        if (first instanceof AbstractWindowPanel) {
-            mainWindow = (AbstractWindowPanel) first;
+        try {
+            view = appendChild(dock.getView().getConstructor().newInstance());
+            view.setSize(size);
+            view.setPosition(position);
+        } catch (Exception e) {
+            getLogger().error(e.getMessage(), e);
         }
     }
 
@@ -60,28 +64,29 @@ public abstract class AbstractWindowPanel extends AbstractView {
         }
 
         beforeWindow();
-        if (ImGui.begin(getTitle(), FLAGS)) {
-            afterWindow();
-            window = imgui.internal.ImGui.getCurrentWindow();
+        if (ImGui.begin(dock.getInternalId(), FLAGS)) {
             ImGui.getWindowSize(sizeInternal);
             size.x = sizeInternal.x;
             size.y = sizeInternal.y;
             ImGui.getWindowPos(position);
-        }
 
-        if (window != null) {
-            renderInternal();
+            renderHeader();
+            view.render();
+
+            ImGui.end();
         }
-        ImGui.end();
 
         ImGui.popStyleVar(stylePushCount);
         stylePushCount = 0;
     }
 
-    /**
-     * is executed immediately after window is opened
-     */
-    protected void afterWindow() {
+    private void renderHeader() {
+        if (ImGui.beginMenuBar()) {
+            ImGui.text(dock.getDescription().getIcon());
+            ImGui.spacing();
+            ImGui.text(dock.getDescription().getTitle());
+            ImGui.endMenuBar();
+        }
     }
 
     private void beforeWindow() {
@@ -99,9 +104,5 @@ public abstract class AbstractWindowPanel extends AbstractView {
 
     private ImVec2 getSize() {
         return sizeInternal;
-    }
-
-    public ImGuiWindow getWindow() {
-        return window;
     }
 }

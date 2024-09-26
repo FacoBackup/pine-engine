@@ -1,4 +1,4 @@
-package com.pine.ui.view.table;
+package com.pine.view.table;
 
 import imgui.flag.ImGuiTableColumnFlags;
 

@@ -2,6 +2,8 @@ package com.pine;
 
 import org.apache.commons.io.input.Tailer;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.time.Duration;
@@ -10,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 
 public class PineEngine {
     private static boolean shouldStop = false;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PineEngine.class);
 
     public static void main(String[] args) {
         createStopThread();
@@ -22,7 +25,11 @@ public class PineEngine {
 
         editorWindow.onInitialize();
         while (!GLFW.glfwWindowShouldClose(editorWindow.getHandle()) && !shouldStop) {
-            editorWindow.render();
+            try{
+                editorWindow.render();
+            }catch (Exception e){
+                LOGGER.error(e.getMessage(), e);
+            }
         }
         editorWindow.dispose();
         System.exit(0);

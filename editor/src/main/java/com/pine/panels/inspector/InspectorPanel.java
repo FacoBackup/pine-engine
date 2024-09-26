@@ -1,6 +1,6 @@
 package com.pine.panels.inspector;
 
-import com.pine.Icon;
+import com.pine.theme.Icon;
 import com.pine.PInject;
 import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
@@ -11,17 +11,15 @@ import com.pine.service.RequestProcessingService;
 import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AddComponentRequest;
 import com.pine.service.world.request.UpdateFieldRequest;
-import com.pine.ui.panel.AbstractWindowPanel;
+import com.pine.dock.AbstractDockPanel;
 import imgui.ImGui;
-import imgui.ImVec4;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class InspectorPanel extends AbstractWindowPanel {
-    private static final ImVec4 HOVERED_COLOR = new ImVec4(0.3f, 0.5f, 0.7f, 1.0f);
+public class InspectorPanel extends AbstractDockPanel {
 
     @PInject
     public EntitySelectionRepository selectionRepository;
@@ -41,11 +39,6 @@ public class InspectorPanel extends AbstractWindowPanel {
     private Integer selected;
     private final List<FormPanel> formPanels = new LinkedList<>();
     private final List<String> types = new ArrayList<>();
-
-    @Override
-    protected String getTitle() {
-        return "Inspector";
-    }
 
     @Override
     public void onInitialize() {

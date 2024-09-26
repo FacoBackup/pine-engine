@@ -1,9 +1,10 @@
 package com.pine;
 
-import com.pine.ui.ViewDocument;
-import com.pine.ui.panel.DockDTO;
-import com.pine.ui.panel.DockPanel;
-import com.pine.ui.theme.ThemeRepository;
+import com.pine.theme.ThemeRepository;
+import com.pine.view.AbstractView;
+import com.pine.view.View;
+import com.pine.dock.DockDTO;
+import com.pine.dock.DockPanel;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiCol;
@@ -20,38 +21,35 @@ import java.nio.IntBuffer;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractWindow implements Renderable, Initializable {
+public abstract class AbstractWindow extends AbstractView implements Initializable {
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
     protected int displayW = 1920;
     protected int displayH = 1080;
-    protected ViewDocument viewDocument;
     protected final DockPanel root = new DockPanel();
     private boolean isVisible = true;
 
     @PInject
     public ThemeRepository themeRepository;
 
-    @PInject
-    public PInjector injector;
-
     @Override
     final public void onInitialize() {
-        viewDocument = new ViewDocument(this, injector);
-        injector.inject(root);
+        appendChild(root);
 
         initializeWindow();
-        onInitialization();
+        onInitializeInternal();
         initializeView();
     }
 
-    protected abstract void onInitialization();
+    protected abstract void onInitializeInternal();
+
+    protected abstract View getHeader();
 
     private void initializeView() {
         themeRepository.initialize();
-        root.setDocument(viewDocument);
-        root.initializeDockSpaces(getDockSpaces());
+        root.setDockSpaces(getDockSpaces());
+        root.setHeader(getHeader());
         root.onInitialize();
     }
 
@@ -163,15 +161,11 @@ public abstract class AbstractWindow implements Renderable, Initializable {
             ImGui.pushStyleColor(ImGuiCol.ButtonHovered, themeRepository.accentColor); // Hovered background
             ImGui.pushStyleColor(ImGuiCol.ButtonActive, ImGui.getColorU32(0.1f, 0.6f, 0.1f, 1.0f)); // Active background
 
-            root.render();
-            ImGui.popStyleColor(3);
-
             renderInternal();
+
+            ImGui.popStyleColor(3);
         }
         endFrame();
-    }
-
-    protected void renderInternal() {
     }
 
     private void endFrame() {
@@ -213,9 +207,5 @@ public abstract class AbstractWindow implements Renderable, Initializable {
 
     protected boolean isFullScreen() {
         return true;
-    }
-
-    public ViewDocument getViewDocument() {
-        return viewDocument;
     }
 }

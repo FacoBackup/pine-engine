@@ -1,6 +1,4 @@
-package com.pine.ui.view;
-
-import com.pine.ui.View;
+package com.pine.view;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +22,6 @@ public class ListView extends AbstractView {
         View container;
         if (containers.get(key) == null) {
             container = getView.apply(item);
-            container.setDocument(getDocument());
             container.setContext(getContext());
             containers.put(key, container);
             container.onInitialize();

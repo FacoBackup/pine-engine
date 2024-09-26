@@ -1,18 +1,21 @@
-package com.pine.common.messages;
+package com.pine.service;
+
+import com.pine.PBean;
 
 /**
  * Intended for grouping messages system-wide
  */
-public class MessageCollector {
+@PBean
+public class MessageRepository {
     public static final int MAX_MESSAGES = 4;
     public static final long MESSAGE_DURATION = 3000;
-    private static final Message[] messages = new Message[MAX_MESSAGES];
+    private final Message[] messages = new Message[MAX_MESSAGES];
 
-    public static void pushMessage(String message, MessageSeverity severity) {
+    public void pushMessage(String message, MessageSeverity severity) {
         pushMessage(new Message(message, severity));
     }
 
-    public static void pushMessage(Message message) {
+    public void pushMessage(Message message) {
         if (message == null) {
             return;
         }
@@ -27,7 +30,7 @@ public class MessageCollector {
         }
     }
 
-    public static Message[] getMessages() {
+    public Message[] getMessages() {
         return messages;
     }
 }

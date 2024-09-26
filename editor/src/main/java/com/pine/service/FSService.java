@@ -1,8 +1,10 @@
-package com.pine.common.fs;
+package com.pine.service;
 
 import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
+import com.pine.repository.FSRepository;
+import com.pine.repository.FileInfoDTO;
 
 import java.io.File;
 import java.io.IOException;

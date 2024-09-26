@@ -7,11 +7,11 @@ import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.world.request.HierarchyRequest;
 import com.pine.tools.repository.WorldTreeTask;
-import com.pine.ui.panel.AbstractWindowPanel;
-import com.pine.ui.view.TreeView;
+import com.pine.dock.AbstractDockPanel;
+import com.pine.view.TreeView;
 import imgui.ImGui;
 
-public class HierarchyPanel extends AbstractWindowPanel {
+public class HierarchyPanel extends AbstractDockPanel {
 
     @PInject
     public EntitySelectionRepository selectionRepository;
@@ -45,9 +45,5 @@ public class HierarchyPanel extends AbstractWindowPanel {
         super.renderInternal();
         ImGui.endGroup();
     }
-
-    @Override
-    protected String getTitle() {
-        return "Hierarchy";
-    }
 }
+

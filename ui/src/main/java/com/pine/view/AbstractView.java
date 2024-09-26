@@ -1,9 +1,9 @@
-package com.pine.ui.view;
+package com.pine.view;
 
-import com.pine.Icon;
-import com.pine.ui.View;
-import com.pine.ui.ViewDocument;
-import com.pine.ui.panel.AbstractPanelContext;
+import com.pine.PInject;
+import com.pine.PInjector;
+import com.pine.theme.Icon;
+import com.pine.panel.AbstractPanelContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,6 @@ import java.util.UUID;
 
 public class AbstractView implements View {
     protected final String id;
-    protected ViewDocument document;
     protected final String imguiId;
     protected final List<View> children = new ArrayList<>();
     protected View parent;
@@ -19,14 +18,12 @@ public class AbstractView implements View {
     protected boolean visible = true;
     private AbstractPanelContext internalContext;
 
+    @PInject
+    public PInjector injector;
+
     public AbstractView() {
         this.id = UUID.randomUUID().toString().replaceAll("-", "");
         this.imguiId = "##" + id;
-    }
-
-    @Override
-    public ViewDocument getDocument() {
-        return document;
     }
 
     @Override
@@ -37,14 +34,6 @@ public class AbstractView implements View {
     @Override
     public void setContext(AbstractPanelContext internalContext) {
         this.internalContext = internalContext;
-    }
-
-    @Override
-    public void setDocument(ViewDocument document) {
-        if (this.document != null) {
-            throw new RuntimeException("Document already bound to view");
-        }
-        this.document = document;
     }
 
     @Override
@@ -59,13 +48,21 @@ public class AbstractView implements View {
 
     @Override
     public <T extends View> T appendChild(T child) {
-        document.appendChild(child, this);
+        injector.inject(child);
+        this.getChildren().add(child);
+
+        if (child.getContext() == null || this.getContext() != null) {
+            child.setContext(this.getContext());
+        }
+        child.setParent(this);
+
+        child.onInitialize();
         return child;
     }
 
     @Override
     public void removeChild(View child) {
-        document.removeChild(child, this);
+        children.remove(child);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.pine.common.messages;
+package com.pine.service;
 
 public final class Message {
     private final String message;

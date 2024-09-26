@@ -1,4 +1,4 @@
-package com.pine.ui.view;
+package com.pine.view;
 
 import com.pine.AbstractTree;
 import imgui.ImGui;

@@ -1,6 +1,6 @@
-package com.pine.common.fs;
+package com.pine.repository;
 
-import com.pine.ui.view.RepeatingViewItem;
+import com.pine.view.RepeatingViewItem;
 
 public record FileInfoDTO(
         String fileName,

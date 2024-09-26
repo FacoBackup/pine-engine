@@ -1,10 +1,12 @@
 package com.pine;
 
-import com.pine.common.messages.Message;
-import com.pine.common.messages.MessageCollector;
-import com.pine.common.messages.MessageSeverity;
+import com.pine.panels.ToasterPanel;
+import com.pine.service.Message;
+import com.pine.service.MessageRepository;
+import com.pine.service.MessageSeverity;
 import com.pine.component.InstancedSceneComponent;
 import com.pine.component.TransformationComponent;
+import com.pine.panels.EditorHeaderPanel;
 import com.pine.panels.console.ConsolePanel;
 import com.pine.panels.files.FilesPanel;
 import com.pine.panels.hierarchy.HierarchyPanel;
@@ -14,7 +16,8 @@ import com.pine.service.ProjectDTO;
 import com.pine.service.ProjectService;
 import com.pine.service.world.request.AddEntityRequest;
 import com.pine.tools.ToolsModule;
-import com.pine.ui.panel.DockDTO;
+import com.pine.view.View;
+import com.pine.dock.DockDTO;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
@@ -24,7 +27,7 @@ import imgui.flag.ImGuiWindowFlags;
 import java.util.List;
 
 import static com.pine.Engine.GLSL_VERSION;
-import static com.pine.common.messages.MessageCollector.MESSAGE_DURATION;
+import static com.pine.service.MessageRepository.MESSAGE_DURATION;
 
 public class EditorWindow extends AbstractWindow {
 
@@ -34,82 +37,64 @@ public class EditorWindow extends AbstractWindow {
     @PInject
     public Engine engine;
 
+    @PInject
+    public MessageRepository messageRepository;
+
     @Override
-    public void onInitialization() {
+    public void onInitializeInternal() {
         engine.prepare(displayW, displayH, (String message, Boolean isError) -> {
-            MessageCollector.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
+            messageRepository.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
         });
         engine.addModules(List.of(new ToolsModule()));
-        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class,  TransformationComponent.class)));
-//        engine.requestTask.addRequest(new AddEntityRequest(List.of(PointLightComponent.class, TransformationComponent.class)));
-//        ((InstancedSceneComponent) engine.worldRepository.entities.get(1).get(InstancedSceneComponent.class.getSimpleName())).primitive = new ResourceRef<>(engine.primitiveRepository.planeMesh.getId());
+        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, TransformationComponent.class)));
+        appendChild(new ToasterPanel());
+    }
+
+    @Override
+    protected View getHeader() {
+        return new EditorHeaderPanel();
     }
 
     @Override
     protected List<DockDTO> getDockSpaces() {
-        DockDTO dockCenter = new DockDTO("Viewport", ViewportPanel.class);
-        DockDTO dockRightUp = new DockDTO("Hierarchy", HierarchyPanel.class);
-        DockDTO dockRightDown = new DockDTO("Inspector", InspectorPanel.class);
-        DockDTO dockDown = new DockDTO("Console", ConsolePanel.class);
-        DockDTO dockDownRight = new DockDTO("Files", FilesPanel.class);
+        DockDTO dockCenter = new DockDTO(EditorDock.Viewport, ViewportPanel.class);
+        DockDTO rightUp = new DockDTO(EditorDock.Hierarchy, HierarchyPanel.class);
+        DockDTO rightDown = new DockDTO(EditorDock.Inspector, InspectorPanel.class);
+        DockDTO downLeft = new DockDTO(EditorDock.Console, ConsolePanel.class);
+        DockDTO downRight = new DockDTO(EditorDock.Files, FilesPanel.class);
 
         dockCenter.setOrigin(null);
         dockCenter.setSplitDir(ImGuiDir.Right);
         dockCenter.setSizeRatioForNodeAtDir(0.17f);
         dockCenter.setOutAtOppositeDir(null);
 
-        dockRightUp.setOrigin(dockCenter);
-        dockRightUp.setSplitDir(ImGuiDir.Down);
-        dockRightUp.setSizeRatioForNodeAtDir(0.4f);
-        dockRightUp.setOutAtOppositeDir(dockCenter);
+        rightUp.setOrigin(dockCenter);
+        rightUp.setSplitDir(ImGuiDir.Down);
+        rightUp.setSizeRatioForNodeAtDir(0.4f);
+        rightUp.setOutAtOppositeDir(dockCenter);
 
-        dockRightDown.setOrigin(dockRightUp);
-        dockRightDown.setSplitDir(ImGuiDir.Down);
-        dockRightDown.setSizeRatioForNodeAtDir(0.6f);
-        dockRightDown.setOutAtOppositeDir(dockRightUp);
+        rightDown.setOrigin(rightUp);
+        rightDown.setSplitDir(ImGuiDir.Down);
+        rightDown.setSizeRatioForNodeAtDir(0.6f);
+        rightDown.setOutAtOppositeDir(rightUp);
 
-        dockDown.setOrigin(null);
-        dockDown.setSplitDir(ImGuiDir.Down);
-        dockDown.setSizeRatioForNodeAtDir(0.22f);
-        dockDown.setOutAtOppositeDir(null);
+        downLeft.setOrigin(null);
+        downLeft.setSplitDir(ImGuiDir.Down);
+        downLeft.setSizeRatioForNodeAtDir(0.22f);
+        downLeft.setOutAtOppositeDir(null);
 
-        dockDownRight.setOrigin(dockDown);
-        dockDownRight.setSplitDir(ImGuiDir.Right);
-        dockDownRight.setSizeRatioForNodeAtDir(0.5f);
-        dockDownRight.setOutAtOppositeDir(dockDown);
+        downRight.setOrigin(downLeft);
+        downRight.setSplitDir(ImGuiDir.Right);
+        downRight.setSizeRatioForNodeAtDir(0.5f);
+        downRight.setOutAtOppositeDir(downLeft);
 
         return List.of(
                 dockCenter,
-                dockRightUp,
-                dockRightDown,
-                dockDown,
-                dockDownRight
+                rightUp,
+                rightDown,
+                downLeft,
+                downRight
         );
-    }
-
-    @Override
-    protected void renderInternal() {
-        Message[] messages = MessageCollector.getMessages();
-        for (int i = 0; i < MessageCollector.MAX_MESSAGES; i++) {
-            var message = messages[i];
-            if (message == null) {
-                continue;
-            }
-            if (System.currentTimeMillis() - message.getDisplayStartTime() > MESSAGE_DURATION) {
-                messages[i] = null;
-                continue;
-            }
-            ImVec2 viewportDimensions = getViewDocument().getViewportDimensions();
-            ImGui.setNextWindowPos(5, viewportDimensions.y - 40 * (i + 1));
-            ImGui.setNextWindowSize(viewportDimensions.x * .35F, 35);
-            ImGui.pushStyleColor(ImGuiCol.Border, message.severity().getColor());
-            ImGui.pushStyleColor(ImGuiCol.WindowBg, message.severity().getColor());
-            ImGui.begin("##toaster" + i, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings);
-            ImGui.popStyleColor();
-            ImGui.popStyleColor();
-            ImGui.text(message.message());
-            ImGui.end();
-        }
     }
 
     @Override

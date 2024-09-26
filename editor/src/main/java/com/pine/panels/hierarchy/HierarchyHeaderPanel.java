@@ -1,11 +1,11 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.Engine;
-import com.pine.Icon;
+import com.pine.theme.Icon;
 import com.pine.PInject;
 import com.pine.component.InstancedSceneComponent;
 import com.pine.service.world.request.AddEntityRequest;
-import com.pine.ui.view.AbstractView;
+import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImString;
@@ -25,7 +25,7 @@ public class HierarchyHeaderPanel extends AbstractView {
             // TODO
         }
         ImGui.sameLine();
-        if(ImGui.button(Icon.PLUS.codePoint, 35, 35)){
+        if(ImGui.button(Icon.PLUS.codePoint, 25, 25)){
             engine.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
         }
     }

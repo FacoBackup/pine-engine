@@ -1,4 +1,4 @@
-package com.pine.ui.panel;
+package com.pine.panel;
 
 import java.util.ArrayList;
 import java.util.List;

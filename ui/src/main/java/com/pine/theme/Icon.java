@@ -1,4 +1,4 @@
-package com.pine;
+package com.pine.theme;
 
 public enum Icon {
     AD("\uf641", "Ad"),
