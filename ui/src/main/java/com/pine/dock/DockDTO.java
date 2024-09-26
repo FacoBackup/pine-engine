@@ -8,6 +8,8 @@ public final class DockDTO {
     private final ImInt nodeId = new ImInt(0);
     private final String internalId;
     private int splitDir;
+    private float sizeX;
+    private float sizeY;
     private float sizeRatioForNodeAtDir;
     private DockDTO outAtOppositeDir;
     private DockDTO origin;
@@ -75,5 +77,21 @@ public final class DockDTO {
 
     public String getInternalId() {
         return internalId;
+    }
+
+    public float getSizeX() {
+        return sizeX;
+    }
+
+    public float getSizeY() {
+        return sizeY;
+    }
+
+    public void setSizeX(float sizeX) {
+        this.sizeX = sizeX;
+    }
+
+    public void setSizeY(float sizeY) {
+        this.sizeY = sizeY;
     }
 }

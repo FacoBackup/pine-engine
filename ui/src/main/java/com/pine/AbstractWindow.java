@@ -39,19 +39,14 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
 
         initializeWindow();
         onInitializeInternal();
-        initializeView();
+        themeRepository.initialize();
+        root.setHeader(getHeader());
+        root.onInitialize();
     }
 
     protected abstract void onInitializeInternal();
 
     protected abstract View getHeader();
-
-    private void initializeView() {
-        themeRepository.initialize();
-        root.setDockSpaces(getDockSpaces());
-        root.setHeader(getHeader());
-        root.onInitialize();
-    }
 
     private void initializeWindow() {
         createGlfwContext();
@@ -69,8 +64,6 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
     }
 
     protected abstract String getGlslVersion();
-
-    protected abstract List<DockDTO> getDockSpaces();
 
     protected void createGlfwContext() {
         GLFWErrorCallback.createPrint(System.err).set();
@@ -90,8 +83,8 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
         }
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            final IntBuffer pWidth = stack.mallocInt(1); // int*
-            final IntBuffer pHeight = stack.mallocInt(1); // int*
+            final IntBuffer pWidth = stack.mallocInt(1);
+            final IntBuffer pHeight = stack.mallocInt(1);
 
             GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
             GLFW.glfwSetWindowPos(handle, (displayW - pWidth.get(0)) / 2, (displayH - pHeight.get(0)) / 2);

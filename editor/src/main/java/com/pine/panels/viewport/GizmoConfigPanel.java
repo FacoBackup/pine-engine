@@ -22,7 +22,7 @@ public class GizmoConfigPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
-        int framerate = (int) io.getFramerate();
+        int framerate = Math.max(1, (int) io.getFramerate());
         ImGui.text(1000 / framerate + "ms | " + framerate + "fps");
         ImGui.sameLine();
         if (ImGui.isKeyPressed(ImGuiKey.T))

@@ -1,6 +1,7 @@
 package com.pine.dock;
 
 import com.pine.Loggable;
+import com.pine.PInject;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -31,6 +32,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable {
     public DockWrapperPanel(DockWrapperPanel mainWindow, DockDTO dock) {
         this.mainWindow = mainWindow;
         this.dock = dock;
+        this.initialSize.set(dock.getSizeX(), dock.getSizeY());
         padding.set(dock.getDescription().getPaddingX(), dock.getDescription().getPaddingY());
     }
 
@@ -68,6 +70,10 @@ public final class DockWrapperPanel extends AbstractView implements Loggable {
             ImGui.getWindowSize(sizeInternal);
             size.x = sizeInternal.x;
             size.y = sizeInternal.y;
+
+            dock.setSizeX(size.x);
+            dock.setSizeY(size.y);
+
             ImGui.getWindowPos(position);
 
             renderHeader();

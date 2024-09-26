@@ -1,5 +1,7 @@
 package com.pine;
 
+import com.pine.dock.DockRepository;
+import com.pine.dock.DockService;
 import com.pine.panels.ToasterPanel;
 import com.pine.service.Message;
 import com.pine.service.MessageRepository;
@@ -40,6 +42,9 @@ public class EditorWindow extends AbstractWindow {
     @PInject
     public MessageRepository messageRepository;
 
+    @PInject
+    public DockService dockService;
+
     @Override
     public void onInitializeInternal() {
         engine.prepare(displayW, displayH, (String message, Boolean isError) -> {
@@ -48,15 +53,7 @@ public class EditorWindow extends AbstractWindow {
         engine.addModules(List.of(new ToolsModule()));
         engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, TransformationComponent.class)));
         appendChild(new ToasterPanel());
-    }
 
-    @Override
-    protected View getHeader() {
-        return new EditorHeaderPanel();
-    }
-
-    @Override
-    protected List<DockDTO> getDockSpaces() {
         DockDTO dockCenter = new DockDTO(EditorDock.Viewport, ViewportPanel.class);
         DockDTO rightUp = new DockDTO(EditorDock.Hierarchy, HierarchyPanel.class);
         DockDTO rightDown = new DockDTO(EditorDock.Inspector, InspectorPanel.class);
@@ -87,14 +84,14 @@ public class EditorWindow extends AbstractWindow {
         downRight.setSplitDir(ImGuiDir.Right);
         downRight.setSizeRatioForNodeAtDir(0.5f);
         downRight.setOutAtOppositeDir(downLeft);
+        dockService.getCurrentDockGroup().docks.addAll(List.of(dockCenter, rightUp, rightDown, downLeft, downRight));
 
-        return List.of(
-                dockCenter,
-                rightUp,
-                rightDown,
-                downLeft,
-                downRight
-        );
+        dockService.setDockGroupTemplate(dockService.getCurrentDockGroup());
+    }
+
+    @Override
+    protected View getHeader() {
+        return new EditorHeaderPanel();
     }
 
     @Override
