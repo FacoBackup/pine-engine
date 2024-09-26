@@ -8,7 +8,8 @@ import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
-import com.pine.service.resource.MeshService;
+import com.pine.service.LightService;
+import com.pine.service.resource.PrimitiveService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
@@ -18,6 +19,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Collects all visible renderable elements into a list
@@ -47,13 +49,16 @@ public class RenderingTask extends AbstractTask {
     public CameraRepository camera;
 
     @PInject
-    public MeshService meshService;
+    public PrimitiveService primitiveService;
 
     @PInject
     public RenderingRepository renderingRepository;
 
     @PInject
     public CoreSSBORepository ssboRepository;
+
+    @PInject
+    public LightService lightService;
 
     private List<PrimitiveRenderRequest> temp = new ArrayList<>();
     private final Vector3f distanceAux = new Vector3f();
@@ -78,28 +83,40 @@ public class RenderingTask extends AbstractTask {
             prepareTerrain(scene);
         }
 
+        lightService.packageLights();
+
+        collectTransformations();
+        List<PrimitiveRenderRequest> aux = renderingRepository.requests;
+        renderingRepository.requests = temp;
+        temp = aux;
+        renderingRepository.infoUpdated = true;
+    }
+
+    private void collectTransformations() {
         offset = 0;
         int requestCount = 0;
-        for (PrimitiveRenderRequest request : temp) {
+        int instancedOffset = 0;
+        for (int i = 0; i < temp.size(); i++) {
+            PrimitiveRenderRequest request = temp.get(i);
             if (request.transformations.isEmpty()) {
                 fillTransformations(request.transformation.translation);
                 fillTransformations(request.transformation.rotation);
                 fillTransformations(request.transformation.scale);
+                request.transformation.primitiveIndex = requestCount;
                 requestCount++;
             } else {
                 for (SimpleTransformation st : request.transformations) {
                     fillTransformations(st.translation);
                     fillTransformations(st.rotation);
                     fillTransformations(st.scale);
+                    st.primitiveIndex = requestCount;
                     requestCount++;
                 }
             }
+            request.renderIndex = i + instancedOffset;
+            instancedOffset += request.transformations.size();
         }
-
-        List<PrimitiveRenderRequest> aux = renderingRepository.requests;
         renderingRepository.requestCount = requestCount;
-        renderingRepository.requests = temp;
-        temp = aux;
     }
 
     private void fillTransformations(Vector3f transformation) {
@@ -116,21 +133,16 @@ public class RenderingTask extends AbstractTask {
                 if (primitive.primitive == null) {
                     continue;
                 }
+                boolean culled = isCulled(primitive.transformation.translation, primitive.maxDistanceFromCamera, primitive.frustumBoxDimensions);
+                if (culled) {
+                    continue;
+                }
                 primitive.transformation.parentTransformationId = scene.getEntityId();
                 var mesh = primitive.primitive.resource = primitive.primitive.resource == null ? (Primitive) resourceService.getOrCreateResource(primitive.primitive.id) : primitive.primitive.resource;
                 if (mesh != null) {
                     scene.requests.add(new PrimitiveRenderRequest(mesh, DEFAULT_RENDER_REQUEST, primitive.transformation));
                 }
             }
-        }
-
-        CullingComponent culling = worldService.getCullingComponentUnchecked(scene.getEntityId());
-        for (var r : scene.requests) {
-            boolean culled = isCulled(r.transformation.translation, culling.maxDistanceFromCamera, culling.frustumBoxDimensions);
-            if (culled) {
-                continue;
-            }
-            temp.add(r);
         }
     }
 
@@ -147,7 +159,7 @@ public class RenderingTask extends AbstractTask {
         if (scene.request == null) {
             TransformationComponent transformation = worldService.getTransformationComponentUnchecked(scene.getEntityId());
             if (scene.meshInstance == null) {
-                scene.meshInstance = meshService.createTerrain(scene.heightMapTexture.id);
+                scene.meshInstance = primitiveService.createTerrain(scene.heightMapTexture.id);
             }
             if (scene.meshInstance != null) {
                 scene.request = new PrimitiveRenderRequest(scene.meshInstance, DEFAULT_RENDER_REQUEST, transformation.toSimpleTransformation());
@@ -184,7 +196,7 @@ public class RenderingTask extends AbstractTask {
             PrimitiveRenderRequest composite;
             if (scene.request == null) {
                 transformations = new ArrayList<>();
-                composite = new PrimitiveRenderRequest(mesh, scene.runtimeData, transformations);
+                composite = new PrimitiveRenderRequest(mesh, scene.runtimeData, transformations, scene.getEntityId());
             } else {
                 composite = scene.request;
                 transformations = scene.request.transformations;

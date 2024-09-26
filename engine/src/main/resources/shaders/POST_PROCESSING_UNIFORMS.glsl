@@ -1,3 +1,5 @@
+// TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
+
 uniform LensEffects{
 
     float textureSizeXDOF;

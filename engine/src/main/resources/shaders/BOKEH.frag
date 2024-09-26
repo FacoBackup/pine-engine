@@ -8,7 +8,7 @@
 
 #include "./POST_PROCESSING_UNIFORMS.glsl"
 #include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
-#include "./SCENE_DEPTH_UTILS.glsl"
+#include "./util/SCENE_DEPTH_UTILS.glsl"
 
 in vec2 texCoords;
 uniform sampler2D sceneColor;

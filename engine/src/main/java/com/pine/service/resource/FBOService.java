@@ -27,6 +27,9 @@ public class FBOService extends AbstractResourceService<FrameBufferObject, Empty
 
     @Override
     protected void bindInternal(FrameBufferObject instance, EmptyRuntimeData data) {
+        if (current == instance) {
+            return;
+        }
         current = instance;
         current.use();
     }
@@ -48,13 +51,14 @@ public class FBOService extends AbstractResourceService<FrameBufferObject, Empty
             h = data.getH();
         }
         var fbo = new FrameBufferObject(w, h);
-        data.getColors().forEach(color -> {
+        data.getSamplers().forEach(color -> {
             if (color.w() == null || color.h() == null) {
-                fbo.texture(color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
+                fbo.sampler(color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
             } else {
-                fbo.texture(color.w(), color.h(), color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
+                fbo.sampler(color.w(), color.h(), color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
             }
         });
+
         if (data.isDepthTexture()) {
             fbo.depthTexture();
         }

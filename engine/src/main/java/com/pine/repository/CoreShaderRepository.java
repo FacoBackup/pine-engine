@@ -24,21 +24,19 @@ public class CoreShaderRepository implements CoreRepository{
     public Shader boxBlurShader;
     public Shader directShadowsShader;
     public Shader omniDirectShadowsShader;
-    public Shader compositionShader;
+    public Shader frameComposition;
     public Shader bloomShader;
     public Shader lensShader;
     public Shader gaussianShader;
     public Shader upSamplingShader;
     public Shader atmosphereShader;
     public Shader terrainShader;
-    public Shader demoShader;
 
     @PInject
     public ResourceService resources;
 
     @Override
     public void initialize(){
-        demoShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEMO.vert", LOCAL_SHADER + "DEMO.frag").staticResource());
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SPRITE.vert", LOCAL_SHADER + "SPRITE.frag").staticResource());
         depthPrePassShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEPTH_PRE_PASS.vert", LOCAL_SHADER + "DEPTH_PRE_PASS.frag").staticResource());
@@ -54,7 +52,7 @@ public class CoreShaderRepository implements CoreRepository{
         boxBlurShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "BOX-BLUR.frag").staticResource());
         directShadowsShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SHADOWS.vert", LOCAL_SHADER + "DIRECTIONAL_SHADOWS.frag").staticResource());
         omniDirectShadowsShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SHADOWS.vert", LOCAL_SHADER + "OMNIDIRECTIONAL_SHADOWS.frag").staticResource());
-        compositionShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "FRAME_COMPOSITION.frag").staticResource());
+        frameComposition = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "FRAME_COMPOSITION.frag").staticResource());
         bloomShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "BRIGHTNESS_FILTER.frag").staticResource());
         lensShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "LENS_POST_PROCESSING.frag").staticResource());
         gaussianShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "GAUSSIAN.frag").staticResource());

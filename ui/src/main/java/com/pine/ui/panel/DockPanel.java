@@ -1,6 +1,8 @@
 package com.pine.ui.panel;
 
 import com.pine.Icon;
+import com.pine.PInject;
+import com.pine.ui.theme.ThemeRepository;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
@@ -15,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class DockPanel extends AbstractPanel {
+    private static final int NO_TAB_BAR_FLAG = 1 << 12;
     private static final ImBoolean OPEN = new ImBoolean(true);
     private static final int FLAGS = ImGuiWindowFlags.MenuBar |
             ImGuiWindowFlags.NoDocking |
@@ -29,6 +32,9 @@ public class DockPanel extends AbstractPanel {
     private final ImInt dockMainId = new ImInt();
     private boolean isInitialized = false;
     private List<DockDTO> dockSpaces = Collections.emptyList();
+
+    @PInject
+    public ThemeRepository themeRepository;
 
     @Override
     public void renderInternal() {
@@ -55,8 +61,8 @@ public class DockPanel extends AbstractPanel {
                 ImGui.endMenu();
             }
 
-            if (ImGui.button(document.isDarkMode() ? Icon.MOON.codePoint : Icon.SUN.codePoint)) {
-                document.setDarkMode(!document.isDarkMode());
+            if (ImGui.button(themeRepository.isDarkMode ? Icon.MOON.codePoint : Icon.LIGHTBULB.codePoint, 27, 27)) {
+                themeRepository.isDarkMode = !themeRepository.isDarkMode;
             }
             ImGui.endMenuBar();
         }
@@ -83,7 +89,7 @@ public class DockPanel extends AbstractPanel {
 
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0.0f);
         ImGui.dockSpace(windowId, CENTER, ImGuiDockNodeFlags.PassthruCentralNode);
-        ImGui.popStyleVar();
+        ImGui.popStyleVar(1);
 
         super.renderInternal();
     }
@@ -95,7 +101,7 @@ public class DockPanel extends AbstractPanel {
             dockMainId.set(windowId);
 
             imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
-            imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), ImGuiDockNodeFlags.AutoHideTabBar);
+            imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), NO_TAB_BAR_FLAG);
             imgui.internal.ImGui.dockBuilderSetNodeSize(dockMainId.get(), document.getViewportDimensions());
 
             for (DockDTO dockSpace : dockSpaces) {
@@ -123,7 +129,7 @@ public class DockPanel extends AbstractPanel {
 
         dockSpace.getNodeId().set(imgui.internal.ImGui.dockBuilderSplitNode(origin, dockSpace.getSplitDir(), dockSpace.getSizeRatioForNodeAtDir(), null, target));
         ImGuiDockNode imGuiDockNode = imgui.internal.ImGui.dockBuilderGetNode(dockSpace.getNodeId().get());
-        imGuiDockNode.addLocalFlags(ImGuiDockNodeFlags.AutoHideTabBar);
+        imGuiDockNode.addLocalFlags(NO_TAB_BAR_FLAG);
     }
 
     private void addWindow(DockDTO d) {

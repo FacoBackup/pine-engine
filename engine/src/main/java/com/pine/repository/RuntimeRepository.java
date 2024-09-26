@@ -18,29 +18,4 @@ public class RuntimeRepository  {
     public float mouseY = 0;
     public float viewportW = 0;
     public float viewportH = 0;
-
-    public boolean isForwardPressed() {
-        return forwardPressed;
-    }
-
-    public boolean isBackwardPressed() {
-        return backwardPressed;
-    }
-
-    public boolean isLeftPressed() {
-        return leftPressed;
-    }
-
-    public boolean isRightPressed() {
-        return rightPressed;
-    }
-
-    public boolean isUpPressed() {
-        return upPressed;
-    }
-
-    public boolean isDownPressed() {
-        return downPressed;
-    }
-
 }

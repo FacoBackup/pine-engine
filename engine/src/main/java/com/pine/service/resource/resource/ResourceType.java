@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 public enum ResourceType {
-    MESH(List.of("gltf", "glb")),
+    PRIMITIVE(List.of("gltf", "glb")),
     TEXTURE(List.of("png", "jpeg", "jpg")),
     AUDIO(List.of("wav")),
     SHADER(List.of("vert", "frag")),

@@ -21,10 +21,9 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
         transformationIndex = shaderRepository.depthPrePassShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
     }
 
-
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.visibility;
+        return fboRepository.sceneDepth;
     }
 
     @Override
@@ -37,10 +36,8 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
             var request = requests.get(i);
             transformationIndexBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, transformationIndexBuffer);
-            meshService.bind(request.primitive, request.runtimeData);
-            meshService.unbind();
+            primitiveService.bind(request.primitive, request.runtimeData);
             instancedOffset += request.transformations.size();
         }
-        shaderService.unbind();
     }
 }

@@ -11,7 +11,7 @@ uniform int maxSamples;
 uniform sampler2D noiseSampler;
 out vec4 fragColor;
 
-#include "./SCENE_DEPTH_UTILS.glsl"
+#include "./util/SCENE_DEPTH_UTILS.glsl"
 
 void main() {
     float depthData = getLogDepth(texCoords);

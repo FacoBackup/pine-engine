@@ -7,6 +7,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -71,11 +72,17 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return engine.getTargetFBO();
+        return fboRepository.tempColorWithDepth;
+    }
+
+    @Override
+    protected boolean isRenderable() {
+        return !atmospheres.getBag().isEmpty();
     }
 
     @Override
     protected void renderInternal() {
+        GL46.glDisable(GL46.GL_DEPTH_TEST);
         shaderService.bind(shaderRepository.atmosphereShader);
         cameraRepository.currentCamera.invSkyboxProjectionMatrix.get(invSkyProjectionMatrixB);
         for (var comp : atmospheres.getBag()) {
@@ -106,9 +113,8 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
             shaderService.bindUniform(threshold, thresholdB);
             shaderService.bindUniform(samples, samplesB);
 
-            meshService.bind(primitiveRepository.quadMesh);
+            primitiveService.bind(primitiveRepository.quadMesh);
         }
-        meshService.unbind();
-        shaderService.unbind();
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
     }
 }

@@ -1,13 +1,14 @@
 package com.pine.repository;
 
 import com.pine.PBean;
-import com.pine.repository.WorldRepository;
+import com.pine.component.rendering.SimpleTransformation;
 
 import java.util.LinkedList;
 import java.util.List;
 
 @PBean
 public class EntitySelectionRepository {
+    private SimpleTransformation primitiveSelected = null;
     private Integer mainSelection = null;
     private final LinkedList<Integer> selected = new LinkedList<>();
 
@@ -44,6 +45,14 @@ public class EntitySelectionRepository {
 
     public Integer getMainSelection() {
         return mainSelection;
+    }
+
+    public void setPrimitiveSelected(SimpleTransformation primitiveSelected) {
+        this.primitiveSelected = primitiveSelected;
+    }
+
+    public SimpleTransformation getPrimitiveSelected() {
+        return primitiveSelected;
     }
 }
 

@@ -3,11 +3,14 @@ package com.pine;
 import com.pine.injection.EngineExternalModule;
 import com.pine.repository.*;
 import com.pine.service.MessageService;
+import com.pine.service.RequestProcessingService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.service.world.request.AbstractRequest;
-import com.pine.tasks.RequestProcessingTask;
+import com.pine.tasks.SyncTask;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL46;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -21,12 +24,13 @@ public class Engine {
     private int displayW;
     private int displayH;
 
+    private int invDisplayW;
+    private int invDisplayH;
+
     private FrameBufferObject targetFBO;
 
     @PInject
     public ModulesService modules;
-    @PInject
-    public ClockRepository clock;
     @PInject
     public SystemService systemsService;
     @PInject
@@ -34,7 +38,7 @@ public class Engine {
     @PInject
     public MessageService messageService;
     @PInject
-    public RequestProcessingTask requestTask;
+    public RequestProcessingService requestTask;
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
@@ -47,24 +51,46 @@ public class Engine {
     public CoreComputeRepository computeRepository;
     @PInject
     public CorePrimitiveRepository primitiveRepository;
+    @PInject
+    public WorldRepository worldRepository;
+    @PInject
+    public List<SyncTask> syncTasks;
 
     public void prepare(int displayW, int displayH, BiConsumer<String, Boolean> onMessage) {
         this.displayW = displayW;
         this.displayH = displayH;
+        this.invDisplayW = 1 / displayW;
+        this.invDisplayH = 1 / displayH;
         this.messageService.setMessageCallback(onMessage);
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+        GL46.glEnable(GL46.GL_CULL_FACE);
+        GL46.glCullFace(GL46.GL_BACK);
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
+        GL46.glDepthFunc(GL46.GL_LESS);
+        GL46.glFrontFace(GL46.GL_CCW);
+        primitiveRepository.initialize();
         ssboRepository.initialize();
         uboRepository.initialize();
         fboRepository.initialize();
         shaderRepository.initialize();
         computeRepository.initialize();
-        primitiveRepository.initialize();
         systemsService.initialize();
+        worldRepository.initialize();
+
+        targetFBO = fboRepository.tempColorWithDepth;
     }
 
     public void render() {
-        clock.tick();
-        resourcesService.tick();
-        systemsService.tick();
+        for (FrameBufferObject fbo : fboRepository.all) {
+            fbo.clear();
+        }
+        if (targetFBO != null) {
+            targetFBO.clear();
+        }
+        for (var syncTask : syncTasks) {
+            syncTask.sync();
+        }
     }
 
     public void shutdown() {
@@ -79,11 +105,7 @@ public class Engine {
         requestTask.addRequest(request);
     }
 
-
-    public void setTargetFBO(FrameBufferObject fbo) {
-        if (this.targetFBO != null) {
-            this.targetFBO.clear();
-        }
+    public void setTargetFBO(@NotNull FrameBufferObject fbo) {
         this.targetFBO = fbo;
     }
 
@@ -97,5 +119,13 @@ public class Engine {
 
     public int getDisplayW() {
         return displayW;
+    }
+
+    public int getInvDisplayH() {
+        return invDisplayH;
+    }
+
+    public int getInvDisplayW() {
+        return invDisplayW;
     }
 }

@@ -1,6 +1,6 @@
 package com.pine.type;
 
-import com.pine.component.SelectableEnum;
+import com.pine.inspection.SelectableEnum;
 
 public enum AtmosphereType implements SelectableEnum {
     MIE("Mie", 0),

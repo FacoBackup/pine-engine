@@ -37,7 +37,7 @@ public class FBOCreationData extends ResourceCreationData {
         return h;
     }
 
-    public List<FBOTextureData> getColors() {
+    public List<FBOTextureData> getSamplers() {
         return colors;
     }
 

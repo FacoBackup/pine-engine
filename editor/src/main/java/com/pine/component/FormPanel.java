@@ -26,8 +26,10 @@ public class FormPanel extends AbstractPanel {
                 case STRING:
                     appendChild(new StringField(field, changeHandler));
                     break;
-                case RESOURCE:
-                    appendChild(new ResourceField(field, changeHandler));
+                case CUSTOM:
+                    if (ResourceRef.class.isAssignableFrom(field.getField().getType())) {
+                        appendChild(new ResourceField(field, changeHandler));
+                    }
                     break;
                 case INT:
                     appendChild(new IntField(field, changeHandler));
@@ -55,9 +57,6 @@ public class FormPanel extends AbstractPanel {
                     break;
                 case OPTIONS:
                     appendChild(new OptionsField(field, changeHandler));
-                    break;
-                case SCENE:
-                    appendChild(new SceneField(field, changeHandler));
                     break;
             }
         }

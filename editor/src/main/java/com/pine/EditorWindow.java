@@ -1,20 +1,17 @@
 package com.pine;
 
-import com.pine.Engine;
-import com.pine.PInject;
+import com.pine.common.messages.Message;
+import com.pine.common.messages.MessageCollector;
+import com.pine.common.messages.MessageSeverity;
+import com.pine.component.InstancedSceneComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.panels.console.ConsolePanel;
 import com.pine.panels.files.FilesPanel;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.viewport.ViewportPanel;
-import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.ProjectDTO;
 import com.pine.service.ProjectService;
-import com.pine.common.messages.Message;
-import com.pine.common.messages.MessageCollector;
-import com.pine.common.messages.MessageSeverity;
-import com.pine.component.AtmosphereComponent;
 import com.pine.service.world.request.AddEntityRequest;
 import com.pine.tools.ToolsModule;
 import com.pine.ui.panel.DockDTO;
@@ -36,9 +33,6 @@ public class EditorWindow extends AbstractWindow {
     public ProjectService projectService;
 
     @PInject
-    public EntitySelectionRepository selectionRepository;
-
-    @PInject
     public Engine engine;
 
     @Override
@@ -47,7 +41,9 @@ public class EditorWindow extends AbstractWindow {
             MessageCollector.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
         });
         engine.addModules(List.of(new ToolsModule()));
-        engine.requestTask.addRequest(new AddEntityRequest(List.of(AtmosphereComponent.class, TransformationComponent.class)));
+        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class,  TransformationComponent.class)));
+//        engine.requestTask.addRequest(new AddEntityRequest(List.of(PointLightComponent.class, TransformationComponent.class)));
+//        ((InstancedSceneComponent) engine.worldRepository.entities.get(1).get(InstancedSceneComponent.class.getSimpleName())).primitive = new ResourceRef<>(engine.primitiveRepository.planeMesh.getId());
     }
 
     @Override
@@ -118,13 +114,13 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    protected String getGlslVersion(){
+    protected String getGlslVersion() {
         return GLSL_VERSION;
     }
 
     public String getWindowName() {
         ProjectDTO currentProject = projectService.getCurrentProject();
-        if(currentProject != null) {
+        if (currentProject != null) {
             return currentProject.getName();
         }
         return "New Project - Pine Engine";

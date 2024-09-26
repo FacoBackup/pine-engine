@@ -3,16 +3,16 @@ package com.pine.service.system;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.PInjector;
-import com.pine.Updatable;
 import com.pine.service.system.impl.AtmosphereSystem;
-import com.pine.service.system.impl.DemoRenderSystem;
 import com.pine.service.system.impl.DepthPrePassSystem;
+import com.pine.service.system.impl.FrameCompositionSystem;
 import com.pine.service.system.impl.ShaderDataSyncSystem;
+import com.pine.tasks.SyncTask;
 
 import java.util.List;
 
 @PBean
-public class SystemService implements Updatable {
+public class SystemService implements SyncTask {
     @PInject
     public PInjector pInjector;
 
@@ -20,7 +20,7 @@ public class SystemService implements Updatable {
             new ShaderDataSyncSystem(),
             new DepthPrePassSystem(),
             new AtmosphereSystem(),
-            new DemoRenderSystem()
+            new FrameCompositionSystem()
     );
 
     public List<AbstractSystem> getSystems() {
@@ -38,7 +38,7 @@ public class SystemService implements Updatable {
     }
 
     @Override
-    public void tick() {
+    public void sync() {
         for (var system : systems) {
             system.render();
         }

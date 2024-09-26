@@ -3,9 +3,13 @@ package com.pine.repository;
 import com.pine.Engine;
 import com.pine.PBean;
 import com.pine.PInject;
+import com.pine.service.resource.PrimitiveService;
 import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.ShaderCreationData;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
@@ -16,20 +20,21 @@ public class CoreFBORepository implements CoreRepository {
     @PInject
     public Engine engine;
     @PInject
+    public CorePrimitiveRepository primitiveRepository;
+    @PInject
+    public ShaderService shaderService;
+    @PInject
+    public PrimitiveService primitiveService;
+    @PInject
     public ResourceService resources;
     @PInject
-    public ConfigurationRepository configuration;
+    public EngineSettingsRepository configuration;
 
 
-    public FrameBufferObject finalFrame;
-    public int finalFrameSampler;
-    public FrameBufferObject visibility;
-    public int sceneDepthVelocity;
-    public int entityIDSampler;
-    public FrameBufferObject postProcessing1;
-    public int postProcessing1Sampler;
-    public FrameBufferObject postProcessing2;
-    public int postProcessing2Sampler;
+    public FrameBufferObject sceneDepth;
+    public int sceneDepthSampler;
+    public FrameBufferObject tempColorWithDepth;
+    public int tempColorWithDepthSampler;
     public FrameBufferObject ssgi;
     public int ssgiSampler;
     public FrameBufferObject ssgiFallback;
@@ -41,8 +46,10 @@ public class CoreFBORepository implements CoreRepository {
     public FrameBufferObject shadows;
     public int shadowsSampler;
     public int noiseSampler; // TODO
+    public int brdfSampler;
     public final List<FrameBufferObject> upscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> downscaleBloom = new ArrayList<>();
+    public final List<FrameBufferObject> all = new ArrayList<>();
 
     @Override
     public void initialize() {
@@ -50,20 +57,14 @@ public class CoreFBORepository implements CoreRepository {
         final int halfResW = engine.getDisplayW() / 2;
         final int halfResH = engine.getDisplayH() / 2;
 
-        visibility = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
-                .addSampler(0, GL46.GL_RGBA32F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
-                .addSampler(1, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
-
-        postProcessing1 = (FrameBufferObject) resources.addResource(new FBOCreationData(false, false).addSampler().staticResource());
-        postProcessing2 = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true).addSampler().staticResource());
+        sceneDepth = (FrameBufferObject) resources.addResource(new FBOCreationData(true, true));
+        tempColorWithDepth = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true).addSampler().staticResource());
 
         ssgi = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
         ssgiFallback = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
 
         ssao = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
         ssaoBlurred = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
-
-        finalFrame = (FrameBufferObject) resources.addResource(new FBOCreationData(false, false).addSampler().staticResource());
 
         int Q = 7;
         int w = engine.getDisplayW();
@@ -83,13 +84,31 @@ public class CoreFBORepository implements CoreRepository {
         ssaoSampler = ssao.getSamplers().getFirst();
         ssgiSampler = ssgi.getSamplers().getFirst();
         ssgiFallbackSampler = ssgiFallback.getSamplers().getFirst();
-        sceneDepthVelocity = visibility.getSamplers().getFirst();
-        entityIDSampler = visibility.getSamplers().get(1);
-        postProcessing1Sampler = postProcessing1.getSamplers().getFirst();
-        postProcessing2Sampler = postProcessing2.getSamplers().getFirst();
-        finalFrameSampler = finalFrame.getSamplers().getFirst();
+        sceneDepthSampler = sceneDepth.getDepthSampler();
+        tempColorWithDepthSampler = tempColorWithDepth.getSamplers().getFirst();
 
         shadows = (FrameBufferObject) resources.addResource(new FBOCreationData(configuration.shadowMapResolution, configuration.shadowMapResolution).setDepthTexture(true).staticResource());
         shadowsSampler = shadows.getDepthSampler();
+
+
+        var brdfFBO = (FrameBufferObject) resources.addResource(new FBOCreationData(512, 512).addSampler(0, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_FLOAT, false, false).staticResource());
+        var brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
+        shaderService.bind(brdfShader);
+        brdfFBO.startMapping(true);
+        primitiveService.bind(primitiveRepository.quadMesh);
+        brdfFBO.stop();
+        primitiveService.unbind();
+        shaderService.unbind();
+        brdfSampler = brdfFBO.getSamplers().getFirst();
+
+        all.add(sceneDepth);
+        all.add(tempColorWithDepth);
+        all.add(ssgi);
+        all.add(ssgiFallback);
+        all.add(ssao);
+        all.add(ssaoBlurred);
+        all.add(shadows);
+        all.addAll(upscaleBloom);
+        all.addAll(downscaleBloom);
     }
 }

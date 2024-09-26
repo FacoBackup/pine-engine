@@ -1,6 +1,3 @@
-
-
-
 in vec2 texCoords;
 
 uniform sampler2D currentFrame;

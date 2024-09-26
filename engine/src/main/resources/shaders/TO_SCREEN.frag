@@ -1,4 +1,4 @@
-precision lowp float;
+
 
 in vec2 texCoords;
 uniform sampler2D image;

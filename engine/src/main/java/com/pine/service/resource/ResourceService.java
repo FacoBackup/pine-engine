@@ -3,17 +3,17 @@ package com.pine.service.resource;
 import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.Updatable;
 import com.pine.repository.ClockRepository;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.resource.resource.*;
+import com.pine.tasks.SyncTask;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @PBean
-public class ResourceService implements Loggable, Updatable {
+public class ResourceService implements Loggable, SyncTask {
     public static final int MAX_TIMEOUT = 5 * 60 * 1000;
 
     @PInject
@@ -90,7 +90,7 @@ public class ResourceService implements Loggable, Updatable {
     }
 
     @Override
-    public void tick() {
+    public void sync() {
         if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
             sinceLastCleanup = clock.totalTime;
             int removed = 0;

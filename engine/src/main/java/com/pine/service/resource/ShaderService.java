@@ -9,7 +9,7 @@ import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.service.resource.shader.*;
-import com.pine.type.BlockPoint;
+import com.pine.type.UBODeclaration;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
 
@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 @PBean
 public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
     private int currentSamplerIndex = 0;
+    private Shader currentShader;
 
     @PInject
     public UBOService uboService;
@@ -30,16 +31,22 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
 
     @Override
     protected void bindInternal(Shader instance, ShaderRuntimeData data) {
+        if (currentShader == instance) {
+            return;
+        }
+        currentShader = instance;
         bindProgram(instance);
-        var uniforms = instance.getUniforms();
-        for (var entry : data.getUniformData().entrySet()) {
-            bindUniform(uniforms.get(entry.getKey()), entry.getValue());
+        if (data != null) {
+            var uniforms = instance.getUniforms();
+            for (var entry : data.getUniformData().entrySet()) {
+                bindUniform(uniforms.get(entry.getKey()), entry.getValue());
+            }
         }
     }
 
     @Override
     protected void bindInternal(Shader instance) {
-        bindProgram(instance);
+        bindInternal(instance, null);
     }
 
     @Override
@@ -65,20 +72,15 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     @Nullable
     public IShader bindWithUBO(String code, IShader instance) {
         if (instance.isValid()) {
-            if (code.contains(BlockPoint.CAMERA_VIEW.getBlockName()))
+            if (code.contains(UBODeclaration.CAMERA_VIEW.getBlockName()))
                 uboService.bindWithShader(uboRepository.cameraViewUBO, instance.getProgram());
-            if (code.contains(BlockPoint.CAMERA_PROJECTION.getBlockName()))
+            if (code.contains(UBODeclaration.CAMERA_PROJECTION.getBlockName()))
                 uboService.bindWithShader(uboRepository.cameraProjectionUBO, instance.getProgram());
-            if (code.contains(BlockPoint.FRAME_COMPOSITION.getBlockName()))
-                uboService.bindWithShader(uboRepository.frameCompositionUBO, instance.getProgram());
-            if (code.contains(BlockPoint.LENS_PP.getBlockName()))
+            if (code.contains(UBODeclaration.LENS_PP.getBlockName()))
                 uboService.bindWithShader(uboRepository.lensPostProcessingUBO, instance.getProgram());
-            if (code.contains(BlockPoint.SSAO.getBlockName()))
+            if (code.contains(UBODeclaration.SSAO.getBlockName()))
                 uboService.bindWithShader(uboRepository.ssaoUBO, instance.getProgram());
-            if (code.contains(BlockPoint.UBER.getBlockName()))
-                uboService.bindWithShader(uboRepository.uberUBO, instance.getProgram());
-            if (code.contains(BlockPoint.LIGHTS.getBlockName()))
-                uboService.bindWithShader(uboRepository.lightsUBO, instance.getProgram());
+
             return instance;
         }
         return null;

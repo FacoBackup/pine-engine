@@ -11,6 +11,8 @@ public abstract class AbstractComponent<T extends EntityComponent> extends WithM
     private transient final Vector<T> bag = new Vector<>();
 
     private final int entityId;
+    private int changes = 0;
+    private int frozenVersion = -1;
 
     public AbstractComponent() {
         entityId = -1;
@@ -51,5 +53,25 @@ public abstract class AbstractComponent<T extends EntityComponent> extends WithM
     @Override
     public String getLabel() {
         return getComponentName();
+    }
+
+    @Override
+    public int getChangeId() {
+        return changes;
+    }
+
+    @Override
+    public void registerChange() {
+        changes++;
+    }
+
+    @Override
+    public boolean isFrozen() {
+        return frozenVersion == getChangeId();
+    }
+
+    @Override
+    public void freezeVersion() {
+        frozenVersion = getChangeId();
     }
 }

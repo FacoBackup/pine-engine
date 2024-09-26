@@ -16,9 +16,9 @@ import static com.pine.Engine.MAX_LIGHTS;
 @PBean
 public class CoreSSBORepository implements CoreRepository {
     private static final int TRANSFORMATION_PER_ENTITY = 9;
-    private static final int INFO_PER_LIGHT = 21;
+    public static final int MAX_INFO_PER_LIGHT = 32;
     private static final int ENTITY_BUFFER_SIZE = TRANSFORMATION_PER_ENTITY * MAX_ENTITIES;
-    private static final int LIGHT_BUFFER_SIZE = MAX_LIGHTS * INFO_PER_LIGHT;
+    private static final int LIGHT_BUFFER_SIZE = MAX_LIGHTS * MAX_INFO_PER_LIGHT;
 
     @PInject
     public ResourceService resources;
@@ -27,7 +27,6 @@ public class CoreSSBORepository implements CoreRepository {
     public final FloatBuffer transformationSSBOState = MemoryUtil.memAllocFloat(ENTITY_BUFFER_SIZE);
 
     public ShaderStorageBufferObject lightMetadataSSBO;
-    public ShaderStorageBufferObject lightDescriptionSSBO;
     public ShaderStorageBufferObject transformationSSBO;
     public ShaderStorageBufferObject modelSSBO;
 
@@ -43,10 +42,6 @@ public class CoreSSBORepository implements CoreRepository {
         ));
         lightMetadataSSBO = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(
                 12,
-                (long) MAX_LIGHTS * GLSLType.MAT_4.getSize()
-        ));
-        lightDescriptionSSBO = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(
-                13,
                 (long) LIGHT_BUFFER_SIZE * GLSLType.FLOAT.getSize()
         ));
     }

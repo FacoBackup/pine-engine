@@ -2,7 +2,6 @@ package com.pine.ui;
 
 import com.pine.Loggable;
 import com.pine.PInjector;
-import com.pine.ui.theme.ThemeUtil;
 import com.pine.ui.view.AbstractView;
 import com.pine.window.AbstractWindow;
 import com.pine.window.WindowRuntimeException;
@@ -18,18 +17,10 @@ public class ViewDocument implements Loggable {
     private final Map<String, View> views = new HashMap<>();
     private final AbstractWindow window;
     private final PInjector injector;
-    private boolean darkMode = true;
-    private final float[] backgroundColor = new float[]{.0f, .0f, .0f};
 
     public ViewDocument(AbstractWindow window, PInjector injector) {
         this.window = window;
         this.injector = injector;
-    }
-
-    public void initialize() {
-        ThemeUtil.applySpacing();
-        ThemeUtil.applyTheme(darkMode, backgroundColor);
-        ThemeUtil.applyFonts();
     }
 
     public AbstractWindow getWindow() {
@@ -93,19 +84,6 @@ public class ViewDocument implements Loggable {
         } catch (Exception _) {
             return null;
         }
-    }
-
-    public float[] getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public boolean isDarkMode() {
-        return darkMode;
-    }
-
-    public void setDarkMode(boolean darkMode) {
-        this.darkMode = darkMode;
-        ThemeUtil.applyTheme(darkMode, backgroundColor);
     }
 
     public void removeChild(View child, AbstractView parent) {

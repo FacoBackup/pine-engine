@@ -3,9 +3,7 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.component.rendering.CompositeScene;
 import com.pine.inspection.MutableField;
-import com.pine.inspection.NumericFieldRule;
 import com.pine.inspection.ResourceField;
-import com.pine.inspection.ResourceRef;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.mesh.Primitive;
@@ -27,8 +25,7 @@ public class InstancedSceneComponent extends AbstractComponent<InstancedSceneCom
     @MutableField(label = "Primitive instance")
     public ResourceRef<Primitive> primitive;
 
-    @NumericFieldRule(min = 1, max = 200, isAngle = false, isDirectChange = false)
-    @MutableField(label = "Number of instances")
+    @MutableField(label = "Number of instances", min = 1, max = 200, isAngle = false, isDirectChange = false)
     public int numberOfInstances = 10;
 
     public transient MeshRuntimeData runtimeData;

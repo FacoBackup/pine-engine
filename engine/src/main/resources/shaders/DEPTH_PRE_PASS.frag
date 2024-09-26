@@ -1,8 +1,8 @@
-in int renderingIndex;
+flat in int renderingIndex;
 in float depthFunc;
 
 layout (location = 0) out vec4 v_depth_velocity;
-layout (location = 1) out vec4 v_entity;
+layout (location = 1) out int v_entity;
 
 float encode() {
     float half_co = depthFunc * 0.5;
@@ -12,5 +12,5 @@ float encode() {
 
 void main() {
     v_depth_velocity = vec4(encode(), 0., 0., 1.);
-    v_entity = vec4(((renderingIndex) & 0xFF) / 0xFF, ((renderingIndex >> 8) & 0xFF) / 0xFF, ((renderingIndex >> 16) & 0xFF) / 0xFF, 1.);
+    v_entity = renderingIndex;
 }
