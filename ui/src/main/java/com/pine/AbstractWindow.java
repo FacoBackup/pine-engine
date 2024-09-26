@@ -1,10 +1,5 @@
-package com.pine.window;
+package com.pine;
 
-import com.pine.Initializable;
-import com.pine.PInject;
-import com.pine.PInjector;
-import com.pine.Renderable;
-import com.pine.service.WindowService;
 import com.pine.ui.ViewDocument;
 import com.pine.ui.panel.DockDTO;
 import com.pine.ui.panel.DockPanel;
@@ -34,9 +29,6 @@ public abstract class AbstractWindow implements Renderable, Initializable {
     protected ViewDocument viewDocument;
     protected final DockPanel root = new DockPanel();
     private boolean isVisible = true;
-
-    @PInject
-    public WindowService windowService;
 
     @PInject
     public ThemeRepository themeRepository;
@@ -131,7 +123,7 @@ public abstract class AbstractWindow implements Renderable, Initializable {
         GLFW.glfwSetWindowCloseCallback(handle, new GLFWWindowCloseCallback() {
             @Override
             public void invoke(long l) {
-                windowService.closeWindow(AbstractWindow.this);
+                GLFW.glfwSetWindowShouldClose(handle, true);
             }
         });
         GLFW.glfwSetWindowIconifyCallback(handle, new GLFWWindowIconifyCallback() {

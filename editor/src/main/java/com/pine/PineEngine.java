@@ -1,7 +1,7 @@
 package com.pine;
 
-import com.pine.service.WindowService;
 import org.apache.commons.io.input.Tailer;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
 import java.time.Duration;
@@ -9,11 +9,30 @@ import java.time.temporal.ChronoUnit;
 
 
 public class PineEngine {
-    public static void main(String[] args) {
-        PInjector injector = new PInjector(PineEngine.class.getPackageName());
-        var windowService = (WindowService) injector.getBean(WindowService.class);
-        windowService.openWindow(EditorWindow.class);
+    private static boolean shouldStop = false;
 
+    public static void main(String[] args) {
+        createStopThread();
+
+        createLogThread();
+
+        PInjector injector = new PInjector(PineEngine.class.getPackageName());
+        EditorWindow editorWindow = new EditorWindow();
+        injector.inject(editorWindow);
+
+        editorWindow.onInitialize();
+        while (!GLFW.glfwWindowShouldClose(editorWindow.getHandle()) && !shouldStop) {
+            editorWindow.render();
+        }
+        editorWindow.dispose();
+        System.exit(0);
+    }
+
+    private static void createStopThread() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> shouldStop = true));
+    }
+
+    private static void createLogThread() {
         File logFile = new File("engine.log");
         LogListener listener = new LogListener();
 
