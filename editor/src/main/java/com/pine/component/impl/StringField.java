@@ -19,7 +19,7 @@ public class StringField extends AbstractFormField {
     @Override
     public void renderInternal() {
         ImGui.text(dto.getLabel());
-        if(ImGui.inputText(dto.getId(), value, ImGuiInputTextFlags.EnterReturnsTrue)){
+        if(ImGui.inputText(dto.getId(), value)){
             changerHandler.accept(dto, value.get());
         }
     }

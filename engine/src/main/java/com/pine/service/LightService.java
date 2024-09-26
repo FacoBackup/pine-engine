@@ -37,6 +37,7 @@ public class LightService {
 
     public void packageLights() {
         int offset = 0;
+        int count = 0;
         final Matrix4f cacheMat4 = new Matrix4f();
         final Matrix4f cacheMat42 = new Matrix4f();
         FloatBuffer b = ssboRepository.lightSSBOState;
@@ -61,6 +62,7 @@ public class LightService {
             }
             light.freezeVersion();
             offset += light.type.getDataDisplacement();
+            count++;
         }
 
         for (int i = 0; i < implPointLightComponent.getBag().size(); i++) {
@@ -75,6 +77,7 @@ public class LightService {
             }
             light.freezeVersion();
             offset += light.type.getDataDisplacement();
+            count++;
         }
 
 
@@ -86,6 +89,7 @@ public class LightService {
             }
             light.freezeVersion();
             offset += light.type.getDataDisplacement();
+            count++;
         }
 
 
@@ -107,9 +111,10 @@ public class LightService {
             }
             light.freezeVersion();
             offset += light.type.getDataDisplacement();
+            count++;
         }
 
-        renderingRepository.lightCount = offset / MAX_INFO_PER_LIGHT;
+        renderingRepository.lightCount = count;
     }
 
     private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent<?> light) {
