@@ -2,6 +2,7 @@ package com.pine.component;
 
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
+import com.pine.theme.Icons;
 
 import java.util.Collections;
 import java.util.Set;
@@ -26,7 +27,12 @@ public class MetadataComponent extends AbstractComponent<MetadataComponent> {
     }
     
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Metadata";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.adjust;
     }
 }

@@ -5,6 +5,7 @@ import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceField;
 import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.resource.ResourceType;
+import com.pine.theme.Icons;
 
 import java.util.Set;
 
@@ -34,7 +35,12 @@ public class SpriteComponent extends AbstractComponent<SpriteComponent> {
 
 
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Sprite";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.image;
     }
 }

@@ -1,15 +1,20 @@
-package com.pine.component;
+package com.pine.repository;
 
 import com.pine.PBean;
+import com.pine.component.ResourceRef;
+import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
+import com.pine.inspection.ResourceField;
+import com.pine.service.resource.primitives.texture.TextureResource;
+import com.pine.service.resource.resource.ResourceType;
+import com.pine.theme.Icons;
 import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;
 
-import java.util.Set;
-
 @PBean
-public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> {
-
+public class AtmosphereSettingsRepository extends Inspectable {
+    @MutableField(label = "Is enabled")
+    public boolean enabled = false;
     @MutableField(label = "Time of day")
     public float elapsedTime = 0;
     @MutableField(label = "Max samples", max = 20, min = 1, isDirectChange = false, isAngle = false)
@@ -33,21 +38,13 @@ public class AtmosphereComponent extends AbstractComponent<AtmosphereComponent> 
     @MutableField(label = "Threshold", max = 10, min = -1, isDirectChange = false, isAngle = false)
     public float threshold = 0;
 
-    public AtmosphereComponent() {
-        super();
-    }
-
-    public AtmosphereComponent(Integer entityId) {
-        super(entityId);
+    @Override
+    public String getTitle() {
+        return "Atmosphere Settings";
     }
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of();
-    }
-
-    @Override
-    public String getComponentName() {
-        return "Atmosphere";
+    public String getIcon() {
+        return Icons.cloud_sync;
     }
 }

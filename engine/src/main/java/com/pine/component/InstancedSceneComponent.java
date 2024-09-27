@@ -8,6 +8,7 @@ import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
+import com.pine.theme.Icons;
 
 import java.util.Set;
 
@@ -45,7 +46,12 @@ public class InstancedSceneComponent extends AbstractComponent<InstancedSceneCom
     }
 
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Instanced Mesh";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.filter_9_plus;
     }
 }

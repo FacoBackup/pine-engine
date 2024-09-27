@@ -34,9 +34,6 @@ public class RenderingTask extends AbstractTask {
     public SceneComponent scenes;
 
     @PInject
-    public TerrainComponent terrains;
-
-    @PInject
     public InstancedSceneComponent instancedComponents;
 
     @PInject
@@ -77,10 +74,6 @@ public class RenderingTask extends AbstractTask {
 
         for (var scene : instancedComponents.getBag()) {
             prepareInstanced(scene);
-        }
-
-        for (var scene : terrains.getBag()) {
-            prepareTerrain(scene);
         }
 
         lightService.packageLights();
@@ -144,28 +137,6 @@ public class RenderingTask extends AbstractTask {
                 }
             }
         }
-    }
-
-    private void prepareTerrain(TerrainComponent scene) {
-        if (scene.heightMapTexture == null) {
-            return;
-        }
-
-        boolean culled = isCulled(scene.getEntityId());
-        if (culled) {
-            return;
-        }
-
-        if (scene.request == null) {
-            TransformationComponent transformation = worldService.getTransformationComponentUnchecked(scene.getEntityId());
-            if (scene.meshInstance == null) {
-                scene.meshInstance = primitiveService.createTerrain(scene.heightMapTexture.id);
-            }
-            if (scene.meshInstance != null) {
-                scene.request = new PrimitiveRenderRequest(scene.meshInstance, DEFAULT_RENDER_REQUEST, transformation.toSimpleTransformation());
-            }
-        }
-        temp.add(scene.request);
     }
 
     private void prepareInstanced(InstancedSceneComponent scene) {

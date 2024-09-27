@@ -9,7 +9,7 @@ import java.util.List;
 
 public enum FieldType {
     LIST(List.class),
-    COMPOSITE(WithMutableData.class),
+    COMPOSITE(Inspectable.class),
     CUSTOM(null),
     COLOR(Color.class),
     OPTIONS(SelectableEnum.class),

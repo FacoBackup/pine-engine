@@ -13,6 +13,8 @@ import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 
+import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
+
 public class DockPanel extends AbstractView {
     private static final ImBoolean OPEN = new ImBoolean(true);
     private static final int FLAGS = ImGuiWindowFlags.MenuBar |
@@ -52,7 +54,7 @@ public class DockPanel extends AbstractView {
                     dockService.switchDockGroups(dockGroup, dockMainId);
                 }
             }
-            if(ImGui.button(Icons.add + "##addDock")){
+            if(ImGui.button(Icons.add + "##addDock", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)){
                 dockService.createDockGroup();
             }
             ImGui.endMenuBar();

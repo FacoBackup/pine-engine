@@ -4,6 +4,7 @@ import com.pine.PBean;
 import com.pine.component.rendering.CompositeScene;
 import com.pine.inspection.MutableField;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
+import com.pine.theme.Icons;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,12 @@ public class SceneComponent extends AbstractComponent<SceneComponent> {
     }
 
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Scene";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.movie_edit;
     }
 }

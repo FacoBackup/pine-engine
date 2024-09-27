@@ -2,25 +2,27 @@ package com.pine.component;
 
 import com.pine.component.impl.*;
 import com.pine.inspection.FieldDTO;
-import com.pine.inspection.WithMutableData;
+import com.pine.inspection.Inspectable;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
-import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.function.BiConsumer;
 
 public class FormPanel extends AbstractView {
     private final BiConsumer<FieldDTO, Object> changeHandler;
-    private final WithMutableData data;
+    private Inspectable inspectable;
     private String title;
 
-    public FormPanel(WithMutableData data, BiConsumer<FieldDTO, Object> changeHandler) {
-        this.data = data;
+    public FormPanel(BiConsumer<FieldDTO, Object> changeHandler) {
         this.changeHandler = changeHandler;
     }
 
-    @Override
-    public void onInitialize() {
+    public void setInspectable(Inspectable data) {
+        if (this.inspectable == data) {
+            return;
+        }
+        this.inspectable = data;
+        children.clear();
         for (FieldDTO field : data.getFieldsAnnotated()) {
             switch (field.getType()) {
                 case STRING:
@@ -60,13 +62,16 @@ public class FormPanel extends AbstractView {
                     break;
             }
         }
-        this.title = data.getLabel() + imguiId;
+        this.title = data.getTitle() + imguiId;
+    }
+
+    public Inspectable getInspectable() {
+        return inspectable;
     }
 
     @Override
     public void renderInternal() {
-        if (ImGui.collapsingHeader(title, ImGuiTreeNodeFlags.DefaultOpen)) {
-            super.renderInternal();
-        }
+        ImGui.text(title);
+        super.renderInternal();
     }
 }

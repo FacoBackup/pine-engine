@@ -1,19 +1,13 @@
-package com.pine.theme;
+package com.pine.repository;
 
-import com.pine.FSUtil;
 import com.pine.PBean;
+import com.pine.PInject;
 import com.pine.Updatable;
-import com.pine.inspection.InspectableRepository;
-import com.pine.inspection.MutableField;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 
 @PBean
-public class ThemeRepository implements Updatable, InspectableRepository {
-    public static final ImVec4 ACCENT_COLOR = new ImVec4(0.26f, 0.59f, 0.98f, 1);
-
-    @MutableField(label = "Accent color")
-    public final ImVec4 accentColor = new ImVec4(0.26f, 0.59f, 0.98f, 1);
+public class ThemeService implements Updatable {
     public ImVec4 neutralPalette;
     public ImVec4 palette0;
     public ImVec4 palette1;
@@ -22,10 +16,12 @@ public class ThemeRepository implements Updatable, InspectableRepository {
     public ImVec4 palette4;
     public ImVec4 palette5;
     public ImVec4 palette6;
-    public final float[] backgroundColor = new float[]{.0f, .0f, .0f};
-    private boolean initialized;
+    public final float[] BACKGROUND_COLOR = new float[]{.0f, .0f, .0f};
     public boolean isDarkMode = true;
     private boolean previousTheme = false;
+
+    @PInject
+    public EditorSettingsRepository settingsRepository;
 
     @Override
     public void tick() {
@@ -81,22 +77,22 @@ public class ThemeRepository implements Updatable, InspectableRepository {
         colors[ImGuiCol.NavWindowingDimBg] = palette2;
         colors[ImGuiCol.ModalWindowDimBg] = palette2;
 
-        colors[ImGuiCol.FrameBgHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.FrameBgActive] = ACCENT_COLOR;
-        colors[ImGuiCol.CheckMark] = ACCENT_COLOR;
-        colors[ImGuiCol.SliderGrabActive] = ACCENT_COLOR;
-        colors[ImGuiCol.Button] = ACCENT_COLOR;
-        colors[ImGuiCol.ButtonHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.Header] = ACCENT_COLOR;
-        colors[ImGuiCol.HeaderHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.HeaderActive] = ACCENT_COLOR;
-        colors[ImGuiCol.ResizeGripHovered] = ACCENT_COLOR;
-        colors[ImGuiCol.ResizeGripActive] = ACCENT_COLOR;
-        colors[ImGuiCol.TextSelectedBg] = ACCENT_COLOR;
+        colors[ImGuiCol.FrameBgHovered] = settingsRepository.accentColor;
+        colors[ImGuiCol.FrameBgActive] = settingsRepository.accentColor;
+        colors[ImGuiCol.CheckMark] = settingsRepository.accentColor;
+        colors[ImGuiCol.SliderGrabActive] = settingsRepository.accentColor;
+        colors[ImGuiCol.Button] = settingsRepository.accentColor;
+        colors[ImGuiCol.ButtonHovered] = settingsRepository.accentColor;
+        colors[ImGuiCol.Header] = settingsRepository.accentColor;
+        colors[ImGuiCol.HeaderHovered] = settingsRepository.accentColor;
+        colors[ImGuiCol.HeaderActive] = settingsRepository.accentColor;
+        colors[ImGuiCol.ResizeGripHovered] = settingsRepository.accentColor;
+        colors[ImGuiCol.ResizeGripActive] = settingsRepository.accentColor;
+        colors[ImGuiCol.TextSelectedBg] = settingsRepository.accentColor;
 
-        backgroundColor[0] = colors[ImGuiCol.WindowBg].x;
-        backgroundColor[1] = colors[ImGuiCol.WindowBg].y;
-        backgroundColor[2] = colors[ImGuiCol.WindowBg].z;
+        BACKGROUND_COLOR[0] = colors[ImGuiCol.WindowBg].x;
+        BACKGROUND_COLOR[1] = colors[ImGuiCol.WindowBg].y;
+        BACKGROUND_COLOR[2] = colors[ImGuiCol.WindowBg].z;
 
         style.setColors(colors);
     }
@@ -119,61 +115,5 @@ public class ThemeRepository implements Updatable, InspectableRepository {
         palette4 = new ImVec4(160f / 255f, 160f / 255f, 160f / 255f, 1); // even darker gray
         palette5 = new ImVec4(120f / 255f, 120f / 255f, 120f / 255f, 1); // dark gray
         palette6 = new ImVec4(10f / 255f, 10f / 255f, 10f / 255f, 1); // dark dark really dark, actually not that dark but dark
-    }
-
-    public void initialize() {
-        if (this.initialized) {
-            return;
-        }
-        initialized = true;
-        applySpacing();
-        applyFonts();
-    }
-
-    public void applySpacing() {
-        ImGuiStyle style = ImGui.getStyle();
-        float borderRadius = 3f;
-        float borderWidth = 1;
-
-        style.setWindowMinSize(new ImVec2(25f, 25f));
-        style.setWindowPadding(new ImVec2(8f, 8f));
-        style.setFramePadding(new ImVec2(5f, 5f));
-        style.setCellPadding(new ImVec2(6f, 5f));
-        style.setItemSpacing(new ImVec2(6f, 5f));
-        style.setItemInnerSpacing(new ImVec2(6f, 6f));
-        style.setTouchExtraPadding(new ImVec2(0f, 0f));
-        style.setIndentSpacing(25f);
-        style.setScrollbarSize(13f);
-        style.setGrabMinSize(10f);
-        style.setWindowBorderSize(borderWidth);
-        style.setChildBorderSize(borderWidth);
-        style.setPopupBorderSize(borderWidth);
-        style.setFrameBorderSize(borderWidth);
-        style.setTabBorderSize(borderWidth);
-        style.setWindowRounding(0);
-        style.setChildRounding(borderRadius);
-        style.setFrameRounding(borderRadius);
-        style.setPopupRounding(borderRadius);
-        style.setScrollbarRounding(9f);
-        style.setGrabRounding(borderRadius);
-        style.setLogSliderDeadzone(4f);
-        style.setTabRounding(borderRadius);
-        style.setAlpha(1);
-    }
-
-    public void applyFonts() {
-        final var io = ImGui.getIO();
-        io.getFonts().setFreeTypeRenderer(true);
-
-        final ImFontConfig fontConfig = new ImFontConfig();
-        fontConfig.setPixelSnapH(true);
-
-        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/Roboto-Regular.ttf"), 14, fontConfig, io.getFonts().getGlyphRangesDefault());
-        fontConfig.setMergeMode(true);
-        fontConfig.setGlyphOffset(-2, 3);
-        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/MaterialIcons.ttf"), 18, fontConfig, Icons.RANGE);
-
-        io.getFonts().build();
-        fontConfig.destroy();
     }
 }

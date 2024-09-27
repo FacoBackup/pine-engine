@@ -2235,4 +2235,5 @@ public class Icons {
     public static final String zoom_out = "\ue900";
     public static final String zoom_out_map = "\ue56b";
     public static final short[] RANGE = new short[]{(short) 0xF1000, (short) 0xFF000, 0};
+    public static final int ONLY_ICON_BUTTON_SIZE = 23;
 }

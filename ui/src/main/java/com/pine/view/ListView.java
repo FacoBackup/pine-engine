@@ -22,6 +22,8 @@ public class ListView extends AbstractView {
         View container;
         if (containers.get(key) == null) {
             container = getView.apply(item);
+            appendChild(container);
+            removeChild(container);
             container.setContext(getContext());
             containers.put(key, container);
             container.onInitialize();

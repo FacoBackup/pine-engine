@@ -1,6 +1,7 @@
 package com.pine.component;
 
 import com.pine.PBean;
+import com.pine.theme.Icons;
 
 import java.util.Set;
 
@@ -35,7 +36,12 @@ public class DecalComponent extends AbstractComponent<DecalComponent> {
     }
 
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Decal";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.format_paint;
     }
 }

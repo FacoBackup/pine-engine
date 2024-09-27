@@ -89,7 +89,6 @@ public final class DockWrapperPanel extends AbstractView implements Loggable {
     private void renderHeader() {
         if (ImGui.beginMenuBar()) {
             ImGui.text(dock.getDescription().getIcon());
-            ImGui.spacing();
             ImGui.text(dock.getDescription().getTitle());
             ImGui.endMenuBar();
         }

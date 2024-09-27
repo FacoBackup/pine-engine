@@ -3,6 +3,7 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.inspection.MutableField;
+import com.pine.theme.Icons;
 import org.joml.Vector3f;
 
 import java.util.Collections;
@@ -34,8 +35,13 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
     }
 
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Transformation";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.control_camera;
     }
 
     public SimpleTransformation toSimpleTransformation() {

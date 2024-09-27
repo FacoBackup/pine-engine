@@ -1,9 +1,8 @@
 package com.pine;
 
-import com.pine.dock.DockRepository;
 import com.pine.dock.DockService;
 import com.pine.panels.ToasterPanel;
-import com.pine.service.Message;
+import com.pine.repository.EditorSettingsRepository;
 import com.pine.service.MessageRepository;
 import com.pine.service.MessageSeverity;
 import com.pine.component.InstancedSceneComponent;
@@ -17,22 +16,18 @@ import com.pine.panels.viewport.ViewportPanel;
 import com.pine.service.ProjectDTO;
 import com.pine.service.ProjectService;
 import com.pine.service.world.request.AddEntityRequest;
+import com.pine.repository.ThemeService;
 import com.pine.tools.ToolsModule;
 import com.pine.view.View;
 import com.pine.dock.DockDTO;
-import imgui.ImGui;
-import imgui.ImVec2;
-import imgui.flag.ImGuiCol;
+import imgui.ImVec4;
 import imgui.flag.ImGuiDir;
-import imgui.flag.ImGuiWindowFlags;
 
 import java.util.List;
 
 import static com.pine.Engine.GLSL_VERSION;
-import static com.pine.service.MessageRepository.MESSAGE_DURATION;
 
 public class EditorWindow extends AbstractWindow {
-
     @PInject
     public ProjectService projectService;
 
@@ -45,8 +40,15 @@ public class EditorWindow extends AbstractWindow {
     @PInject
     public DockService dockService;
 
+    @PInject
+    public ThemeService themeService;
+
+    @PInject
+    public EditorSettingsRepository settingsRepository;
+
     @Override
     public void onInitializeInternal() {
+        themeService.tick();
         engine.prepare(displayW, displayH, (String message, Boolean isError) -> {
             messageRepository.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
         });
@@ -90,6 +92,21 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
+    protected float[] getBackgroundColor() {
+        return themeService.BACKGROUND_COLOR;
+    }
+
+    @Override
+    protected ImVec4 getNeutralPalette() {
+        return themeService.neutralPalette;
+    }
+
+    @Override
+    protected ImVec4 getAccentColor() {
+        return settingsRepository.accentColor;
+    }
+
+    @Override
     protected View getHeader() {
         return new EditorHeaderPanel();
     }
@@ -105,6 +122,11 @@ public class EditorWindow extends AbstractWindow {
             return currentProject.getName();
         }
         return "New Project - Pine Engine";
+    }
+
+    @Override
+    public void tick() {
+        themeService.tick();
     }
 
     public Engine getEngine() {

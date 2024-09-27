@@ -1,12 +1,10 @@
 package com.pine;
 
-import com.pine.theme.ThemeRepository;
+import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import com.pine.view.View;
-import com.pine.dock.DockDTO;
 import com.pine.dock.DockPanel;
-import imgui.ImGui;
-import imgui.ImGuiIO;
+import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
@@ -18,7 +16,6 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
-import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractWindow extends AbstractView implements Initializable {
@@ -30,8 +27,6 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
     protected final DockPanel root = new DockPanel();
     private boolean isVisible = true;
 
-    @PInject
-    public ThemeRepository themeRepository;
 
     @Override
     final public void onInitialize() {
@@ -39,9 +34,58 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
 
         initializeWindow();
         onInitializeInternal();
-        themeRepository.initialize();
+        applySpacing();
+        applyFonts();
         root.setHeader(getHeader());
         root.onInitialize();
+
+    }
+
+    private void applySpacing() {
+        ImGuiStyle style = ImGui.getStyle();
+        float borderRadius = 3f;
+        float borderWidth = 1;
+
+        style.setWindowMinSize(new ImVec2(25f, 25f));
+        style.setWindowPadding(new ImVec2(8f, 8f));
+        style.setFramePadding(new ImVec2(5f, 5f));
+        style.setCellPadding(new ImVec2(6f, 5f));
+        style.setItemSpacing(new ImVec2(6f, 5f));
+        style.setItemInnerSpacing(new ImVec2(6f, 6f));
+        style.setTouchExtraPadding(new ImVec2(0f, 0f));
+        style.setIndentSpacing(25f);
+        style.setScrollbarSize(13f);
+        style.setGrabMinSize(10f);
+        style.setWindowBorderSize(borderWidth);
+        style.setChildBorderSize(borderWidth);
+        style.setPopupBorderSize(borderWidth);
+        style.setFrameBorderSize(borderWidth);
+        style.setTabBorderSize(borderWidth);
+        style.setWindowRounding(0);
+        style.setChildRounding(borderRadius);
+        style.setFrameRounding(borderRadius);
+        style.setPopupRounding(borderRadius);
+        style.setScrollbarRounding(9f);
+        style.setGrabRounding(borderRadius);
+        style.setLogSliderDeadzone(4f);
+        style.setTabRounding(borderRadius);
+        style.setAlpha(1);
+    }
+
+    private void applyFonts() {
+        final var io = ImGui.getIO();
+        io.getFonts().setFreeTypeRenderer(true);
+
+        final ImFontConfig fontConfig = new ImFontConfig();
+        fontConfig.setPixelSnapH(true);
+
+        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/Roboto-Regular.ttf"), 14, fontConfig, io.getFonts().getGlyphRangesDefault());
+        fontConfig.setMergeMode(true);
+        fontConfig.setGlyphOffset(-2, 3);
+        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/MaterialIcons.ttf"), 18, fontConfig, Icons.RANGE);
+
+        io.getFonts().build();
+        fontConfig.destroy();
     }
 
     protected abstract void onInitializeInternal();
@@ -146,13 +190,11 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
 
     @Override
     final public void render() {
-        themeRepository.tick();
-
         startFrame();
         if (isVisible) {
-            ImGui.pushStyleColor(ImGuiCol.Button, themeRepository.neutralPalette); // Green background
-            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, themeRepository.accentColor); // Hovered background
-            ImGui.pushStyleColor(ImGuiCol.ButtonActive, ImGui.getColorU32(0.1f, 0.6f, 0.1f, 1.0f)); // Active background
+            ImGui.pushStyleColor(ImGuiCol.Button, getNeutralPalette());
+            ImGui.pushStyleColor(ImGuiCol.ButtonHovered, getAccentColor());
+            ImGui.pushStyleColor(ImGuiCol.ButtonActive, getAccentColor());
 
             renderInternal();
 
@@ -160,6 +202,10 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
         }
         endFrame();
     }
+
+    protected abstract ImVec4 getNeutralPalette();
+
+    protected abstract ImVec4 getAccentColor();
 
     private void endFrame() {
         ImGui.render();
@@ -180,8 +226,10 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
         ImGui.newFrame();
     }
 
+    protected abstract float[] getBackgroundColor();
+
     private void clearBuffer() {
-        float[] theme = themeRepository.backgroundColor;
+        float[] theme = getBackgroundColor();
         GL46.glClearColor(theme[0], theme[1], theme[2], 1);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }

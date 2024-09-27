@@ -2,6 +2,7 @@ package com.pine.component;
 
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
+import com.pine.theme.Icons;
 
 import java.util.Set;
 
@@ -29,7 +30,13 @@ public class LightProbeComponent extends AbstractComponent<LightProbeComponent> 
     }
 
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Probe";
+    }
+
+
+    @Override
+    public String getIcon() {
+        return Icons.panorama;
     }
 }

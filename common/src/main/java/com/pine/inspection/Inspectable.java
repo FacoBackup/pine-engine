@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class WithMutableData {
+public abstract class Inspectable {
     private transient final List<FieldDTO> fieldsAnnotated = new ArrayList<>();
 
     final public List<FieldDTO> getFieldsAnnotated() {
@@ -31,7 +31,9 @@ public abstract class WithMutableData {
         return fieldsAnnotated;
     }
 
-    public abstract String getLabel();
+    public abstract String getTitle();
+
+    public abstract String getIcon();
 
     @SuppressWarnings("unchecked")
     private List<SelectableEnum> getOptions(Field field) {

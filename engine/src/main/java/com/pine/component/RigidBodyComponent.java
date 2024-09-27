@@ -1,6 +1,7 @@
 package com.pine.component;
 
 import com.pine.PBean;
+import com.pine.theme.Icons;
 
 import java.util.Set;
 
@@ -19,9 +20,13 @@ public class RigidBodyComponent extends AbstractComponent<RigidBodyComponent> {
         return Set.of(TransformationComponent.class, PhysicsColliderComponent.class);
     }
 
+    @Override
+    public String getTitle() {
+        return "Rigid body";
+    }
 
     @Override
-    public String getComponentName() {
-        return "Rigid body";
+    public String getIcon() {
+        return Icons.sports_baseball;
     }
 }

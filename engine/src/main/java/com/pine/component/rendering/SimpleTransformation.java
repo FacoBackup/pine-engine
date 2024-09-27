@@ -1,10 +1,13 @@
 package com.pine.component.rendering;
 
 import com.pine.inspection.MutableField;
-import com.pine.inspection.WithMutableData;
+import com.pine.inspection.Inspectable;
+import com.pine.theme.Icons;
 import org.joml.Vector3f;
 
-public class SimpleTransformation extends WithMutableData {
+import javax.swing.*;
+
+public class SimpleTransformation extends Inspectable {
     @MutableField(label = "Translation")
     public Vector3f translation = new Vector3f();
     @MutableField(label = "Scale")
@@ -21,7 +24,12 @@ public class SimpleTransformation extends WithMutableData {
     }
 
     @Override
-    public String getLabel() {
+    public String getTitle() {
         return "Transformation";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.control_camera;
     }
 }

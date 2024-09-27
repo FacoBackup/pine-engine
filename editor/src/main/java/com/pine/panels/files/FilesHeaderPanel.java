@@ -13,6 +13,8 @@ import imgui.type.ImString;
 
 import java.io.File;
 
+import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
+
 public class FilesHeaderPanel extends AbstractView {
     @PInject
     public FSService fsService;
@@ -35,11 +37,11 @@ public class FilesHeaderPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
-        if(ImGui.button(Icons.create_new_folder + "##mkdir")){
+        if(ImGui.button(Icons.create_new_folder + "##mkdir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)){
             fsService.createDirectory(filesContext.getDirectory() + File.separator + "New folder");
         }
         ImGui.sameLine();
-        if(ImGui.button(Icons.arrow_upward + "##goUpDir")){
+        if(ImGui.button(Icons.arrow_upward + "##goUpDir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)){
             filesContext.setDirectory(fsService.getParentDir(filesContext.getDirectory()));
         }
         ImGui.sameLine();

@@ -1,6 +1,7 @@
 package com.pine.panels.files;
 
 import com.pine.PInject;
+import com.pine.repository.EditorSettingsRepository;
 import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
@@ -18,6 +19,11 @@ public class FilePanel extends AbstractView {
 
     @PInject
     public ResourceLoaderService loader;
+
+    @PInject
+    public EditorSettingsRepository settingsRepository;
+
+    private int accentColor;
 
     public FilePanel(FileInfoDTO item) {
         super();
@@ -38,12 +44,14 @@ public class FilePanel extends AbstractView {
         }
 
         color.w = 1;
+        accentColor = ImGui.getColorU32(settingsRepository.accentColor);
+
     }
 
     @Override
     public void renderInternal() {
         if (context.getSelectedFile() == item) {
-            TableView.highlightRow();
+            TableView.highlightRow(accentColor);
         }
 
         ImGui.tableNextColumn();

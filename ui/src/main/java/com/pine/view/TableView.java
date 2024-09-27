@@ -8,14 +8,10 @@ import imgui.flag.ImGuiTableFlags;
 import java.util.Collections;
 import java.util.List;
 
-import static com.pine.theme.ThemeRepository.ACCENT_COLOR;
-
 public class TableView extends ListView {
     private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.RowBg;
     private int maxCells = 3;
     private List<TableHeader> headerColumns = Collections.emptyList();
-    private static final int ACCENT = ImGui.getColorU32(ACCENT_COLOR);
-
 
     @Override
     public void renderInternal() {
@@ -54,8 +50,8 @@ public class TableView extends ListView {
         }
     }
 
-    public static void highlightRow() {
-        ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, ACCENT);
-        ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, ACCENT);
+    public static void highlightRow(int accentColor) {
+        ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, accentColor);
+        ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, accentColor);
     }
 }
