@@ -4,8 +4,10 @@ import com.pine.PInject;
 import com.pine.component.AbstractFormField;
 import com.pine.component.ResourceRef;
 import com.pine.inspection.FieldDTO;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.ResourceLoaderRepository;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
+import com.pine.service.resource.resource.ResourceType;
 import imgui.ImGui;
 import imgui.type.ImInt;
 
@@ -15,6 +17,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class ResourceField extends AbstractFormField {
+    private final ResourceType type;
     @PInject
     public ResourceLoaderRepository repository;
 
@@ -24,14 +27,20 @@ public class ResourceField extends AbstractFormField {
 
     public ResourceField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
+        ResourceTypeField annotation = dto.getField().getAnnotation(ResourceTypeField.class);
+        if (annotation != null) {
+            type = annotation.type();
+        } else {
+            type = null;
+        }
     }
 
     @Override
     public void onInitialize() {
         refresh();
-        var cast = (ResourceRef) dto.getValue();
+        var cast = (ResourceRef<?>) dto.getValue();
 
-        if(cast != null) {
+        if (cast != null) {
             for (int i = 0; i < items.size(); i++) {
                 var item = items.get(i);
                 if (Objects.equals(item.id, cast.id)) {
@@ -43,7 +52,9 @@ public class ResourceField extends AbstractFormField {
 
     private void refresh() {
         for (var history : repository.loadedResources) {
-            items.addAll(history.getRecords());
+            if(type == null || type == history.getResourceType()) {
+                items.addAll(history.getRecords());
+            }
         }
         itemsArr = new String[items.size()];
         for (int i = 0; i < items.size(); i++) {
@@ -56,7 +67,7 @@ public class ResourceField extends AbstractFormField {
     public void renderInternal() {
         ImGui.text(dto.getLabel());
         if (ImGui.combo(imguiId, selected, itemsArr)) {
-            changerHandler.accept(dto, new ResourceRef(items.get(selected.get()).id));
+            changerHandler.accept(dto, new ResourceRef<>(items.get(selected.get()).id));
         }
 
         if (ImGui.button("Refresh" + imguiId + "1")) {

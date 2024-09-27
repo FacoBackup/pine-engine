@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 public class FormPanel extends AbstractView {
     private final BiConsumer<FieldDTO, Object> changeHandler;
     private Inspectable inspectable;
-    private String title;
+    private String title = null;
 
     public FormPanel(BiConsumer<FieldDTO, Object> changeHandler) {
         this.changeHandler = changeHandler;
@@ -23,6 +23,11 @@ public class FormPanel extends AbstractView {
         }
         this.inspectable = data;
         children.clear();
+
+        if (data == null) {
+            return;
+        }
+
         for (FieldDTO field : data.getFieldsAnnotated()) {
             switch (field.getType()) {
                 case STRING:
@@ -62,7 +67,7 @@ public class FormPanel extends AbstractView {
                     break;
             }
         }
-        this.title = data.getTitle() + imguiId;
+        this.title = data.getTitle();
     }
 
     public Inspectable getInspectable() {
@@ -71,7 +76,9 @@ public class FormPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
-        ImGui.text(title);
-        super.renderInternal();
+        if (title != null && inspectable != null) {
+            ImGui.text(title);
+            super.renderInternal();
+        }
     }
 }

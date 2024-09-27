@@ -2,7 +2,7 @@ package com.pine.component.rendering;
 
 import com.pine.component.ResourceRef;
 import com.pine.inspection.MutableField;
-import com.pine.inspection.ResourceField;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.inspection.Inspectable;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
@@ -17,7 +17,7 @@ public class ScenePrimitive extends Inspectable {
     @MutableField(label = "Contribute to probes")
     public boolean contributeToProbes = true;
 
-    @ResourceField(type = ResourceType.PRIMITIVE)
+    @ResourceTypeField(type = ResourceType.PRIMITIVE)
     @MutableField(label = "Primitive")
     public ResourceRef<Primitive> primitive;
 

@@ -1,12 +1,8 @@
 package com.pine.repository;
 
 import com.pine.PBean;
-import com.pine.component.ResourceRef;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.inspection.ResourceField;
-import com.pine.service.resource.primitives.texture.TextureResource;
-import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;

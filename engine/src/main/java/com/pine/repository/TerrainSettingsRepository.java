@@ -4,7 +4,7 @@ import com.pine.PBean;
 import com.pine.component.ResourceRef;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.inspection.ResourceField;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
@@ -14,7 +14,7 @@ public class TerrainSettingsRepository extends Inspectable {
     @MutableField(label = "Casts shadows")
     public boolean castsShadows = true;
 
-    @ResourceField(type = ResourceType.TEXTURE)
+    @ResourceTypeField(type = ResourceType.TEXTURE)
     @MutableField(label = "Height map")
     public ResourceRef<TextureResource> heightMapTexture;
 

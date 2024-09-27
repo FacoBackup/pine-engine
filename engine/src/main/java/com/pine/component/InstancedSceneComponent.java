@@ -3,7 +3,7 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.component.rendering.CompositeScene;
 import com.pine.inspection.MutableField;
-import com.pine.inspection.ResourceField;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.mesh.Primitive;
@@ -22,7 +22,7 @@ public class InstancedSceneComponent extends AbstractComponent<InstancedSceneCom
     @MutableField(label = "Contribute to probes")
     public boolean contributeToProbes = true;
 
-    @ResourceField(type = ResourceType.TEXTURE)
+    @ResourceTypeField(type = ResourceType.TEXTURE)
     @MutableField(label = "Primitive instance")
     public ResourceRef<Primitive> primitive;
 
