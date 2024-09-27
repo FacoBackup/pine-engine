@@ -2,7 +2,6 @@ package com.pine.view;
 
 import com.pine.PInject;
 import com.pine.PInjector;
-import com.pine.theme.Icon;
 import com.pine.panel.AbstractPanelContext;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ public class AbstractView implements View {
     protected final String imguiId;
     protected final List<View> children = new ArrayList<>();
     protected View parent;
-    protected String innerText;
     protected boolean visible = true;
     private AbstractPanelContext internalContext;
 
@@ -66,11 +64,6 @@ public class AbstractView implements View {
     }
 
     @Override
-    public String getInnerText() {
-        return innerText;
-    }
-
-    @Override
     public boolean isVisible() {
         return this.visible;
     }
@@ -99,25 +92,6 @@ public class AbstractView implements View {
             return;
         }
         renderInternal();
-    }
-
-    @Override
-    public void onInitialize() {
-        setInnerText(innerText);
-    }
-
-    @Override
-    public void setInnerText(String textContent) {
-        innerText = textContent;
-        processIcons();
-    }
-
-    private void processIcons() {
-        if (innerText != null) {
-            for (var icon : Icon.values()) {
-                innerText = innerText.replace("[" + icon.getIconName() + "]", icon.codePoint);
-            }
-        }
     }
 }
 

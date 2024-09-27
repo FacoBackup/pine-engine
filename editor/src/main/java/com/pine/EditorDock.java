@@ -1,14 +1,14 @@
 package com.pine;
 
 import com.pine.dock.DockDescription;
-import com.pine.theme.Icon;
+import com.pine.theme.Icons;
 
 public enum EditorDock implements DockDescription {
-    Viewport("Viewport", Icon.GLOBE.codePoint, 0, 0),
-    Hierarchy("Hierarchy", Icon.CODEBRANCH.codePoint),
-    Inspector("Inspector", Icon.SEARCH.codePoint),
-    Console("Console", Icon.TERMINAL.codePoint),
-    Files("Files", Icon.FOLDEROPEN.codePoint);
+    Viewport("Viewport", Icons.ipublic, 0, 0),
+    Hierarchy("Hierarchy", Icons.account_tree),
+    Inspector("Inspector", Icons.search),
+    Console("Console", Icons.terminal),
+    Files("Files", Icons.folder_open);
 
     private final String title;
     private final String codePoint;

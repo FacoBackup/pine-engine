@@ -19,7 +19,7 @@ public class TableView extends ListView {
 
     @Override
     public void renderInternal() {
-        if (ImGui.beginTable(innerText + imguiId, maxCells, FLAGS)) {
+        if (ImGui.beginTable(imguiId, maxCells, FLAGS)) {
             for (var column : headerColumns) {
                 if (column.getColumnWidth() > 0) {
                     ImGui.tableSetupColumn(column.getTitle(), column.getFlags(), column.getColumnWidth());

@@ -1,10 +1,10 @@
 package com.pine.panels.files;
 
-import com.pine.theme.Icon;
 import com.pine.PInject;
 import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
+import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import com.pine.view.TableView;
 import imgui.ImGui;
@@ -28,7 +28,7 @@ public class FilePanel extends AbstractView {
     public void onInitialize() {
         super.onInitialize();
         context = (FilesContext) getContext();
-        iconCodepoint = item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint;
+        iconCodepoint = item.isDirectory() ? Icons.folder : Icons.file_open;
         if (item.isDirectory()) {
             color.x = 1;
             color.y = 0.8352941f;

@@ -168,10 +168,10 @@ public class ThemeRepository implements Updatable, InspectableRepository {
         final ImFontConfig fontConfig = new ImFontConfig();
         fontConfig.setPixelSnapH(true);
 
-        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/fa-regular-400.ttf"), 14, fontConfig, Icon.getRange());
+        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/Roboto-Regular.ttf"), 14, fontConfig, io.getFonts().getGlyphRangesDefault());
         fontConfig.setMergeMode(true);
-        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/fa-solid-900.ttf"), 12, fontConfig, Icon.getRange());
-        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/OpenSans-Regular.ttf"), 16, fontConfig, io.getFonts().getGlyphRangesDefault());
+        fontConfig.setGlyphOffset(-2, 3);
+        io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/MaterialIcons.ttf"), 18, fontConfig, Icons.RANGE);
 
         io.getFonts().build();
         fontConfig.destroy();

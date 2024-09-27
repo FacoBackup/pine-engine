@@ -10,10 +10,6 @@ public interface View extends Renderable {
 
     void removeChild(View child);
 
-    String getInnerText();
-
-    void setInnerText(String textContent);
-
     boolean isVisible();
 
     void setVisible(boolean visible);

@@ -1,7 +1,7 @@
 package com.pine.dock;
 
 import com.pine.PInject;
-import com.pine.theme.Icon;
+import com.pine.theme.Icons;
 import com.pine.view.View;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
@@ -52,7 +52,7 @@ public class DockPanel extends AbstractView {
                     dockService.switchDockGroups(dockGroup, dockMainId);
                 }
             }
-            if(ImGui.button(Icon.PLUS.codePoint + "##addDock")){
+            if(ImGui.button(Icons.add + "##addDock")){
                 dockService.createDockGroup();
             }
             ImGui.endMenuBar();

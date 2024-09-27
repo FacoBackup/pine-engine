@@ -1,11 +1,11 @@
 package com.pine.panels.files;
 
-import com.pine.theme.Icon;
 import com.pine.PInject;
 import com.pine.service.FSService;
 import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
+import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
@@ -35,11 +35,11 @@ public class FilesHeaderPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
-        if(ImGui.button(Icon.FOLDERPLUS.codePoint + "##mkdir")){
+        if(ImGui.button(Icons.create_new_folder + "##mkdir")){
             fsService.createDirectory(filesContext.getDirectory() + File.separator + "New folder");
         }
         ImGui.sameLine();
-        if(ImGui.button(Icon.ARROWUP.codePoint + "##goUpDir")){
+        if(ImGui.button(Icons.arrow_upward + "##goUpDir")){
             filesContext.setDirectory(fsService.getParentDir(filesContext.getDirectory()));
         }
         ImGui.sameLine();
@@ -53,7 +53,7 @@ public class FilesHeaderPanel extends AbstractView {
         FileInfoDTO selected = filesContext.getSelectedFile();
         if(selected != null && !selected.isDirectory()) {
             ImGui.sameLine();
-            if (ImGui.button(Icon.FILE.codePoint + " Import File##importFile")) {
+            if (ImGui.button(Icons.file_open + " Import File##importFile")) {
                 FileInfoDTO file = filesContext.getSelectedFile();
                 if (file != null && !file.isDirectory()) {
                     resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));

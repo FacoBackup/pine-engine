@@ -1,6 +1,5 @@
 package com.pine.panels.inspector;
 
-import com.pine.theme.Icon;
 import com.pine.PInject;
 import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
@@ -12,6 +11,7 @@ import com.pine.service.world.WorldService;
 import com.pine.service.world.request.AddComponentRequest;
 import com.pine.service.world.request.UpdateFieldRequest;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.theme.Icons;
 import imgui.ImGui;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class InspectorPanel extends AbstractDockPanel {
 
     @Override
     public void onInitialize() {
-        types.add(Icon.PLUS.codePoint + " Add component");
+        types.add(Icons.add + " Add component");
         types.addAll(components.stream().map(EntityComponent::getLabel).toList());
     }
 
@@ -70,10 +70,10 @@ public class InspectorPanel extends AbstractDockPanel {
         ImGui.columns(2, "columns", false);
         ImGui.setColumnWidth(0, 35);
 
-        ImGui.button(Icon.ANGLEDOUBLELEFT.codePoint, 27, 27);
-        ImGui.button(Icon.EDIT.codePoint, 27, 27);
-        ImGui.button(Icon.EGG.codePoint, 27, 27);
-        ImGui.button(Icon.AD.codePoint, 27, 27);
+//        ImGui.button(Icons.ANGLEDOUBLELEFT.codePoint, 27, 27);
+//        ImGui.button(Icons.EDIT.codePoint, 27, 27);
+//        ImGui.button(Icons.EGG.codePoint, 27, 27);
+//        ImGui.button(Icons.AD.codePoint, 27, 27);
 
         ImGui.nextColumn();
         if (selected != null) {
