@@ -55,11 +55,11 @@ public class EditorWindow extends AbstractWindow {
         requestProcessingService.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, TransformationComponent.class)));
         appendChild(new ToasterPanel());
 
-        DockDTO dockCenter = new DockDTO(EditorDock.Viewport, ViewportPanel.class);
-        DockDTO rightUp = new DockDTO(EditorDock.Hierarchy, HierarchyPanel.class);
-        DockDTO rightDown = new DockDTO(EditorDock.Inspector, InspectorPanel.class);
-        DockDTO downLeft = new DockDTO(EditorDock.Console, ConsolePanel.class);
-        DockDTO downRight = new DockDTO(EditorDock.Files, FilesPanel.class);
+        DockDTO dockCenter = new DockDTO(EditorDock.Viewport);
+        DockDTO rightUp = new DockDTO(EditorDock.Hierarchy);
+        DockDTO rightDown = new DockDTO(EditorDock.Inspector);
+        DockDTO downLeft = new DockDTO(EditorDock.Console);
+        DockDTO downRight = new DockDTO(EditorDock.Files);
 
         dockCenter.setOrigin(null);
         dockCenter.setSplitDir(ImGuiDir.Right);

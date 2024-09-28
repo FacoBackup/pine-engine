@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public final class DockDTO {
     private final ImInt nodeId = new ImInt(0);
+    private final ImInt selectedOption = new ImInt(0);
     private final String internalId;
     private int splitDir;
     private float sizeX;
@@ -13,13 +14,11 @@ public final class DockDTO {
     private float sizeRatioForNodeAtDir;
     private DockDTO outAtOppositeDir;
     private DockDTO origin;
-    private final DockDescription description;
-    private final Class<? extends AbstractDockPanel> view;
-    private DockWrapperPanel panel;
+    private DockDescription description;
 
-    public DockDTO(DockDescription description, Class<? extends AbstractDockPanel> view) {
+    public DockDTO(DockDescription description) {
         this.description = description;
-        this.view = view;
+        selectedOption.set(description.getOptionIndex());
         internalId = "##" + UUID.randomUUID().toString().replace("-", "");
     }
 
@@ -63,18 +62,6 @@ public final class DockDTO {
         this.origin = origin;
     }
 
-    public Class<? extends AbstractDockPanel> getView() {
-        return view;
-    }
-
-    public void setPanelInstance(DockWrapperPanel child) {
-        panel = child;
-    }
-
-    public DockWrapperPanel getPanel() {
-        return panel;
-    }
-
     public String getInternalId() {
         return internalId;
     }
@@ -93,5 +80,13 @@ public final class DockDTO {
 
     public void setSizeY(float sizeY) {
         this.sizeY = sizeY;
+    }
+
+    public ImInt selectedOption() {
+        return selectedOption;
+    }
+
+    public void setDescription(DockDescription description) {
+        this.description = description;
     }
 }

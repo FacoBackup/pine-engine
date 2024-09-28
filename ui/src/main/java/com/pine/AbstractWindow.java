@@ -24,7 +24,12 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
     private long handle = -1;
     protected int displayW = 1920;
     protected int displayH = 1080;
-    protected final DockPanel root = new DockPanel();
+    protected final DockPanel root = new DockPanel(){
+        @Override
+        protected ImVec4 getAccentColor() {
+            return AbstractWindow.this.getAccentColor();
+        }
+    };
     private boolean isVisible = true;
 
 

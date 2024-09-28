@@ -7,6 +7,8 @@ import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
+import imgui.ImVec4;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
@@ -15,7 +17,7 @@ import imgui.type.ImInt;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
-public class DockPanel extends AbstractView {
+public abstract class DockPanel extends AbstractView {
     private static final ImBoolean OPEN = new ImBoolean(true);
     private static final int FLAGS = ImGuiWindowFlags.MenuBar |
             ImGuiWindowFlags.NoDocking |
@@ -28,39 +30,31 @@ public class DockPanel extends AbstractView {
     private static final String NAME = "##main_window";
     private static final ImVec2 CENTER = new ImVec2(0.0f, 0.0f);
     private final ImInt dockMainId = new ImInt();
+
     @PInject
     public DockService dockService;
 
     private View headerView;
 
+    protected abstract ImVec4 getAccentColor();
+
     @Override
     public void renderInternal() {
         final ImGuiViewport viewport = ImGui.getMainViewport();
 
+
         setupPosition(viewport);
         setupStyles();
         ImGui.begin(NAME, OPEN, FLAGS);
+
         int windowId = ImGui.getID(NAME);
         dockMainId.set(windowId);
 
         ImGui.popStyleVar(3);
 
-        if (ImGui.beginMenuBar()) {
-            if (headerView != null) {
-                headerView.render();
-            }
-            for(var dockGroup : dockService.getDockGroups()){
-                if(ImGui.button(dockGroup.getTitleWithId())){
-                    dockService.switchDockGroups(dockGroup, dockMainId);
-                }
-            }
-            if(ImGui.button(Icons.add + "##addDock", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)){
-                dockService.createDockGroup();
-            }
-            ImGui.endMenuBar();
-        }
+        menuBar();
 
-        if(!dockService.getCurrentDockGroup().isInitialized) {
+        if (!dockService.getCurrentDockGroup().isInitialized) {
             dockService.buildViews(dockMainId, this);
         }
 
@@ -70,6 +64,32 @@ public class DockPanel extends AbstractView {
 
         super.renderInternal();
         ImGui.end();
+    }
+
+    private void menuBar() {
+        if (ImGui.beginMenuBar()) {
+            if (headerView != null) {
+                headerView.render();
+            }
+            ImGui.dummy(25, 0);
+            for (var dockGroup : dockService.getDockGroups()) {
+                boolean isSelected = dockGroup == dockService.getCurrentDockGroup();
+                if (isSelected) {
+                    ImGui.pushStyleColor(ImGuiCol.Button, getAccentColor());
+                }
+                if (ImGui.button(dockGroup.getTitleWithId()) && !isSelected) {
+                    dockService.switchDockGroups(dockGroup, dockMainId);
+                    children.clear();
+                }
+                if (isSelected) {
+                    ImGui.popStyleColor();
+                }
+            }
+            if (ImGui.button(Icons.add + "##addDock", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
+                dockService.createDockGroup();
+            }
+            ImGui.endMenuBar();
+        }
     }
 
     private static void setupPosition(ImGuiViewport viewport) {
@@ -83,8 +103,6 @@ public class DockPanel extends AbstractView {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, new ImVec2(0.0f, 0.0f));
     }
-
-
 
     public void setHeader(View view) {
         if (view != null) {

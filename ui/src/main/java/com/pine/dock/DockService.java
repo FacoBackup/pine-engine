@@ -74,9 +74,7 @@ public class DockService {
     private void addWindow(DockDTO d, DockPanel panel) {
         try {
             imgui.internal.ImGui.dockBuilderDockWindow(d.getInternalId(), d.getNodeId().get());
-            if (d.getView() != null) {
-                d.setPanelInstance(panel.appendChild(new DockWrapperPanel((DockWrapperPanel) panel.getChildren().stream().findFirst().orElse(null), d)));
-            }
+            panel.appendChild(new DockWrapperPanel((DockWrapperPanel) panel.getChildren().stream().findFirst().orElse(null), d));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -1,8 +1,9 @@
 package com.pine.dock;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import imgui.flag.ImGuiDir;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DockGroup {
     private final String id;
@@ -33,7 +34,24 @@ public class DockGroup {
 
     public DockGroup generateNew() {
         DockGroup newDockGroup = new DockGroup("New dock group");
-        newDockGroup.docks.addAll(docks);
+        Map<DockDTO, DockDTO> oldToNew = new LinkedHashMap<>();
+        for (var d : docks) {
+            DockDTO dto = new DockDTO(d.getDescription());
+            oldToNew.put(d, dto);
+            dto.setOrigin(d.getOrigin());
+            dto.setSplitDir(d.getSplitDir());
+            dto.setSizeRatioForNodeAtDir(d.getSizeRatioForNodeAtDir());
+            dto.setOutAtOppositeDir(d.getOutAtOppositeDir());
+        }
+        for (var newDock : oldToNew.values()) {
+            if (newDock.getOrigin() != null) {
+                newDock.setOrigin(oldToNew.get(newDock.getOrigin()));
+            }
+            if (newDock.getOutAtOppositeDir() != null) {
+                newDock.setOutAtOppositeDir(oldToNew.get(newDock.getOutAtOppositeDir()));
+            }
+        }
+        newDockGroup.docks.addAll(oldToNew.values());
         return newDockGroup;
     }
 }

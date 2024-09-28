@@ -5,9 +5,11 @@ import com.pine.PInject;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImInt;
 import org.joml.Vector2f;
 
 public final class DockWrapperPanel extends AbstractView implements Loggable {
@@ -28,6 +30,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable {
     private final DockWrapperPanel mainWindow;
     private final DockDTO dock;
     private AbstractDockPanel view;
+    private final ImVec2 headerPadding = new ImVec2(0, 3);
 
     public DockWrapperPanel(DockWrapperPanel mainWindow, DockDTO dock) {
         this.mainWindow = mainWindow;
@@ -38,8 +41,13 @@ public final class DockWrapperPanel extends AbstractView implements Loggable {
 
     @Override
     public void onInitialize() {
+        initializeView();
+    }
+
+    private void initializeView() {
         try {
-            view = dock.getView().getConstructor().newInstance();
+            children.clear();
+            view = dock.getDescription().getView().getConstructor().newInstance();
             view.setSize(size);
             view.setPosition(position);
             appendChild(view);
@@ -80,18 +88,27 @@ public final class DockWrapperPanel extends AbstractView implements Loggable {
 
             renderHeader();
             view.render();
-
-            ImGui.end();
         }
+        ImGui.end();
 
         ImGui.popStyleVar(stylePushCount);
         stylePushCount = 0;
     }
 
     private void renderHeader() {
+        headerPadding.x = ImGui.getStyle().getFramePaddingX();
+
         if (ImGui.beginMenuBar()) {
-            ImGui.text(dock.getDescription().getIcon());
-            ImGui.text(dock.getDescription().getTitle());
+            String[] options = dock.getDescription().getOptions();
+            ImInt selected = dock.selectedOption();
+            ImGui.setNextItemWidth(ImGui.calcTextSizeX(options[selected.get()]) + 30);
+            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, headerPadding);
+            if(ImGui.combo(imguiId, selected, options)){
+                dock.setDescription(dock.getDescription().getSelectedOption(selected.get()));
+                initializeView();
+            }
+            ImGui.popStyleVar();
+
             ImGui.endMenuBar();
         }
     }

@@ -64,6 +64,12 @@ public class GizmoConfigPanel extends AbstractView {
 
         gizmoGrid();
 
+        shadingMode();
+
+        ImGui.end();
+    }
+
+    private void shadingMode() {
         ImGui.sameLine();
         spacing.x = ImGui.getContentRegionAvailX() - 230;
         ImGui.dummy(spacing);
@@ -75,8 +81,6 @@ public class GizmoConfigPanel extends AbstractView {
         if(ImGui.combo("##shadingMode", settingsRepository.shadingModelOption, SHADING_MODE_OPTIONS)){
             settingsRepository.debugShadingModel = DebugShadingModel.values()[settingsRepository.shadingModelOption.get()];
         }
-
-        ImGui.end();
     }
 
     private void framerate() {
