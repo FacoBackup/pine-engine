@@ -45,7 +45,6 @@ public class EditorWindow extends AbstractWindow {
         themeService.tick();
         engine.prepare(displayW, displayH);
         engine.addModules(List.of(new ToolsModule()));
-        requestProcessingService.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, TransformationComponent.class)));
         appendChild(new ToasterPanel());
 
         DockDTO dockCenter = new DockDTO(EditorDock.Viewport);

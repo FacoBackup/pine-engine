@@ -1,23 +1,22 @@
 package com.pine.tools.tasks;
 
-import com.pine.AbstractTree;
 import com.pine.PBean;
 import com.pine.PInject;
+import com.pine.component.AbstractComponent;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
 import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 import com.pine.tasks.AbstractTask;
+import com.pine.theme.Icons;
 
-import java.util.LinkedList;
-import java.util.Vector;
+import java.util.*;
 
-import static com.pine.repository.WorldRepository.ROOT;
 import static com.pine.repository.WorldRepository.ROOT_ID;
 
 @PBean
 public class WorldTreeTask extends AbstractTask {
-    private final WorldHierarchyTree worldTree = new WorldHierarchyTree(ROOT);
+    private final HierarchyTree worldTree = new HierarchyTree(ROOT_ID, "World", Icons.inventory_2);
     private int internalWorldChangeId;
 
     @PInject
@@ -28,33 +27,45 @@ public class WorldTreeTask extends AbstractTask {
 
     @Override
     protected void tickInternal() {
-        if(worldRepository.getChangeId() != internalWorldChangeId) {
+        if (worldRepository.getChangeId() != internalWorldChangeId) {
             update();
         }
     }
 
-    public WorldHierarchyTree getHierarchyTree() {
+    public HierarchyTree getHierarchyTree() {
         return worldTree;
-    }
-
-    private void updateTree(Integer entityId, Vector<AbstractTree<MetadataComponent, EntityComponent>> branch) {
-        WorldHierarchyTree current = new WorldHierarchyTree(world.getComponent(entityId, MetadataComponent.class));
-        branch.add(current);
-        current.extraData.addAll(worldRepository.entities.get(entityId).values());
-        LinkedList<Integer> children = worldRepository.parentChildren.get(entityId);
-        if (children != null) {
-            for (Integer childId : children) {
-                updateTree(childId, current.branches);
-            }
-        }
     }
 
     public void update() {
         internalWorldChangeId = worldRepository.getChangeId();
-        worldTree.branches.clear();
+        worldTree.children.clear();
 
         for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {
-            updateTree(childId, worldTree.branches);
+            updateTree(childId, worldTree.children);
+        }
+    }
+
+    private void updateTree(int entityId, List<HierarchyTree> branch) {
+        MetadataComponent metadata = world.getComponent(entityId, MetadataComponent.class);
+        if (metadata == null) {
+            return;
+        }
+
+        HierarchyTree current = new HierarchyTree(entityId, metadata.name, Icons.inventory_2, true, new ArrayList<>());
+        branch.add(current);
+
+        for (EntityComponent c : worldRepository.entities.get(entityId).values()) {
+            AbstractComponent<?> component = (AbstractComponent<?>) c;
+            if (component != metadata) {
+                current.children.add(new HierarchyTree(c.getEntityId(), component.getTitle(), component.getIcon(), false, Collections.emptyList()));
+            }
+        }
+
+        LinkedList<Integer> actualChildren = worldRepository.parentChildren.get(entityId);
+        if (actualChildren != null) {
+            for (Integer childId : actualChildren) {
+                updateTree(childId, current.children);
+            }
         }
     }
 }

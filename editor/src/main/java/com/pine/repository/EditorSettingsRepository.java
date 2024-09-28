@@ -67,6 +67,7 @@ public class EditorSettingsRepository extends Inspectable implements Serializabl
     public boolean gizmoUseSnapScale;
     public final ImInt gizmoModeOption = new ImInt(0);
     public final ImInt shadingModelOption = new ImInt(0);
+    public boolean showOnlyEntitiesHierarchy = false;
 
     @Override
     public String getIcon() {

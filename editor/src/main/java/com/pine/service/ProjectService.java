@@ -58,13 +58,13 @@ public class ProjectService implements Loggable, Initializable {
         if (previousOpenedProject == null) {
             return;
         }
-        messageRepository.pushMessage("Loading project", MessageSeverity.WARN);
         var t = new Thread(() -> {
             try {
                 File file = new File(previousOpenedProject + File.separator + getRepositoryIdentifier());
                 if (!file.exists()) {
                     return;
                 }
+                messageRepository.pushMessage("Loading project", MessageSeverity.WARN);
                 try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()))) {
                     var bean = (SerializableRepository) injector.getBean(ProjectStateRepository.class);
                     bean.merge(in.readObject());

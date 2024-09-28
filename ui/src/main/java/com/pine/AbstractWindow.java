@@ -86,7 +86,7 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
 
         io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/Roboto-Regular.ttf"), 14, fontConfig, io.getFonts().getGlyphRangesDefault());
         fontConfig.setMergeMode(true);
-        fontConfig.setGlyphOffset(-2, 3);
+        fontConfig.setGlyphOffset(-2, 4);
         io.getFonts().addFontFromMemoryTTF(FSUtil.loadResource("fonts/MaterialIcons.ttf"), 18, fontConfig, Icons.RANGE);
 
         io.getFonts().build();
