@@ -4,7 +4,6 @@ import com.pine.*;
 import com.pine.repository.MessageRepository;
 import com.pine.repository.MessageSeverity;
 import com.pine.repository.ProjectDTO;
-import com.pine.repository.ProjectRepository;
 import com.pine.tools.tasks.WorldTreeTask;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -21,9 +20,6 @@ import java.util.List;
 public class ProjectService implements Loggable, Initializable {
     private static final String IDENTIFIER = "project.pine";
     private static final String CONFIG_NAME = System.getProperty("user.home") + File.separator + IDENTIFIER;
-
-    @PInject
-    public ProjectRepository repository;
 
     @PInject
     public MessageRepository messageRepository;
@@ -84,10 +80,6 @@ public class ProjectService implements Loggable, Initializable {
             }
         });
         t.start();
-    }
-
-    public ProjectDTO getCurrentProject() {
-        return repository.getCurrentProject();
     }
 
     public void save() {

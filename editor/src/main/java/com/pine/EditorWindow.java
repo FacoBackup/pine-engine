@@ -112,19 +112,11 @@ public class EditorWindow extends AbstractWindow {
     }
 
     public String getWindowName() {
-        ProjectDTO currentProject = projectService.getCurrentProject();
-        if (currentProject != null) {
-            return currentProject.getName();
-        }
-        return "New Project - Pine Engine";
+        return "Pine Engine";
     }
 
     @Override
     public void tick() {
         themeService.tick();
-    }
-
-    public Engine getEngine() {
-        return engine;
     }
 }
