@@ -65,7 +65,7 @@ public class InspectorPanel extends AbstractDockPanel {
     public void tick() {
         Integer first = selectionRepository.getMainSelection();
         if (!Objects.equals(first, selected)) {
-            formPanel.setInspectable(repositories.getFirst());
+            currentInspection = repositories.getFirst();
             isComponentInspected = false;
             additionalInspectable.clear();
             selected = first;
