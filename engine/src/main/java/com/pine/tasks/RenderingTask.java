@@ -2,7 +2,10 @@ package com.pine.tasks;
 
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.component.*;
+import com.pine.component.CullingComponent;
+import com.pine.component.InstancedSceneComponent;
+import com.pine.component.SceneComponent;
+import com.pine.component.TransformationComponent;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;

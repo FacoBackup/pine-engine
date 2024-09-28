@@ -1,26 +1,19 @@
 package com.pine;
 
-import com.pine.dock.DockService;
-import com.pine.panels.ToasterPanel;
-import com.pine.repository.EditorSettingsRepository;
-import com.pine.repository.MessageRepository;
-import com.pine.repository.MessageSeverity;
 import com.pine.component.InstancedSceneComponent;
 import com.pine.component.TransformationComponent;
+import com.pine.dock.DockDTO;
+import com.pine.dock.DockService;
 import com.pine.panels.EditorHeaderPanel;
-import com.pine.panels.console.ConsolePanel;
-import com.pine.panels.files.FilesPanel;
-import com.pine.panels.hierarchy.HierarchyPanel;
-import com.pine.panels.inspector.InspectorPanel;
-import com.pine.panels.viewport.ViewportPanel;
+import com.pine.panels.ToasterPanel;
+import com.pine.repository.EditorSettingsRepository;
 import com.pine.repository.ProjectDTO;
+import com.pine.repository.ThemeService;
 import com.pine.service.ProjectService;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
-import com.pine.repository.ThemeService;
 import com.pine.tools.ToolsModule;
 import com.pine.view.View;
-import com.pine.dock.DockDTO;
 import imgui.ImVec4;
 import imgui.flag.ImGuiDir;
 
@@ -46,6 +39,7 @@ public class EditorWindow extends AbstractWindow {
 
     @PInject
     public RequestProcessingService requestProcessingService;
+
 
     @Override
     public void onInitializeInternal() {
@@ -88,6 +82,8 @@ public class EditorWindow extends AbstractWindow {
 
         dockService.getCurrentDockGroup().docks.addAll(List.of(dockCenter, rightUp, rightDown, downLeft, downRight));
         dockService.setDockGroupTemplate(dockService.getCurrentDockGroup());
+
+        projectService.loadProject();
     }
 
     @Override
@@ -102,7 +98,7 @@ public class EditorWindow extends AbstractWindow {
 
     @Override
     protected ImVec4 getAccentColor() {
-        return settingsRepository.accentColor;
+        return settingsRepository.getAccentColor();
     }
 
     @Override

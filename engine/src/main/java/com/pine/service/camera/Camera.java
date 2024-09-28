@@ -5,9 +5,10 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Camera {
+public class Camera implements Serializable {
     public final String id = UUID.randomUUID().toString();
     public final Vector3f position = new Vector3f();
     public final Matrix4f viewMatrix = new Matrix4f();

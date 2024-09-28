@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Set;
 
 @PBean
-public class MetadataComponent extends AbstractComponent<MetadataComponent> {
+public class MetadataComponent extends AbstractComponent<MetadataComponent>  {
     @MutableField(label = "Name")
     public String name = "New Entity";
     public final long creationDate = System.currentTimeMillis();

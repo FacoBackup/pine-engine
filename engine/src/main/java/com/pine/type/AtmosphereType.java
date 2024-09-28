@@ -2,7 +2,9 @@ package com.pine.type;
 
 import com.pine.inspection.SelectableEnum;
 
-public enum AtmosphereType implements SelectableEnum {
+import java.io.Serializable;
+
+public enum AtmosphereType implements SelectableEnum, Serializable {
     MIE("Mie", 0),
     RAYLEIGH("Rayleigh", 1),
     COMBINED("Combined", 2);

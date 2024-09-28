@@ -1,6 +1,7 @@
 package com.pine.repository;
 
 import com.pine.PBean;
+import com.pine.SerializableRepository;
 import com.pine.component.ResourceRef;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
@@ -10,7 +11,7 @@ import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 
 @PBean
-public class TerrainSettingsRepository extends Inspectable {
+public class TerrainSettingsRepository extends Inspectable implements SerializableRepository {
     @MutableField(label = "Casts shadows")
     public boolean castsShadows = true;
 

@@ -6,13 +6,18 @@ import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.flag.*;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiDir;
+import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImInt;
 import org.joml.Vector2f;
 
+import java.io.Serializable;
+
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
-public final class DockWrapperPanel extends AbstractView implements Loggable {
+public final class DockWrapperPanel extends AbstractView implements Loggable, Serializable {
     private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.MenuBar;
     private static final ImVec2 DEFAULT = new ImVec2(-1, -1);
     private static final ImVec2 MAX_SIZE = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);

@@ -2,13 +2,14 @@ package com.pine.dock;
 
 import com.pine.Initializable;
 import com.pine.PBean;
+import com.pine.SerializableRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @PBean
-public class DockRepository implements Initializable {
-    public final List<DockGroup> dockGroups = new ArrayList<>();
+public class DockRepository implements Initializable, SerializableRepository {
+    public List<DockGroup> dockGroups = new ArrayList<>();
     public DockGroup currentDockGroup;
     public DockGroup template;
     public transient DockDTO dockToRemove;

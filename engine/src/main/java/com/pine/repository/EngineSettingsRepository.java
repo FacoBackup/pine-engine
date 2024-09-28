@@ -1,12 +1,13 @@
 package com.pine.repository;
 
 import com.pine.PBean;
+import com.pine.SerializableRepository;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
 
 @PBean
-public class EngineSettingsRepository extends Inspectable {
+public class EngineSettingsRepository extends Inspectable implements SerializableRepository {
 
     @MutableField(label = "FXAA Enabled")
     public boolean fxaaEnabled = false;

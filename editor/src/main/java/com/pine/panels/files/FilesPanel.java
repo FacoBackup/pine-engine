@@ -1,8 +1,8 @@
 package com.pine.panels.files;
 
 import com.pine.PInject;
-import com.pine.service.FSService;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.service.FSService;
 import imgui.ImGui;
 
 public class FilesPanel extends AbstractDockPanel {

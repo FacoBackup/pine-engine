@@ -1,6 +1,7 @@
 package com.pine.repository;
 
 import com.pine.PBean;
+import com.pine.SerializableRepository;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
@@ -11,9 +12,10 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
+import org.joml.Vector4f;
 
 @PBean
-public class EditorSettingsRepository extends Inspectable {
+public class EditorSettingsRepository extends Inspectable implements SerializableRepository {
     @MutableField(label = "Show grid")
     public boolean showGrid = true;
 
@@ -33,7 +35,8 @@ public class EditorSettingsRepository extends Inspectable {
     public DebugShadingModel debugShadingModel = DebugShadingModel.ALBEDO;
 
     @MutableField(label = "Accent color")
-    public final ImVec4 accentColor = new ImVec4(0.26f, 0.59f, 0.98f, 1);
+    public final Vector4f accentColor = new Vector4f(0.26f, 0.59f, 0.98f, 1);
+    transient private final ImVec4 accent = new ImVec4();
 
     @MutableField(label = "Dark mode")
     public boolean isDarkMode = true;
@@ -73,5 +76,13 @@ public class EditorSettingsRepository extends Inspectable {
     @Override
     public String getTitle() {
         return "Editor Settings";
+    }
+
+    public ImVec4 getAccentColor() {
+        accent.x = accentColor.x;
+        accent.y = accentColor.y;
+        accent.z = accentColor.z;
+        accent.w = accentColor.w;
+        return accent;
     }
 }

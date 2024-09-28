@@ -4,7 +4,9 @@ import com.pine.view.AbstractView;
 import imgui.ImVec2;
 import org.joml.Vector2f;
 
-public abstract class AbstractDockPanel extends AbstractView {
+import java.io.Serializable;
+
+public abstract class AbstractDockPanel extends AbstractView implements Serializable {
     protected ImVec2 position;
     protected Vector2f size;
 

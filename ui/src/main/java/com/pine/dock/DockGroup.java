@@ -1,16 +1,14 @@
 package com.pine.dock;
 
-import imgui.flag.ImGuiDir;
-
+import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class DockGroup {
+public class DockGroup implements Serializable {
     private final String id;
     private String title;
     private String titleWithId;
     public final List<DockDTO> docks = new ArrayList<>();
-    public boolean isInitialized = false;
+    transient public boolean isInitialized = false;
 
     public DockGroup(String title, DockDTO... docks) {
         this.id = "##" + UUID.randomUUID().toString().replaceAll("-", "");

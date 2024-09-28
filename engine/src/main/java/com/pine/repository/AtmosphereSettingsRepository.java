@@ -1,6 +1,7 @@
 package com.pine.repository;
 
 import com.pine.PBean;
+import com.pine.SerializableRepository;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
@@ -8,7 +9,7 @@ import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;
 
 @PBean
-public class AtmosphereSettingsRepository extends Inspectable {
+public class AtmosphereSettingsRepository extends Inspectable implements SerializableRepository {
     @MutableField(label = "Is enabled")
     public boolean enabled = false;
     @MutableField(label = "Time of day")

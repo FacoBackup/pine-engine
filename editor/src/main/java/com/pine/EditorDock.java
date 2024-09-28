@@ -3,13 +3,11 @@ package com.pine;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.dock.DockDescription;
 import com.pine.panels.console.ConsolePanel;
-import com.pine.panels.files.FilePanel;
 import com.pine.panels.files.FilesPanel;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.viewport.ViewportPanel;
 import com.pine.theme.Icons;
-import com.pine.view.View;
 
 import java.util.Arrays;
 
