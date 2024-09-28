@@ -24,7 +24,7 @@ public class Vector4Field extends AbstractFormField {
         values[3] = valVec.w;
 
         ImGui.text(dto.getLabel());
-        if (ImGui.dragFloat4(internalId, values, .01f, dto.getMin(), dto.getMax())) {
+        if (ImGui.dragFloat4(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
             changerHandler.accept(dto, values);
         }
     }

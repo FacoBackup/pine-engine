@@ -1,37 +1,43 @@
 package com.pine.panels.console;
 
-import com.pine.LogListener;
-import com.pine.ui.panel.AbstractWindowPanel;
+import com.pine.PInject;
+import com.pine.dock.AbstractDockPanel;
+import com.pine.repository.MessageRepository;
+import com.pine.repository.MessageSeverity;
 import imgui.ImGui;
 import imgui.ImVec4;
+import imgui.type.ImString;
 
-import static com.pine.LogListener.getLogMessages;
-
-public class ConsolePanel extends AbstractWindowPanel {
+public class ConsolePanel extends AbstractDockPanel {
     private static final ImVec4 ERROR = new ImVec4(0.35f, 0, 0, 1);
     private static final ImVec4 WARN = new ImVec4(1, 0.59f, 0, 1);
     private static final ImVec4 INFO = new ImVec4(0, .5f, 0, 1);
 
+    @PInject
+    public MessageRepository messageRepository;
+
+    private final ImString searchValue = new ImString();
+
     @Override
-    protected String getTitle() {
-        return "Console";
+    public void onInitialize() {
+        appendChild(new ConsoleHeaderPanel(searchValue));
     }
 
     @Override
     public void renderInternal() {
-        float max = size.y / ImGui.getTextLineHeight();
-        LogListener.LogEntry[] messages = getLogMessages();
-        for(int i = 0; i < Math.min(max, LogListener.getFilledMessages()); i++){
-            var log = messages[i];
-            if(log == null){
-                break;
+        super.renderInternal();
+        boolean hasSearchValue = !searchValue.isEmpty();
+        for(int i = 0; i < messageRepository.getMessagesHistory().size(); i++){
+            var log = messageRepository.getMessagesHistory().get(i);
+            if(hasSearchValue && !log.messageWithTime().contains(searchValue.get())){
+                continue;
             }
-            if (log.level() == LogListener.LogLevel.ERROR) {
-                ImGui.textColored(ERROR, log.line());
-            } else if (log.level() == LogListener.LogLevel.WARN) {
-                ImGui.textColored(WARN, log.line());
+            if (log.severity() == MessageSeverity.ERROR) {
+                ImGui.textColored(ERROR, log.messageWithTime());
+            } else if (log.severity() == MessageSeverity.WARN) {
+                ImGui.textColored(WARN, log.messageWithTime());
             } else {
-                ImGui.textColored(INFO, log.line());
+                ImGui.textColored(INFO, log.messageWithTime());
             }
         }
     }

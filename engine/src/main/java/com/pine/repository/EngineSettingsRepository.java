@@ -1,11 +1,12 @@
 package com.pine.repository;
 
 import com.pine.PBean;
-import com.pine.inspection.InspectableRepository;
+import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
+import com.pine.theme.Icons;
 
 @PBean
-public class EngineSettingsRepository implements InspectableRepository {
+public class EngineSettingsRepository extends Inspectable {
 
     @MutableField(label = "FXAA Enabled")
     public boolean fxaaEnabled = false;
@@ -162,57 +163,14 @@ public class EngineSettingsRepository implements InspectableRepository {
 
     @MutableField(label = "Distortion Strength")
     public int distortionStrength = 1;
+
+    @Override
+    public String getTitle() {
+        return "Engine Settings";
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.display_settings;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

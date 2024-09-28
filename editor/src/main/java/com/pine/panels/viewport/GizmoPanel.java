@@ -4,12 +4,13 @@ import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorSettingsRepository;
-import com.pine.ui.panel.AbstractPanel;
+import com.pine.view.AbstractView;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
+import org.jetbrains.annotations.Nullable;
 
-public class GizmoPanel extends AbstractPanel {
+public class GizmoPanel extends AbstractView {
     @PInject
     public EditorSettingsRepository editorSettingsRepository;
 
@@ -34,12 +35,7 @@ public class GizmoPanel extends AbstractPanel {
     @Override
     public void renderInternal() {
         recomposeMatrix();
-        float[] snap = switch (editorSettingsRepository.gizmoOperation) {
-            case Operation.TRANSLATE -> editorSettingsRepository.gizmoSnapTranslate;
-            case Operation.ROTATE -> editorSettingsRepository.gizmoSnapRotate.getData();
-            case Operation.SCALE -> editorSettingsRepository.gizmoSnapScale.getData();
-            default -> null;
-        };
+        float[] snap = getSnapValues();
         ImGuizmo.setOrthographic(cameraRepository.currentCamera.isOrthographic);
         ImGuizmo.setDrawList();
         ImGuizmo.setRect(position.x, position.y, size.x, size.y);
@@ -50,8 +46,32 @@ public class GizmoPanel extends AbstractPanel {
                 editorSettingsRepository.gizmoMode,
                 cacheMatrix,
                 null,
-                editorSettingsRepository.gizmoUseSnap || snap == null ? snap : null);
+                snap);
         decomposeMatrix();
+    }
+
+    private float @Nullable [] getSnapValues() {
+        return switch (editorSettingsRepository.gizmoOperation) {
+            case Operation.TRANSLATE -> {
+                if (editorSettingsRepository.gizmoUseSnapTranslate) {
+                    yield editorSettingsRepository.gizmoSnapTranslate;
+                }
+                yield null;
+            }
+            case Operation.ROTATE -> {
+                if (editorSettingsRepository.gizmoUseSnapRotate) {
+                    yield editorSettingsRepository.gizmoSnapRotate.getData();
+                }
+                yield null;
+            }
+            case Operation.SCALE -> {
+                if (editorSettingsRepository.gizmoUseSnapScale) {
+                    yield editorSettingsRepository.gizmoSnapScale.getData();
+                }
+                yield null;
+            }
+            default -> null;
+        };
     }
 
     private void decomposeMatrix() {

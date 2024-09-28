@@ -2,6 +2,7 @@ package com.pine.component;
 
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
+import com.pine.theme.Icons;
 import org.joml.Vector3f;
 
 import java.util.Set;
@@ -28,7 +29,13 @@ public class CullingComponent extends AbstractComponent<CullingComponent> {
     }
 
     @Override
-    public String getComponentName() {
+    public String getTitle() {
         return "Culling";
+    }
+
+
+    @Override
+    public String getIcon() {
+        return Icons.disabled_visible;
     }
 }

@@ -2,12 +2,9 @@ package com.pine;
 
 import com.pine.injection.EngineExternalModule;
 import com.pine.repository.*;
-import com.pine.service.MessageService;
-import com.pine.service.RequestProcessingService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
-import com.pine.service.world.request.AbstractRequest;
 import com.pine.tasks.SyncTask;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -36,10 +33,6 @@ public class Engine {
     @PInject
     public ResourceService resourcesService;
     @PInject
-    public MessageService messageService;
-    @PInject
-    public RequestProcessingService requestTask;
-    @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
     public CoreSSBORepository ssboRepository;
@@ -56,12 +49,11 @@ public class Engine {
     @PInject
     public List<SyncTask> syncTasks;
 
-    public void prepare(int displayW, int displayH, BiConsumer<String, Boolean> onMessage) {
+    public void prepare(int displayW, int displayH) {
         this.displayW = displayW;
         this.displayH = displayH;
         this.invDisplayW = 1 / displayW;
         this.invDisplayH = 1 / displayH;
-        this.messageService.setMessageCallback(onMessage);
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
         GL46.glEnable(GL46.GL_CULL_FACE);
@@ -99,10 +91,6 @@ public class Engine {
 
     public void addModules(List<EngineExternalModule> modules) {
         this.modules.addModules(modules);
-    }
-
-    public void addRequest(AbstractRequest request) {
-        requestTask.addRequest(request);
     }
 
     public void setTargetFBO(@NotNull FrameBufferObject fbo) {

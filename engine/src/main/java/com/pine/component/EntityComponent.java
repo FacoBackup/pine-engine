@@ -9,9 +9,7 @@ public interface EntityComponent extends ChangeRecord {
 
     Set<Class<? extends EntityComponent>> getDependencies();
 
-    String getComponentName();
+    String getTitle();
 
     void addComponent(EntityComponent instance);
-
-    String getLabel();
 }

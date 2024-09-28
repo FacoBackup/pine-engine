@@ -1,6 +1,7 @@
 package com.pine.component;
 
 import com.pine.PBean;
+import com.pine.theme.Icons;
 
 import java.util.Set;
 
@@ -20,9 +21,13 @@ public class PhysicsColliderComponent extends AbstractComponent<PhysicsColliderC
         return Set.of(TransformationComponent.class, RigidBodyComponent.class, SceneComponent.class);
     }
 
+    @Override
+    public String getTitle() {
+        return "Collider";
+    }
 
     @Override
-    public String getComponentName() {
-        return "Collider";
+    public String getIcon() {
+        return Icons.sports_tennis;
     }
 }

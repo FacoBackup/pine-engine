@@ -23,6 +23,7 @@ public enum DebugShadingModel implements SelectableEnum {
 
     private final int id;
     private final String label;
+    private static final String[] labels = new String[values().length];
 
     DebugShadingModel(String label, int id) {
         this.id = id;
@@ -31,6 +32,17 @@ public enum DebugShadingModel implements SelectableEnum {
 
     public int getId() {
         return id;
+    }
+
+    public static String[] getLabels() {
+        if (labels[0] == null) {
+            DebugShadingModel[] values = values();
+            for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
+                var value = values[i];
+                labels[i] = value.label;
+            }
+        }
+        return labels;
     }
 
     @Override

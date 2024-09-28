@@ -3,7 +3,6 @@ package com.pine.service.loader;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.repository.ResourceLoaderRepository;
-import com.pine.service.MessageService;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
@@ -18,9 +17,6 @@ public class ResourceLoaderService  {
     public ResourceLoaderRepository repository;
 
     @PInject
-    public MessageService messageService;
-
-    @PInject
     public List<AbstractResourceLoader> resourceLoaders;
 
     @Nullable
@@ -32,7 +28,6 @@ public class ResourceLoaderService  {
                 return process(extraInfo, i, dto);
             }
         }
-        messageService.onMessage("No loader was found for extension " + path.split("\\.")[1], true);
         return null;
     }
 
@@ -46,9 +41,6 @@ public class ResourceLoaderService  {
         }
 
         if (metadata.isLoaded()) {
-            if (extraInfo == null || !extraInfo.isSilentOperation()) {
-                messageService.onMessage("File was successfully loaded", false);
-            }
             repository.loadedResources.add(metadata);
         }
         return metadata;

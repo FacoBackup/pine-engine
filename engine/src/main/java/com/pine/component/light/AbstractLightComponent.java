@@ -5,6 +5,7 @@ import com.pine.component.EntityComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.inspection.Color;
 import com.pine.inspection.MutableField;
+import com.pine.theme.Icons;
 import com.pine.type.LightType;
 import org.joml.Vector2f;
 
@@ -39,9 +40,13 @@ public abstract class AbstractLightComponent<T extends EntityComponent> extends 
     abstract LightType getType();
 
     @Override
-    final public String getComponentName() {
+    final public String getTitle() {
         return type.getLabel();
     }
 
+    @Override
+    public String getIcon() {
+        return Icons.lightbulb;
+    }
 }
 

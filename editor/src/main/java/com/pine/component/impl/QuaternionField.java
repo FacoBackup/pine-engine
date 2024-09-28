@@ -23,7 +23,7 @@ public class QuaternionField extends AbstractFormField {
         values[2] = valQuat.z;
         values[3] = valQuat.w;
         ImGui.text(dto.getLabel());
-        if (ImGui.dragFloat4(internalId, values, .01f, dto.getMin(), dto.getMax())) {
+        if (ImGui.dragFloat4(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
             changerHandler.accept(dto, values);
         }
     }

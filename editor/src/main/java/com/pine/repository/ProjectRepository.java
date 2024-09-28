@@ -1,7 +1,6 @@
 package com.pine.repository;
 
 import com.pine.PBean;
-import com.pine.service.ProjectDTO;
 
 @PBean
 public class ProjectRepository {

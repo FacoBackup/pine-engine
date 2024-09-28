@@ -1,13 +1,13 @@
 package com.pine.component;
 
-import com.pine.inspection.WithMutableData;
+import com.pine.inspection.Inspectable;
 import com.pine.service.serialization.SerializableResource;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-public abstract class AbstractComponent<T extends EntityComponent> extends WithMutableData implements SerializableResource, EntityComponent {
+public abstract class AbstractComponent<T extends EntityComponent> extends Inspectable implements SerializableResource, EntityComponent {
     private transient final Vector<T> bag = new Vector<>();
 
     private final int entityId;
@@ -47,12 +47,7 @@ public abstract class AbstractComponent<T extends EntityComponent> extends WithM
 
     @Override
     final public String toString() {
-        return getComponentName();
-    }
-
-    @Override
-    public String getLabel() {
-        return getComponentName();
+        return this.getTitle();
     }
 
     @Override

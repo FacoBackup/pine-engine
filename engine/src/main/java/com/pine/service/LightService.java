@@ -14,8 +14,6 @@ import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
 
-import static com.pine.repository.CoreSSBORepository.MAX_INFO_PER_LIGHT;
-
 @PBean
 public class LightService {
     @PInject

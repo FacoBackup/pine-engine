@@ -2,7 +2,7 @@ package com.pine.service.system.impl;
 
 import com.pine.Loggable;
 import com.pine.PInject;
-import com.pine.component.AtmosphereComponent;
+import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
@@ -16,7 +16,7 @@ import java.nio.IntBuffer;
 public class AtmosphereSystem extends AbstractSystem implements Loggable {
 
     @PInject
-    public AtmosphereComponent atmospheres;
+    public AtmosphereSettingsRepository atmosphere;
 
     private UniformDTO invSkyProjectionMatrix;
     private FloatBuffer invSkyProjectionMatrixB = MemoryUtil.memAllocFloat(16);
@@ -77,7 +77,7 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected boolean isRenderable() {
-        return !atmospheres.getBag().isEmpty();
+        return atmosphere.enabled;
     }
 
     @Override
@@ -85,36 +85,35 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
         GL46.glDisable(GL46.GL_DEPTH_TEST);
         shaderService.bind(shaderRepository.atmosphereShader);
         cameraRepository.currentCamera.invSkyboxProjectionMatrix.get(invSkyProjectionMatrixB);
-        for (var comp : atmospheres.getBag()) {
-            typeB.put(0, comp.renderingType.getId());
-            elapsedTimeB.put(0, comp.elapsedTime);
 
-            comp.betaRayleigh.get(rayleighBetaB);
-            comp.betaMie.get(mieBetaB);
+        typeB.put(0, atmosphere.renderingType.getId());
+        elapsedTimeB.put(0, atmosphere.elapsedTime);
 
-            intensityB.put(0, comp.intensity);
-            atmosphereRadiusB.put(0, comp.atmosphereRadius);
-            planetRadiusB.put(0, comp.planetRadius);
-            rayleighHeightB.put(0, comp.rayleighHeight);
-            mieHeightB.put(0, comp.mieHeight);
-            thresholdB.put(0, comp.threshold);
-            samplesB.put(0, comp.maxSamples);
+        atmosphere.betaRayleigh.get(rayleighBetaB);
+        atmosphere.betaMie.get(mieBetaB);
 
-            shaderService.bindUniform(invSkyProjectionMatrix, invSkyProjectionMatrixB);
-            shaderService.bindUniform(type, typeB);
-            shaderService.bindUniform(elapsedTime, elapsedTimeB);
-            shaderService.bindUniform(rayleighBeta, rayleighBetaB);
-            shaderService.bindUniform(mieBeta, mieBetaB);
-            shaderService.bindUniform(intensity, intensityB);
-            shaderService.bindUniform(atmosphereRadius, atmosphereRadiusB);
-            shaderService.bindUniform(planetRadius, planetRadiusB);
-            shaderService.bindUniform(rayleighHeight, rayleighHeightB);
-            shaderService.bindUniform(mieHeight, mieHeightB);
-            shaderService.bindUniform(threshold, thresholdB);
-            shaderService.bindUniform(samples, samplesB);
+        intensityB.put(0, atmosphere.intensity);
+        atmosphereRadiusB.put(0, atmosphere.atmosphereRadius);
+        planetRadiusB.put(0, atmosphere.planetRadius);
+        rayleighHeightB.put(0, atmosphere.rayleighHeight);
+        mieHeightB.put(0, atmosphere.mieHeight);
+        thresholdB.put(0, atmosphere.threshold);
+        samplesB.put(0, atmosphere.maxSamples);
 
-            primitiveService.bind(primitiveRepository.quadMesh);
-        }
+        shaderService.bindUniform(invSkyProjectionMatrix, invSkyProjectionMatrixB);
+        shaderService.bindUniform(type, typeB);
+        shaderService.bindUniform(elapsedTime, elapsedTimeB);
+        shaderService.bindUniform(rayleighBeta, rayleighBetaB);
+        shaderService.bindUniform(mieBeta, mieBetaB);
+        shaderService.bindUniform(intensity, intensityB);
+        shaderService.bindUniform(atmosphereRadius, atmosphereRadiusB);
+        shaderService.bindUniform(planetRadius, planetRadiusB);
+        shaderService.bindUniform(rayleighHeight, rayleighHeightB);
+        shaderService.bindUniform(mieHeight, mieHeightB);
+        shaderService.bindUniform(threshold, thresholdB);
+        shaderService.bindUniform(samples, samplesB);
+
+        primitiveService.bind(primitiveRepository.quadMesh);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
     }
 }

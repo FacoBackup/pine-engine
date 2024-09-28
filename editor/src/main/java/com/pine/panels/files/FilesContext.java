@@ -1,7 +1,7 @@
 package com.pine.panels.files;
 
-import com.pine.common.fs.FileInfoDTO;
-import com.pine.ui.panel.AbstractPanelContext;
+import com.pine.repository.FileInfoDTO;
+import com.pine.panel.AbstractPanelContext;
 
 import java.util.ArrayList;
 import java.util.List;

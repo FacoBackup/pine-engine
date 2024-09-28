@@ -1,10 +1,17 @@
 package com.pine.service.loader.impl.response;
 
+import com.pine.service.resource.resource.ResourceType;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MeshLoaderResponse extends AbstractLoaderResponse {
     private  List<MeshInstanceMetadata> meshes;
+
+    @Override
+    public ResourceType getResourceType() {
+        return ResourceType.PRIMITIVE;
+    }
 
     public MeshLoaderResponse() {}
 

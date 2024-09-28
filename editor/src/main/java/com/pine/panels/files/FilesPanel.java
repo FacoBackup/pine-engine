@@ -1,10 +1,11 @@
 package com.pine.panels.files;
 
 import com.pine.PInject;
-import com.pine.common.fs.FSService;
-import com.pine.ui.panel.AbstractWindowPanel;
+import com.pine.service.FSService;
+import com.pine.dock.AbstractDockPanel;
+import imgui.ImGui;
 
-public class FilesPanel extends AbstractWindowPanel {
+public class FilesPanel extends AbstractDockPanel {
     @PInject
     public FSService service;
 
@@ -14,29 +15,20 @@ public class FilesPanel extends AbstractWindowPanel {
     }
 
     @Override
-    protected String getDefinition() {
-        return """
-                <group>
-                    <fragment id='filesHeader'/>
-                    <inline id='filesContainer'/>
-                </group>
-                """;
-    }
-
-    @Override
     public void onInitialize() {
         super.onInitialize();
-
+        refreshFiles();
         getContext().subscribe(this::refreshFiles);
 
-        var container = document.getElementById("filesContainer");
-        document.getElementById("filesHeader").appendChild(new FilesHeaderPanel());
-        container.appendChild(new FilesDirectoryPanel());
+        appendChild(new FilesHeaderPanel());
+        appendChild(new FilesDirectoryPanel());
     }
 
     @Override
-    protected String getTitle() {
-        return "Files";
+    public void renderInternal() {
+        ImGui.beginGroup();
+        super.renderInternal();
+        ImGui.endGroup();
     }
 
     private void refreshFiles() {

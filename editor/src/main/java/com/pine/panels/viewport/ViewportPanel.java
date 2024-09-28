@@ -8,14 +8,14 @@ import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.ui.panel.AbstractWindowPanel;
+import com.pine.dock.AbstractDockPanel;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiKey;
 
-import static com.pine.panels.viewport.GizmoConfigPanel.GIZMO_PANEL_SIZE;
+import static com.pine.dock.DockWrapperPanel.FRAME_SIZE;
 
-public class ViewportPanel extends AbstractWindowPanel {
+public class ViewportPanel extends AbstractDockPanel {
     @PInject
     public Engine engine;
 
@@ -39,16 +39,9 @@ public class ViewportPanel extends AbstractWindowPanel {
     @Override
     public void onInitialize() {
         super.onInitialize();
-        padding.x = 0;
-        padding.y = 0;
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
         appendChild(gizmoPanel = new GizmoConfigPanel(position, sizeVec));
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
-    }
-
-    @Override
-    protected String getTitle() {
-        return "Viewport";
     }
 
     @Override
@@ -59,8 +52,10 @@ public class ViewportPanel extends AbstractWindowPanel {
 
     @Override
     public void renderInternal() {
+        afterWindow();
+
         sizeVec.x = size.x;
-        sizeVec.y = size.y - FRAME_SIZE - GIZMO_PANEL_SIZE;
+        sizeVec.y = size.y - FRAME_SIZE;
 
         gizmoPanel.renderInternal();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
@@ -75,8 +70,7 @@ public class ViewportPanel extends AbstractWindowPanel {
         gizmo.renderInternal();
     }
 
-    @Override
-    protected void afterWindow() {
+    private void afterWindow() {
         repo.inputFocused = ImGui.isWindowFocused() && (ImGui.isMouseDown(2) || ImGui.isMouseDown(1));
         repo.fasterPressed = ImGui.isKeyPressed(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyPressed(ImGuiKey.W);

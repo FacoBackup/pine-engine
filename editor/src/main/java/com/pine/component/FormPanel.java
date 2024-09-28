@@ -2,25 +2,32 @@ package com.pine.component;
 
 import com.pine.component.impl.*;
 import com.pine.inspection.FieldDTO;
-import com.pine.inspection.WithMutableData;
-import com.pine.ui.panel.AbstractPanel;
+import com.pine.inspection.Inspectable;
+import com.pine.view.AbstractView;
 import imgui.ImGui;
-import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.function.BiConsumer;
 
-public class FormPanel extends AbstractPanel {
+public class FormPanel extends AbstractView {
     private final BiConsumer<FieldDTO, Object> changeHandler;
-    private final WithMutableData data;
-    private String title;
+    private Inspectable inspectable;
+    private String title = null;
 
-    public FormPanel(WithMutableData data, BiConsumer<FieldDTO, Object> changeHandler) {
-        this.data = data;
+    public FormPanel(BiConsumer<FieldDTO, Object> changeHandler) {
         this.changeHandler = changeHandler;
     }
 
-    @Override
-    public void onInitialize() {
+    public void setInspectable(Inspectable data) {
+        if (this.inspectable == data) {
+            return;
+        }
+        this.inspectable = data;
+        children.clear();
+
+        if (data == null) {
+            return;
+        }
+
         for (FieldDTO field : data.getFieldsAnnotated()) {
             switch (field.getType()) {
                 case STRING:
@@ -60,12 +67,17 @@ public class FormPanel extends AbstractPanel {
                     break;
             }
         }
-        this.title = data.getLabel() + internalId;
+        this.title = data.getTitle();
+    }
+
+    public Inspectable getInspectable() {
+        return inspectable;
     }
 
     @Override
     public void renderInternal() {
-        if (ImGui.collapsingHeader(title, ImGuiTreeNodeFlags.DefaultOpen)) {
+        if (title != null && inspectable != null) {
+            ImGui.text(title);
             super.renderInternal();
         }
     }

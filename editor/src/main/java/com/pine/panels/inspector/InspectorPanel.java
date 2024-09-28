@@ -1,27 +1,28 @@
 package com.pine.panels.inspector;
 
-import com.pine.Icon;
 import com.pine.PInject;
+import com.pine.component.AbstractComponent;
 import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
-import com.pine.inspection.InspectableRepository;
-import com.pine.inspection.WithMutableData;
+import com.pine.inspection.Inspectable;
+import com.pine.repository.EditorSettingsRepository;
 import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.world.WorldService;
-import com.pine.service.world.request.AddComponentRequest;
-import com.pine.service.world.request.UpdateFieldRequest;
-import com.pine.ui.panel.AbstractWindowPanel;
+import com.pine.service.request.AddComponentRequest;
+import com.pine.service.request.UpdateFieldRequest;
+import com.pine.dock.AbstractDockPanel;
+import com.pine.theme.Icons;
 import imgui.ImGui;
-import imgui.ImVec4;
+import imgui.flag.ImGuiCol;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class InspectorPanel extends AbstractWindowPanel {
-    private static final ImVec4 HOVERED_COLOR = new ImVec4(0.3f, 0.5f, 0.7f, 1.0f);
+import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
+
+public class InspectorPanel extends AbstractDockPanel {
 
     @PInject
     public EntitySelectionRepository selectionRepository;
@@ -30,61 +31,73 @@ public class InspectorPanel extends AbstractWindowPanel {
     public RequestProcessingService requestProcessingService;
 
     @PInject
+    public EditorSettingsRepository settingsRepository;
+
+    @PInject
     public List<EntityComponent> components;
 
     @PInject
-    public List<InspectableRepository> repositories;
+    public List<Inspectable> repositories;
+
+    private final List<Inspectable> additionalInspectable = new ArrayList<>();
 
     @PInject
     public WorldService worldService;
 
+    private Inspectable currentInspection;
     private Integer selected;
-    private final List<FormPanel> formPanels = new LinkedList<>();
     private final List<String> types = new ArrayList<>();
-
-    @Override
-    protected String getTitle() {
-        return "Inspector";
-    }
+    private FormPanel formPanel;
+    private boolean isComponentInspected;
 
     @Override
     public void onInitialize() {
-        types.add(Icon.PLUS.codePoint + " Add component");
-        types.addAll(components.stream().map(EntityComponent::getLabel).toList());
+        types.add(Icons.add + " Add component");
+        types.addAll(components.stream().map(EntityComponent::getTitle).toList());
+        formPanel = appendChild(new FormPanel((dto, newValue) -> {
+            requestProcessingService.addRequest(new UpdateFieldRequest(dto, newValue));
+        }));
+        repositories = repositories.stream().filter(a -> !(a instanceof AbstractComponent<?>)).toList();
+        currentInspection = repositories.getFirst();
     }
 
     @Override
     public void tick() {
         Integer first = selectionRepository.getMainSelection();
         if (!Objects.equals(first, selected)) {
+            formPanel.setInspectable(repositories.getFirst());
+            isComponentInspected = false;
+            additionalInspectable.clear();
             selected = first;
-            formPanels.forEach(this::removeChild);
             if (selected != null) {
                 for (var component : worldService.getComponents(selected).values()) {
-                    FormPanel formPanel;
-                    formPanels.add(formPanel = new FormPanel((WithMutableData) component, (dto, newValue) -> {
-                        requestProcessingService.addRequest(new UpdateFieldRequest(dto, newValue));
-                    }));
-                    appendChild(formPanel);
+                    additionalInspectable.add((AbstractComponent<?>) component);
                 }
             }
         }
-        super.tick();
+
+        if (formPanel.getInspectable() != currentInspection) {
+            formPanel.setInspectable(currentInspection);
+        }
     }
 
     @Override
     public void renderInternal() {
-        ImGui.columns(2, "columns", false);
+        ImGui.columns(2, "##inspectorColumns", false);
         ImGui.setColumnWidth(0, 35);
+        for (var repo : repositories) {
+            renderOption(repo);
+        }
 
-        ImGui.button(Icon.ANGLEDOUBLELEFT.codePoint, 27, 27);
-        ImGui.button(Icon.EDIT.codePoint, 27, 27);
-        ImGui.button(Icon.EGG.codePoint, 27, 27);
-        ImGui.button(Icon.AD.codePoint, 27, 27);
+        ImGui.spacing();
+        ImGui.spacing();
+        for (var additional : additionalInspectable) {
+            renderOption(additional);
+        }
 
         ImGui.nextColumn();
-        if (selected != null) {
-            if (ImGui.beginCombo(internalId, types.getFirst())) {
+        if (selected != null && isComponentInspected) {
+            if (ImGui.beginCombo(imguiId, types.getFirst())) {
                 for (int i = 1; i < types.size(); i++) {
                     String type = types.get(i);
                     if (ImGui.selectable(type)) {
@@ -98,5 +111,19 @@ public class InspectorPanel extends AbstractWindowPanel {
         }
         super.renderInternal();
         ImGui.columns(1);
+    }
+
+    private void renderOption(Inspectable repo) {
+        int popStyle = 0;
+        if (Objects.equals(currentInspection, repo)) {
+            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.accentColor);
+            popStyle++;
+        }
+
+        if (ImGui.button(repo.getIcon(), ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
+            currentInspection = repo;
+            isComponentInspected = false;
+        }
+        ImGui.popStyleColor(popStyle);
     }
 }

@@ -1,25 +1,20 @@
 package com.pine.panels.files;
 
-import com.pine.common.fs.FileInfoDTO;
-import com.pine.ui.panel.AbstractPanel;
-import com.pine.ui.view.TableView;
-import com.pine.ui.view.table.TableHeader;
+import com.pine.repository.FileInfoDTO;
+import com.pine.view.AbstractView;
+import com.pine.view.TableView;
+import com.pine.view.table.TableHeader;
 
 import java.util.List;
 
-public class FilesDirectoryPanel extends AbstractPanel {
+public class FilesDirectoryPanel extends AbstractView {
 
     private TableView table;
 
     @Override
-    protected String getDefinition() {
-        return "<table id='list'/>";
-    }
-
-    @Override
     public void onInitialize() {
         super.onInitialize();
-        table = (TableView) document.getElementById("list");
+        table = appendChild(new TableView());
         table.setGetView(item -> new FilePanel((FileInfoDTO) item));
         table.setHeaderColumns(List.of(
                 new TableHeader("", 30),

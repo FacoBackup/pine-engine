@@ -1,5 +1,6 @@
 package com.pine.service.loader.impl.response;
 
+import com.pine.service.resource.resource.ResourceType;
 import com.pine.service.serialization.SerializableResource;
 
 import java.util.ArrayList;
@@ -11,7 +12,9 @@ import java.util.List;
  * Also includes basic information like file path and if the loading process was successful
  */
 public abstract class AbstractLoaderResponse implements SerializableResource {
-    public static class ResourceInfo{
+    public abstract ResourceType getResourceType();
+
+    public static class ResourceInfo {
         public final String id;
         public final String name;
 
@@ -20,6 +23,7 @@ public abstract class AbstractLoaderResponse implements SerializableResource {
             this.name = name;
         }
     }
+
     private boolean isLoaded;
     private String filePath;
     private final List<ResourceInfo> records = new ArrayList<>();

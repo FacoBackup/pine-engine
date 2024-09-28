@@ -1,16 +1,17 @@
 package com.pine.panels.files;
 
-import com.pine.Icon;
 import com.pine.PInject;
-import com.pine.common.fs.FileInfoDTO;
+import com.pine.repository.EditorSettingsRepository;
+import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
-import com.pine.ui.panel.AbstractPanel;
-import com.pine.ui.view.TableView;
+import com.pine.theme.Icons;
+import com.pine.view.AbstractView;
+import com.pine.view.TableView;
 import imgui.ImGui;
 import imgui.ImVec4;
 
-public class FilePanel extends AbstractPanel {
+public class FilePanel extends AbstractView {
     private final FileInfoDTO item;
     private final ImVec4 color = new ImVec4();
     private String iconCodepoint;
@@ -18,6 +19,11 @@ public class FilePanel extends AbstractPanel {
 
     @PInject
     public ResourceLoaderService loader;
+
+    @PInject
+    public EditorSettingsRepository settingsRepository;
+
+    private int accentColor;
 
     public FilePanel(FileInfoDTO item) {
         super();
@@ -28,7 +34,7 @@ public class FilePanel extends AbstractPanel {
     public void onInitialize() {
         super.onInitialize();
         context = (FilesContext) getContext();
-        iconCodepoint = item.isDirectory() ? Icon.FOLDER.codePoint : Icon.FILE.codePoint;
+        iconCodepoint = item.isDirectory() ? Icons.folder : Icons.file_open;
         if (item.isDirectory()) {
             color.x = 1;
             color.y = 0.8352941f;
@@ -38,12 +44,14 @@ public class FilePanel extends AbstractPanel {
         }
 
         color.w = 1;
+        accentColor = ImGui.getColorU32(settingsRepository.accentColor);
+
     }
 
     @Override
     public void renderInternal() {
         if (context.getSelectedFile() == item) {
-            TableView.highlightRow();
+            TableView.highlightRow(accentColor);
         }
 
         ImGui.tableNextColumn();
