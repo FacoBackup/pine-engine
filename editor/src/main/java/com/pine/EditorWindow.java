@@ -7,7 +7,6 @@ import com.pine.dock.DockService;
 import com.pine.panels.EditorHeaderPanel;
 import com.pine.panels.ToasterPanel;
 import com.pine.repository.EditorSettingsRepository;
-import com.pine.repository.ProjectDTO;
 import com.pine.repository.ThemeService;
 import com.pine.service.ProjectService;
 import com.pine.service.RequestProcessingService;

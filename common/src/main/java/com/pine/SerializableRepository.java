@@ -17,6 +17,12 @@ public interface SerializableRepository extends Serializable, Loggable {
             getLogger().error("Classes are not compatible {} {}", data.getClass(), this.getClass());
             return;
         }
+
+        if(SerializationState.loaded.containsKey(this)){
+            return;
+        }
+
+        SerializationState.loaded.put(this, true);
         Field[] declaredFields = this.getClass().getDeclaredFields();
         final Map<String, Field> fieldMap = new HashMap<>();
 
@@ -32,28 +38,49 @@ public interface SerializableRepository extends Serializable, Loggable {
 
             try {
                 var value = fieldMap.get(declaredField.getName()).get(data);
-                if (Modifier.isFinal(modifiers)) {
-                    var targetValue = fieldMap.get(declaredField.getName()).get(this);
-                    if (value instanceof Vector3f) {
-                        ((Vector3f) targetValue).set((Vector3f) value);
-                    } else if (value instanceof Map) {
-                        ((Map<?, ?>) targetValue).clear();
-                        ((Map<?, ?>) targetValue).putAll((Map) value);
-                    } else if (value instanceof ImVec4) {
-                        ((ImVec4) targetValue).set((ImVec4) value);
-                    } else if (value instanceof ImInt) {
-                        ((ImInt) targetValue).set((ImInt) value);
-                    } else if (value instanceof List) {
-                        ((List<?>) targetValue).clear();
-                        ((List<?>) targetValue).addAll((List) value);
+                var targetValue = fieldMap.get(declaredField.getName()).get(this);
+
+                if (declaredField.isAnnotationPresent(PInject.class)) {
+                    if (List.class.isAssignableFrom(declaredField.getType())) {
+                        List<?> t = (List<?>) targetValue;
+                        List<?> tO = (List<?>) value;
+                        t.forEach(a -> {
+                            if (a instanceof SerializableRepository) {
+                                ((SerializableRepository) a).merge(tO.get(t.indexOf(a)));
+                            }
+                        });
+                    } else if (targetValue instanceof SerializableRepository) {
+                        ((SerializableRepository) targetValue).merge(value);
                     }
-                } else {
-                    declaredField.setAccessible(true);
-                    declaredField.set(this, value);
+                    continue;
                 }
+
+                mergeNormalField(declaredField, modifiers, value, targetValue);
             } catch (Exception e) {
                 getLogger().error("Failed to update field {} onto {}", declaredField.getName(), this.getClass().getSimpleName(), e);
             }
+        }
+    }
+
+    private void mergeNormalField(Field declaredField, int modifiers, Object value, Object targetValue) throws IllegalAccessException {
+        if (Modifier.isFinal(modifiers)) {
+            if (value instanceof Vector3f) {
+                ((Vector3f) targetValue).set((Vector3f) value);
+            } else if (value instanceof Map) {
+                ((Map<?, ?>) targetValue).clear();
+                ((Map<?, ?>) targetValue).putAll((Map) value);
+            } else if (value instanceof ImVec4) {
+                ((ImVec4) targetValue).set((ImVec4) value);
+            } else if (value instanceof ImInt) {
+                ((ImInt) targetValue).set((ImInt) value);
+            } else if (value instanceof List) {
+                List<?> t = (List<?>) targetValue;
+                t.clear();
+                t.addAll((List) value);
+            }
+        } else {
+            declaredField.setAccessible(true);
+            declaredField.set(this, value);
         }
     }
 }

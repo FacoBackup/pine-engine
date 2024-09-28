@@ -3,8 +3,9 @@ package com.pine.service;
 import com.pine.*;
 import com.pine.repository.MessageRepository;
 import com.pine.repository.MessageSeverity;
-import com.pine.repository.ProjectDTO;
 import com.pine.tools.tasks.WorldTreeTask;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.nfd.NativeFileDialog;
@@ -34,7 +35,7 @@ public class ProjectService implements Loggable, Initializable {
     public WorldTreeTask treeTask;
 
     @PInject
-    public List<SerializableRepository> serializableRepositories;
+    public ProjectStateRepository projectStateRepository;
 
     private String previousOpenedProject = null;
 
@@ -60,20 +61,14 @@ public class ProjectService implements Loggable, Initializable {
         messageRepository.pushMessage("Loading project", MessageSeverity.WARN);
         var t = new Thread(() -> {
             try {
-                List<File> files = fsService.readFilesInDirectory(previousOpenedProject);
-                for (var file : files) {
-                    if (file.getName().contains(IDENTIFIER)) {
-                        continue;
-                    }
-                    try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()))) {
-                        Class<?> repoClass = Class.forName(file.getName());
-                        var bean = (SerializableRepository) injector.getBean(repoClass);
-                        bean.merge(in.readObject());
-                    }
+                File file = new File(previousOpenedProject + File.separator + getRepositoryIdentifier());
+                try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()))) {
+                    var bean = (SerializableRepository) injector.getBean(ProjectStateRepository.class);
+                    bean.merge(in.readObject());
                 }
                 messageRepository.pushMessage("Project loaded successfully", MessageSeverity.SUCCESS);
                 treeTask.update();
-                getLogger().info("Project loaded from {} files", files.size());
+                SerializationState.loaded.clear();
             } catch (Exception e) {
                 messageRepository.pushMessage("Error while loading project", MessageSeverity.ERROR);
                 getLogger().error(e.getMessage(), e);
@@ -94,10 +89,8 @@ public class ProjectService implements Loggable, Initializable {
         }
 
         try {
-            for (SerializableRepository repository : serializableRepositories) {
-                try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(previousOpenedProject + File.separator + repository.getClass().getCanonicalName()))) {
-                    out.writeObject(repository);
-                }
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(previousOpenedProject + File.separator + getRepositoryIdentifier()))) {
+                out.writeObject(projectStateRepository);
             }
         } catch (Exception e) {
             messageRepository.pushMessage("Could not save project", MessageSeverity.ERROR);
@@ -105,6 +98,10 @@ public class ProjectService implements Loggable, Initializable {
             return;
         }
         messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
+    }
+
+    private @NotNull String getRepositoryIdentifier() {
+        return DigestUtils.sha1Hex(ProjectStateRepository.class.getCanonicalName()) + ".dat";
     }
 
     public void openProject() {
