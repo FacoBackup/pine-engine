@@ -36,10 +36,6 @@ public class EditorWindow extends AbstractWindow {
     @PInject
     public EditorSettingsRepository settingsRepository;
 
-    @PInject
-    public RequestProcessingService requestProcessingService;
-
-
     @Override
     public void onInitializeInternal() {
         themeService.tick();

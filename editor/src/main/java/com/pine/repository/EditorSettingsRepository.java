@@ -2,6 +2,7 @@ package com.pine.repository;
 
 import com.pine.PBean;
 import com.pine.SerializableRepository;
+import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
@@ -13,6 +14,9 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 import org.joml.Vector4f;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @PBean
 public class EditorSettingsRepository extends Inspectable implements SerializableRepository {
@@ -35,7 +39,7 @@ public class EditorSettingsRepository extends Inspectable implements Serializabl
     public DebugShadingModel debugShadingModel = DebugShadingModel.ALBEDO;
 
     @MutableField(label = "Accent color")
-    public final Vector4f accentColor = new Vector4f(0.26f, 0.59f, 0.98f, 1);
+    public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);
     transient private final ImVec4 accent = new ImVec4();
 
     @MutableField(label = "Dark mode")
@@ -68,6 +72,7 @@ public class EditorSettingsRepository extends Inspectable implements Serializabl
     public final ImInt gizmoModeOption = new ImInt(0);
     public final ImInt shadingModelOption = new ImInt(0);
     public boolean showOnlyEntitiesHierarchy = false;
+    public Map<Integer, Boolean> pinnedEntities = new HashMap<>();
 
     @Override
     public String getIcon() {
@@ -83,7 +88,7 @@ public class EditorSettingsRepository extends Inspectable implements Serializabl
         accent.x = accentColor.x;
         accent.y = accentColor.y;
         accent.z = accentColor.z;
-        accent.w = accentColor.w;
+        accent.w = 1;
         return accent;
     }
 }

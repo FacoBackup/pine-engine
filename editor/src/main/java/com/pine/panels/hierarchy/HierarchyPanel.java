@@ -4,6 +4,7 @@ import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.repository.EditorSettingsRepository;
 import com.pine.repository.EntitySelectionRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
@@ -30,6 +31,9 @@ public class HierarchyPanel extends AbstractDockPanel {
     public WorldTreeTask worldTask;
 
     @PInject
+    public WorldRepository world;
+
+    @PInject
     public EditorSettingsRepository editorSettingsRepository;
 
     @PInject
@@ -52,9 +56,10 @@ public class HierarchyPanel extends AbstractDockPanel {
         header.render();
         isOnSearch = search.isNotEmpty();
 
-        if (ImGui.beginTable("##hierarchy", 2, ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody)) {
+        if (ImGui.beginTable("##hierarchy", 3, ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.NoHide);
-            ImGui.tableSetupColumn("Hide", ImGuiTableColumnFlags.WidthFixed, 35f);
+            ImGui.tableSetupColumn(Icons.visibility, ImGuiTableColumnFlags.WidthFixed, 20f);
+            ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableHeadersRow();
             renderNode(worldTask.getHierarchyTree());
         }
@@ -68,7 +73,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         if (isOnSearch) {
             node.isMatch = node.title.contains(search.get());
             node.matchedWith = search.get();
-        }else{
+        } else {
             node.isMatch = true;
             node.matchedWith = null;
         }
@@ -92,8 +97,14 @@ public class HierarchyPanel extends AbstractDockPanel {
             ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
             ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
             ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
-            if (ImGui.button(Icons.visibility + "##visibility" + node.id, 20, 15)) {
-
+            Boolean isVisible = world.activeEntities.getOrDefault(node.id, true);
+            if (ImGui.button(isVisible ? node.visibilityLabel : node.visibilityOffLabel, 20, 15)) {
+                world.activeEntities.put(node.id, !isVisible);
+            }
+            ImGui.tableNextColumn();
+            Boolean isPinned = editorSettingsRepository.pinnedEntities.getOrDefault(node.id, false);
+            if (ImGui.button(isPinned ? node.pinLabel : node.pinOffLabel, 20, 15)) {
+                editorSettingsRepository.pinnedEntities.put(node.id, !isPinned);
             }
             ImGui.popStyleColor();
             ImGui.popStyleVar(2);

@@ -1,5 +1,7 @@
 package com.pine.tools.tasks;
 
+import com.pine.theme.Icons;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +14,12 @@ public class HierarchyTree {
     public final boolean isEntity;
     public final int id;
     public final String titleWithId;
+    public final String visibilityLabel;
+    public final String pinLabel;
     public String matchedWith;
     public boolean isMatch;
+    public final String visibilityOffLabel;
+    public final String pinOffLabel;
 
     public HierarchyTree(int id, String title, String icon, boolean isEntity, List<HierarchyTree> children) {
         this.title = title;
@@ -24,6 +30,10 @@ public class HierarchyTree {
         titleWithIcon = icon + title;
         titleWithIconId = titleWithIcon + "##" + id;
         this.id = id;
+        visibilityLabel = Icons.visibility + "##visibility" + id;
+        visibilityOffLabel = Icons.visibility_off + "##visibility" + id;
+        pinLabel = Icons.lock + "##pin" + id;
+        pinOffLabel =  "##pin" + id;
     }
 
     public HierarchyTree(int id, String title, String icon) {

@@ -19,7 +19,6 @@ public class ThemeService implements Updatable {
     public ImVec4 palette5;
     public ImVec4 palette6;
     public final float[] BACKGROUND_COLOR = new float[]{.0f, .0f, .0f};
-    public boolean isDarkMode = true;
     private boolean previousTheme = false;
 
     @PInject
@@ -27,15 +26,15 @@ public class ThemeService implements Updatable {
 
     @Override
     public void tick() {
-        if (previousTheme == isDarkMode) {
+        if (previousTheme == settingsRepository.isDarkMode) {
             return;
         }
-        previousTheme = isDarkMode;
+        previousTheme =settingsRepository. isDarkMode;
 
         ImGuiStyle style = ImGui.getStyle();
         ImVec4[] colors = style.getColors();
 
-        if (!isDarkMode) {
+        if (!settingsRepository.isDarkMode) {
             ImGui.styleColorsLight();
             setLightMode();
         } else {
