@@ -31,7 +31,6 @@ public class GizmoConfigPanel extends AbstractView {
     private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar |  ImGuiWindowFlags.NoMove;
     private static final String[] SHADING_MODE_OPTIONS = DebugShadingModel.getLabels();
     private static final ImVec2 MEDIUM_SPACING = new ImVec2(5, 0);
-    private final ImVec2 spacing = new ImVec2(5, 0);
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
 
     @PInject
@@ -71,8 +70,7 @@ public class GizmoConfigPanel extends AbstractView {
 
     private void shadingMode() {
         ImGui.sameLine();
-        spacing.x = ImGui.getContentRegionAvailX() - 230;
-        ImGui.dummy(spacing);
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 230, 0);
         ImGui.sameLine();
 
         ImGui.text(Icons.texture);

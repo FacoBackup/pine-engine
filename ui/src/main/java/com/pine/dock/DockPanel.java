@@ -41,7 +41,7 @@ public abstract class DockPanel extends AbstractView {
     @Override
     public void renderInternal() {
         final ImGuiViewport viewport = ImGui.getMainViewport();
-
+        dockService.updateForRemoval(this);
 
         setupPosition(viewport);
         setupStyles();
@@ -77,7 +77,7 @@ public abstract class DockPanel extends AbstractView {
                 if (isSelected) {
                     ImGui.pushStyleColor(ImGuiCol.Button, getAccentColor());
                 }
-                if (ImGui.button(dockGroup.getTitleWithId()) && !isSelected) {
+                if (ImGui.button(Icons.dashboard + dockGroup.getTitleWithId()) && !isSelected) {
                     dockService.switchDockGroups(dockGroup, dockMainId);
                     children.clear();
                 }
@@ -85,7 +85,11 @@ public abstract class DockPanel extends AbstractView {
                     ImGui.popStyleColor();
                 }
             }
-            if (ImGui.button(Icons.add + "##addDock", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
+            if (dockService.getDockGroups().size() > 1 && ImGui.button(Icons.remove + " Remove selected##removeDockGroup")) {
+                dockService.getDockGroups().remove(dockService.getCurrentDockGroup());
+                dockService.dockRepository.setCurrentDockGroup(dockService.getDockGroups().getLast());
+            }
+            if (ImGui.button(Icons.add + "##addDockGroup", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                 dockService.createDockGroup();
             }
             ImGui.endMenuBar();

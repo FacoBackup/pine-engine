@@ -91,4 +91,9 @@ public enum EditorDock implements DockDescription {
         }
         return optionIndex;
     }
+
+    @Override
+    public DockDescription getDefault() {
+        return EditorDock.Files;
+    }
 }

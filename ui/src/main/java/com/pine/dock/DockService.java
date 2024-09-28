@@ -38,6 +38,7 @@ public class DockService {
     }
 
     public void buildViews(ImInt dockMainId, DockPanel panel) {
+        panel.getChildren().clear();
         DockGroup group = dockRepository.getCurrentDockGroup();
         imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
         imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), NO_TAB_BAR_FLAG);
@@ -82,5 +83,17 @@ public class DockService {
 
     public DockGroup getCurrentDockGroup() {
         return dockRepository.getCurrentDockGroup();
+    }
+
+    public void prepareForRemoval(DockDTO dock, DockWrapperPanel dockWrapperPanel) {
+        dockRepository.dockToRemove = dock;
+        dockRepository.dockPanelToRemove = dockWrapperPanel;
+    }
+
+    public void updateForRemoval(DockPanel panel) {
+        if(dockRepository.dockPanelToRemove != null) {
+            getCurrentDockGroup().docks.remove(dockRepository.dockToRemove);
+            panel.getChildren().remove(dockRepository.dockPanelToRemove);
+        }
     }
 }

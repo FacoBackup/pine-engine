@@ -18,4 +18,6 @@ public interface DockDescription {
     DockDescription getSelectedOption(int index);
 
     int getOptionIndex();
+
+    DockDescription getDefault();
 }

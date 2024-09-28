@@ -85,8 +85,8 @@ public class EditorWindow extends AbstractWindow {
         downRight.setSplitDir(ImGuiDir.Right);
         downRight.setSizeRatioForNodeAtDir(0.5f);
         downRight.setOutAtOppositeDir(downLeft);
-        dockService.getCurrentDockGroup().docks.addAll(List.of(dockCenter, rightUp, rightDown, downLeft, downRight));
 
+        dockService.getCurrentDockGroup().docks.addAll(List.of(dockCenter, rightUp, rightDown, downLeft, downRight));
         dockService.setDockGroupTemplate(dockService.getCurrentDockGroup());
     }
 

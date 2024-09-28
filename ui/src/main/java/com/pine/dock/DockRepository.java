@@ -11,6 +11,8 @@ public class DockRepository implements Initializable {
     public final List<DockGroup> dockGroups = new ArrayList<>();
     public DockGroup currentDockGroup;
     public DockGroup template;
+    public transient DockDTO dockToRemove;
+    public transient DockWrapperPanel dockPanelToRemove;
 
     @Override
     public void onInitialize() {
@@ -27,7 +29,7 @@ public class DockRepository implements Initializable {
         return currentDockGroup;
     }
 
-    public void addDock(DockDTO dto){
+    public void addDock(DockDTO dto) {
         currentDockGroup.docks.add(dto);
         currentDockGroup.isInitialized = false;
     }
