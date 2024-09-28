@@ -2,8 +2,8 @@ package com.pine.dock;
 
 import com.pine.PInject;
 import com.pine.theme.Icons;
-import com.pine.view.View;
 import com.pine.view.AbstractView;
+import com.pine.view.View;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;

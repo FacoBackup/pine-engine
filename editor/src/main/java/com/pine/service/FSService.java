@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @PBean
@@ -57,11 +59,19 @@ public class FSService implements Loggable {
                     }
                 }
             }
-        } else {
-            System.out.println(directory.getAbsolutePath() + " is not a directory.");
         }
-
         return directories;
+    }
+
+    public List<File> readFilesInDirectory(String path) {
+        File directory = new File(path);
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                return Arrays.asList(files);
+            }
+        }
+        return Collections.emptyList();
     }
 
     public void createDirectory(String dirPath) {

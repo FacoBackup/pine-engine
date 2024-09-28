@@ -2,9 +2,10 @@ package com.pine.dock;
 
 import imgui.type.ImInt;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public final class DockDTO {
+public final class DockDTO implements Serializable {
     private final ImInt nodeId = new ImInt(0);
     private final ImInt selectedOption = new ImInt(0);
     private final String internalId;

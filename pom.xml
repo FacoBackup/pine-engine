@@ -18,7 +18,6 @@
     </modules>
 
     <properties>
-        <java.version>22</java.version>
         <lwjgl.version>3.3.4</lwjgl.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
     </properties>
@@ -50,6 +49,10 @@
         </dependency>
         <dependency>
             <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nfd</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-openal</artifactId>
         </dependency>
         <dependency>
@@ -73,6 +76,11 @@
         <dependency>
             <groupId>org.lwjgl</groupId>
             <artifactId>lwjgl-glfw</artifactId>
+            <classifier>${lwjgl.natives}</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.lwjgl</groupId>
+            <artifactId>lwjgl-nfd</artifactId>
             <classifier>${lwjgl.natives}</classifier>
         </dependency>
         <dependency>

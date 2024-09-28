@@ -1,8 +1,8 @@
 package com.pine.dock;
 
-import com.pine.view.View;
+import java.io.Serializable;
 
-public interface DockDescription {
+public interface DockDescription extends Serializable {
     String getTitle();
 
     String getIcon();

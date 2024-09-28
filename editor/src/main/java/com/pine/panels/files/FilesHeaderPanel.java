@@ -1,11 +1,11 @@
 package com.pine.panels.files;
 
 import com.pine.PInject;
+import com.pine.repository.FileInfoDTO;
 import com.pine.repository.Message;
 import com.pine.repository.MessageRepository;
 import com.pine.repository.MessageSeverity;
 import com.pine.service.FSService;
-import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.theme.Icons;

@@ -1,11 +1,10 @@
 package com.pine.repository;
 
-import com.google.gson.JsonElement;
 import com.pine.PBean;
 import com.pine.PInject;
+import com.pine.SerializableRepository;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
-import com.pine.service.serialization.SerializableRepository;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @PBean
-public class WorldRepository extends SerializableRepository implements ChangeRecord {
+public class WorldRepository implements ChangeRecord, SerializableRepository {
     public static final ConcurrentHashMap<String, EntityComponent> EMPTY_MAP = new ConcurrentHashMap<>();
     public static final int ROOT_ID = 0;
     public static final MetadataComponent ROOT = new MetadataComponent(ROOT_ID);
@@ -27,18 +26,6 @@ public class WorldRepository extends SerializableRepository implements ChangeRec
 
     @PInject
     public List<EntityComponent> components;
-
-
-    @Override
-    protected void parseInternal(JsonElement data) {
-        // TODO
-    }
-
-    @Override
-    public JsonElement serializeData() {
-        // TODO
-        return null;
-    }
 
     public void initialize() {
         ConcurrentHashMap<String, EntityComponent> rootComponents = new ConcurrentHashMap<>();
@@ -81,7 +68,7 @@ public class WorldRepository extends SerializableRepository implements ChangeRec
     }
 
     @Override
-    public void registerChange(){
+    public void registerChange() {
         worldChangeId++;
     }
 }

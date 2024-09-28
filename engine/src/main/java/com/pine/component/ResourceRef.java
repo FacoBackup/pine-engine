@@ -1,7 +1,9 @@
 package com.pine.component;
 
 
-public class ResourceRef<T> {
+import java.io.Serializable;
+
+public class ResourceRef<T> implements Serializable {
     public final String id;
     public transient T resource;
 

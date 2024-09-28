@@ -1,11 +1,9 @@
 package com.pine.component.rendering;
 
-import com.pine.inspection.MutableField;
 import com.pine.inspection.Inspectable;
+import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
 import org.joml.Vector3f;
-
-import javax.swing.*;
 
 public class SimpleTransformation extends Inspectable {
     @MutableField(label = "Translation")

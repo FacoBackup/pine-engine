@@ -12,13 +12,9 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
-import imgui.type.ImFloat;
-
-import java.util.Arrays;
 
 import static com.pine.dock.DockWrapperPanel.FRAME_SIZE;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
-import static com.pine.theme.Icons.spa;
 
 public class GizmoConfigPanel extends AbstractView {
     private static final ImVec2 SPACING = new ImVec2(0, 0);
@@ -193,7 +189,7 @@ public class GizmoConfigPanel extends AbstractView {
     private boolean renderOption(String label, boolean selected, boolean fixedSize) {
         int popStyle = 0;
         if (selected) {
-            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.accentColor);
+            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.getAccentColor());
             popStyle++;
         }
         boolean value;

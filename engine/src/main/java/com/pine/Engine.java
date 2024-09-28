@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 
 @PBean
 public class Engine {

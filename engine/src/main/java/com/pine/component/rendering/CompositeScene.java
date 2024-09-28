@@ -3,10 +3,11 @@ package com.pine.component.rendering;
 import com.pine.component.InstancedSceneComponent;
 import com.pine.inspection.MutableField;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompositeScene {
+public class CompositeScene implements Serializable {
     private final InstancedSceneComponent comp;
     private final int entityId;
 

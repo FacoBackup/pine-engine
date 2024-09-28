@@ -1,6 +1,8 @@
 package com.pine.tools.types;
 
-public enum ExecutionEnvironment {
+import java.io.Serializable;
+
+public enum ExecutionEnvironment implements Serializable {
     DEVELOPMENT,
     PLAY
 }

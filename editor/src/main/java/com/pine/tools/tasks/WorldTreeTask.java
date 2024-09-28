@@ -29,12 +29,7 @@ public class WorldTreeTask extends AbstractTask {
     @Override
     protected void tickInternal() {
         if(worldRepository.getChangeId() != internalWorldChangeId) {
-            internalWorldChangeId = worldRepository.getChangeId();
-            worldTree.branches.clear();
-
-            for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {
-                updateTree(childId, worldTree.branches);
-            }
+            update();
         }
     }
 
@@ -51,6 +46,15 @@ public class WorldTreeTask extends AbstractTask {
             for (Integer childId : children) {
                 updateTree(childId, current.branches);
             }
+        }
+    }
+
+    public void update() {
+        internalWorldChangeId = worldRepository.getChangeId();
+        worldTree.branches.clear();
+
+        for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {
+            updateTree(childId, worldTree.branches);
         }
     }
 }

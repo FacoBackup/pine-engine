@@ -1,9 +1,9 @@
 package com.pine;
 
+import com.pine.dock.DockPanel;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import com.pine.view.View;
-import com.pine.dock.DockPanel;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;

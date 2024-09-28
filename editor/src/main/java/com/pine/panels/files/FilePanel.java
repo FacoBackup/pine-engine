@@ -44,7 +44,7 @@ public class FilePanel extends AbstractView {
         }
 
         color.w = 1;
-        accentColor = ImGui.getColorU32(settingsRepository.accentColor);
+        accentColor = ImGui.getColorU32(settingsRepository.getAccentColor());
 
     }
 

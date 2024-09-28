@@ -1,9 +1,9 @@
 package com.pine.component.rendering;
 
 import com.pine.component.ResourceRef;
+import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceTypeField;
-import com.pine.inspection.Inspectable;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;

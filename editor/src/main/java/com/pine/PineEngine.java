@@ -1,36 +1,33 @@
 package com.pine;
 
-import org.apache.commons.io.input.Tailer;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-
 
 public class PineEngine {
-    private static boolean shouldStop = false;
+    public static boolean shouldStop = false;
     private static final Logger LOGGER = LoggerFactory.getLogger(PineEngine.class);
+    private static final PInjector INJECTOR = new PInjector(PineEngine.class.getPackageName());
+    private static final EditorWindow EDITOR_WINDOW = new EditorWindow();
 
     public static void main(String[] args) {
         createStopThread();
+        INJECTOR.inject(EDITOR_WINDOW);
+        startWindow();
+        EDITOR_WINDOW.dispose();
+        System.exit(0);
+    }
 
-        PInjector injector = new PInjector(PineEngine.class.getPackageName());
-        EditorWindow editorWindow = new EditorWindow();
-        injector.inject(editorWindow);
-
-        editorWindow.onInitialize();
-        while (!GLFW.glfwWindowShouldClose(editorWindow.getHandle()) && !shouldStop) {
-            try{
-                editorWindow.render();
-            }catch (Exception e){
+    private static void startWindow() {
+        EDITOR_WINDOW.onInitialize();
+        while (!GLFW.glfwWindowShouldClose(EDITOR_WINDOW.getHandle()) && !shouldStop) {
+            try {
+                EDITOR_WINDOW.render();
+            } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }
         }
-        editorWindow.dispose();
-        System.exit(0);
     }
 
     private static void createStopThread() {

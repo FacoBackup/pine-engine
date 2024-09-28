@@ -3,7 +3,9 @@ package com.pine.repository;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.Updatable;
-import imgui.*;
+import imgui.ImGui;
+import imgui.ImGuiStyle;
+import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 
 @PBean
@@ -77,18 +79,18 @@ public class ThemeService implements Updatable {
         colors[ImGuiCol.NavWindowingDimBg] = palette2;
         colors[ImGuiCol.ModalWindowDimBg] = palette2;
 
-        colors[ImGuiCol.FrameBgHovered] = settingsRepository.accentColor;
-        colors[ImGuiCol.FrameBgActive] = settingsRepository.accentColor;
-        colors[ImGuiCol.CheckMark] = settingsRepository.accentColor;
-        colors[ImGuiCol.SliderGrabActive] = settingsRepository.accentColor;
-        colors[ImGuiCol.Button] = settingsRepository.accentColor;
-        colors[ImGuiCol.ButtonHovered] = settingsRepository.accentColor;
-        colors[ImGuiCol.Header] = settingsRepository.accentColor;
-        colors[ImGuiCol.HeaderHovered] = settingsRepository.accentColor;
-        colors[ImGuiCol.HeaderActive] = settingsRepository.accentColor;
-        colors[ImGuiCol.ResizeGripHovered] = settingsRepository.accentColor;
-        colors[ImGuiCol.ResizeGripActive] = settingsRepository.accentColor;
-        colors[ImGuiCol.TextSelectedBg] = settingsRepository.accentColor;
+        colors[ImGuiCol.FrameBgHovered] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.FrameBgActive] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.CheckMark] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.SliderGrabActive] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.Button] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.ButtonHovered] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.Header] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.HeaderHovered] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.HeaderActive] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.ResizeGripHovered] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.ResizeGripActive] = settingsRepository.getAccentColor();
+        colors[ImGuiCol.TextSelectedBg] = settingsRepository.getAccentColor();
 
         BACKGROUND_COLOR[0] = colors[ImGuiCol.WindowBg].x;
         BACKGROUND_COLOR[1] = colors[ImGuiCol.WindowBg].y;

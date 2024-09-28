@@ -4,14 +4,14 @@ import com.pine.PInject;
 import com.pine.component.AbstractComponent;
 import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
+import com.pine.dock.AbstractDockPanel;
 import com.pine.inspection.Inspectable;
 import com.pine.repository.EditorSettingsRepository;
 import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.RequestProcessingService;
-import com.pine.service.world.WorldService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
-import com.pine.dock.AbstractDockPanel;
+import com.pine.service.world.WorldService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -116,7 +116,7 @@ public class InspectorPanel extends AbstractDockPanel {
     private void renderOption(Inspectable repo) {
         int popStyle = 0;
         if (Objects.equals(currentInspection, repo)) {
-            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.accentColor);
+            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.getAccentColor());
             popStyle++;
         }
 

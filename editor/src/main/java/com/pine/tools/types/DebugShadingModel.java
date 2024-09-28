@@ -2,7 +2,9 @@ package com.pine.tools.types;
 
 import com.pine.inspection.SelectableEnum;
 
-public enum DebugShadingModel implements SelectableEnum {
+import java.io.Serializable;
+
+public enum DebugShadingModel implements SelectableEnum, Serializable {
     ALBEDO("Albedo", 0),
     NORMAL("Normal", 1),
     TANGENT("Tangent", 2),

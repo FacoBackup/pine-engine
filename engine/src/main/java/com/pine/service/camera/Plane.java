@@ -2,7 +2,9 @@ package com.pine.service.camera;
 
 import org.joml.Vector3f;
 
-public class Plane {
+import java.io.Serializable;
+
+public class Plane implements Serializable {
     public Vector3f normal = new Vector3f();
     public float distance;
 

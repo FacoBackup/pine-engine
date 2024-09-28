@@ -17,7 +17,7 @@ public class PInjector implements Loggable {
     /**
      * Scans classpath for EngineInjectable, injects dependencies and initializes them
      */
-    public PInjector(String rootPackageName){
+    public PInjector(String rootPackageName) {
         this.rootPackageName = rootPackageName;
         injectables.add(this);
         collectInjectables();
@@ -34,6 +34,7 @@ public class PInjector implements Loggable {
                 ((Initializable) in).onInitialize();
             }
         }
+
         for (var in : injectables) {
             if (in instanceof LateInitializable) {
                 ((LateInitializable) in).lateInitialize();
@@ -133,5 +134,17 @@ public class PInjector implements Loggable {
 
     public Object getBean(Class<?> clazz) {
         return injectables.stream().filter(a -> a.getClass() == clazz).findFirst().orElse(null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getBeanList(Class<T> clazz) {
+        List<T> result = new ArrayList<>();
+
+        for (Object i : injectables) {
+            if (clazz.isAssignableFrom(i.getClass())) {
+                result.add((T) i);
+            }
+        }
+        return result;
     }
 }
