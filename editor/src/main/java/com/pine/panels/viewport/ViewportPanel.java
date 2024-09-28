@@ -13,7 +13,6 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiKey;
 
-import static com.pine.panels.viewport.GizmoConfigPanel.GIZMO_PANEL_SIZE;
 import static com.pine.dock.DockWrapperPanel.FRAME_SIZE;
 
 public class ViewportPanel extends AbstractDockPanel {
@@ -41,7 +40,7 @@ public class ViewportPanel extends AbstractDockPanel {
     public void onInitialize() {
         super.onInitialize();
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
-        appendChild(gizmoPanel = new GizmoConfigPanel());
+        appendChild(gizmoPanel = new GizmoConfigPanel(position, sizeVec));
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
     }
 
@@ -56,7 +55,7 @@ public class ViewportPanel extends AbstractDockPanel {
         afterWindow();
 
         sizeVec.x = size.x;
-        sizeVec.y = size.y - FRAME_SIZE - GIZMO_PANEL_SIZE;
+        sizeVec.y = size.y - FRAME_SIZE;
 
         gizmoPanel.renderInternal();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);

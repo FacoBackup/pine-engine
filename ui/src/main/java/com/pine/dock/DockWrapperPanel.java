@@ -39,9 +39,11 @@ public final class DockWrapperPanel extends AbstractView implements Loggable {
     @Override
     public void onInitialize() {
         try {
-            view = appendChild(dock.getView().getConstructor().newInstance());
+            view = dock.getView().getConstructor().newInstance();
             view.setSize(size);
             view.setPosition(position);
+            appendChild(view);
+
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }

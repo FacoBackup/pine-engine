@@ -5,8 +5,8 @@ import imgui.ImVec2;
 import org.joml.Vector2f;
 
 public abstract class AbstractDockPanel extends AbstractView {
-    public ImVec2 position;
-    public Vector2f size;
+    protected ImVec2 position;
+    protected Vector2f size;
 
     public void setSize(Vector2f size) {
         this.size = size;

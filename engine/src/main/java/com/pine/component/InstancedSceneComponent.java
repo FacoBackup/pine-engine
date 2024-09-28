@@ -22,7 +22,7 @@ public class InstancedSceneComponent extends AbstractComponent<InstancedSceneCom
     @MutableField(label = "Contribute to probes")
     public boolean contributeToProbes = true;
 
-    @ResourceTypeField(type = ResourceType.TEXTURE)
+    @ResourceTypeField(type = ResourceType.PRIMITIVE)
     @MutableField(label = "Primitive instance")
     public ResourceRef<Primitive> primitive;
 

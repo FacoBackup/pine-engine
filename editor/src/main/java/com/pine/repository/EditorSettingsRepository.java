@@ -10,6 +10,7 @@ import imgui.ImVec4;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
+import imgui.type.ImInt;
 
 @PBean
 public class EditorSettingsRepository extends Inspectable {
@@ -29,7 +30,7 @@ public class EditorSettingsRepository extends Inspectable {
     public float gridOpacity = 1f;
 
     @MutableField(label = "Shading model")
-    public DebugShadingModel debugShadingModel = DebugShadingModel.RANDOM;
+    public DebugShadingModel debugShadingModel = DebugShadingModel.ALBEDO;
 
     @MutableField(label = "Accent color")
     public final ImVec4 accentColor = new ImVec4(0.26f, 0.59f, 0.98f, 1);
@@ -49,10 +50,20 @@ public class EditorSettingsRepository extends Inspectable {
     public ExecutionEnvironment environment = ExecutionEnvironment.DEVELOPMENT;
     public int gizmoOperation = Operation.TRANSLATE;
     public int gizmoMode = Mode.LOCAL;
-    public boolean gizmoUseSnap;
+
     public float[] gizmoSnapTranslate = new float[3];
     public ImFloat gizmoSnapRotate = new ImFloat();
     public ImFloat gizmoSnapScale = new ImFloat();
+
+    public final ImInt gizmoSnapTranslateOption = new ImInt(0);
+    public final ImInt gizmoSnapRotateOption = new ImInt(0);
+    public final ImInt gizmoSnapScaleOption = new ImInt(0);
+
+    public boolean gizmoUseSnapTranslate;
+    public boolean gizmoUseSnapRotate;
+    public boolean gizmoUseSnapScale;
+    public final ImInt gizmoModeOption = new ImInt(0);
+    public final ImInt shadingModelOption = new ImInt(0);
 
     @Override
     public String getIcon() {
