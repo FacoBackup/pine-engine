@@ -17,8 +17,6 @@ public class PineEngine {
     public static void main(String[] args) {
         createStopThread();
 
-        createLogThread();
-
         PInjector injector = new PInjector(PineEngine.class.getPackageName());
         EditorWindow editorWindow = new EditorWindow();
         injector.inject(editorWindow);
@@ -37,17 +35,5 @@ public class PineEngine {
 
     private static void createStopThread() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shouldStop = true));
-    }
-
-    private static void createLogThread() {
-        File logFile = new File("engine.log");
-        LogListener listener = new LogListener();
-
-        Tailer tailer = Tailer.builder()
-                .setFile(logFile)
-                .setTailerListener(listener)
-                .setDelayDuration(Duration.of(1, ChronoUnit.SECONDS))
-                .get();
-        new Thread(tailer).start();
     }
 }

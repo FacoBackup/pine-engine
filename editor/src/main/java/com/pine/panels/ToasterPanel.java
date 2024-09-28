@@ -1,15 +1,15 @@
 package com.pine.panels;
 
 import com.pine.PInject;
-import com.pine.service.Message;
-import com.pine.service.MessageRepository;
+import com.pine.repository.Message;
+import com.pine.repository.MessageRepository;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 
-import static com.pine.service.MessageRepository.MESSAGE_DURATION;
+import static com.pine.repository.MessageRepository.MESSAGE_DURATION;
 
 public class ToasterPanel extends AbstractView {
     @PInject
@@ -23,7 +23,7 @@ public class ToasterPanel extends AbstractView {
             if (message == null) {
                 continue;
             }
-            if (System.currentTimeMillis() - message.getDisplayStartTime() > MESSAGE_DURATION) {
+            if (System.currentTimeMillis() - message.getDisplayStartTime().getTime() > MESSAGE_DURATION) {
                 messages[i] = null;
                 continue;
             }

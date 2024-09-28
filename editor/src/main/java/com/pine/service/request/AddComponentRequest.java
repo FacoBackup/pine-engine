@@ -1,6 +1,8 @@
-package com.pine.service.world.request;
+package com.pine.service.request;
 
 import com.pine.component.EntityComponent;
+import com.pine.repository.Message;
+import com.pine.repository.MessageSeverity;
 import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 
@@ -14,18 +16,18 @@ public class AddComponentRequest extends AbstractRequest {
     }
 
     @Override
-    public RequestMessage run(WorldRepository repository, WorldService service) {
+    public Message run(WorldRepository repository, WorldService service) {
         if (!repository.entities.containsKey(entityId)) {
-            return new RequestMessage("Entity not found", true);
+            return new Message("Entity not found", MessageSeverity.ERROR);
         }
         try {
             boolean isSuccess = repository.registerComponent(componentClass.getConstructor(Integer.class).newInstance(entityId));
             if(!isSuccess) {
-                return new RequestMessage("Could not add component to entity", true);
+                return new Message("Could not add component to entity", MessageSeverity.ERROR);
             }
         } catch (Exception e) {
-            return new RequestMessage("Could not create", true);
+            return new Message("Could not create", MessageSeverity.ERROR);
         }
-        return new RequestMessage("Component added to entity", false);
+        return new Message("Component added to entity", MessageSeverity.SUCCESS);
     }
 }

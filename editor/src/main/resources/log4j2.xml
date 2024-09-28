@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
+        <Console name="CONSOLE">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %highlight{%-5level}{FATAL=bright red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %logger{36} - %msg%n"/>
         </Console>
+        <File name="MAIN" fileName="engine.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %highlight{%-5level}{FATAL=bright red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %logger{36} - %msg%n"/>
+        </File>
     </Appenders>
-
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
+        <Root level="ALL">
+            <AppenderRef ref="CONSOLE" level="WARN"/>
+            <AppenderRef ref="MAIN"/>
         </Root>
     </Loggers>
 </Configuration>

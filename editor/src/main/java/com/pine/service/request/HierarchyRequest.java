@@ -1,5 +1,7 @@
-package com.pine.service.world.request;
+package com.pine.service.request;
 
+import com.pine.repository.Message;
+import com.pine.repository.MessageSeverity;
 import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 
@@ -18,9 +20,9 @@ public class HierarchyRequest extends AbstractRequest {
     }
 
     @Override
-    public RequestMessage run(WorldRepository repository, WorldService service) {
+    public Message run(WorldRepository repository, WorldService service) {
         if (!repository.entities.containsKey(child) || (parent != null && !repository.entities.containsKey(parent))) {
-            return new RequestMessage("Entities were not found", true);
+            return new Message("Entities were not found", MessageSeverity.ERROR);
         }
         if (parent == null) {
             parent = ROOT_ID;
@@ -36,6 +38,6 @@ public class HierarchyRequest extends AbstractRequest {
         repository.parentChildren.put(parent, parentList);
         repository.childParent.put(child, parent);
 
-        return new RequestMessage("Entities linked successfully", false);
+        return new Message("Entities linked successfully", MessageSeverity.SUCCESS);
     }
 }

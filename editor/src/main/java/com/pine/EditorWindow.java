@@ -3,8 +3,8 @@ package com.pine;
 import com.pine.dock.DockService;
 import com.pine.panels.ToasterPanel;
 import com.pine.repository.EditorSettingsRepository;
-import com.pine.service.MessageRepository;
-import com.pine.service.MessageSeverity;
+import com.pine.repository.MessageRepository;
+import com.pine.repository.MessageSeverity;
 import com.pine.component.InstancedSceneComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.panels.EditorHeaderPanel;
@@ -13,9 +13,10 @@ import com.pine.panels.files.FilesPanel;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.viewport.ViewportPanel;
-import com.pine.service.ProjectDTO;
+import com.pine.repository.ProjectDTO;
 import com.pine.service.ProjectService;
-import com.pine.service.world.request.AddEntityRequest;
+import com.pine.service.RequestProcessingService;
+import com.pine.service.request.AddEntityRequest;
 import com.pine.repository.ThemeService;
 import com.pine.tools.ToolsModule;
 import com.pine.view.View;
@@ -35,9 +36,6 @@ public class EditorWindow extends AbstractWindow {
     public Engine engine;
 
     @PInject
-    public MessageRepository messageRepository;
-
-    @PInject
     public DockService dockService;
 
     @PInject
@@ -46,14 +44,15 @@ public class EditorWindow extends AbstractWindow {
     @PInject
     public EditorSettingsRepository settingsRepository;
 
+    @PInject
+    public RequestProcessingService requestProcessingService;
+
     @Override
     public void onInitializeInternal() {
         themeService.tick();
-        engine.prepare(displayW, displayH, (String message, Boolean isError) -> {
-            messageRepository.pushMessage(message, isError ? MessageSeverity.ERROR : MessageSeverity.SUCCESS);
-        });
+        engine.prepare(displayW, displayH);
         engine.addModules(List.of(new ToolsModule()));
-        engine.requestTask.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, TransformationComponent.class)));
+        requestProcessingService.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class, TransformationComponent.class)));
         appendChild(new ToasterPanel());
 
         DockDTO dockCenter = new DockDTO(EditorDock.Viewport, ViewportPanel.class);

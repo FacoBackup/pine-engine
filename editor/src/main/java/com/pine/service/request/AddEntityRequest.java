@@ -1,8 +1,10 @@
-package com.pine.service.world.request;
+package com.pine.service.request;
 
 import com.pine.Loggable;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
+import com.pine.repository.Message;
+import com.pine.repository.MessageSeverity;
 import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 
@@ -31,7 +33,7 @@ public class AddEntityRequest extends AbstractRequest implements Loggable {
     }
 
     @Override
-    public RequestMessage run(WorldRepository repository, WorldService service) {
+    public Message run(WorldRepository repository, WorldService service) {
         entityId = repository.genNextId();
 
         ConcurrentHashMap<String, EntityComponent> newComponents = new ConcurrentHashMap<>();
@@ -44,10 +46,10 @@ public class AddEntityRequest extends AbstractRequest implements Loggable {
 
             createHierarchy(repository);
 
-            return new RequestMessage("Entity created successfully", false);
+            return new Message("Entity created successfully", MessageSeverity.SUCCESS);
         } catch (Exception e) {
             getLogger().error("Error while adding component", e);
-            return new RequestMessage("Error while adding component", true);
+            return new Message("Error while adding component", MessageSeverity.ERROR);
         }
     }
 

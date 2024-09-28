@@ -1,9 +1,9 @@
 package com.pine.panels.hierarchy;
 
-import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.component.InstancedSceneComponent;
-import com.pine.service.world.request.AddEntityRequest;
+import com.pine.service.RequestProcessingService;
+import com.pine.service.request.AddEntityRequest;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
@@ -15,7 +15,7 @@ import java.util.List;
 public class HierarchyHeaderPanel extends AbstractView {
 
     @PInject
-    public Engine engine;
+    public RequestProcessingService requestProcessingService;
 
     private final ImString search = new ImString();
 
@@ -26,7 +26,7 @@ public class HierarchyHeaderPanel extends AbstractView {
         }
         ImGui.sameLine();
         if(ImGui.button(Icons.add, 25, 25)){
-            engine.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
+            requestProcessingService.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
         }
     }
 }

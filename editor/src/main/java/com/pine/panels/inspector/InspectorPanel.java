@@ -9,8 +9,8 @@ import com.pine.repository.EditorSettingsRepository;
 import com.pine.repository.EntitySelectionRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.world.WorldService;
-import com.pine.service.world.request.AddComponentRequest;
-import com.pine.service.world.request.UpdateFieldRequest;
+import com.pine.service.request.AddComponentRequest;
+import com.pine.service.request.UpdateFieldRequest;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -58,6 +58,7 @@ public class InspectorPanel extends AbstractDockPanel {
             requestProcessingService.addRequest(new UpdateFieldRequest(dto, newValue));
         }));
         repositories = repositories.stream().filter(a -> !(a instanceof AbstractComponent<?>)).toList();
+        currentInspection = repositories.getFirst();
     }
 
     @Override

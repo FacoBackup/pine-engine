@@ -1,6 +1,9 @@
 package com.pine.panels.files;
 
 import com.pine.PInject;
+import com.pine.repository.Message;
+import com.pine.repository.MessageRepository;
+import com.pine.repository.MessageSeverity;
 import com.pine.service.FSService;
 import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
@@ -20,6 +23,8 @@ public class FilesHeaderPanel extends AbstractView {
     public FSService fsService;
     @PInject
     public ResourceLoaderService resourceLoader;
+    @PInject
+    public MessageRepository messageRepository;
 
     private FilesContext filesContext;
     private final ImString searchPath = new ImString();
@@ -37,15 +42,15 @@ public class FilesHeaderPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
-        if(ImGui.button(Icons.create_new_folder + "##mkdir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)){
+        if (ImGui.button(Icons.create_new_folder + "##mkdir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
             fsService.createDirectory(filesContext.getDirectory() + File.separator + "New folder");
         }
         ImGui.sameLine();
-        if(ImGui.button(Icons.arrow_upward + "##goUpDir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)){
+        if (ImGui.button(Icons.arrow_upward + "##goUpDir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
             filesContext.setDirectory(fsService.getParentDir(filesContext.getDirectory()));
         }
         ImGui.sameLine();
-        if(ImGui.inputText("##searchPath", searchPath, ImGuiInputTextFlags.EnterReturnsTrue)){
+        if (ImGui.inputText("##searchPath", searchPath, ImGuiInputTextFlags.EnterReturnsTrue)) {
             if (fsService.exists(searchPath.get())) {
                 var context = ((FilesContext) getContext());
                 context.setDirectory(searchPath.get());
@@ -53,12 +58,15 @@ public class FilesHeaderPanel extends AbstractView {
         }
 
         FileInfoDTO selected = filesContext.getSelectedFile();
-        if(selected != null && !selected.isDirectory()) {
+        if (selected != null && !selected.isDirectory()) {
             ImGui.sameLine();
             if (ImGui.button(Icons.file_open + " Import File##importFile")) {
                 FileInfoDTO file = filesContext.getSelectedFile();
                 if (file != null && !file.isDirectory()) {
-                    resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+                    var response = resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+                    if (response == null || !response.isLoaded()) {
+                        messageRepository.pushMessage(new Message("Error while importing file {}" + file.absolutePath(), MessageSeverity.ERROR));
+                    }
                 }
             }
         }

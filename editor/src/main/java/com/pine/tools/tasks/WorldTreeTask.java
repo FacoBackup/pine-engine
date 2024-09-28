@@ -1,4 +1,4 @@
-package com.pine.tools.repository;
+package com.pine.tools.tasks;
 
 import com.pine.AbstractTree;
 import com.pine.PBean;
@@ -6,7 +6,6 @@ import com.pine.PInject;
 import com.pine.component.EntityComponent;
 import com.pine.component.MetadataComponent;
 import com.pine.repository.WorldRepository;
-import com.pine.service.world.WorldHierarchyTree;
 import com.pine.service.world.WorldService;
 import com.pine.tasks.AbstractTask;
 

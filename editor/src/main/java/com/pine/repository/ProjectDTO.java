@@ -1,4 +1,4 @@
-package com.pine.service;
+package com.pine.repository;
 
 import com.pine.view.RepeatingViewItem;
 

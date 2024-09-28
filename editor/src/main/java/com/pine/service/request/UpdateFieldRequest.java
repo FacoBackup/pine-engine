@@ -1,8 +1,10 @@
-package com.pine.service.world.request;
+package com.pine.service.request;
 
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.repository.ChangeRecord;
+import com.pine.repository.Message;
+import com.pine.repository.MessageSeverity;
 import com.pine.repository.WorldRepository;
 import com.pine.service.world.WorldService;
 import org.joml.Quaternionf;
@@ -28,7 +30,7 @@ public class UpdateFieldRequest extends AbstractRequest {
     }
 
     @Override
-    public RequestMessage run(WorldRepository repository, WorldService service) {
+    public Message run(WorldRepository repository, WorldService service) {
         try {
             switch (fieldDTO.getType()) {
                 case VECTOR2 -> {
@@ -63,7 +65,7 @@ public class UpdateFieldRequest extends AbstractRequest {
             }
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
-            return new RequestMessage("Could not update field " + fieldDTO.getField().getName(), true);
+            return new Message("Could not update field " + fieldDTO.getField().getName(), MessageSeverity.ERROR);
         }
         return null;
     }
