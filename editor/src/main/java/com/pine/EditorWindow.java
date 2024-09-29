@@ -1,16 +1,12 @@
 package com.pine;
 
-import com.pine.component.InstancedSceneComponent;
-import com.pine.component.TransformationComponent;
 import com.pine.dock.DockDTO;
 import com.pine.dock.DockService;
 import com.pine.panels.EditorHeaderPanel;
 import com.pine.panels.ToasterPanel;
-import com.pine.repository.EditorSettingsRepository;
+import com.pine.repository.EditorStateRepository;
 import com.pine.repository.ThemeService;
 import com.pine.service.ProjectService;
-import com.pine.service.RequestProcessingService;
-import com.pine.service.request.AddEntityRequest;
 import com.pine.tools.ToolsModule;
 import com.pine.view.View;
 import imgui.ImVec4;
@@ -34,7 +30,7 @@ public class EditorWindow extends AbstractWindow {
     public ThemeService themeService;
 
     @PInject
-    public EditorSettingsRepository settingsRepository;
+    public EditorStateRepository settingsRepository;
 
     @Override
     public void onInitializeInternal() {

@@ -3,7 +3,7 @@ package com.pine.panels.viewport;
 import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.EditorSettingsRepository;
+import com.pine.repository.EditorStateRepository;
 import com.pine.view.AbstractView;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GizmoPanel extends AbstractView {
     @PInject
-    public EditorSettingsRepository editorSettingsRepository;
+    public EditorStateRepository editorStateRepository;
 
     @PInject
     public CameraRepository cameraRepository;
@@ -42,8 +42,8 @@ public class GizmoPanel extends AbstractView {
         ImGuizmo.manipulate(
                 viewMatrixCache,
                 projectionMatrixCache,
-                editorSettingsRepository.gizmoOperation,
-                editorSettingsRepository.gizmoMode,
+                editorStateRepository.gizmoOperation,
+                editorStateRepository.gizmoMode,
                 cacheMatrix,
                 null,
                 snap);
@@ -51,22 +51,22 @@ public class GizmoPanel extends AbstractView {
     }
 
     private float @Nullable [] getSnapValues() {
-        return switch (editorSettingsRepository.gizmoOperation) {
+        return switch (editorStateRepository.gizmoOperation) {
             case Operation.TRANSLATE -> {
-                if (editorSettingsRepository.gizmoUseSnapTranslate) {
-                    yield editorSettingsRepository.gizmoSnapTranslate;
+                if (editorStateRepository.gizmoUseSnapTranslate) {
+                    yield editorStateRepository.gizmoSnapTranslate;
                 }
                 yield null;
             }
             case Operation.ROTATE -> {
-                if (editorSettingsRepository.gizmoUseSnapRotate) {
-                    yield editorSettingsRepository.gizmoSnapRotate.getData();
+                if (editorStateRepository.gizmoUseSnapRotate) {
+                    yield editorStateRepository.gizmoSnapRotate.getData();
                 }
                 yield null;
             }
             case Operation.SCALE -> {
-                if (editorSettingsRepository.gizmoUseSnapScale) {
-                    yield editorSettingsRepository.gizmoSnapScale.getData();
+                if (editorStateRepository.gizmoUseSnapScale) {
+                    yield editorStateRepository.gizmoSnapScale.getData();
                 }
                 yield null;
             }

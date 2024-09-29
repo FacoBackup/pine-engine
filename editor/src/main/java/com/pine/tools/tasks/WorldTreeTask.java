@@ -17,6 +17,7 @@ import static com.pine.repository.WorldRepository.ROOT_ID;
 @PBean
 public class WorldTreeTask extends AbstractTask {
     private final HierarchyTree worldTree = new HierarchyTree(ROOT_ID, "World", Icons.inventory_2);
+    private final Map<Integer, HierarchyTree> nodes = new HashMap<>();
     private int internalWorldChangeId;
 
     @PInject
@@ -37,12 +38,17 @@ public class WorldTreeTask extends AbstractTask {
     }
 
     public void update() {
+        nodes.clear();
         internalWorldChangeId = worldRepository.getChangeId();
         worldTree.children.clear();
-
+        nodes.put(ROOT_ID, worldTree);
         for (var childId : worldRepository.parentChildren.get(ROOT_ID)) {
             updateTree(childId, worldTree.children);
         }
+    }
+
+    public Map<Integer, HierarchyTree> getNodes() {
+        return nodes;
     }
 
     private void updateTree(int entityId, List<HierarchyTree> branch) {
@@ -52,6 +58,7 @@ public class WorldTreeTask extends AbstractTask {
         }
 
         HierarchyTree current = new HierarchyTree(entityId, metadata.name, Icons.inventory_2, true, new ArrayList<>());
+        nodes.put(current.id, current);
         branch.add(current);
 
         for (EntityComponent c : worldRepository.entities.get(entityId).values()) {

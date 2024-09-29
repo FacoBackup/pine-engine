@@ -2,6 +2,7 @@ package com.pine.repository;
 
 import com.pine.PBean;
 import com.pine.SerializableRepository;
+import com.pine.component.rendering.SimpleTransformation;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
@@ -13,13 +14,13 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
-import org.joml.Vector4f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 @PBean
-public class EditorSettingsRepository extends Inspectable implements SerializableRepository {
+public class EditorStateRepository extends Inspectable implements SerializableRepository {
     @MutableField(label = "Show grid")
     public boolean showGrid = true;
 
@@ -72,7 +73,11 @@ public class EditorSettingsRepository extends Inspectable implements Serializabl
     public final ImInt gizmoModeOption = new ImInt(0);
     public final ImInt shadingModelOption = new ImInt(0);
     public boolean showOnlyEntitiesHierarchy = false;
+
     public Map<Integer, Boolean> pinnedEntities = new HashMap<>();
+    public SimpleTransformation primitiveSelected = null;
+    public Integer mainSelection = null;
+    public final LinkedList<Integer> selected = new LinkedList<>();
 
     @Override
     public String getIcon() {

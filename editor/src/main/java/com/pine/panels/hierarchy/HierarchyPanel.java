@@ -2,10 +2,10 @@ package com.pine.panels.hierarchy;
 
 import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
-import com.pine.repository.EditorSettingsRepository;
-import com.pine.repository.EntitySelectionRepository;
+import com.pine.repository.EditorStateRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.RequestProcessingService;
+import com.pine.service.SelectionService;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
 import com.pine.tools.tasks.HierarchyTree;
@@ -16,8 +16,10 @@ import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImString;
 
-import javax.swing.*;
+import java.util.Map;
 import java.util.Objects;
+
+import static com.pine.repository.WorldRepository.ROOT_ID;
 
 
 public class HierarchyPanel extends AbstractDockPanel {
@@ -25,7 +27,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     private static final ImVec2 PADDING = new ImVec2(0, 0);
 
     @PInject
-    public EntitySelectionRepository selectionRepository;
+    public SelectionService selectionRepository;
 
     @PInject
     public WorldTreeTask worldTask;
@@ -34,7 +36,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     public WorldRepository world;
 
     @PInject
-    public EditorSettingsRepository editorSettingsRepository;
+    public EditorStateRepository editorStateRepository;
 
     @PInject
     public RequestProcessingService requestProcessingService;
@@ -61,13 +63,20 @@ public class HierarchyPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn(Icons.visibility, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableHeadersRow();
-            renderNode(worldTask.getHierarchyTree());
+
+            Map<Integer, HierarchyTree> nodes = worldTask.getNodes();
+            for (var pinned : editorStateRepository.pinnedEntities.keySet()) {
+                if (nodes.containsKey(pinned)) {
+                    renderNode(nodes.get(pinned), true);
+                }
+            }
+            renderNode(worldTask.getHierarchyTree(), false);
         }
         ImGui.endTable();
     }
 
-    private boolean renderNode(HierarchyTree node) {
-        if ((isOnSearch && !node.isMatch && Objects.equals(node.matchedWith, search.get())) || (editorSettingsRepository.showOnlyEntitiesHierarchy && !node.isEntity)) {
+    private boolean renderNode(HierarchyTree node, boolean isPinned) {
+        if ((isOnSearch && !node.isMatch && Objects.equals(node.matchedWith, search.get())) || (editorStateRepository.showOnlyEntitiesHierarchy && !node.isEntity)) {
             return false;
         }
         if (isOnSearch) {
@@ -80,52 +89,76 @@ public class HierarchyPanel extends AbstractDockPanel {
 
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
-        if (node.isEntity) {
-            int flags = ImGuiTreeNodeFlags.SpanFullWidth;
-            if (selectionRepository.getSelected().contains(node.id)) {
-                flags |= ImGuiTreeNodeFlags.Selected;
-            }
-            if (isOnSearch) {
-                flags |= ImGuiTreeNodeFlags.DefaultOpen;
-            }
+        if (node.isEntity && !isPinned) {
+            int flags = getFlags(node);
 
             boolean open = ImGui.treeNodeEx(node.titleWithIconId, flags);
-            handleClick(node);
-            handleDragDrop(node);
-            ImGui.tableNextColumn();
-
-            ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
-            ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
-            ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
-            Boolean isVisible = world.activeEntities.getOrDefault(node.id, true);
-            if (ImGui.button(isVisible ? node.visibilityLabel : node.visibilityOffLabel, 20, 15)) {
-                world.activeEntities.put(node.id, !isVisible);
+            if(node.id != ROOT_ID) {
+                handleDragDrop(node);
+                renderEntityColumns(node, false);
             }
-            ImGui.tableNextColumn();
-            Boolean isPinned = editorSettingsRepository.pinnedEntities.getOrDefault(node.id, false);
-            if (ImGui.button(isPinned ? node.pinLabel : node.pinOffLabel, 20, 15)) {
-                editorSettingsRepository.pinnedEntities.put(node.id, !isPinned);
-            }
-            ImGui.popStyleColor();
-            ImGui.popStyleVar(2);
-            if (open) {
-                if (isOnSearch) {
-                    for (var child : node.children) {
-                        node.isMatch = node.isMatch || renderNode(child);
-                    }
-                } else {
-                    for (var child : node.children) {
-                        renderNode(child);
-                    }
-                }
-                ImGui.treePop();
-            }
-        } else {
+            renderEntityChildren(node, open);
+        } else if (!node.isEntity) {
             ImGui.textDisabled(node.titleWithIcon);
             ImGui.tableNextColumn();
             ImGui.textDisabled("--");
+            ImGui.tableNextColumn();
+            ImGui.textDisabled("--");
+        } else {
+            if (selectionRepository.getSelected().contains(node.id)) {
+                ImGui.textColored(editorStateRepository.getAccentColor(), node.titleWithIcon);
+            }else{
+                ImGui.text(node.titleWithIcon);
+            }
+            renderEntityColumns(node, true);
         }
         return node.isMatch;
+    }
+
+    private void renderEntityChildren(HierarchyTree node, boolean open) {
+        if (open) {
+            if (isOnSearch) {
+                for (var child : node.children) {
+                    node.isMatch = node.isMatch || renderNode(child, false);
+                }
+            } else {
+                for (var child : node.children) {
+                    renderNode(child, false);
+                }
+            }
+            ImGui.treePop();
+        }
+    }
+
+    private int getFlags(HierarchyTree node) {
+        int flags = ImGuiTreeNodeFlags.SpanFullWidth;
+        if (selectionRepository.getSelected().contains(node.id)) {
+            flags |= ImGuiTreeNodeFlags.Selected;
+        }
+        if (isOnSearch) {
+            flags |= ImGuiTreeNodeFlags.DefaultOpen;
+        }
+        return flags;
+    }
+
+    private void renderEntityColumns(HierarchyTree node, boolean isPinned) {
+        handleClick(node);
+        ImGui.tableNextColumn();
+
+        ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
+        ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
+        ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
+        Boolean isVisible = world.activeEntities.getOrDefault(node.id, true);
+        if (ImGui.button((isVisible ? node.visibilityLabel : node.visibilityOffLabel) + (isPinned ? "pinned" : ""), 20, 15)) {
+            world.activeEntities.put(node.id, !isVisible);
+        }
+        ImGui.tableNextColumn();
+        Boolean isNodePinned = editorStateRepository.pinnedEntities.getOrDefault(node.id, false);
+        if (ImGui.button((isNodePinned ? node.pinLabel : node.pinOffLabel) + (isPinned ? "pinned" : ""), 20, 15)) {
+            editorStateRepository.pinnedEntities.put(node.id, !isNodePinned);
+        }
+        ImGui.popStyleColor();
+        ImGui.popStyleVar(2);
     }
 
     private void handleClick(HierarchyTree node) {

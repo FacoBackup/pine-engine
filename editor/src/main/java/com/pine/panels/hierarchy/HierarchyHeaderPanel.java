@@ -2,13 +2,12 @@ package com.pine.panels.hierarchy;
 
 import com.pine.PInject;
 import com.pine.component.InstancedSceneComponent;
-import com.pine.repository.EditorSettingsRepository;
+import com.pine.repository.EditorStateRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
-import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImString;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class HierarchyHeaderPanel extends AbstractView {
     public RequestProcessingService requestProcessingService;
 
     @PInject
-    public EditorSettingsRepository editorSettingsRepository;
+    public EditorStateRepository editorStateRepository;
 
     private final ImString search;
 
@@ -40,9 +39,9 @@ public class HierarchyHeaderPanel extends AbstractView {
             requestProcessingService.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
         }
         ImGui.sameLine();
-        boolean show = editorSettingsRepository.showOnlyEntitiesHierarchy;
+        boolean show = editorStateRepository.showOnlyEntitiesHierarchy;
         if (ImGui.button(show ? FILTER_OFF_LABEL : FILTER_ON_LABEL, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            editorSettingsRepository.showOnlyEntitiesHierarchy = !show;
+            editorStateRepository.showOnlyEntitiesHierarchy = !show;
         }
     }
 }

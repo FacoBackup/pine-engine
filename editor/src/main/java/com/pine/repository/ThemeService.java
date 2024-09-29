@@ -22,7 +22,7 @@ public class ThemeService implements Updatable {
     private boolean previousTheme = false;
 
     @PInject
-    public EditorSettingsRepository settingsRepository;
+    public EditorStateRepository settingsRepository;
 
     @Override
     public void tick() {

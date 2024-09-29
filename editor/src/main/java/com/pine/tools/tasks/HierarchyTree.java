@@ -22,6 +22,7 @@ public class HierarchyTree {
     public final String pinOffLabel;
 
     public HierarchyTree(int id, String title, String icon, boolean isEntity, List<HierarchyTree> children) {
+        this.id = id;
         this.title = title;
         this.titleWithId = title + "##" + id;
         this.icon = icon;
@@ -29,11 +30,10 @@ public class HierarchyTree {
         this.children = children;
         titleWithIcon = icon + title;
         titleWithIconId = titleWithIcon + "##" + id;
-        this.id = id;
         visibilityLabel = Icons.visibility + "##visibility" + id;
-        visibilityOffLabel = Icons.visibility_off + "##visibility" + id;
+        visibilityOffLabel = Icons.visibility_off + "##visibilityOff" + id;
         pinLabel = Icons.lock + "##pin" + id;
-        pinOffLabel =  "##pin" + id;
+        pinOffLabel = Icons.lock_open + "##pinOff" + id;
     }
 
     public HierarchyTree(int id, String title, String icon) {
