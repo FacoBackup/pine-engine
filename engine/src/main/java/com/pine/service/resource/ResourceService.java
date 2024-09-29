@@ -117,6 +117,9 @@ public class ResourceService implements Loggable, SyncTask {
             getLogger().warn("Loading {} scheduled resources", schedule.size());
             for (int i = 0, scheduleSize = schedule.size(); i < scheduleSize; i++) {
                 String id = schedule.get(i);
+                if (resources.containsKey(id)) {
+                    continue;
+                }
                 List<AbstractLoaderResponse> loadedResources = loader.repository.loadedResources;
                 i:
                 for (int j = 0, loadedResourcesSize = loadedResources.size(); j < loadedResourcesSize; j++) {

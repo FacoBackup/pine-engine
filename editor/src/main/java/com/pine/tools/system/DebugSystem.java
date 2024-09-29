@@ -1,6 +1,7 @@
 package com.pine.tools.system;
 
 import com.pine.PInject;
+import com.pine.component.PrimitiveComponent;
 import com.pine.repository.EditorStateRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -13,6 +14,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.List;
 
 public class DebugSystem extends AbstractSystem {
 
@@ -171,10 +173,9 @@ public class DebugSystem extends AbstractSystem {
 
         shaderService.bindUniform(shadowAtlas, fboRepository.shadowsSampler);
 
-
         var requests = renderingRepository.requests;
         int instancedOffset = 0;
-        for (int i = 0; i < requests.size(); i++) {
+        for (int i = 0, bagSize = requests.size(); i < bagSize; i++) {
             PrimitiveRenderRequest request = requests.get(i);
             intBoolBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, intBoolBuffer);

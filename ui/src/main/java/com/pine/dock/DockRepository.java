@@ -9,11 +9,11 @@ import java.util.List;
 
 @PBean
 public class DockRepository implements Initializable, SerializableRepository {
-    public List<DockGroup> dockGroups = new ArrayList<>();
-    public DockGroup currentDockGroup;
+    public transient List<DockGroup> dockGroups = new ArrayList<>();
+    public transient DockGroup currentDockGroup;
     public transient DockDTO dockToRemove;
     public transient DockWrapperPanel dockPanelToRemove;
-    transient public DockGroup template;
+    public transient DockGroup template;
 
     @Override
     public void onInitialize() {

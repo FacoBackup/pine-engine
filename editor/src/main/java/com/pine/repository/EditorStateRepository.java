@@ -36,7 +36,7 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
     public float gridOpacity = 1f;
 
     @MutableField(label = "Shading model")
-    public DebugShadingModel debugShadingModel = DebugShadingModel.ALBEDO;
+    public DebugShadingModel debugShadingModel = DebugShadingModel.RANDOM;
 
     @MutableField(label = "Accent color")
     public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);

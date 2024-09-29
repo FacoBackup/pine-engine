@@ -7,4 +7,8 @@ import com.pine.repository.WorldRepository;
 public abstract class AbstractRequest implements Loggable {
 
     public abstract Message run(WorldRepository repository);
+
+    public Object getResponse(){
+        return null;
+    }
 }

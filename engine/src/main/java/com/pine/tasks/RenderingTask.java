@@ -56,7 +56,6 @@ public class RenderingTask extends AbstractTask implements Loggable {
     @PInject
     public LightService lightService;
 
-    private List<PrimitiveRenderRequest> temp = new ArrayList<>();
     private final Vector3f distanceAux = new Vector3f();
     private final Vector3f auxCubeMax = new Vector3f();
     private final Vector3f auxCubeMin = new Vector3f();
@@ -65,46 +64,46 @@ public class RenderingTask extends AbstractTask implements Loggable {
 
     @Override
     protected void tickInternal() {
-      try {
-          requestCount = 0;
-          int instancedOffset = 0;
-          offset = 0;
-          DEFAULT_RENDER_REQUEST.mode = DEFAULT_RENDERING_MODE;
+        if (renderingRepository.infoUpdated) {
+            return;
+        }
+        try {
+            requestCount = 0;
+            int instancedOffset = 0;
+            offset = 0;
+            DEFAULT_RENDER_REQUEST.mode = DEFAULT_RENDERING_MODE;
 
-          temp.clear();
-          List<PrimitiveComponent> bag = scenes.getBag();
-          for (int i = 0, bagSize = bag.size(); i < bagSize; i++) {
-              var scene = bag.get(i);
-              PrimitiveRenderRequest request = preparePrimitive(scene);
-              if (request != null) {
-                  request.renderIndex = i + instancedOffset;
-                  instancedOffset += request.transformations.size();
-                  temp.add(request);
-              }
-          }
+            renderingRepository.newRequests.clear();
+            List<PrimitiveComponent> bag = scenes.getBag();
+            for (int i = 0, bagSize = bag.size(); i < bagSize; i++) {
+                var scene = bag.get(i);
+                PrimitiveRenderRequest request = preparePrimitive(scene);
+                if (request != null) {
+                    request.renderIndex = i + instancedOffset;
+                    instancedOffset += request.transformations.size();
+                    renderingRepository.newRequests.add(request);
+                }
+            }
 
-          List<InstancedPrimitiveComponent> instancedComponentsBag = instancedComponents.getBag();
-          for (int i = 0, instancedComponentsBagSize = instancedComponentsBag.size(); i < instancedComponentsBagSize; i++) {
-              var scene = instancedComponentsBag.get(i);
-              PrimitiveRenderRequest request = prepareInstanced(scene);
-              if (request != null) {
-                  request.renderIndex = i + instancedOffset;
-                  instancedOffset += request.transformations.size();
-                  temp.add(request);
-              }
-          }
+            List<InstancedPrimitiveComponent> instancedComponentsBag = instancedComponents.getBag();
+            for (int i = 0, instancedComponentsBagSize = instancedComponentsBag.size(); i < instancedComponentsBagSize; i++) {
+                var scene = instancedComponentsBag.get(i);
+                PrimitiveRenderRequest request = prepareInstanced(scene);
+                if (request != null) {
+                    request.renderIndex = i + instancedOffset;
+                    instancedOffset += request.transformations.size();
+                    renderingRepository.newRequests.add(request);
+                }
+            }
 
-          renderingRepository.requestCount = requestCount;
+            renderingRepository.requestCount = requestCount;
 
 
-          lightService.packageLights();
-          List<PrimitiveRenderRequest> aux = renderingRepository.requests;
-          renderingRepository.requests = temp;
-          temp = aux;
-          renderingRepository.infoUpdated = true;
-      }catch (Exception e){
-          getLogger().error(e.getMessage(), e);
-      }
+            lightService.packageLights();
+            renderingRepository.infoUpdated = true;
+        } catch (Exception e) {
+            getLogger().error(e.getMessage(), e);
+        }
     }
 
     private PrimitiveRenderRequest preparePrimitive(PrimitiveComponent scene) {
@@ -120,6 +119,7 @@ public class RenderingTask extends AbstractTask implements Loggable {
                     transform.renderRequest = new PrimitiveRenderRequest(mesh, DEFAULT_RENDER_REQUEST, (TransformationComponent) scene.entity.components.get(TransformationComponent.class.getSimpleName()));
                 }
                 transform.renderRequest.primitive = mesh;
+                extractTransformations(transform);
                 return transform.renderRequest;
             }
         }

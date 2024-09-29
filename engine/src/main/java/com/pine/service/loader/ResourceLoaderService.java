@@ -20,20 +20,14 @@ public class ResourceLoaderService {
     public List<AbstractResourceLoader> resourceLoaders;
 
     @Nullable
-    public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
-        var dto = new LoadRequest(path, isStaticResource, extraInfo);
-        final String extension = path.substring(path.lastIndexOf(".") + 1);
-        for (AbstractResourceLoader i : resourceLoaders) {
-            if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
-                return process(extraInfo, i, dto);
-            }
-        }
-        return null;
+    public AbstractLoaderResponse load(String path, boolean isStaticResource) {
+        return load(path, isStaticResource, null);
     }
 
     @Nullable
-    public AbstractLoaderResponse load(String path, boolean isStaticResource) {
-        return load(path, isStaticResource, null);
+    public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
+        var dto = new LoadRequest(path, isStaticResource, extraInfo);
+        return load(dto);
     }
 
     @Nullable

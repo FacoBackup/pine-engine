@@ -18,38 +18,28 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AddEntityRequest extends AbstractRequest implements Loggable {
     private final List<Class<? extends EntityComponent>> components;
+    private Entity entity;
 
     public AddEntityRequest(List<Class<? extends EntityComponent>> components) {
         this.components = components;
     }
 
     @Override
+    public Object getResponse() {
+        return entity;
+    }
+
+    @Override
     public Message run(WorldRepository repository) {
-        Entity entity = new Entity();
+        entity = new Entity();
         entity.parent = repository.rootEntity;
         repository.rootEntity.children.add(entity);
         try {
-            for (Class<? extends EntityComponent> component : components) {
-                addComponent(component, entity, repository);
-            }
+            AddComponentRequest.add(components, entity, repository);
             return new Message("Entity created successfully", MessageSeverity.SUCCESS);
         } catch (Exception e) {
             getLogger().error("Error while adding component", e);
             return new Message("Error while adding component", MessageSeverity.ERROR);
         }
-    }
-
-
-    private void addComponent(Class<? extends EntityComponent> clazz, Entity entity, WorldRepository repository) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if (entity.components.containsKey(clazz.getSimpleName())) {
-            return;
-        }
-        var bean = (AbstractComponent<?>) repository.injector.getBean(clazz);
-        var instance = clazz.getConstructor(Entity.class, LinkedList.class).newInstance(entity, bean.getBag());
-        Set<Class<? extends EntityComponent>> dependencies = instance.getDependencies();
-        for (var dependency : dependencies) {
-            addComponent(dependency, entity, repository);
-        }
-        entity.components.put(clazz.getSimpleName(), instance);
     }
 }

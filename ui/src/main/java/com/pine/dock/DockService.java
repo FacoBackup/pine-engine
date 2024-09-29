@@ -91,9 +91,21 @@ public class DockService {
     }
 
     public void updateForRemoval(DockPanel panel) {
-        if(dockRepository.dockPanelToRemove != null) {
+        if (dockRepository.dockPanelToRemove != null) {
             getCurrentDockGroup().docks.remove(dockRepository.dockToRemove);
+//            List<DockDTO> docks = getCurrentDockGroup().docks;
+//            for (int i = 0, docksSize = docks.size(); i < docksSize; i++) {
+//                DockDTO d = docks.get(i);
+//                if (d.getOrigin() == dockRepository.dockToRemove && i > 0) {
+//                    d.setOrigin(docks.get(i - 1));
+//                    if (d.getOutAtOppositeDir() == dockRepository.dockToRemove) {
+//                        d.setOutAtOppositeDir(docks.get(i - 1));
+//                    }
+//                }
+//            }
             panel.getChildren().remove(dockRepository.dockPanelToRemove);
+            dockRepository.dockToRemove = null;
+            dockRepository.dockPanelToRemove = null;
         }
     }
 }

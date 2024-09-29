@@ -37,7 +37,7 @@ public class PrimitiveComponent extends AbstractComponent<PrimitiveComponent> {
 
     @Override
     public Set<Class<? extends EntityComponent>> getDependencies() {
-        return Set.of(TransformationComponent.class);
+        return Set.of(TransformationComponent.class, CullingComponent.class);
     }
 
     @Override

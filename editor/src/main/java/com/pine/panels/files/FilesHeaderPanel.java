@@ -65,7 +65,7 @@ public class FilesHeaderPanel extends AbstractView {
                 if (file != null && !file.isDirectory()) {
                     var response = resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
                     if (response == null || !response.isLoaded) {
-                        messageRepository.pushMessage(new Message("Error while importing file {}" + file.absolutePath(), MessageSeverity.ERROR));
+                        messageRepository.pushMessage(new Message("Error while importing file " + file.absolutePath(), MessageSeverity.ERROR));
                     }
                 }
             }
