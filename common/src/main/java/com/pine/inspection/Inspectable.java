@@ -14,7 +14,7 @@ public abstract class Inspectable {
         if (fieldsAnnotated.isEmpty()) {
             for (var field : getClass().getFields()) {
                 MutableField mutableField = field.getAnnotation(MutableField.class);
-                if (!Modifier.isTransient(field.getModifiers()) && mutableField != null) {
+                if (mutableField != null) {
                     FieldType fieldType = FieldType.getFieldType(field.getType());
                     if (fieldType != null) {
                         fieldsAnnotated.add(new FieldDTO(

@@ -32,6 +32,8 @@ import java.nio.CharBuffer;
 import java.nio.FloatBuffer;
 import java.util.*;
 
+import static com.pine.tasks.RenderingTask.TRANSFORMATION_COMP;
+
 @PBean
 public class MeshLoader extends AbstractResourceLoader {
     private static final int FLAGS = Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs | Assimp.aiProcess_GlobalScale | Assimp.aiProcess_GenNormals;
@@ -120,14 +122,14 @@ public class MeshLoader extends AbstractResourceLoader {
         Entity entity = (Entity) entityRequest.getResponse();
         requestProcessingService.addRequest(new HierarchyRequest(parent, entity));
         entity.name = root.name;
-        updateMatrix(root);
         if (primitive != null) {
             requestProcessingService.addRequest(new AddComponentRequest(PrimitiveComponent.class, entity));
             var primitiveComponent = (PrimitiveComponent) entity.components.get(PrimitiveComponent.class.getSimpleName());
-            var transformationComponent = (TransformationComponent) entity.components.get(TransformationComponent.class.getSimpleName());
             primitiveComponent.primitive = new ResourceRef<>(primitive.id());
-            createPrimitiveTransformation(transformationComponent, root);
+        } else {
+            requestProcessingService.addRequest(new AddComponentRequest(TransformationComponent.class, entity));
         }
+        createPrimitiveTransformation((TransformationComponent) entity.components.get(TRANSFORMATION_COMP), root);
 
         for (var child : root.children) {
             traverseTree(child, entity, processed, scene, request, depth + 1);
@@ -141,15 +143,6 @@ public class MeshLoader extends AbstractResourceLoader {
         transformation.getUnnormalizedRotation(rotation);
         rotation.getEulerAnglesXYZ(t.rotation);
         transformation.getScale(t.scale);
-    }
-
-    private static void updateMatrix(MeshInstance instance) {
-        Matrix4f transformation = new Matrix4f(instance.transformation);
-        MeshInstance parent = instance.parent;
-        if (parent != null) {
-            transformation = new Matrix4f(parent.transformation).mul(transformation);
-        }
-        instance.transformation = transformation;
     }
 
     private void traverseNode(AINode node, MeshInstance parent, Map<Integer, List<MeshInstance>> byPrimitive) {

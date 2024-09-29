@@ -1,6 +1,7 @@
 package com.pine.panels.viewport;
 
 import com.pine.PInject;
+import com.pine.component.TransformationComponent;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorStateRepository;
 import com.pine.view.AbstractView;
@@ -40,6 +41,7 @@ public class GizmoPanel extends AbstractView {
         ImGuizmo.setOrthographic(cameraRepository.currentCamera.isOrthographic);
         ImGuizmo.setDrawList();
         ImGuizmo.setRect(position.x, position.y, size.x, size.y);
+        stateRepository.primitiveSelected.matrix.get(cacheMatrix);
         ImGuizmo.manipulate(
                 viewMatrixCache,
                 projectionMatrixCache,
@@ -77,35 +79,42 @@ public class GizmoPanel extends AbstractView {
 
     private void decomposeMatrix() {
         ImGuizmo.decomposeMatrixToComponents(cacheMatrix, translationCache, rotationCache, scaleCache);
-       stateRepository.primitiveSelected.translation.x = translationCache[0];
-       stateRepository.primitiveSelected.translation.y = translationCache[1];
-       stateRepository.primitiveSelected.translation.z = translationCache[2];
+        TransformationComponent p = stateRepository.primitiveSelected;
 
-       stateRepository.primitiveSelected.rotation.x = rotationCache[0];
-       stateRepository.primitiveSelected.rotation.y = rotationCache[1];
-       stateRepository.primitiveSelected.rotation.z = rotationCache[2];
+        boolean hasChanged = isChanged(p);
 
-       stateRepository.primitiveSelected.scale.x = scaleCache[0];
-       stateRepository.primitiveSelected.scale.y = scaleCache[1];
-       stateRepository.primitiveSelected.scale.z = scaleCache[2];
+        p.translation.x = translationCache[0];
+       p.translation.y = translationCache[1];
+       p.translation.z = translationCache[2];
+
+       p.rotation.x = rotationCache[0];
+       p.rotation.y = rotationCache[1];
+       p.rotation.z = rotationCache[2];
+
+       p.scale.x = scaleCache[0];
+       p.scale.y = scaleCache[1];
+       p.scale.z = scaleCache[2];
+
+        if (hasChanged) {
+            p.registerChange();
+        }
+    }
+
+    private boolean isChanged(TransformationComponent p) {
+        if (p.translation.x != translationCache[0] || p.translation.y != translationCache[1] || p.translation.z != translationCache[2]) {
+            return true;
+        }
+        if (p.rotation.x != rotationCache[0] || p.rotation.y != rotationCache[1] || p.rotation.z != rotationCache[2]) {
+            return true;
+
+        }
+        return p.scale.x != scaleCache[0] || p.scale.y != scaleCache[1] || p.scale.z != scaleCache[2];
     }
 
     private void recomposeMatrix() {
-        translationCache[0] = stateRepository.primitiveSelected.translation.x;
-        translationCache[1] = stateRepository.primitiveSelected.translation.y;
-        translationCache[2] = stateRepository.primitiveSelected.translation.z;
-
-        rotationCache[0] = stateRepository.primitiveSelected.rotation.x;
-        rotationCache[1] = stateRepository.primitiveSelected.rotation.y;
-        rotationCache[2] = stateRepository.primitiveSelected.rotation.z;
-
-        scaleCache[0] = stateRepository.primitiveSelected.scale.x;
-        scaleCache[1] = stateRepository.primitiveSelected.scale.y;
-        scaleCache[2] = stateRepository.primitiveSelected.scale.z;
 
         cameraRepository.currentCamera.viewMatrix.get(viewMatrixCache);
         cameraRepository.currentCamera.projectionMatrix.get(projectionMatrixCache);
 
-        ImGuizmo.recomposeMatrixFromComponents(translationCache, rotationCache, scaleCache, cacheMatrix);
     }
 }

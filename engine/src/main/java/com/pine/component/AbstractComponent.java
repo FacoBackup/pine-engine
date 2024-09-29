@@ -9,8 +9,8 @@ public abstract class AbstractComponent<T extends EntityComponent> extends Inspe
     public final LinkedList<T> bag;
 
     public final Entity entity;
-    private int changes = 0;
-    private int frozenVersion = -1;
+    public transient int changes = 0;
+    public transient int frozenVersion = -1;
 
     public AbstractComponent(Entity entity, LinkedList<?> bag) {
         this.entity = entity;

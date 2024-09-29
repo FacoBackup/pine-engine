@@ -28,7 +28,7 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected void renderInternal() {
-        ssboService.bind(ssboRepository.modelSSBO);
+        ssboService.bind(ssboRepository.transformationSSBO);
         shaderService.bind(shaderRepository.depthPrePassShader);
         List<PrimitiveRenderRequest> requests = renderingRepository.requests;
         int instancedOffset = 0;

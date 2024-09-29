@@ -13,10 +13,9 @@ public class CoreComputeRepository implements CoreRepository {
     @PInject
     public ResourceService resources;
 
-    public Compute transformationCompute;
 
     @Override
     public void initialize() {
-        transformationCompute = (Compute) resources.addResource(new ComputeCreationData(LOCAL_SHADER + "compute/TRANSFORMATION_COMPUTE.glsl").staticResource());
+//        transformationCompute = (Compute) resources.addResource(new ComputeCreationData(LOCAL_SHADER + "compute/TRANSFORMATION_COMPUTE.glsl").staticResource());
     }
 }

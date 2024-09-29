@@ -1,3 +1,3 @@
-layout(std430, binding = 11) buffer ModelBlock {
+layout(std430, binding = 10) buffer ModelBlock {
     mat4 modelMatrices[];
 };

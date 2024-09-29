@@ -39,11 +39,12 @@ public class InstancedPrimitiveComponent extends AbstractComponent<InstancedPrim
         super(entity, bag);
     }
 
-    public InstancedPrimitiveComponent() {}
+    public InstancedPrimitiveComponent() {
+    }
 
     @Override
     public Set<Class<? extends EntityComponent>> getDependencies() {
-        return Set.of(CullingComponent.class);
+        return Set.of(CullingComponent.class, TransformationComponent.class);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
 
     public ExecutionEnvironment environment = ExecutionEnvironment.DEVELOPMENT;
     public int gizmoOperation = Operation.TRANSLATE;
-    public int gizmoMode = Mode.LOCAL;
+    public int gizmoMode = Mode.WORLD;
 
     public float[] gizmoSnapTranslate = new float[3];
     public ImFloat gizmoSnapRotate = new ImFloat();
@@ -70,7 +70,7 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
     public boolean gizmoUseSnapRotate;
     public boolean gizmoUseSnapScale;
     public final ImInt gizmoModeOption = new ImInt(0);
-    public final ImInt shadingModelOption = new ImInt(0);
+    public final ImInt shadingModelOption = new ImInt(DebugShadingModel.RANDOM.getId());
     public boolean showOnlyEntitiesHierarchy = false;
 
     public LinkedList<Entity> pinnedEntities = new LinkedList<>();
