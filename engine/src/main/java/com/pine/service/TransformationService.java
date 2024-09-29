@@ -15,6 +15,7 @@ import static com.pine.tasks.RenderingTask.TRANSFORMATION_COMP;
 
 @PBean
 public class TransformationService {
+    private static final float TO_RAD = (float) (Math.PI / 180);
     @PInject
     public CameraRepository camera;
 
@@ -24,6 +25,7 @@ public class TransformationService {
     @PInject
     public CoreSSBORepository ssboRepository;
 
+    private final Vector3f rotationAux = new Vector3f();
     private final Vector3f distanceAux = new Vector3f();
     private final Vector3f auxCubeMax = new Vector3f();
     private final Vector3f auxCubeMin = new Vector3f();
@@ -41,6 +43,10 @@ public class TransformationService {
             parent = parent.parent;
         }
 
+        updateMatrix(st, parentTransform);
+    }
+
+    public void updateMatrix(TransformationComponent st, TransformationComponent parentTransform) {
         if (parentTransform != null) {
             auxMat4.set(parentTransform.matrix);
             if (parentTransform.getChangeId() != st.parentChangeId || !st.isFrozen()) {
@@ -50,8 +56,8 @@ public class TransformationService {
         } else if (!st.isFrozen()) {
             transform(st);
         }
-
     }
+
     public void extractTransformations(TransformationComponent st) {
         EngineUtils.copyWithOffset(ssboRepository.transformationSSBOState, st.matrix, renderingRepository.offset);
         renderingRepository.offset += 16;
@@ -61,7 +67,7 @@ public class TransformationService {
         st.matrix.identity();
         st.matrix
                 .translate(st.translation)
-                .rotateXYZ(st.rotation)
+                .rotate(st.rotation)
                 .scale(st.scale);
 
         auxMat4.mul(st.matrix);

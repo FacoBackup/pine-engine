@@ -97,7 +97,7 @@ public class LightService {
 
                 cacheMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
                 cacheMat4.identity();
-                cacheMat42.rotate(new Quaternionf().rotateX(transform.rotation.x).rotateY(transform.rotation.y).rotateZ(transform.rotation.z));
+                cacheMat42.rotate(transform.rotation);
                 cacheMat4.mul(cacheMat42);
 
                 b.put(internalOffset, cacheMat4.m20());

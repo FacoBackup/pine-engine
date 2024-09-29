@@ -5,6 +5,7 @@ import com.pine.inspection.MutableField;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.theme.Icons;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.Collections;
@@ -18,7 +19,7 @@ public class TransformationComponent extends AbstractComponent<TransformationCom
     @MutableField(label = "Scale")
     public Vector3f scale = new Vector3f(1);
     @MutableField(label = "Rotation")
-    public Vector3f rotation = new Vector3f();
+    public Quaternionf rotation = new Quaternionf();
 
     public transient PrimitiveRenderRequest renderRequest;
     public transient int renderIndex;

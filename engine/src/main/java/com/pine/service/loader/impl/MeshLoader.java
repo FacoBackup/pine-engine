@@ -139,9 +139,7 @@ public class MeshLoader extends AbstractResourceLoader {
     private void createPrimitiveTransformation(TransformationComponent t, MeshInstance instance) {
         Matrix4f transformation = instance.transformation;
         transformation.getTranslation(t.translation);
-        Quaternionf rotation = new Quaternionf();
-        transformation.getUnnormalizedRotation(rotation);
-        rotation.getEulerAnglesXYZ(t.rotation);
+        transformation.getUnnormalizedRotation(t.rotation);
         transformation.getScale(t.scale);
     }
 

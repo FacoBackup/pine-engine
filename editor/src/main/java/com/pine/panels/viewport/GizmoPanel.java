@@ -5,10 +5,13 @@ import com.pine.component.TransformationComponent;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorStateRepository;
 import com.pine.view.AbstractView;
+import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class GizmoPanel extends AbstractView {
     @PInject
@@ -20,9 +23,6 @@ public class GizmoPanel extends AbstractView {
     private final float[] cacheMatrix = new float[16];
     private final float[] viewMatrixCache = new float[16];
     private final float[] projectionMatrixCache = new float[16];
-    private final float[] translationCache = new float[3];
-    private final float[] rotationCache = new float[3];
-    private final float[] scaleCache = new float[3];
     private final ImVec2 size;
     private final ImVec2 position;
 
@@ -41,7 +41,6 @@ public class GizmoPanel extends AbstractView {
         ImGuizmo.setOrthographic(cameraRepository.currentCamera.isOrthographic);
         ImGuizmo.setDrawList();
         ImGuizmo.setRect(position.x, position.y, size.x, size.y);
-        stateRepository.primitiveSelected.matrix.get(cacheMatrix);
         ImGuizmo.manipulate(
                 viewMatrixCache,
                 projectionMatrixCache,
@@ -50,7 +49,9 @@ public class GizmoPanel extends AbstractView {
                 cacheMatrix,
                 null,
                 snap);
-        decomposeMatrix();
+        if (ImGuizmo.isUsing()) {
+            decomposeMatrix();
+        }
     }
 
     private float @Nullable [] getSnapValues() {
@@ -78,43 +79,19 @@ public class GizmoPanel extends AbstractView {
     }
 
     private void decomposeMatrix() {
-        ImGuizmo.decomposeMatrixToComponents(cacheMatrix, translationCache, rotationCache, scaleCache);
         TransformationComponent p = stateRepository.primitiveSelected;
+        p.matrix.set(cacheMatrix);
 
-        boolean hasChanged = isChanged(p);
+        p.matrix.getTranslation(p.translation);
+        p.matrix.getUnnormalizedRotation(p.rotation);
+        p.matrix.getScale(p.scale);
 
-        p.translation.x = translationCache[0];
-       p.translation.y = translationCache[1];
-       p.translation.z = translationCache[2];
-
-       p.rotation.x = rotationCache[0];
-       p.rotation.y = rotationCache[1];
-       p.rotation.z = rotationCache[2];
-
-       p.scale.x = scaleCache[0];
-       p.scale.y = scaleCache[1];
-       p.scale.z = scaleCache[2];
-
-        if (hasChanged) {
-            p.registerChange();
-        }
-    }
-
-    private boolean isChanged(TransformationComponent p) {
-        if (p.translation.x != translationCache[0] || p.translation.y != translationCache[1] || p.translation.z != translationCache[2]) {
-            return true;
-        }
-        if (p.rotation.x != rotationCache[0] || p.rotation.y != rotationCache[1] || p.rotation.z != rotationCache[2]) {
-            return true;
-
-        }
-        return p.scale.x != scaleCache[0] || p.scale.y != scaleCache[1] || p.scale.z != scaleCache[2];
+        p.registerChange();
     }
 
     private void recomposeMatrix() {
-
+        stateRepository.primitiveSelected.matrix.get(cacheMatrix);
         cameraRepository.currentCamera.viewMatrix.get(viewMatrixCache);
         cameraRepository.currentCamera.projectionMatrix.get(projectionMatrixCache);
-
     }
 }

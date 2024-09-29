@@ -163,7 +163,7 @@ public class RenderingTask extends AbstractTask implements Loggable {
             }
             realNumberOfInstances++;
 
-            transformationService.updateMatrix(primitive);
+            transformationService.updateMatrix(primitive, t);
             transformationService.extractTransformations(primitive);
             scene.renderRequest.transformations.add(primitive);
         }
