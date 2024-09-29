@@ -1,7 +1,7 @@
 package com.pine.panels.viewport;
 
 import com.pine.PInject;
-import com.pine.repository.EditorSettingsRepository;
+import com.pine.repository.EditorStateRepository;
 import com.pine.theme.Icons;
 import com.pine.tools.types.DebugShadingModel;
 import com.pine.view.AbstractView;
@@ -30,7 +30,7 @@ public class GizmoConfigPanel extends AbstractView {
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
 
     @PInject
-    public EditorSettingsRepository settingsRepository;
+    public EditorStateRepository settingsRepository;
 
     private final ImGuiIO io;
     private final ImVec2 size;

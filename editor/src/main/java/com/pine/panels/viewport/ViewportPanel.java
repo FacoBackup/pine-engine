@@ -4,8 +4,8 @@ import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.component.rendering.SimpleTransformation;
 import com.pine.dock.AbstractDockPanel;
-import com.pine.repository.EntitySelectionRepository;
 import com.pine.repository.RuntimeRepository;
+import com.pine.service.SelectionService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -26,7 +26,7 @@ public class ViewportPanel extends AbstractDockPanel {
     public ResourceService resourceService;
 
     @PInject
-    public EntitySelectionRepository entitySelectionRepository;
+    public SelectionService selectionService;
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
@@ -60,8 +60,8 @@ public class ViewportPanel extends AbstractDockPanel {
         gizmoPanel.renderInternal();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
 
-        if (selected != entitySelectionRepository.getPrimitiveSelected()) {
-            selected = entitySelectionRepository.getPrimitiveSelected();
+        if (selected != selectionService.getPrimitiveSelected()) {
+            selected = selectionService.getPrimitiveSelected();
         }
         if (selected == null) {
             return;

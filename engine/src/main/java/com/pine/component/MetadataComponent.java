@@ -11,6 +11,10 @@ import java.util.Set;
 public class MetadataComponent extends AbstractComponent<MetadataComponent>  {
     @MutableField(label = "Name")
     public String name = "New Entity";
+
+    @MutableField(label = "Is collection")
+    public boolean collection = false;
+
     public final long creationDate = System.currentTimeMillis();
 
     public MetadataComponent(Integer entityId) {

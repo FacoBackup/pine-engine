@@ -39,9 +39,5 @@ public class EditorHeaderPanel extends AbstractView {
 
         if (ImGui.button(Icons.undo, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) { /* Action for Undo */ }
         if (ImGui.button(Icons.redo, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) { /* Action for Redo */ }
-
-        if (ImGui.button(themeService.isDarkMode ? Icons.dark_mode : Icons.light_mode, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            themeService.isDarkMode = !themeService.isDarkMode;
-        }
     }
 }

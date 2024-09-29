@@ -18,7 +18,8 @@ public interface SerializableRepository extends Serializable, Loggable {
             return;
         }
 
-        if(SerializationState.loaded.containsKey(this)){
+        if (SerializationState.loaded.containsKey(this)) {
+            getLogger().warn("Class already loaded {}", this.getClass());
             return;
         }
 
@@ -33,6 +34,7 @@ public interface SerializableRepository extends Serializable, Loggable {
         for (Field declaredField : declaredFields) {
             int modifiers = declaredField.getModifiers();
             if (Modifier.isTransient(modifiers) || Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers)) {
+                getLogger().warn("Invalid member {}", declaredField.getName());
                 continue;
             }
 

@@ -58,10 +58,13 @@ public class ProjectService implements Loggable, Initializable {
         if (previousOpenedProject == null) {
             return;
         }
-        messageRepository.pushMessage("Loading project", MessageSeverity.WARN);
         var t = new Thread(() -> {
             try {
                 File file = new File(previousOpenedProject + File.separator + getRepositoryIdentifier());
+                if (!file.exists()) {
+                    return;
+                }
+                messageRepository.pushMessage("Loading project", MessageSeverity.WARN);
                 try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()))) {
                     var bean = (SerializableRepository) injector.getBean(ProjectStateRepository.class);
                     bean.merge(in.readObject());
@@ -81,12 +84,7 @@ public class ProjectService implements Loggable, Initializable {
         if (previousOpenedProject == null) {
             previousOpenedProject = selectDirectory();
         }
-        try {
-            Files.write(Path.of(CONFIG_NAME), previousOpenedProject.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.write(Path.of(previousOpenedProject + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (Exception e) {
-            getLogger().warn("Could not save project cache to {}", CONFIG_NAME, e);
-        }
+        writeProject();
 
         try {
             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(previousOpenedProject + File.separator + getRepositoryIdentifier()))) {
@@ -98,6 +96,15 @@ public class ProjectService implements Loggable, Initializable {
             return;
         }
         messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
+    }
+
+    private void writeProject() {
+        try {
+            Files.write(Path.of(CONFIG_NAME), previousOpenedProject.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(Path.of(previousOpenedProject + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (Exception e) {
+            getLogger().warn("Could not save project cache to {}", CONFIG_NAME, e);
+        }
     }
 
     private @NotNull String getRepositoryIdentifier() {
@@ -116,7 +123,9 @@ public class ProjectService implements Loggable, Initializable {
     }
 
     public void newProject() {
-        previousOpenedProject = null;
+        previousOpenedProject = selectDirectory();
+        writeProject();
+        System.exit(0);
         // TODO - Clear injection cache and re-create editor window
     }
 

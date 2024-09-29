@@ -6,9 +6,9 @@ import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.inspection.Inspectable;
-import com.pine.repository.EditorSettingsRepository;
-import com.pine.repository.EntitySelectionRepository;
+import com.pine.repository.EditorStateRepository;
 import com.pine.service.RequestProcessingService;
+import com.pine.service.SelectionService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
 import com.pine.service.world.WorldService;
@@ -25,13 +25,13 @@ import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 public class InspectorPanel extends AbstractDockPanel {
 
     @PInject
-    public EntitySelectionRepository selectionRepository;
+    public SelectionService selectionRepository;
 
     @PInject
     public RequestProcessingService requestProcessingService;
 
     @PInject
-    public EditorSettingsRepository settingsRepository;
+    public EditorStateRepository settingsRepository;
 
     @PInject
     public List<EntityComponent> components;
@@ -65,7 +65,7 @@ public class InspectorPanel extends AbstractDockPanel {
     public void tick() {
         Integer first = selectionRepository.getMainSelection();
         if (!Objects.equals(first, selected)) {
-            formPanel.setInspectable(repositories.getFirst());
+            currentInspection = repositories.getFirst();
             isComponentInspected = false;
             additionalInspectable.clear();
             selected = first;
