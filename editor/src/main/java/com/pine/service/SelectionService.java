@@ -3,6 +3,7 @@ package com.pine.service;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.component.Entity;
+import com.pine.component.TransformationComponent;
 import com.pine.repository.EditorStateRepository;
 import com.pine.repository.WorldRepository;
 
@@ -11,28 +12,30 @@ import java.util.LinkedList;
 @PBean
 public class SelectionService {
     @PInject
-    public EditorStateRepository settingsRepository;
+    public EditorStateRepository stateRepository;
 
     @PInject
     public WorldRepository worldRepository;
 
     public LinkedList<Entity> getSelected() {
-        return settingsRepository.selected;
+        return stateRepository.selected;
     }
 
     public void addSelected(Entity entity) {
-        if (settingsRepository.selected.isEmpty() || entity == null) {
-            settingsRepository.mainSelection = entity;
-            if (settingsRepository.mainSelection == worldRepository.rootEntity) {
-                settingsRepository.mainSelection = null;
+        if (stateRepository.selected.isEmpty() || entity == null) {
+            stateRepository.mainSelection = entity;
+            if (stateRepository.mainSelection == worldRepository.rootEntity) {
+                stateRepository.mainSelection = null;
+            } else if (stateRepository.mainSelection != null) {
+                stateRepository.primitiveSelected = (TransformationComponent) stateRepository.mainSelection.components.get(TransformationComponent.class.getSimpleName());
             }
         }
-        settingsRepository.selected.add(entity);
+        stateRepository.selected.add(entity);
     }
 
     public void clearSelection() {
-        settingsRepository.selected.forEach(e -> e.selected = false);
-        settingsRepository.selected.clear();
+        stateRepository.selected.forEach(e -> e.selected = false);
+        stateRepository.selected.clear();
     }
 
 }

@@ -24,7 +24,7 @@ public class CullingComponent extends AbstractComponent<CullingComponent> {
 
     @Override
     public Set<Class<? extends EntityComponent>> getDependencies() {
-        return Set.of(TransformationComponent.class);
+        return Set.of();
     }
 
     @Override

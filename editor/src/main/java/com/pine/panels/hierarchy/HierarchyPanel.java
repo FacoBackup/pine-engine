@@ -2,6 +2,9 @@ package com.pine.panels.hierarchy;
 
 import com.pine.PInject;
 import com.pine.component.Entity;
+import com.pine.component.EntityComponent;
+import com.pine.component.InstancedPrimitiveComponent;
+import com.pine.component.TransformationComponent;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.repository.EditorStateRepository;
 import com.pine.repository.WorldRepository;
@@ -15,15 +18,17 @@ import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImString;
 
+import java.util.List;
 import java.util.Objects;
 
 
 public class HierarchyPanel extends AbstractDockPanel {
+    private static final String INSTANCED_COMPONENT = InstancedPrimitiveComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
 
     @PInject
-    public SelectionService selectionRepository;
+    public SelectionService selectionService;
 
     @PInject
     public WorldRepository world;
@@ -106,23 +111,52 @@ public class HierarchyPanel extends AbstractDockPanel {
                     node.isSearchMatch = node.isSearchMatch || renderNode(child, false);
                 }
             } else {
-                if (!stateRepository.showOnlyEntitiesHierarchy) {
-                    for (var component : node.components.values()) {
-                        ImGui.tableNextRow();
-                        ImGui.tableNextColumn();
-                        ImGui.textDisabled(component.getIcon() + component.getTitle());
-                        ImGui.tableNextColumn();
-                        ImGui.textDisabled("--");
-                        ImGui.tableNextColumn();
-                        ImGui.textDisabled("--");
-                    }
-                }
+                renderComponents(node);
                 for (var child : node.children) {
                     renderNode(child, false);
                 }
             }
 
             ImGui.treePop();
+        }
+    }
+
+    private void renderComponents(Entity node) {
+        if (!stateRepository.showOnlyEntitiesHierarchy) {
+            for (var component : node.components.values()) {
+                ImGui.tableNextRow();
+                ImGui.tableNextColumn();
+                ImGui.textDisabled(component.getIcon() + component.getTitle());
+                ImGui.tableNextColumn();
+                ImGui.textDisabled("--");
+                ImGui.tableNextColumn();
+                ImGui.textDisabled("--");
+            }
+            EntityComponent instanced = node.components.get(INSTANCED_COMPONENT);
+            if (instanced != null) {
+                List<TransformationComponent> primitives = ((InstancedPrimitiveComponent) instanced).primitives;
+                for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
+                    TransformationComponent p = primitives.get(i);
+                    ImGui.tableNextRow();
+                    ImGui.tableNextColumn();
+                    String title = Icons.content_copy + " Instance - " + i;
+                    if(stateRepository.primitiveSelected == p) {
+                        ImGui.textColored(stateRepository.getAccentColor(), title);
+                    }else {
+                        ImGui.textDisabled(title);
+                    }
+                    if (ImGui.isItemClicked()) {
+                        stateRepository.primitiveSelected = p;
+                        node.selected = true;
+                    }
+                    ImGui.tableNextColumn();
+                    ImGui.textDisabled("--");
+                    ImGui.tableNextColumn();
+                    ImGui.textDisabled("--");
+
+                }
+
+            }
         }
     }
 
@@ -164,9 +198,9 @@ public class HierarchyPanel extends AbstractDockPanel {
         if (ImGui.isItemClicked()) {
             boolean isMultiSelect = ImGui.isKeyPressed(ImGuiKey.LeftCtrl);
             if (!isMultiSelect) {
-                selectionRepository.clearSelection();
+                selectionService.clearSelection();
             }
-            selectionRepository.addSelected(node);
+            selectionService.addSelected(node);
             node.selected = true;
         }
     }
