@@ -16,7 +16,7 @@ public class AudioLoader extends AbstractResourceLoader {
 
     @Override
     public AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
-        return new AudioLoaderResponse(false, resource.path(), Collections.emptyList());
+        return new AudioLoaderResponse(false, resource, Collections.emptyList());
     }
 
     @Override

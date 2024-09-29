@@ -11,7 +11,6 @@ import java.util.function.BiConsumer;
 public class FormPanel extends AbstractView {
     private final BiConsumer<FieldDTO, Object> changeHandler;
     private Inspectable inspectable;
-    private String title = null;
 
     public FormPanel(BiConsumer<FieldDTO, Object> changeHandler) {
         this.changeHandler = changeHandler;
@@ -67,7 +66,6 @@ public class FormPanel extends AbstractView {
                     break;
             }
         }
-        this.title = data.getTitle();
     }
 
     public Inspectable getInspectable() {
@@ -76,8 +74,8 @@ public class FormPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
-        if (title != null && inspectable != null) {
-            ImGui.text(title);
+        if (inspectable != null) {
+            ImGui.text(inspectable.getTitle());
             super.renderInternal();
         }
     }

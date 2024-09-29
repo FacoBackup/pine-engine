@@ -1,7 +1,9 @@
 package com.pine.service.loader.impl.response;
 
+import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.resource.resource.ResourceType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,10 +15,8 @@ public class MeshLoaderResponse extends AbstractLoaderResponse {
         return ResourceType.PRIMITIVE;
     }
 
-    public MeshLoaderResponse() {}
-
-    public MeshLoaderResponse(boolean isLoaded, String filePath, List<MeshInstanceMetadata> meshes) {
-        super(isLoaded, filePath, meshes.stream().map(a -> new AbstractLoaderResponse.ResourceInfo(a.id(), a.name())).collect(Collectors.toList()));
+    public MeshLoaderResponse(boolean isLoaded, LoadRequest request, List<MeshInstanceMetadata> meshes) {
+        super(isLoaded, request, meshes.stream().map(a -> new AbstractLoaderResponse.ResourceInfo(a.id(), a.name())).collect(Collectors.toList()));
         this.meshes = meshes;
     }
 

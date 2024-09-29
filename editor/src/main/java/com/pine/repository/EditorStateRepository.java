@@ -2,7 +2,8 @@ package com.pine.repository;
 
 import com.pine.PBean;
 import com.pine.SerializableRepository;
-import com.pine.component.rendering.SimpleTransformation;
+import com.pine.component.Entity;
+import com.pine.component.TransformationComponent;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
@@ -15,9 +16,7 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 @PBean
 public class EditorStateRepository extends Inspectable implements SerializableRepository {
@@ -74,10 +73,10 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
     public final ImInt shadingModelOption = new ImInt(0);
     public boolean showOnlyEntitiesHierarchy = false;
 
-    public Map<Integer, Boolean> pinnedEntities = new HashMap<>();
-    public SimpleTransformation primitiveSelected = null;
-    public Integer mainSelection = null;
-    public final LinkedList<Integer> selected = new LinkedList<>();
+    public LinkedList<Entity> pinnedEntities = new LinkedList<>();
+    public TransformationComponent primitiveSelected = null;
+    public Entity mainSelection = null;
+    public final LinkedList<Entity> selected = new LinkedList<>();
 
     @Override
     public String getIcon() {

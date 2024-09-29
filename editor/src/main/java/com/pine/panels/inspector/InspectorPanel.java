@@ -1,7 +1,9 @@
 package com.pine.panels.inspector;
 
 import com.pine.PInject;
+import com.pine.PInjector;
 import com.pine.component.AbstractComponent;
+import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
 import com.pine.dock.AbstractDockPanel;
@@ -11,7 +13,6 @@ import com.pine.service.RequestProcessingService;
 import com.pine.service.SelectionService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
-import com.pine.service.world.WorldService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
@@ -23,10 +24,6 @@ import java.util.Objects;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class InspectorPanel extends AbstractDockPanel {
-
-    @PInject
-    public SelectionService selectionRepository;
-
     @PInject
     public RequestProcessingService requestProcessingService;
 
@@ -41,14 +38,10 @@ public class InspectorPanel extends AbstractDockPanel {
 
     private final List<Inspectable> additionalInspectable = new ArrayList<>();
 
-    @PInject
-    public WorldService worldService;
-
     private Inspectable currentInspection;
-    private Integer selected;
+    private Entity selected;
     private final List<String> types = new ArrayList<>();
     private FormPanel formPanel;
-    private boolean isComponentInspected;
 
     @Override
     public void onInitialize() {
@@ -63,14 +56,13 @@ public class InspectorPanel extends AbstractDockPanel {
 
     @Override
     public void tick() {
-        Integer first = selectionRepository.getMainSelection();
-        if (!Objects.equals(first, selected)) {
+        if (settingsRepository.mainSelection != selected) {
             currentInspection = repositories.getFirst();
-            isComponentInspected = false;
             additionalInspectable.clear();
-            selected = first;
+            selected = settingsRepository.mainSelection;
+            additionalInspectable.add(selected);
             if (selected != null) {
-                for (var component : worldService.getComponents(selected).values()) {
+                for (var component : selected.components.values()) {
                     additionalInspectable.add((AbstractComponent<?>) component);
                 }
             }
@@ -96,7 +88,7 @@ public class InspectorPanel extends AbstractDockPanel {
         }
 
         ImGui.nextColumn();
-        if (selected != null && isComponentInspected) {
+        if (selected != null) {
             if (ImGui.beginCombo(imguiId, types.getFirst())) {
                 for (int i = 1; i < types.size(); i++) {
                     String type = types.get(i);
@@ -122,7 +114,6 @@ public class InspectorPanel extends AbstractDockPanel {
 
         if (ImGui.button(repo.getIcon(), ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
             currentInspection = repo;
-            isComponentInspected = false;
         }
         ImGui.popStyleColor(popStyle);
     }

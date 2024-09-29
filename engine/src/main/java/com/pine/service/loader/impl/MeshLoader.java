@@ -12,6 +12,7 @@ import com.pine.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.resource.ResourceType;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
@@ -29,22 +30,22 @@ public class MeshLoader extends AbstractResourceLoader {
     public ResourceService resources;
 
     @Override
-    public AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
+    public AbstractLoaderResponse load(LoadRequest request, @Nullable AbstractLoaderExtraInfo extraInfo) {
         var extra = (MeshLoaderExtraInfo) extraInfo;
         try {
             List<MeshInstanceMetadata> meshes = new ArrayList<>();
-            AIScene scene = loadScene(resource);
+            AIScene scene = loadScene(request);
 
             if (scene == null) {
-                getLogger().error("Failed to load mesh at {}", resource.path());
-                return new MeshLoaderResponse(false, resource.path(), Collections.emptyList());
+                getLogger().error("Failed to load mesh at {}", request.path());
+                return new MeshLoaderResponse(false, request, Collections.emptyList());
             }
 
             PointerBuffer meshList = scene.mMeshes();
             if (meshList != null) {
                 for (int i = 0; i < scene.mNumMeshes(); i++) {
                     AIMesh mesh = AIMesh.create(meshList.get(i));
-                    meshes.add(processPrimitive(mesh, resource, i, extra));
+                    meshes.add(processPrimitive(mesh, request, i, extra));
                 }
             }
 
@@ -53,9 +54,9 @@ public class MeshLoader extends AbstractResourceLoader {
             }
 
             Assimp.aiReleaseImport(scene);
-            return new MeshLoaderResponse(true, resource.path(), meshes);
+            return new MeshLoaderResponse(true, request, meshes);
         } catch (Exception e) {
-            return new MeshLoaderResponse(false, resource.path(), Collections.emptyList());
+            return new MeshLoaderResponse(false, request, Collections.emptyList());
         }
     }
 
@@ -113,7 +114,7 @@ public class MeshLoader extends AbstractResourceLoader {
                     uvs[i * 2 + 1] = nUV.get(i).y();
                 }
             }
-            resourceId = resources.addResource(new MeshCreationData(vertices, indices, normals, uvs)).getId();
+            resourceId = resources.addResource(new MeshCreationData(vertices, indices, normals, uvs), DigestUtils.sha1Hex(resource.path() + index)).getId();
         }
         return new MeshInstanceMetadata(mesh.mName().dataString(), resource.path(), index, resourceId);
     }

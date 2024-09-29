@@ -3,11 +3,11 @@ package com.pine.service;
 import com.pine.EngineUtils;
 import com.pine.PBean;
 import com.pine.PInject;
+import com.pine.component.TransformationComponent;
 import com.pine.component.light.*;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;
 import com.pine.repository.RenderingRepository;
-import com.pine.service.world.WorldService;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -16,8 +16,6 @@ import java.nio.FloatBuffer;
 
 @PBean
 public class LightService {
-    @PInject
-    public WorldService worldService;
     @PInject
     public CameraRepository camera;
     @PInject
@@ -42,7 +40,7 @@ public class LightService {
         for (int i = 0; i < implDirectionalLightComponent.getBag().size(); i++) {
             var light = implDirectionalLightComponent.getBag().get(i);
             if (!light.isFrozen()) {
-                var transform = worldService.getTransformationComponentUnchecked(light.getEntityId());
+                var transform = (TransformationComponent) light.entity.components.get(TransformationComponent.class.getSimpleName());
                 int internalOffset = fillCommon(b, offset, light);
 
                 b.put(internalOffset, light.atlasFace.x);
@@ -94,7 +92,7 @@ public class LightService {
         for (int i = 0; i < implSpotLightComponent.getBag().size(); i++) {
             var light = implSpotLightComponent.getBag().get(i);
             if (!light.isFrozen()) {
-                var transform = worldService.getTransformationComponentUnchecked(light.getEntityId());
+                var transform = (TransformationComponent) light.entity.components.get(TransformationComponent.class.getSimpleName());
                 int internalOffset = fillCommon(b, offset, light);
 
                 cacheMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
@@ -116,7 +114,7 @@ public class LightService {
     }
 
     private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent<?> light) {
-        var transform = worldService.getTransformationComponentUnchecked(light.getEntityId());
+        var transform = (TransformationComponent) light.entity.components.get(TransformationComponent.class.getSimpleName());
 
         lightSSBOState.put(offset, light.type.getTypeId());
         lightSSBOState.put(offset + 1, light.color.x);

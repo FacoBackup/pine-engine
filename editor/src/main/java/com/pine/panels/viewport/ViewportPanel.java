@@ -2,8 +2,8 @@ package com.pine.panels.viewport;
 
 import com.pine.Engine;
 import com.pine.PInject;
-import com.pine.component.rendering.SimpleTransformation;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.repository.EditorStateRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.SelectionService;
 import com.pine.service.resource.ResourceService;
@@ -28,11 +28,14 @@ public class ViewportPanel extends AbstractDockPanel {
     @PInject
     public SelectionService selectionService;
 
+
+    @PInject
+    public EditorStateRepository stateRepository;
+
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     private final ImVec2 INV_X = new ImVec2(1, 0);
     private final ImVec2 INV_Y = new ImVec2(0, 1);
-    private SimpleTransformation selected;
     private GizmoPanel gizmo;
     private GizmoConfigPanel gizmoPanel;
 
@@ -60,13 +63,6 @@ public class ViewportPanel extends AbstractDockPanel {
         gizmoPanel.renderInternal();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
 
-        if (selected != selectionService.getPrimitiveSelected()) {
-            selected = selectionService.getPrimitiveSelected();
-        }
-        if (selected == null) {
-            return;
-        }
-        gizmo.setSelected(selected);
         gizmo.renderInternal();
     }
 

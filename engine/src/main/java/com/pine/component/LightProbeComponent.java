@@ -4,7 +4,9 @@ import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
 
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.LinkedList;
 
 @PBean
 public class LightProbeComponent extends AbstractComponent<LightProbeComponent> {
@@ -16,16 +18,14 @@ public class LightProbeComponent extends AbstractComponent<LightProbeComponent> 
     @MutableField(label = "Radius")
     public int collectionRadius = 50;
 
-    public LightProbeComponent(Integer entityId) {
-        super(entityId);
+    public LightProbeComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
     }
 
-    public LightProbeComponent() {
-        super();
-    }
+    public LightProbeComponent() {}
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
+    public Set<Class<? extends EntityComponent>> getDependencies() {
         return Set.of(TransformationComponent.class);
     }
 

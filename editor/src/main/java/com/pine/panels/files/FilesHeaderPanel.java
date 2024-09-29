@@ -2,9 +2,9 @@ package com.pine.panels.files;
 
 import com.pine.PInject;
 import com.pine.repository.FileInfoDTO;
-import com.pine.repository.Message;
-import com.pine.repository.MessageRepository;
-import com.pine.repository.MessageSeverity;
+import com.pine.Message;
+import com.pine.MessageRepository;
+import com.pine.MessageSeverity;
 import com.pine.service.FSService;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
@@ -64,7 +64,7 @@ public class FilesHeaderPanel extends AbstractView {
                 FileInfoDTO file = filesContext.getSelectedFile();
                 if (file != null && !file.isDirectory()) {
                     var response = resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
-                    if (response == null || !response.isLoaded()) {
+                    if (response == null || !response.isLoaded) {
                         messageRepository.pushMessage(new Message("Error while importing file {}" + file.absolutePath(), MessageSeverity.ERROR));
                     }
                 }

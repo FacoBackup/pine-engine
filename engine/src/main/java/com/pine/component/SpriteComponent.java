@@ -8,6 +8,7 @@ import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 
 import java.util.Set;
+import java.util.LinkedList;
 
 @PBean
 public class SpriteComponent extends AbstractComponent<SpriteComponent> {
@@ -17,19 +18,18 @@ public class SpriteComponent extends AbstractComponent<SpriteComponent> {
 
     @MutableField(label = "Keep same size")
     public boolean keepSameSize = true;
+
     @MutableField(label = "Always face camera")
     public boolean alwaysFaceCamera = true;
 
-    public SpriteComponent(Integer entityId) {
-        super(entityId);
+    public SpriteComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
     }
 
-    public SpriteComponent() {
-        super();
-    }
+    public SpriteComponent() {}
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
+    public Set<Class<? extends EntityComponent>> getDependencies() {
         return Set.of(TransformationComponent.class);
     }
 

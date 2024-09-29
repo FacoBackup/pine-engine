@@ -1,8 +1,10 @@
 package com.pine.service.loader.impl.response;
 
 import com.pine.FSUtil;
+import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.resource.resource.ResourceType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,11 +16,8 @@ public class TextureLoaderResponse extends AbstractLoaderResponse {
         return ResourceType.TEXTURE;
     }
 
-    public TextureLoaderResponse() {
-    }
-
-    public TextureLoaderResponse(boolean isLoaded, String filePath, List<String> textures) {
-        super(isLoaded, filePath, textures.stream().map(a -> new ResourceInfo(FSUtil.getNameFromPath(filePath), a)).collect(Collectors.toList()));
+    public TextureLoaderResponse(boolean isLoaded, LoadRequest request, List<String> textures) {
+        super(isLoaded, request, textures.stream().map(a -> new ResourceInfo(FSUtil.getNameFromPath(request.path()), a)).collect(Collectors.toList()));
         this.textures = textures;
     }
 

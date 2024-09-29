@@ -1,9 +1,8 @@
 package com.pine.service;
 
 import com.pine.*;
-import com.pine.repository.MessageRepository;
-import com.pine.repository.MessageSeverity;
-import com.pine.tools.tasks.WorldTreeTask;
+import com.pine.MessageRepository;
+import com.pine.MessageSeverity;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
@@ -30,9 +29,6 @@ public class ProjectService implements Loggable, Initializable {
 
     @PInject
     public PInjector injector;
-
-    @PInject
-    public WorldTreeTask treeTask;
 
     @PInject
     public ProjectStateRepository projectStateRepository;
@@ -67,10 +63,10 @@ public class ProjectService implements Loggable, Initializable {
                 messageRepository.pushMessage("Loading project", MessageSeverity.WARN);
                 try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()))) {
                     var bean = (SerializableRepository) injector.getBean(ProjectStateRepository.class);
-                    bean.merge(in.readObject());
+                    ProjectStateRepository o = (ProjectStateRepository) in.readObject();
+                    bean.merge(o);
                 }
                 messageRepository.pushMessage("Project loaded successfully", MessageSeverity.SUCCESS);
-                treeTask.update();
                 SerializationState.loaded.clear();
             } catch (Exception e) {
                 messageRepository.pushMessage("Error while loading project", MessageSeverity.ERROR);

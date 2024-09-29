@@ -1,5 +1,6 @@
 package com.pine.service.loader.impl.response;
 
+import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.resource.resource.ResourceType;
 
 import java.io.Serializable;
@@ -24,36 +25,13 @@ public abstract class AbstractLoaderResponse implements Serializable {
         }
     }
 
-    private boolean isLoaded;
-    private String filePath;
-    private final List<ResourceInfo> records = new ArrayList<>();
+    public final boolean isLoaded;
+    public final LoadRequest request;
+    public final ArrayList<ResourceInfo> records;
 
-    public AbstractLoaderResponse() {
-    }
-
-    public AbstractLoaderResponse(boolean isLoaded, String filePath, List<ResourceInfo> records) {
+    public AbstractLoaderResponse(boolean isLoaded, LoadRequest request, List<ResourceInfo> records) {
         this.isLoaded = isLoaded;
-        this.filePath = filePath;
-        this.records.addAll(records);
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public boolean isLoaded() {
-        return isLoaded;
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public void setLoaded(boolean loaded) {
-        isLoaded = loaded;
-    }
-
-    public List<ResourceInfo> getRecords() {
-        return records;
+        this.request = request;
+        this.records = new ArrayList<>(records);
     }
 }

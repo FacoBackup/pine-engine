@@ -2,7 +2,7 @@ package com.pine.service;
 
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.component.rendering.SimpleTransformation;
+import com.pine.component.Entity;
 import com.pine.repository.EditorStateRepository;
 import com.pine.repository.WorldRepository;
 
@@ -13,30 +13,27 @@ public class SelectionService {
     @PInject
     public EditorStateRepository settingsRepository;
 
-    public LinkedList<Integer> getSelected() {
+    @PInject
+    public WorldRepository worldRepository;
+
+    public LinkedList<Entity> getSelected() {
         return settingsRepository.selected;
     }
 
-    public void addSelected(Integer entityId) {
-        if (settingsRepository.selected.isEmpty() || entityId == null) {
-            settingsRepository.mainSelection = entityId;
-            if (settingsRepository.mainSelection == WorldRepository.ROOT_ID) {
+    public void addSelected(Entity entity) {
+        if (settingsRepository.selected.isEmpty() || entity == null) {
+            settingsRepository.mainSelection = entity;
+            if (settingsRepository.mainSelection == worldRepository.rootEntity) {
                 settingsRepository.mainSelection = null;
             }
         }
-        settingsRepository.selected.add(entityId);
+        settingsRepository.selected.add(entity);
     }
 
     public void clearSelection() {
+        settingsRepository.selected.forEach(e -> e.selected = false);
         settingsRepository.selected.clear();
     }
 
-    public Integer getMainSelection() {
-        return settingsRepository.mainSelection;
-    }
-
-    public SimpleTransformation getPrimitiveSelected() {
-        return settingsRepository.primitiveSelected;
-    }
 }
 

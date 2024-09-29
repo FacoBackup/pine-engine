@@ -1,7 +1,7 @@
 package com.pine.panels.console;
 
 import com.pine.PInject;
-import com.pine.repository.MessageRepository;
+import com.pine.MessageRepository;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;

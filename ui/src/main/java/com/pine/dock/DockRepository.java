@@ -11,9 +11,9 @@ import java.util.List;
 public class DockRepository implements Initializable, SerializableRepository {
     public List<DockGroup> dockGroups = new ArrayList<>();
     public DockGroup currentDockGroup;
-    public DockGroup template;
     public transient DockDTO dockToRemove;
     public transient DockWrapperPanel dockPanelToRemove;
+    transient public DockGroup template;
 
     @Override
     public void onInitialize() {

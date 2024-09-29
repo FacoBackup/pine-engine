@@ -44,8 +44,6 @@ public class Engine {
     @PInject
     public CorePrimitiveRepository primitiveRepository;
     @PInject
-    public WorldRepository worldRepository;
-    @PInject
     public List<SyncTask> syncTasks;
 
     public void prepare(int displayW, int displayH) {
@@ -67,7 +65,6 @@ public class Engine {
         shaderRepository.initialize();
         computeRepository.initialize();
         systemsService.initialize();
-        worldRepository.initialize();
 
         targetFBO = fboRepository.tempColorWithDepth;
     }

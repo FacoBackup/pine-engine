@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public abstract class AbstractResourceService<T extends IResource, R extends IResourceRuntimeData, C extends ResourceCreationData> implements Loggable {
 
+    private String nextId;
+
     public void bind(IResource instance, IResourceRuntimeData data) {
         bindInternal((T) instance, (R) data);
     }
@@ -15,7 +17,8 @@ public abstract class AbstractResourceService<T extends IResource, R extends IRe
         bindInternal((T) instance);
     }
 
-    public IResource add(ResourceCreationData data) {
+    public IResource add(ResourceCreationData data, String fixedId) {
+        this.nextId = fixedId;
         return addInternal((C) data);
     }
 
@@ -34,7 +37,7 @@ public abstract class AbstractResourceService<T extends IResource, R extends IRe
     protected abstract void removeInternal(T resource);
 
     public String getId() {
-        return UUID.randomUUID().toString();
+        return nextId;
     }
 
     public abstract ResourceType getResourceType();

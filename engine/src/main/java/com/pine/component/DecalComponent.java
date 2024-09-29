@@ -4,9 +4,13 @@ import com.pine.PBean;
 import com.pine.theme.Icons;
 
 import java.util.Set;
+import java.util.LinkedList;
 
 @PBean
 public class DecalComponent extends AbstractComponent<DecalComponent> {
+    public DecalComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
+    }
 
     // TODO - MIGRATE TO MATERIAL DEFINITION
 //    public String albedoID;
@@ -22,16 +26,10 @@ public class DecalComponent extends AbstractComponent<DecalComponent> {
 //    public float sheen = 0.0f;
 //    public float sheenTint = 0.0f;
 
-    public DecalComponent(Integer entityId) {
-        super(entityId);
-    }
-
-    public DecalComponent() {
-        super();
-    }
+    public DecalComponent() {}
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
+    public Set<Class<? extends EntityComponent>> getDependencies() {
         return Set.of(TransformationComponent.class);
     }
 

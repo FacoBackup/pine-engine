@@ -1,9 +1,11 @@
 package com.pine.component.light;
 
 import com.pine.PBean;
+import com.pine.component.Entity;
 import com.pine.inspection.MutableField;
 import com.pine.type.LightType;
 import org.joml.Vector2f;
+import java.util.LinkedList;
 
 @PBean
 public class DirectionalLightComponent extends AbstractLightComponent<DirectionalLightComponent> {
@@ -22,16 +24,15 @@ public class DirectionalLightComponent extends AbstractLightComponent<Directiona
     public float size = 35;
     public transient Vector2f atlasFace = new Vector2f();
 
+    public DirectionalLightComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
+    }
+
+    public DirectionalLightComponent() {}
+
     @Override
     LightType getType() {
         return LightType.DIRECTIONAL;
-    }
-
-    public DirectionalLightComponent() {
-    }
-
-    public DirectionalLightComponent(Integer entityId) {
-        super(entityId);
     }
 
 }

@@ -3,20 +3,21 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.theme.Icons;
 
+import java.util.LinkedList;
 import java.util.Set;
 
 @PBean
 public class RigidBodyComponent extends AbstractComponent<RigidBodyComponent> {
-    public RigidBodyComponent(Integer entityId) {
-        super(entityId);
+
+    public RigidBodyComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
     }
 
     public RigidBodyComponent() {
-        super();
     }
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
+    public Set<Class<? extends EntityComponent>> getDependencies() {
         return Set.of(TransformationComponent.class, PhysicsColliderComponent.class);
     }
 

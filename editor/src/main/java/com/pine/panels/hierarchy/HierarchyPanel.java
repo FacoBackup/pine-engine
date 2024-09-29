@@ -1,6 +1,7 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.PInject;
+import com.pine.component.Entity;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.repository.EditorStateRepository;
 import com.pine.repository.WorldRepository;
@@ -8,18 +9,13 @@ import com.pine.service.RequestProcessingService;
 import com.pine.service.SelectionService;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
-import com.pine.tools.tasks.HierarchyTree;
-import com.pine.tools.tasks.WorldTreeTask;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImString;
 
-import java.util.Map;
 import java.util.Objects;
-
-import static com.pine.repository.WorldRepository.ROOT_ID;
 
 
 public class HierarchyPanel extends AbstractDockPanel {
@@ -30,19 +26,16 @@ public class HierarchyPanel extends AbstractDockPanel {
     public SelectionService selectionRepository;
 
     @PInject
-    public WorldTreeTask worldTask;
-
-    @PInject
     public WorldRepository world;
 
     @PInject
-    public EditorStateRepository editorStateRepository;
+    public EditorStateRepository stateRepository;
 
     @PInject
     public RequestProcessingService requestProcessingService;
 
     private HierarchyHeaderPanel header;
-    private HierarchyTree onDrag;
+    private Entity onDrag;
     private final ImString search = new ImString();
     private boolean isOnSearch = false;
 
@@ -64,75 +57,78 @@ public class HierarchyPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableHeadersRow();
 
-            Map<Integer, HierarchyTree> nodes = worldTask.getNodes();
-            for (var pinned : editorStateRepository.pinnedEntities.keySet()) {
-                if (nodes.containsKey(pinned)) {
-                    renderNode(nodes.get(pinned), true);
-                }
+            for (Entity pinned : stateRepository.pinnedEntities) {
+                renderNode(pinned, true);
             }
-            renderNode(worldTask.getHierarchyTree(), false);
+            renderNode(world.rootEntity, false);
         }
         ImGui.endTable();
     }
 
-    private boolean renderNode(HierarchyTree node, boolean isPinned) {
-        if ((isOnSearch && !node.isMatch && Objects.equals(node.matchedWith, search.get())) || (editorStateRepository.showOnlyEntitiesHierarchy && !node.isEntity)) {
+    private boolean renderNode(Entity node, boolean isPinned) {
+        if ((isOnSearch && !node.isSearchMatch && Objects.equals(node.searchMatchedWith, search.get()))) {
             return false;
         }
         if (isOnSearch) {
-            node.isMatch = node.title.contains(search.get());
-            node.matchedWith = search.get();
+            node.isSearchMatch = node.getTitle().contains(search.get());
+            node.searchMatchedWith = search.get();
         } else {
-            node.isMatch = true;
-            node.matchedWith = null;
+            node.isSearchMatch = true;
+            node.searchMatchedWith = null;
         }
 
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
-        if (node.isEntity && !isPinned) {
+        if (!isPinned) {
             int flags = getFlags(node);
 
-            boolean open = ImGui.treeNodeEx(node.titleWithIconId, flags);
-            if(node.id != ROOT_ID) {
+            boolean open = ImGui.treeNodeEx(node.getIcon() + node.getTitle() + "##" + node.id, flags);
+            if (node != world.rootEntity) {
                 handleDragDrop(node);
                 renderEntityColumns(node, false);
             }
             renderEntityChildren(node, open);
-        } else if (!node.isEntity) {
-            ImGui.textDisabled(node.titleWithIcon);
-            ImGui.tableNextColumn();
-            ImGui.textDisabled("--");
-            ImGui.tableNextColumn();
-            ImGui.textDisabled("--");
         } else {
-            if (selectionRepository.getSelected().contains(node.id)) {
-                ImGui.textColored(editorStateRepository.getAccentColor(), node.titleWithIcon);
-            }else{
-                ImGui.text(node.titleWithIcon);
+            if (node.selected) {
+                ImGui.textColored(stateRepository.getAccentColor(), node.getIcon() + node.getTitle());
+            } else {
+                ImGui.text(node.getIcon() + node.getTitle());
             }
             renderEntityColumns(node, true);
         }
-        return node.isMatch;
+        return node.isSearchMatch;
     }
 
-    private void renderEntityChildren(HierarchyTree node, boolean open) {
+    private void renderEntityChildren(Entity node, boolean open) {
         if (open) {
             if (isOnSearch) {
                 for (var child : node.children) {
-                    node.isMatch = node.isMatch || renderNode(child, false);
+                    node.isSearchMatch = node.isSearchMatch || renderNode(child, false);
                 }
             } else {
+                if (!stateRepository.showOnlyEntitiesHierarchy) {
+                    for (var component : node.components.values()) {
+                        ImGui.tableNextRow();
+                        ImGui.tableNextColumn();
+                        ImGui.textDisabled(component.getIcon() + component.getTitle());
+                        ImGui.tableNextColumn();
+                        ImGui.textDisabled("--");
+                        ImGui.tableNextColumn();
+                        ImGui.textDisabled("--");
+                    }
+                }
                 for (var child : node.children) {
                     renderNode(child, false);
                 }
             }
+
             ImGui.treePop();
         }
     }
 
-    private int getFlags(HierarchyTree node) {
+    private int getFlags(Entity node) {
         int flags = ImGuiTreeNodeFlags.SpanFullWidth;
-        if (selectionRepository.getSelected().contains(node.id)) {
+        if (node.selected) {
             flags |= ImGuiTreeNodeFlags.Selected;
         }
         if (isOnSearch) {
@@ -141,48 +137,52 @@ public class HierarchyPanel extends AbstractDockPanel {
         return flags;
     }
 
-    private void renderEntityColumns(HierarchyTree node, boolean isPinned) {
+    private void renderEntityColumns(Entity node, boolean isPinned) {
         handleClick(node);
         ImGui.tableNextColumn();
 
         ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
-        Boolean isVisible = world.activeEntities.getOrDefault(node.id, true);
-        if (ImGui.button((isVisible ? node.visibilityLabel : node.visibilityOffLabel) + (isPinned ? "pinned" : ""), 20, 15)) {
-            world.activeEntities.put(node.id, !isVisible);
+        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "pinned" : "") + "##v" + node.id, 20, 15)) {
+            node.visible = !node.visible;
         }
         ImGui.tableNextColumn();
-        Boolean isNodePinned = editorStateRepository.pinnedEntities.getOrDefault(node.id, false);
-        if (ImGui.button((isNodePinned ? node.pinLabel : node.pinOffLabel) + (isPinned ? "pinned" : ""), 20, 15)) {
-            editorStateRepository.pinnedEntities.put(node.id, !isNodePinned);
+        if (ImGui.button(((node.pinned ? Icons.lock : Icons.lock_open) + (isPinned ? "pinned" : "") + "##p" + node.id), 20, 15)) {
+            node.pinned = !node.pinned;
+            if (node.pinned) {
+                stateRepository.pinnedEntities.add(node);
+            } else {
+                stateRepository.pinnedEntities.remove(node);
+            }
         }
         ImGui.popStyleColor();
         ImGui.popStyleVar(2);
     }
 
-    private void handleClick(HierarchyTree node) {
+    private void handleClick(Entity node) {
         if (ImGui.isItemClicked()) {
             boolean isMultiSelect = ImGui.isKeyPressed(ImGuiKey.LeftCtrl);
             if (!isMultiSelect) {
                 selectionRepository.clearSelection();
             }
-            selectionRepository.addSelected(node.id);
+            selectionRepository.addSelected(node);
+            node.selected = true;
         }
     }
 
 
-    private void handleDragDrop(HierarchyTree target) {
+    private void handleDragDrop(Entity target) {
         if (ImGui.beginDragDropSource()) {
             ImGui.setDragDropPayload(id, id);
             this.onDrag = target;
-            ImGui.text("Dragging Node " + target.title);
+            ImGui.text("Dragging Node " + target.getTitle());
             ImGui.endDragDropSource();
         }
 
         if (ImGui.beginDragDropTarget()) {
             if (Objects.equals(ImGui.acceptDragDropPayload(id), id)) {
-                requestProcessingService.addRequest(new HierarchyRequest(target.id, onDrag.id));
+                requestProcessingService.addRequest(new HierarchyRequest(target, onDrag));
             }
             ImGui.endDragDropTarget();
         }

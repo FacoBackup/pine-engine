@@ -1,8 +1,10 @@
 package com.pine.service.loader.impl.response;
 
 import com.pine.FSUtil;
+import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.resource.resource.ResourceType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,10 +16,8 @@ public class AudioLoaderResponse extends AbstractLoaderResponse {
         return ResourceType.AUDIO;
     }
 
-    public AudioLoaderResponse(){}
-
-    public AudioLoaderResponse(boolean isLoaded, String filePath, List<String> audio) {
-        super(isLoaded, filePath, audio.stream().map(a -> new ResourceInfo(FSUtil.getNameFromPath(filePath), a)).collect(Collectors.toList()));
+    public AudioLoaderResponse(boolean isLoaded, LoadRequest request, List<String> audio) {
+        super(isLoaded, request, audio.stream().map(a -> new ResourceInfo(FSUtil.getNameFromPath(request.path()), a)).collect(Collectors.toList()));
         this.audio = audio;
     }
 

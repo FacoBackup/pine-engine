@@ -1,15 +1,15 @@
 package com.pine.panels;
 
 import com.pine.PInject;
-import com.pine.repository.Message;
-import com.pine.repository.MessageRepository;
+import com.pine.Message;
+import com.pine.MessageRepository;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 
-import static com.pine.repository.MessageRepository.MESSAGE_DURATION;
+import static com.pine.MessageRepository.MESSAGE_DURATION;
 
 public class ToasterPanel extends AbstractView {
     @PInject

@@ -1,7 +1,6 @@
 package com.pine.panels.viewport;
 
 import com.pine.PInject;
-import com.pine.component.rendering.SimpleTransformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorStateRepository;
 import com.pine.view.AbstractView;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GizmoPanel extends AbstractView {
     @PInject
-    public EditorStateRepository editorStateRepository;
+    public EditorStateRepository stateRepository;
 
     @PInject
     public CameraRepository cameraRepository;
@@ -23,7 +22,6 @@ public class GizmoPanel extends AbstractView {
     private final float[] translationCache = new float[3];
     private final float[] rotationCache = new float[3];
     private final float[] scaleCache = new float[3];
-    private SimpleTransformation selected;
     private final ImVec2 size;
     private final ImVec2 position;
 
@@ -34,6 +32,9 @@ public class GizmoPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
+        if (stateRepository.primitiveSelected == null) {
+            return;
+        }
         recomposeMatrix();
         float[] snap = getSnapValues();
         ImGuizmo.setOrthographic(cameraRepository.currentCamera.isOrthographic);
@@ -42,8 +43,8 @@ public class GizmoPanel extends AbstractView {
         ImGuizmo.manipulate(
                 viewMatrixCache,
                 projectionMatrixCache,
-                editorStateRepository.gizmoOperation,
-                editorStateRepository.gizmoMode,
+                stateRepository.gizmoOperation,
+                stateRepository.gizmoMode,
                 cacheMatrix,
                 null,
                 snap);
@@ -51,22 +52,22 @@ public class GizmoPanel extends AbstractView {
     }
 
     private float @Nullable [] getSnapValues() {
-        return switch (editorStateRepository.gizmoOperation) {
+        return switch (stateRepository.gizmoOperation) {
             case Operation.TRANSLATE -> {
-                if (editorStateRepository.gizmoUseSnapTranslate) {
-                    yield editorStateRepository.gizmoSnapTranslate;
+                if (stateRepository.gizmoUseSnapTranslate) {
+                    yield stateRepository.gizmoSnapTranslate;
                 }
                 yield null;
             }
             case Operation.ROTATE -> {
-                if (editorStateRepository.gizmoUseSnapRotate) {
-                    yield editorStateRepository.gizmoSnapRotate.getData();
+                if (stateRepository.gizmoUseSnapRotate) {
+                    yield stateRepository.gizmoSnapRotate.getData();
                 }
                 yield null;
             }
             case Operation.SCALE -> {
-                if (editorStateRepository.gizmoUseSnapScale) {
-                    yield editorStateRepository.gizmoSnapScale.getData();
+                if (stateRepository.gizmoUseSnapScale) {
+                    yield stateRepository.gizmoSnapScale.getData();
                 }
                 yield null;
             }
@@ -76,39 +77,35 @@ public class GizmoPanel extends AbstractView {
 
     private void decomposeMatrix() {
         ImGuizmo.decomposeMatrixToComponents(cacheMatrix, translationCache, rotationCache, scaleCache);
-        selected.translation.x = translationCache[0];
-        selected.translation.y = translationCache[1];
-        selected.translation.z = translationCache[2];
+       stateRepository.primitiveSelected.translation.x = translationCache[0];
+       stateRepository.primitiveSelected.translation.y = translationCache[1];
+       stateRepository.primitiveSelected.translation.z = translationCache[2];
 
-        selected.rotation.x = rotationCache[0];
-        selected.rotation.y = rotationCache[1];
-        selected.rotation.z = rotationCache[2];
+       stateRepository.primitiveSelected.rotation.x = rotationCache[0];
+       stateRepository.primitiveSelected.rotation.y = rotationCache[1];
+       stateRepository.primitiveSelected.rotation.z = rotationCache[2];
 
-        selected.scale.x = scaleCache[0];
-        selected.scale.y = scaleCache[1];
-        selected.scale.z = scaleCache[2];
+       stateRepository.primitiveSelected.scale.x = scaleCache[0];
+       stateRepository.primitiveSelected.scale.y = scaleCache[1];
+       stateRepository.primitiveSelected.scale.z = scaleCache[2];
     }
 
     private void recomposeMatrix() {
-        translationCache[0] = selected.translation.x;
-        translationCache[1] = selected.translation.y;
-        translationCache[2] = selected.translation.z;
+        translationCache[0] = stateRepository.primitiveSelected.translation.x;
+        translationCache[1] = stateRepository.primitiveSelected.translation.y;
+        translationCache[2] = stateRepository.primitiveSelected.translation.z;
 
-        rotationCache[0] = selected.rotation.x;
-        rotationCache[1] = selected.rotation.y;
-        rotationCache[2] = selected.rotation.z;
+        rotationCache[0] = stateRepository.primitiveSelected.rotation.x;
+        rotationCache[1] = stateRepository.primitiveSelected.rotation.y;
+        rotationCache[2] = stateRepository.primitiveSelected.rotation.z;
 
-        scaleCache[0] = selected.scale.x;
-        scaleCache[1] = selected.scale.y;
-        scaleCache[2] = selected.scale.z;
+        scaleCache[0] = stateRepository.primitiveSelected.scale.x;
+        scaleCache[1] = stateRepository.primitiveSelected.scale.y;
+        scaleCache[2] = stateRepository.primitiveSelected.scale.z;
 
         cameraRepository.currentCamera.viewMatrix.get(viewMatrixCache);
         cameraRepository.currentCamera.projectionMatrix.get(projectionMatrixCache);
 
         ImGuizmo.recomposeMatrixFromComponents(translationCache, rotationCache, scaleCache, cacheMatrix);
-    }
-
-    public void setSelected(SimpleTransformation selected) {
-        this.selected = selected;
     }
 }

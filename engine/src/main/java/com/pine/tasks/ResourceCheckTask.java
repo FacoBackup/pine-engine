@@ -24,7 +24,7 @@ public class ResourceCheckTask extends AbstractTask {
     protected void tickInternal() {
         ArrayList<AbstractLoaderResponse> resources = new ArrayList<>(repository.loadedResources);
         resources.forEach(r -> {
-            if (!(new File(r.getFilePath())).exists()) {
+            if (!(new File(r.request.path())).exists()) {
                 repository.loadedResources.remove(r);
             }
         });
