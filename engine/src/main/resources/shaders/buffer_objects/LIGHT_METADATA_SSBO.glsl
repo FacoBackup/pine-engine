@@ -1,3 +1,3 @@
-layout(std430, binding = 12) buffer LightMetadataBlock {
+layout(std430, binding = 11) buffer LightMetadataBlock {
     float lightMetadata[];
 };

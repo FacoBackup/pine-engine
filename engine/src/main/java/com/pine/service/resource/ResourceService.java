@@ -29,19 +29,24 @@ public class ResourceService implements Loggable, SyncTask {
     private final Map<String, Long> sinceLastUse = new HashMap<>();
     private final Map<ResourceType, List<String>> usedResources = new HashMap<>();
     private long sinceLastCleanup;
+    private final List<String> schedule = new ArrayList<>();
 
     public IResource addResource(ResourceCreationData data) {
+        return addResource(data, UUID.randomUUID().toString());
+    }
+
+    public IResource addResource(ResourceCreationData data, String fixedId) {
         IResource instance = null;
         for (var i : implementations) {
             if (i.getResourceType() == data.getResourceType()) {
-                instance = i.add(data);
+                instance = i.add(data, fixedId);
             }
         }
         if (instance == null) {
             getLogger().warn("Resource could not be initialized correctly: {}", data.getResourceType());
             return null;
         }
-        resources.put(instance.getId(), instance);
+        resources.put(fixedId, instance);
         sinceLastUse.put(instance.getId(), System.currentTimeMillis());
         return instance;
     }
@@ -107,6 +112,31 @@ public class ResourceService implements Loggable, SyncTask {
                 usedResources.get(resource.getResourceType()).add(resource.getId());
             });
         }
+
+        if (!schedule.isEmpty()) {
+            getLogger().warn("Loading {} scheduled resources", schedule.size());
+            for (int i = 0, scheduleSize = schedule.size(); i < scheduleSize; i++) {
+                String id = schedule.get(i);
+                if (resources.containsKey(id)) {
+                    continue;
+                }
+                List<AbstractLoaderResponse> loadedResources = loader.repository.loadedResources;
+                i:
+                for (int j = 0, loadedResourcesSize = loadedResources.size(); j < loadedResourcesSize; j++) {
+                    var history = loadedResources.get(j);
+                    for (var record : history.records) {
+                        if (Objects.equals(record.id, id)) {
+                            AbstractLoaderResponse load = loader.load(history.request);
+                            if (load == null) {
+                                getLogger().error("Could not load resource: {}", history.request.path());
+                            }
+                            break i;
+                        }
+                    }
+                }
+            }
+            schedule.clear();
+        }
     }
 
     public IResource getById(String id) {
@@ -119,21 +149,13 @@ public class ResourceService implements Loggable, SyncTask {
 
     public IResource getOrCreateResource(String id) {
         IResource found = getById(id);
-        if(found != null) {
+        if (found != null) {
             return found;
         }
 
-        for(var history : loader.repository.loadedResources){
-            for(var record : history.getRecords()){
-                if(Objects.equals(record.id, id)) {
-                    AbstractLoaderResponse load = loader.load(history.getFilePath(), false, null);
-                    if (load != null) {
-                        return getById(id);
-                    } else {
-                        getLogger().error("Could not load resource: {}", history.getFilePath());
-                    }
-                }
-            }
+        if (!schedule.contains(id)) {
+            getLogger().warn("Scheduling load of resource {}", id);
+            schedule.add(id);
         }
 
         return null;

@@ -1,13 +1,8 @@
 package com.pine.service;
 
-import com.pine.Loggable;
-import com.pine.PBean;
-import com.pine.PInject;
-import com.pine.repository.Message;
-import com.pine.repository.MessageRepository;
+import com.pine.*;
 import com.pine.repository.WorldRepository;
 import com.pine.service.request.AbstractRequest;
-import com.pine.service.world.WorldService;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,9 +13,6 @@ public class RequestProcessingService implements Loggable {
     private static final int MAX_HISTORY = 15;
     @PInject
     public WorldRepository worldRepository;
-
-    @PInject
-    public WorldService world;
 
     @PInject
     public MessageRepository messageRepository;
@@ -34,7 +26,7 @@ public class RequestProcessingService implements Loggable {
         requests.add(request);
 
         try{
-            Message message = request.run(worldRepository, world);
+            Message message = request.run(worldRepository);
             if (message != null) {
                 messageRepository.pushMessage(message);
             }

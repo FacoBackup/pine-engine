@@ -14,7 +14,7 @@ import java.util.List;
 @PBean
 public class Engine {
     public static final String GLSL_VERSION = "#version 460 core";
-    public static final int MAX_ENTITIES = 200000;
+    public static final int MAX_ENTITIES = 100000;
     public static final int MAX_LIGHTS = 310;
 
     private int displayW;
@@ -44,8 +44,6 @@ public class Engine {
     @PInject
     public CorePrimitiveRepository primitiveRepository;
     @PInject
-    public WorldRepository worldRepository;
-    @PInject
     public List<SyncTask> syncTasks;
 
     public void prepare(int displayW, int displayH) {
@@ -55,8 +53,8 @@ public class Engine {
         this.invDisplayH = 1 / displayH;
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
-        GL46.glEnable(GL46.GL_CULL_FACE);
-        GL46.glCullFace(GL46.GL_BACK);
+//        GL46.glEnable(GL46.GL_CULL_FACE);
+//        GL46.glCullFace(GL46.GL_BACK);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
         GL46.glDepthFunc(GL46.GL_LESS);
         GL46.glFrontFace(GL46.GL_CCW);
@@ -67,7 +65,6 @@ public class Engine {
         shaderRepository.initialize();
         computeRepository.initialize();
         systemsService.initialize();
-        worldRepository.initialize();
 
         targetFBO = fboRepository.tempColorWithDepth;
     }

@@ -4,7 +4,6 @@ import com.pine.Engine;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.service.loader.ResourceLoaderService;
-import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
@@ -25,13 +24,13 @@ public class CorePrimitiveRepository implements CoreRepository {
 
     @Override
     public void initialize() {
-        var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
+        var planeResponse = (MeshLoaderResponse) resourceLoader.load("plane.glb", true);
         if (planeResponse != null) {
             planeMesh = (Primitive) resources.getById(planeResponse.getMeshes().getFirst().id());
             resources.makeStatic(planeMesh);
         }
 
-        var cubeResponse = (MeshLoaderResponse) resourceLoader.load("cube.glb", true, new MeshLoaderExtraInfo().setSilentOperation(true));
+        var cubeResponse = (MeshLoaderResponse) resourceLoader.load("cube.glb", true);
         if (cubeResponse != null) {
             cubeMesh = (Primitive) resources.getById(cubeResponse.getMeshes().getFirst().id());
             resources.makeStatic(cubeMesh);

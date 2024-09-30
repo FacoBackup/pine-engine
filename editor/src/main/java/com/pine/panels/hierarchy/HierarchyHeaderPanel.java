@@ -1,7 +1,6 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.PInject;
-import com.pine.component.InstancedSceneComponent;
 import com.pine.repository.EditorStateRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
@@ -36,7 +35,7 @@ public class HierarchyHeaderPanel extends AbstractView {
         ImGui.inputText("##hierarchySearch", search);
         ImGui.sameLine();
         if (ImGui.button(ADD_LABEL, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            requestProcessingService.addRequest(new AddEntityRequest(List.of(InstancedSceneComponent.class)));
+            requestProcessingService.addRequest(new AddEntityRequest(List.of()));
         }
         ImGui.sameLine();
         boolean show = editorStateRepository.showOnlyEntitiesHierarchy;

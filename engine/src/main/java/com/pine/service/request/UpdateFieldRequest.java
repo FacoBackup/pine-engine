@@ -1,12 +1,11 @@
 package com.pine.service.request;
 
+import com.pine.Message;
+import com.pine.MessageSeverity;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.repository.ChangeRecord;
-import com.pine.repository.Message;
-import com.pine.repository.MessageSeverity;
 import com.pine.repository.WorldRepository;
-import com.pine.service.world.WorldService;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -30,7 +29,7 @@ public class UpdateFieldRequest extends AbstractRequest {
     }
 
     @Override
-    public Message run(WorldRepository repository, WorldService service) {
+    public Message run(WorldRepository repository) {
         try {
             switch (fieldDTO.getType()) {
                 case VECTOR2 -> {

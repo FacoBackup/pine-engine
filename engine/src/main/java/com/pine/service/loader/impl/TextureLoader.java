@@ -16,7 +16,7 @@ public class TextureLoader extends AbstractResourceLoader {
 
     @Override
     public AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
-        return new TextureLoaderResponse(false, resource.path(), Collections.emptyList());
+        return new TextureLoaderResponse(false, resource, Collections.emptyList());
     }
 
     @Override

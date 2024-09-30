@@ -3,22 +3,21 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.theme.Icons;
 
+import java.util.LinkedList;
 import java.util.Set;
 
 @PBean
 public class PhysicsColliderComponent extends AbstractComponent<PhysicsColliderComponent> {
 
-    public PhysicsColliderComponent(Integer entityId) {
-        super(entityId);
+    public PhysicsColliderComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
     }
 
-    public PhysicsColliderComponent() {
-        super();
-    }
+    public PhysicsColliderComponent() {}
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of(TransformationComponent.class, RigidBodyComponent.class, SceneComponent.class);
+    public Set<Class<? extends EntityComponent>> getDependencies() {
+        return Set.of(TransformationComponent.class, RigidBodyComponent.class, PrimitiveComponent.class);
     }
 
     @Override

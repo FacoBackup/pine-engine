@@ -5,6 +5,7 @@ import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
 import org.joml.Vector3f;
 
+import java.util.LinkedList;
 import java.util.Set;
 
 @PBean
@@ -15,17 +16,15 @@ public class CullingComponent extends AbstractComponent<CullingComponent> {
     @MutableField(label = "Frustum box size")
     public final Vector3f frustumBoxDimensions = new Vector3f(1);
 
-    public CullingComponent(Integer entityId) {
-        super(entityId);
+    public CullingComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
     }
 
-    public CullingComponent() {
-        super();
-    }
+    public CullingComponent() {}
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of(TransformationComponent.class);
+    public Set<Class<? extends EntityComponent>> getDependencies() {
+        return Set.of();
     }
 
     @Override

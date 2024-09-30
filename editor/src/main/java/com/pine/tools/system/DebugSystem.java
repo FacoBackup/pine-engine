@@ -109,7 +109,7 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     protected void renderInternal() {
-        ssboService.bind(ssboRepository.modelSSBO);
+        ssboService.bind(ssboRepository.transformationSSBO);
         ssboService.bind(ssboRepository.lightMetadataSSBO);
         shaderService.bind(toolsResourceRepository.debugShader);
 
@@ -171,15 +171,11 @@ public class DebugSystem extends AbstractSystem {
 
         shaderService.bindUniform(shadowAtlas, fboRepository.shadowsSampler);
 
-
         var requests = renderingRepository.requests;
-        int instancedOffset = 0;
-        for (int i = 0; i < requests.size(); i++) {
-            PrimitiveRenderRequest request = requests.get(i);
-            intBoolBuffer.put(0, (i + instancedOffset));
+        for (PrimitiveRenderRequest request : requests) {
+            intBoolBuffer.put(0, request.transformation.renderIndex);
             shaderService.bindUniform(transformationIndex, intBoolBuffer);
             primitiveService.bind(request.primitive, request.runtimeData);
-            instancedOffset += request.transformations.size();
         }
     }
 }

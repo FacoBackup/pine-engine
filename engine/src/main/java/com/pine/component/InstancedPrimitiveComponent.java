@@ -1,7 +1,6 @@
 package com.pine.component;
 
 import com.pine.PBean;
-import com.pine.component.rendering.CompositeScene;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
@@ -10,39 +9,42 @@ import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 @PBean
-public class InstancedSceneComponent extends AbstractComponent<InstancedSceneComponent> {
+public class InstancedPrimitiveComponent extends AbstractComponent<InstancedPrimitiveComponent> {
     @MutableField(label = "Scene members")
-    public final CompositeScene compositeScene = new CompositeScene(true, this);
+    public List<TransformationComponent> primitives = new ArrayList<>();
 
-    @MutableField(label = "Casts shadows")
+    @MutableField(label = "Casts shadow")
     public boolean castsShadows = true;
+
     @MutableField(label = "Contribute to probes")
     public boolean contributeToProbes = true;
 
     @ResourceTypeField(type = ResourceType.PRIMITIVE)
-    @MutableField(label = "Primitive instance")
+    @MutableField(label = "Primitive")
     public ResourceRef<Primitive> primitive;
 
-    @MutableField(label = "Number of instances", min = 1, max = 200, isAngle = false, isDirectChange = false)
+    @MutableField(label = "Number of instances", min = 1)
     public int numberOfInstances = 10;
 
     public transient MeshRuntimeData runtimeData;
-    public transient PrimitiveRenderRequest request;
+    public transient PrimitiveRenderRequest renderRequest;
 
-    public InstancedSceneComponent(Integer entityId) {
-        super(entityId);
+    public InstancedPrimitiveComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
     }
 
-    public InstancedSceneComponent() {
-        super();
+    public InstancedPrimitiveComponent() {
     }
 
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
-        return Set.of(CullingComponent.class);
+    public Set<Class<? extends EntityComponent>> getDependencies() {
+        return Set.of(CullingComponent.class, TransformationComponent.class);
     }
 
     @Override

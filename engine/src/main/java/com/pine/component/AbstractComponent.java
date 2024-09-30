@@ -2,31 +2,37 @@ package com.pine.component;
 
 import com.pine.inspection.Inspectable;
 
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
-import java.util.Vector;
 
 public abstract class AbstractComponent<T extends EntityComponent> extends Inspectable implements EntityComponent {
-    private transient final Vector<T> bag = new Vector<>();
+    public final LinkedList<T> bag;
 
-    private final int entityId;
-    private int changes = 0;
-    private int frozenVersion = -1;
+    public final Entity entity;
+    public transient int changes = 0;
+    public transient int frozenVersion = -1;
 
+    public AbstractComponent(Entity entity, LinkedList<?> bag) {
+        this.entity = entity;
+        this.bag = (LinkedList<T>) bag;
+        this.bag.add((T) this);
+    }
+
+    /**
+     * Bean instance
+     */
     public AbstractComponent() {
-        entityId = -1;
+        entity = null;
+        bag = new LinkedList<>();
     }
 
-    public AbstractComponent(Integer entityId) {
-        this.entityId = entityId;
-    }
-
-    final public int getEntityId() {
-        return entityId;
-    }
-
-    final public Vector<T> getBag() {
+    final public LinkedList<T> getBag() {
         return bag;
+    }
+
+    @Override
+    public Entity getEntity() {
+        return entity;
     }
 
     @SuppressWarnings("unchecked")
@@ -36,13 +42,7 @@ public abstract class AbstractComponent<T extends EntityComponent> extends Inspe
     }
 
     @Override
-    final public Set<Class<? extends EntityComponent>> getDependencies() {
-        var internal = new HashSet<>(getDependenciesInternal());
-        internal.add(MetadataComponent.class);
-        return internal;
-    }
-
-    protected abstract Set<Class<? extends EntityComponent>> getDependenciesInternal();
+    public abstract Set<Class<? extends EntityComponent>> getDependencies();
 
     @Override
     final public String toString() {

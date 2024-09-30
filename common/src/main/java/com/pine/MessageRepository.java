@@ -1,6 +1,4 @@
-package com.pine.repository;
-
-import com.pine.PBean;
+package com.pine;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -1,4 +1,6 @@
 package com.pine.service.loader.impl.info;
 
-public record LoadRequest(String path, boolean isStaticResource, AbstractLoaderExtraInfo extraInfo) {
+import java.io.Serializable;
+
+public record LoadRequest(String path, boolean isStaticResource, AbstractLoaderExtraInfo extraInfo) implements Serializable {
 }

@@ -1,6 +1,7 @@
 package com.pine.component.light;
 
 import com.pine.component.AbstractComponent;
+import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.inspection.Color;
@@ -9,6 +10,7 @@ import com.pine.theme.Icons;
 import com.pine.type.LightType;
 import org.joml.Vector2f;
 
+import java.util.LinkedList;
 import java.util.Set;
 
 public abstract class AbstractLightComponent<T extends EntityComponent> extends AbstractComponent<T> {
@@ -25,15 +27,15 @@ public abstract class AbstractLightComponent<T extends EntityComponent> extends 
     @MutableField(label = "Light cutoff distance")
     public float innerCutoff = 50;
 
+    public AbstractLightComponent(Entity entity, LinkedList<?> bag) {
+        super(entity, bag);
+    }
+
     public AbstractLightComponent() {
     }
 
-    public AbstractLightComponent(Integer entityId) {
-        super(entityId);
-    }
-
     @Override
-    protected Set<Class<? extends EntityComponent>> getDependenciesInternal() {
+    public Set<Class<? extends EntityComponent>> getDependencies() {
         return Set.of(TransformationComponent.class);
     }
 

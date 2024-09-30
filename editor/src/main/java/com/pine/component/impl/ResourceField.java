@@ -51,9 +51,10 @@ public class ResourceField extends AbstractFormField {
     }
 
     private void refresh() {
+        items.clear();
         for (var history : repository.loadedResources) {
             if(type == null || type == history.getResourceType()) {
-                items.addAll(history.getRecords());
+                items.addAll(history.records);
             }
         }
         itemsArr = new String[items.size()];

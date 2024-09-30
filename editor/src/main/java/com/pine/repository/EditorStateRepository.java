@@ -2,7 +2,8 @@ package com.pine.repository;
 
 import com.pine.PBean;
 import com.pine.SerializableRepository;
-import com.pine.component.rendering.SimpleTransformation;
+import com.pine.component.Entity;
+import com.pine.component.TransformationComponent;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
@@ -15,9 +16,7 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 @PBean
 public class EditorStateRepository extends Inspectable implements SerializableRepository {
@@ -37,7 +36,7 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
     public float gridOpacity = 1f;
 
     @MutableField(label = "Shading model")
-    public DebugShadingModel debugShadingModel = DebugShadingModel.ALBEDO;
+    public DebugShadingModel debugShadingModel = DebugShadingModel.RANDOM;
 
     @MutableField(label = "Accent color")
     public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);
@@ -57,7 +56,7 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
 
     public ExecutionEnvironment environment = ExecutionEnvironment.DEVELOPMENT;
     public int gizmoOperation = Operation.TRANSLATE;
-    public int gizmoMode = Mode.LOCAL;
+    public int gizmoMode = Mode.WORLD;
 
     public float[] gizmoSnapTranslate = new float[3];
     public ImFloat gizmoSnapRotate = new ImFloat();
@@ -71,13 +70,13 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
     public boolean gizmoUseSnapRotate;
     public boolean gizmoUseSnapScale;
     public final ImInt gizmoModeOption = new ImInt(0);
-    public final ImInt shadingModelOption = new ImInt(0);
+    public final ImInt shadingModelOption = new ImInt(DebugShadingModel.RANDOM.getId());
     public boolean showOnlyEntitiesHierarchy = false;
 
-    public Map<Integer, Boolean> pinnedEntities = new HashMap<>();
-    public SimpleTransformation primitiveSelected = null;
-    public Integer mainSelection = null;
-    public final LinkedList<Integer> selected = new LinkedList<>();
+    public LinkedList<Entity> pinnedEntities = new LinkedList<>();
+    public TransformationComponent primitiveSelected = null;
+    public Entity mainSelection = null;
+    public final LinkedList<Entity> selected = new LinkedList<>();
 
     @Override
     public String getIcon() {

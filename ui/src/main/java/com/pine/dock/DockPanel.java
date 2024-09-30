@@ -40,6 +40,10 @@ public abstract class DockPanel extends AbstractView {
 
     @Override
     public void renderInternal() {
+        DockGroup group = dockService.getCurrentDockGroup();
+        if(group == null){
+            return;
+        }
         final ImGuiViewport viewport = ImGui.getMainViewport();
         dockService.updateForRemoval(this);
 
@@ -54,7 +58,7 @@ public abstract class DockPanel extends AbstractView {
 
         menuBar();
 
-        if (!dockService.getCurrentDockGroup().isInitialized) {
+        if (!group.isInitialized) {
             dockService.buildViews(dockMainId, this);
         }
 

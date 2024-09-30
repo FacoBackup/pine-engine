@@ -7,40 +7,29 @@ import org.joml.Vector3f;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public interface SerializableRepository extends Serializable, Loggable {
     default void merge(Object data) {
-        if (data.getClass() != this.getClass()) {
-            getLogger().error("Classes are not compatible {} {}", data.getClass(), this.getClass());
+        if (data == null) {
             return;
         }
-
         if (SerializationState.loaded.containsKey(this)) {
-            getLogger().warn("Class already loaded {}", this.getClass());
             return;
         }
 
         SerializationState.loaded.put(this, true);
-        Field[] declaredFields = this.getClass().getDeclaredFields();
-        final Map<String, Field> fieldMap = new HashMap<>();
-
-        for (Field sourceField : data.getClass().getDeclaredFields()) {
-            fieldMap.put(sourceField.getName(), sourceField);
-        }
-
-        for (Field declaredField : declaredFields) {
+        for (Field declaredField : this.getClass().getFields()) {
             int modifiers = declaredField.getModifiers();
             if (Modifier.isTransient(modifiers) || Modifier.isPrivate(modifiers) || Modifier.isStatic(modifiers)) {
-                getLogger().warn("Invalid member {}", declaredField.getName());
                 continue;
             }
 
             try {
-                var value = fieldMap.get(declaredField.getName()).get(data);
-                var targetValue = fieldMap.get(declaredField.getName()).get(this);
+                declaredField.setAccessible(true);
+                var value = data.getClass().getField(declaredField.getName()).get(data);
+                var targetValue = declaredField.get(this);
 
                 if (declaredField.isAnnotationPresent(PInject.class)) {
                     if (List.class.isAssignableFrom(declaredField.getType())) {
@@ -48,7 +37,7 @@ public interface SerializableRepository extends Serializable, Loggable {
                         List<?> tO = (List<?>) value;
                         t.forEach(a -> {
                             if (a instanceof SerializableRepository) {
-                                ((SerializableRepository) a).merge(tO.get(t.indexOf(a)));
+                                ((SerializableRepository) a).merge(tO.stream().filter(b -> b.getClass() == a.getClass()).findFirst().orElse(null));
                             }
                         });
                     } else if (targetValue instanceof SerializableRepository) {
@@ -79,9 +68,10 @@ public interface SerializableRepository extends Serializable, Loggable {
                 List<?> t = (List<?>) targetValue;
                 t.clear();
                 t.addAll((List) value);
+            } else {
+                declaredField.set(this, value);
             }
         } else {
-            declaredField.setAccessible(true);
             declaredField.set(this, value);
         }
     }

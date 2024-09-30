@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @PBean
-public class ResourceLoaderService  {
+public class ResourceLoaderService {
     @PInject
     public ResourceLoaderRepository repository;
 
@@ -20,12 +20,22 @@ public class ResourceLoaderService  {
     public List<AbstractResourceLoader> resourceLoaders;
 
     @Nullable
+    public AbstractLoaderResponse load(String path, boolean isStaticResource) {
+        return load(path, isStaticResource, null);
+    }
+
+    @Nullable
     public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
         var dto = new LoadRequest(path, isStaticResource, extraInfo);
-        final String extension = path.substring(path.lastIndexOf(".") + 1);
+        return load(dto);
+    }
+
+    @Nullable
+    public AbstractLoaderResponse load(LoadRequest loadRequest) {
+        final String extension = loadRequest.path().substring(loadRequest.path().lastIndexOf(".") + 1);
         for (AbstractResourceLoader i : resourceLoaders) {
             if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
-                return process(extraInfo, i, dto);
+                return process(loadRequest.extraInfo(), i, loadRequest);
             }
         }
         return null;
@@ -40,7 +50,7 @@ public class ResourceLoaderService  {
             metadata = i.load(dto, null);
         }
 
-        if (metadata.isLoaded()) {
+        if (metadata.isLoaded) {
             repository.loadedResources.add(metadata);
         }
         return metadata;
