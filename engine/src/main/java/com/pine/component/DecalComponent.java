@@ -4,7 +4,6 @@ import com.pine.PBean;
 import com.pine.theme.Icons;
 
 import java.util.LinkedList;
-import java.util.Set;
 
 @PBean
 public class DecalComponent extends AbstractComponent<DecalComponent> {
@@ -27,11 +26,6 @@ public class DecalComponent extends AbstractComponent<DecalComponent> {
 //    public float sheenTint = 0.0f;
 
     public DecalComponent() {}
-
-    @Override
-    public Set<Class<? extends EntityComponent>> getDependencies() {
-        return Set.of(TransformationComponent.class);
-    }
 
     @Override
     public String getTitle() {

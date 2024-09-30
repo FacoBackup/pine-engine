@@ -26,8 +26,8 @@ public class AddEntityRequest extends AbstractRequest implements Loggable {
     @Override
     public Message run(WorldRepository repository) {
         entity = new Entity();
-        entity.parent = repository.rootEntity;
-        repository.rootEntity.children.add(entity);
+        entity.transformation.parent = repository.rootEntity.transformation;
+        repository.rootEntity.transformation.children.add(entity.transformation);
         try {
             AddComponentRequest.add(components, entity, repository);
             return new Message("Entity created successfully", MessageSeverity.SUCCESS);

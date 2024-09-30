@@ -3,9 +3,7 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
-import com.pine.repository.EditorStateRepository;
 import com.pine.repository.RuntimeRepository;
-import com.pine.service.SelectionService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -24,13 +22,6 @@ public class ViewportPanel extends AbstractDockPanel {
 
     @PInject
     public ResourceService resourceService;
-
-    @PInject
-    public SelectionService selectionService;
-
-
-    @PInject
-    public EditorStateRepository stateRepository;
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();

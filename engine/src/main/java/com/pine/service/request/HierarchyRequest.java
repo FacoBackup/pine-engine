@@ -6,7 +6,6 @@ import com.pine.component.Entity;
 import com.pine.repository.WorldRepository;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
 
 public class HierarchyRequest extends AbstractRequest {
     private final Entity parent;
@@ -19,11 +18,11 @@ public class HierarchyRequest extends AbstractRequest {
 
     @Override
     public Message run(WorldRepository repository) {
-        if (child.parent != null) {
-            child.parent.children.remove(child);
+        if (child.transformation.parent != null) {
+            child.transformation.parent.children.remove(child.transformation);
         }
-        child.parent = Objects.requireNonNullElseGet(parent, () -> repository.rootEntity);
-        child.parent.children.add(child);
+        child.transformation.parent = parent != null ? parent.transformation : repository.rootEntity.transformation;
+        child.transformation.parent.children.add(child.transformation);
         return new Message("Entities linked successfully", MessageSeverity.SUCCESS);
     }
 }

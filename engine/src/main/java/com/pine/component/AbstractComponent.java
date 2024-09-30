@@ -42,7 +42,9 @@ public abstract class AbstractComponent<T extends EntityComponent> extends Inspe
     }
 
     @Override
-    public abstract Set<Class<? extends EntityComponent>> getDependencies();
+    public Set<Class<? extends EntityComponent>> getDependencies() {
+        return Set.of();
+    }
 
     @Override
     final public String toString() {

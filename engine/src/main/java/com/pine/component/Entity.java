@@ -5,23 +5,23 @@ import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class Entity extends Inspectable implements Serializable {
     @MutableField(label = "Name")
     public String name = "New Entity";
 
-    @MutableField(label = "Is collection")
-    public boolean collection = false;
+    @MutableField(label = "Transformation")
+    public final Transformation transformation = new Transformation(this);
 
     /**
      * Key: Class.simpleName
      * Value: Component instance
      */
     public final Map<String, EntityComponent> components = new HashMap<>();
-    public final List<Entity> children = new LinkedList<>();
     public final String id;
-    public Entity parent;
     public final long creationDate = System.currentTimeMillis();
     public boolean visible = true;
 
@@ -32,7 +32,6 @@ public class Entity extends Inspectable implements Serializable {
 
     public Entity(String id, String name) {
         this.id = id;
-        parent = null;
         this.name = name;
     }
 

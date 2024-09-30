@@ -3,7 +3,6 @@ package com.pine.service;
 import com.pine.EngineUtils;
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.component.TransformationComponent;
 import com.pine.component.light.*;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;
@@ -39,7 +38,7 @@ public class LightService {
         for (int i = 0; i < implDirectionalLightComponent.getBag().size(); i++) {
             var light = implDirectionalLightComponent.getBag().get(i);
             if (!light.isFrozen()) {
-                var transform = (TransformationComponent) light.entity.components.get(TransformationComponent.class.getSimpleName());
+                var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
 
                 b.put(internalOffset, light.atlasFace.x);
@@ -91,7 +90,7 @@ public class LightService {
         for (int i = 0; i < implSpotLightComponent.getBag().size(); i++) {
             var light = implSpotLightComponent.getBag().get(i);
             if (!light.isFrozen()) {
-                var transform = (TransformationComponent) light.entity.components.get(TransformationComponent.class.getSimpleName());
+                var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
 
                 cacheMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
@@ -113,7 +112,7 @@ public class LightService {
     }
 
     private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent<?> light) {
-        var transform = (TransformationComponent) light.entity.components.get(TransformationComponent.class.getSimpleName());
+        var transform = light.entity.transformation;
 
         lightSSBOState.put(offset, light.type.getTypeId());
         lightSSBOState.put(offset + 1, light.color.x);

@@ -1,6 +1,6 @@
 package com.pine.repository;
 
-public interface ChangeRecord {
+public interface Mutable {
     /**
      * Stores id of last consumed version
      */

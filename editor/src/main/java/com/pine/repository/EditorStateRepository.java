@@ -3,7 +3,7 @@ package com.pine.repository;
 import com.pine.PBean;
 import com.pine.SerializableRepository;
 import com.pine.component.Entity;
-import com.pine.component.TransformationComponent;
+import com.pine.component.Transformation;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
@@ -74,7 +74,7 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
     public boolean showOnlyEntitiesHierarchy = false;
 
     public LinkedList<Entity> pinnedEntities = new LinkedList<>();
-    public TransformationComponent primitiveSelected = null;
+    public Transformation primitiveSelected = null;
     public Entity mainSelection = null;
     public final LinkedList<Entity> selected = new LinkedList<>();
 

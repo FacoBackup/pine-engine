@@ -17,7 +17,7 @@ import java.util.Set;
 @PBean
 public class InstancedPrimitiveComponent extends AbstractComponent<InstancedPrimitiveComponent> {
     @MutableField(label = "Scene members")
-    public List<TransformationComponent> primitives = new ArrayList<>();
+    public List<Transformation> primitives = new ArrayList<>();
 
     @MutableField(label = "Casts shadow")
     public boolean castsShadows = true;
@@ -44,7 +44,7 @@ public class InstancedPrimitiveComponent extends AbstractComponent<InstancedPrim
 
     @Override
     public Set<Class<? extends EntityComponent>> getDependencies() {
-        return Set.of(CullingComponent.class, TransformationComponent.class);
+        return Set.of(CullingComponent.class);
     }
 
     @Override

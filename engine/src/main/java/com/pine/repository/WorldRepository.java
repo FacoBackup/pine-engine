@@ -10,7 +10,7 @@ import com.pine.component.EntityComponent;
 import java.util.List;
 
 @PBean
-public class WorldRepository implements ChangeRecord, SerializableRepository {
+public class WorldRepository implements Mutable, SerializableRepository {
     public static final String ROOT_ID = Entity.class.getCanonicalName();
     public final Entity rootEntity = new Entity(ROOT_ID, "World");
     transient private int worldChangeId = 0;
