@@ -14,7 +14,7 @@ public class Entity extends Inspectable implements Serializable {
     public String name = "New Entity";
 
     @MutableField(label = "Transformation")
-    public final Transformation transformation = new Transformation(this);
+    public final Transformation transformation = new Transformation(this, false);
 
     /**
      * Key: Class.simpleName

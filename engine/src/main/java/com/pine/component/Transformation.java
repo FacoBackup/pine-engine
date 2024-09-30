@@ -21,6 +21,7 @@ public class Transformation extends Inspectable implements Mutable, Serializable
     @MutableField(label = "Rotation")
     public Quaternionf rotation = new Quaternionf();
 
+    public final boolean isInstance;
     public final Entity entity;
     public final List<Transformation> children = new LinkedList<>();
     public Transformation parent;
@@ -34,8 +35,9 @@ public class Transformation extends Inspectable implements Mutable, Serializable
     public transient int renderIndex;
     public transient int parentChangeId = -1;
 
-    public Transformation(Entity entity){
+    public Transformation(Entity entity, boolean isInstance){
         this.entity = entity;
+        this.isInstance = isInstance;
     }
 
     @Override

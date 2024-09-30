@@ -62,7 +62,7 @@ public class InstancedRequestService {
             scene.primitives = new ArrayList<>(scene.primitives.subList(0, scene.numberOfInstances));
         } else if (scene.primitives.size() < scene.numberOfInstances) {
             for (int i = scene.primitives.size(); i < scene.numberOfInstances; i++) {
-                scene.primitives.add(new Transformation(scene.entity));
+                scene.primitives.add(new Transformation(scene.entity, true));
             }
         }
 
