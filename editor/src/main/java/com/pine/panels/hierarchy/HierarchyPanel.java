@@ -26,6 +26,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     private static final String INSTANCED_COMPONENT = InstancedPrimitiveComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
+    private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
 
     @PInject
     public SelectionService selectionService;
@@ -56,7 +57,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         header.render();
         isOnSearch = search.isNotEmpty();
 
-        if (ImGui.beginTable("##hierarchy", 3, ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody)) {
+        if (ImGui.beginTable("##hierarchy" + imguiId, 3, FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.NoHide);
             ImGui.tableSetupColumn(Icons.visibility, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
@@ -87,7 +88,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         if (!isPinned) {
             int flags = getFlags(node);
 
-            boolean open = ImGui.treeNodeEx(node.getIcon() + node.getTitle() + "##" + node.id, flags);
+            boolean open = ImGui.treeNodeEx(node.getIcon() + node.getTitle() + "##" + node.id + imguiId, flags);
             if (node != world.rootEntity) {
                 handleDragDrop(node);
                 renderEntityColumns(node, false);
@@ -140,9 +141,9 @@ public class HierarchyPanel extends AbstractDockPanel {
                     ImGui.tableNextRow();
                     ImGui.tableNextColumn();
                     String title = Icons.content_copy + " Instance - " + i;
-                    if(stateRepository.primitiveSelected == p) {
+                    if (stateRepository.primitiveSelected == p) {
                         ImGui.textColored(stateRepository.getAccentColor(), title);
-                    }else {
+                    } else {
                         ImGui.textDisabled(title);
                     }
                     if (ImGui.isItemClicked()) {
@@ -178,11 +179,11 @@ public class HierarchyPanel extends AbstractDockPanel {
         ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
-        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "pinned" : "") + "##v" + node.id, 20, 15)) {
+        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "pinned" : "") + "##v" + node.id + imguiId, 20, 15)) {
             node.visible = !node.visible;
         }
         ImGui.tableNextColumn();
-        if (ImGui.button(((node.pinned ? Icons.lock : Icons.lock_open) + (isPinned ? "pinned" : "") + "##p" + node.id), 20, 15)) {
+        if (ImGui.button(((node.pinned ? Icons.lock : Icons.lock_open) + (isPinned ? "pinned" : "") + "##p" + node.id) + imguiId, 20, 15)) {
             node.pinned = !node.pinned;
             if (node.pinned) {
                 stateRepository.pinnedEntities.add(node);

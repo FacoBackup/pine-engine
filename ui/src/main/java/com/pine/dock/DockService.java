@@ -16,6 +16,10 @@ public class DockService {
     @PInject
     public DockRepository dockRepository;
 
+    public DockDTO getCurrentDockDTO() {
+        return dockRepository.currentDockDTO;
+    }
+
     public void setDockGroupTemplate(DockGroup template) {
         dockRepository.template = template;
     }
@@ -26,7 +30,7 @@ public class DockService {
 
     public void switchDockGroups(DockGroup targetGroup, ImInt dockMainId) {
         imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
-        dockRepository.setCurrentDockGroup(targetGroup);
+        dockRepository.currentDockGroup = targetGroup;
         targetGroup.isInitialized = false;
     }
 
@@ -43,7 +47,7 @@ public class DockService {
 
     public void buildViews(ImInt dockMainId, DockPanel panel) {
         panel.getChildren().clear();
-        DockGroup group = dockRepository.getCurrentDockGroup();
+        DockGroup group = dockRepository.currentDockGroup;
         imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
         imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), NO_TAB_BAR_FLAG);
         imgui.internal.ImGui.dockBuilderSetNodeSize(dockMainId.get(), ImGui.getMainViewport().getSize());
@@ -138,7 +142,7 @@ public class DockService {
     }
 
     public DockGroup getCurrentDockGroup() {
-        return dockRepository.getCurrentDockGroup();
+        return dockRepository.currentDockGroup;
     }
 
     public void prepareForRemoval(DockDTO dock, DockWrapperPanel dockWrapperPanel) {
@@ -164,5 +168,9 @@ public class DockService {
             dockRepository.dockToRemove = null;
             dockRepository.dockPanelToRemove = null;
         }
+    }
+
+    public void setCurrentDockGroup(DockGroup last) {
+        dockRepository.currentDockGroup = last;
     }
 }

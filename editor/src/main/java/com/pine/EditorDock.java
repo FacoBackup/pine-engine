@@ -36,9 +36,7 @@ public enum EditorDock implements DockDescription {
         this.paddingX = paddingX;
         this.paddingY = paddingY;
         this.view = view;
-
     }
-
 
     @Override
     public float getPaddingX() {

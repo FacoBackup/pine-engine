@@ -145,6 +145,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
     }
 
     private void beforeWindow() {
+        dockService.dockRepository.currentDockDTO = dock;
         if (mainWindow != null && mainWindow != this) {
             ImVec2 pos = mainWindow.getPosition();
             ImVec2 sze = mainWindow.getSize();

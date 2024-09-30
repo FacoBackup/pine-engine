@@ -8,19 +8,12 @@ import java.util.List;
 
 @PBean
 public class DockRepository implements SerializableRepository {
-    public transient List<DockGroup> dockGroups = new ArrayList<>();
-    public transient DockGroup currentDockGroup;
+    public List<DockGroup> dockGroups = new ArrayList<>();
+    public DockGroup currentDockGroup;
     public transient DockDTO dockToRemove;
     public transient DockWrapperPanel dockPanelToRemove;
-    public transient DockGroup template;
-
-    public void setCurrentDockGroup(DockGroup currentDockGroup) {
-        this.currentDockGroup = currentDockGroup;
-    }
-
-    public DockGroup getCurrentDockGroup() {
-        return currentDockGroup;
-    }
+    public DockDTO currentDockDTO;
+    public DockGroup template;
 
     public void addDockGroup(DockGroup dock) {
         dockGroups.add(dock);
