@@ -25,12 +25,12 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
     public static final float FRAME_SIZE = 25;
     private static final ImVec2 MIN_SIZE = new ImVec2(300, 300);
 
-    private final ImVec2 initialSize = DEFAULT.clone();
     public final ImVec2 padding = DEFAULT.clone();
     public final ImVec2 position = DEFAULT.clone();
     public final Vector2f size = new Vector2f();
     private final ImVec2 sizeInternal = DEFAULT.clone();
     private final boolean isDownDirection;
+    private boolean sizeInitialized = false;
     private int stylePushCount;
 
     private final DockWrapperPanel mainWindow;
@@ -40,12 +40,11 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
 
     @PInject
     public DockService dockService;
-    private boolean isNotFirstDockSpace;
+    private boolean isNotCenter;
 
     public DockWrapperPanel(DockWrapperPanel mainWindow, DockDTO dock) {
         this.mainWindow = mainWindow;
         this.dock = dock;
-        this.initialSize.set(dock.getSizeX(), dock.getSizeY());
         padding.set(dock.getDescription().getPaddingX(), dock.getDescription().getPaddingY());
         isDownDirection = dock.getSplitDir() == ImGuiDir.Down && dock.getOrigin() != null;
     }
@@ -53,7 +52,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
     @Override
     public void onInitialize() {
         initializeView();
-        isNotFirstDockSpace = dockService.getCurrentDockGroup().docks.getFirst() != dock;
+        isNotCenter = dock.getDirection() != DockPosition.CENTER;
     }
 
     private void initializeView() {
@@ -76,17 +75,15 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             return;
         }
 
-        if (!initialSize.equals(DEFAULT)) {
-            ImGui.setNextWindowSize(initialSize, ImGuiCond.FirstUseEver);
-        }
-
         ImGui.setNextWindowSizeConstraints(MIN_SIZE, MAX_SIZE);
-
         if (!padding.equals(DEFAULT)) {
             ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, padding);
             stylePushCount++;
         }
-
+        if (!sizeInitialized && dock.getSizeX() > 0 && dock.getSizeY() > 0) {
+            ImGui.setNextWindowSize(dock.getSizeX(), dock.getSizeY());
+            sizeInitialized = true;
+        }
         beforeWindow();
         if (ImGui.begin(dock.getInternalId(), FLAGS)) {
             ImGui.getWindowSize(sizeInternal);
@@ -121,19 +118,23 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             }
             ImGui.popStyleVar();
 
-            ImGui.dummy(ImGui.getContentRegionAvailX() - (isNotFirstDockSpace ? 55 : 35), 0);
-            if (ImGui.button((isDownDirection ? Icons.horizontal_split : Icons.vertical_split) + "##splitView" + imguiId, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-                DockDTO dto = new DockDTO(dock.getDescription().getDefault());
-                dto.setOrigin(dock);
-                dto.setSplitDir(isDownDirection ? ImGuiDir.Down : ImGuiDir.Right);
-                dto.setSizeRatioForNodeAtDir(.5f);
-                dto.setOutAtOppositeDir(dock);
+            if (isNotCenter) {
+                ImGui.dummy(ImGui.getContentRegionAvailX() - 55, 0);
+                if (ImGui.button((isDownDirection ? Icons.horizontal_split : Icons.vertical_split) + "##splitView" + imguiId, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
+                    DockDTO dto = new DockDTO(dock.getDescription().getDefault());
+                    dto.setOrigin(dock);
+                    dto.setSplitDir(isDownDirection ? ImGuiDir.Down : ImGuiDir.Right);
+                    dto.setSizeRatioForNodeAtDir(.5f);
+                    dto.setOutAtOppositeDir(dock);
+                    DockGroup group = dockService.getCurrentDockGroup();
+                    switch (dock.getDirection()) {
+                        case LEFT -> group.left.add(group.left.indexOf(dock) + 1, dto);
+                        case RIGHT -> group.right.add(group.right.indexOf(dock) + 1, dto);
+                        case BOTTOM -> group.bottom.add(group.bottom.indexOf(dock) + 1, dto);
+                    }
+                    group.isInitialized = false;
+                }
 
-                dockService.getCurrentDockGroup().docks.add(dto);
-                dockService.getCurrentDockGroup().isInitialized = false;
-            }
-
-            if (isNotFirstDockSpace) {
                 if (ImGui.button(Icons.close + "##removeView" + imguiId, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                     dockService.prepareForRemoval(dock, this);
                 }

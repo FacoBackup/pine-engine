@@ -8,19 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PBean
-public class DockRepository implements Initializable, SerializableRepository {
+public class DockRepository implements SerializableRepository {
     public transient List<DockGroup> dockGroups = new ArrayList<>();
     public transient DockGroup currentDockGroup;
     public transient DockDTO dockToRemove;
     public transient DockWrapperPanel dockPanelToRemove;
     public transient DockGroup template;
-
-    @Override
-    public void onInitialize() {
-        if (dockGroups.isEmpty()) {
-            dockGroups.add(currentDockGroup = new DockGroup("Main View"));
-        }
-    }
 
     public void setCurrentDockGroup(DockGroup currentDockGroup) {
         this.currentDockGroup = currentDockGroup;
@@ -28,11 +21,6 @@ public class DockRepository implements Initializable, SerializableRepository {
 
     public DockGroup getCurrentDockGroup() {
         return currentDockGroup;
-    }
-
-    public void addDock(DockDTO dto) {
-        currentDockGroup.docks.add(dto);
-        currentDockGroup.isInitialized = false;
     }
 
     public void addDockGroup(DockGroup dock) {

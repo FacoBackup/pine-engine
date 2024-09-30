@@ -16,11 +16,20 @@ public final class DockDTO implements Serializable {
     private DockDTO outAtOppositeDir;
     private DockDTO origin;
     private DockDescription description;
+    private DockPosition direction;
 
     public DockDTO(DockDescription description) {
         this.description = description;
         selectedOption.set(description.getOptionIndex());
         internalId = "##" + UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public void setDirection(DockPosition direction) {
+        this.direction = direction;
+    }
+
+    public DockPosition getDirection() {
+        return direction;
     }
 
     public DockDescription getDescription() {

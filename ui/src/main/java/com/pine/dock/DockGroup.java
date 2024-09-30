@@ -5,16 +5,27 @@ import java.util.*;
 
 public class DockGroup implements Serializable {
     private final String id;
+    public DockDTO center;
     private String title;
     private String titleWithId;
-    public final List<DockDTO> docks = new ArrayList<>();
+    public final List<DockDTO> bottom = new ArrayList<>();
+    public final List<DockDTO> left = new ArrayList<>();
+    public final List<DockDTO> right = new ArrayList<>();
+
     transient public boolean isInitialized = false;
 
-    public DockGroup(String title, DockDTO... docks) {
+    public DockGroup(String title,
+                     DockDTO center,
+                     List<DockDTO> bottom,
+                     List<DockDTO> left,
+                     List<DockDTO> right) {
         this.id = "##" + UUID.randomUUID().toString().replaceAll("-", "");
         this.title = title;
         this.titleWithId = title + id;
-        this.docks.addAll(List.of(docks));
+        this.center = center;
+        this.bottom.addAll(bottom);
+        this.left.addAll(left);
+        this.right.addAll(right);
     }
 
     public String getTitleWithId() {
@@ -31,25 +42,6 @@ public class DockGroup implements Serializable {
     }
 
     public DockGroup generateNew() {
-        DockGroup newDockGroup = new DockGroup("New dock group");
-        Map<DockDTO, DockDTO> oldToNew = new LinkedHashMap<>();
-        for (var d : docks) {
-            DockDTO dto = new DockDTO(d.getDescription());
-            oldToNew.put(d, dto);
-            dto.setOrigin(d.getOrigin());
-            dto.setSplitDir(d.getSplitDir());
-            dto.setSizeRatioForNodeAtDir(d.getSizeRatioForNodeAtDir());
-            dto.setOutAtOppositeDir(d.getOutAtOppositeDir());
-        }
-        for (var newDock : oldToNew.values()) {
-            if (newDock.getOrigin() != null) {
-                newDock.setOrigin(oldToNew.get(newDock.getOrigin()));
-            }
-            if (newDock.getOutAtOppositeDir() != null) {
-                newDock.setOutAtOppositeDir(oldToNew.get(newDock.getOutAtOppositeDir()));
-            }
-        }
-        newDockGroup.docks.addAll(oldToNew.values());
-        return newDockGroup;
+        return new DockGroup("New dock group", center, bottom, left, right);
     }
 }
