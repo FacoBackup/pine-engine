@@ -4,7 +4,6 @@ import com.pine.Engine;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.service.loader.ResourceLoaderService;
-import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;

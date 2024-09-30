@@ -1,7 +1,6 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.PInject;
-import com.pine.component.InstancedPrimitiveComponent;
 import com.pine.repository.EditorStateRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;

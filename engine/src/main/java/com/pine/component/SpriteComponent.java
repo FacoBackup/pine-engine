@@ -7,8 +7,8 @@ import com.pine.service.resource.primitives.texture.TextureResource;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 
-import java.util.Set;
 import java.util.LinkedList;
+import java.util.Set;
 
 @PBean
 public class SpriteComponent extends AbstractComponent<SpriteComponent> {

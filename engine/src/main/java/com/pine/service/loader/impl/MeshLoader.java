@@ -2,7 +2,10 @@ package com.pine.service.loader.impl;
 
 import com.pine.PBean;
 import com.pine.PInject;
-import com.pine.component.*;
+import com.pine.component.Entity;
+import com.pine.component.PrimitiveComponent;
+import com.pine.component.ResourceRef;
+import com.pine.component.TransformationComponent;
 import com.pine.repository.WorldRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.loader.AbstractResourceLoader;
@@ -20,16 +23,12 @@ import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.resource.ResourceType;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
-import org.lwjgl.system.MemoryUtil;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.FloatBuffer;
 import java.util.*;
 
 import static com.pine.tasks.RenderingTask.TRANSFORMATION_COMP;

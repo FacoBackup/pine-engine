@@ -2,8 +2,8 @@ package com.pine.component;
 
 import com.pine.inspection.Inspectable;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
+import java.util.Set;
 
 public abstract class AbstractComponent<T extends EntityComponent> extends Inspectable implements EntityComponent {
     public final LinkedList<T> bag;

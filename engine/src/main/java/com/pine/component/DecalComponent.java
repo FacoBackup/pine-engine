@@ -3,8 +3,8 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.theme.Icons;
 
-import java.util.Set;
 import java.util.LinkedList;
+import java.util.Set;
 
 @PBean
 public class DecalComponent extends AbstractComponent<DecalComponent> {

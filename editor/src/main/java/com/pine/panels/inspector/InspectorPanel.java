@@ -1,7 +1,6 @@
 package com.pine.panels.inspector;
 
 import com.pine.PInject;
-import com.pine.PInjector;
 import com.pine.component.AbstractComponent;
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
@@ -10,7 +9,6 @@ import com.pine.dock.AbstractDockPanel;
 import com.pine.inspection.Inspectable;
 import com.pine.repository.EditorStateRepository;
 import com.pine.service.RequestProcessingService;
-import com.pine.service.SelectionService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
 import com.pine.theme.Icons;

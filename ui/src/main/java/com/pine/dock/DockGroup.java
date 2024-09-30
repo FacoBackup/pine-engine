@@ -1,7 +1,9 @@
 package com.pine.dock;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class DockGroup implements Serializable {
     private final String id;

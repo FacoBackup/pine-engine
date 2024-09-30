@@ -10,8 +10,8 @@ import com.pine.theme.Icons;
 import com.pine.type.LightType;
 import org.joml.Vector2f;
 
-import java.util.Set;
 import java.util.LinkedList;
+import java.util.Set;
 
 public abstract class AbstractLightComponent<T extends EntityComponent> extends AbstractComponent<T> {
     @MutableField(label = "Screen Space Shadows")

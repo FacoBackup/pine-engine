@@ -5,13 +5,10 @@ import com.pine.component.TransformationComponent;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorStateRepository;
 import com.pine.view.AbstractView;
-import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 public class GizmoPanel extends AbstractView {
     @PInject

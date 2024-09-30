@@ -1,8 +1,6 @@
 package com.pine.service;
 
 import com.pine.*;
-import com.pine.MessageRepository;
-import com.pine.MessageSeverity;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;

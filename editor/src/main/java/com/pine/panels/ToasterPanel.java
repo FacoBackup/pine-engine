@@ -1,8 +1,8 @@
 package com.pine.panels;
 
-import com.pine.PInject;
 import com.pine.Message;
 import com.pine.MessageRepository;
+import com.pine.PInject;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;

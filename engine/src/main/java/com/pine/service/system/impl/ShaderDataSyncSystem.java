@@ -1,12 +1,7 @@
 package com.pine.service.system.impl;
 
 import com.pine.Loggable;
-import com.pine.service.resource.primitives.GLSLType;
-import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
-import org.lwjgl.system.MemoryUtil;
-
-import java.nio.IntBuffer;
 
 public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
     @Override

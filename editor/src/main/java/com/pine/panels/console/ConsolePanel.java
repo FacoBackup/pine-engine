@@ -1,9 +1,9 @@
 package com.pine.panels.console;
 
-import com.pine.PInject;
-import com.pine.dock.AbstractDockPanel;
 import com.pine.MessageRepository;
 import com.pine.MessageSeverity;
+import com.pine.PInject;
+import com.pine.dock.AbstractDockPanel;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.type.ImString;

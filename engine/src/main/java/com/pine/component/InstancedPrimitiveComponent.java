@@ -1,7 +1,5 @@
 package com.pine.component;
 
-import java.util.*;
-
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceTypeField;
@@ -10,9 +8,11 @@ import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
-import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @PBean
 public class InstancedPrimitiveComponent extends AbstractComponent<InstancedPrimitiveComponent> {

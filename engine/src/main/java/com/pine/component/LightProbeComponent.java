@@ -6,7 +6,6 @@ import com.pine.theme.Icons;
 
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.LinkedList;
 
 @PBean
 public class LightProbeComponent extends AbstractComponent<LightProbeComponent> {

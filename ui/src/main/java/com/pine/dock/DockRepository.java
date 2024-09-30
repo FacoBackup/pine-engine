@@ -1,6 +1,5 @@
 package com.pine.dock;
 
-import com.pine.Initializable;
 import com.pine.PBean;
 import com.pine.SerializableRepository;
 

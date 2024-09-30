@@ -1,10 +1,10 @@
 package com.pine.service.request;
 
+import com.pine.Message;
+import com.pine.MessageSeverity;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.repository.ChangeRecord;
-import com.pine.Message;
-import com.pine.MessageSeverity;
 import com.pine.repository.WorldRepository;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
