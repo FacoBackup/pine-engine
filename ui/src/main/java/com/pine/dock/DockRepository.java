@@ -12,7 +12,6 @@ public class DockRepository implements SerializableRepository {
     public DockGroup currentDockGroup;
     public transient DockDTO dockToRemove;
     public transient DockWrapperPanel dockPanelToRemove;
-    public DockDTO currentDockDTO;
     public DockGroup template;
 
     public void addDockGroup(DockGroup dock) {

@@ -1,5 +1,6 @@
 package com.pine.dock;
 
+import com.pine.panel.AbstractPanelContext;
 import imgui.type.ImInt;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ public final class DockDTO implements Serializable {
     private final ImInt nodeId = new ImInt(0);
     private final ImInt selectedOption = new ImInt(0);
     private final String internalId;
+    private final AbstractPanelContext context;
     private int splitDir;
     private float sizeX;
     private float sizeY;
@@ -18,10 +20,15 @@ public final class DockDTO implements Serializable {
     private DockDescription description;
     private DockPosition direction;
 
-    public DockDTO(DockDescription description) {
+    public DockDTO(DockDescription description) throws Exception {
         this.description = description;
         selectedOption.set(description.getOptionIndex());
         internalId = "##" + UUID.randomUUID().toString().replace("-", "");
+        if (description.getContext() != null) {
+            context = description.getContext().getConstructor().newInstance();
+        } else {
+            context = null;
+        }
     }
 
     public void setDirection(DockPosition direction) {
@@ -98,5 +105,9 @@ public final class DockDTO implements Serializable {
 
     public void setDescription(DockDescription description) {
         this.description = description;
+    }
+
+    public AbstractPanelContext getContext() {
+        return context;
     }
 }

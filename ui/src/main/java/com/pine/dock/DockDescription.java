@@ -1,5 +1,7 @@
 package com.pine.dock;
 
+import com.pine.panel.AbstractPanelContext;
+
 import java.io.Serializable;
 
 public interface DockDescription extends Serializable {
@@ -20,4 +22,6 @@ public interface DockDescription extends Serializable {
     int getOptionIndex();
 
     DockDescription getDefault();
+
+    Class<? extends AbstractPanelContext> getContext();
 }

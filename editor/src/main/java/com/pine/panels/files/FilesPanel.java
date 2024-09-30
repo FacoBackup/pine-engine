@@ -9,11 +9,6 @@ public class FilesPanel extends AbstractDockPanel {
     @PInject
     public FSService service;
 
-    public FilesPanel() {
-        super();
-        setContext(new FilesContext(FSService.getUserRootPath()));
-    }
-
     @Override
     public void onInitialize() {
         super.onInitialize();

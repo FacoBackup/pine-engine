@@ -2,18 +2,15 @@ package com.pine.panels.files;
 
 import com.pine.panel.AbstractPanelContext;
 import com.pine.repository.FileInfoDTO;
+import com.pine.service.FSService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class FilesContext extends AbstractPanelContext {
-    private String directory;
+    private String directory = FSService.getUserRootPath();
     private List<FileInfoDTO> files = new ArrayList<>();
     private FileInfoDTO selectedFile;
-
-    public FilesContext(String directory) {
-        this.directory = directory;
-    }
 
     public List<FileInfoDTO> getFiles() {
         return files;

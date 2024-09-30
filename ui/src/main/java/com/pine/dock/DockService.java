@@ -16,10 +16,6 @@ public class DockService {
     @PInject
     public DockRepository dockRepository;
 
-    public DockDTO getCurrentDockDTO() {
-        return dockRepository.currentDockDTO;
-    }
-
     public void setDockGroupTemplate(DockGroup template) {
         dockRepository.template = template;
     }

@@ -27,15 +27,15 @@ public class Transformation extends Inspectable implements Mutable, Serializable
     public Transformation parent;
 
     public final Matrix4f globalMatrix = new Matrix4f();
-    public final transient Matrix4f localMatrix = new Matrix4f();
+    public final Matrix4f localMatrix = new Matrix4f();
 
-    public transient int changes = 0;
-    public transient int frozenVersion = -1;
+    public int changes = 0;
+    public int frozenVersion = -1;
     public transient PrimitiveRenderRequest renderRequest;
     public transient int renderIndex;
-    public transient int parentChangeId = -1;
+    public int parentChangeId = -1;
 
-    public Transformation(Entity entity, boolean isInstance){
+    public Transformation(Entity entity, boolean isInstance) {
         this.entity = entity;
         this.isInstance = isInstance;
     }
@@ -57,7 +57,7 @@ public class Transformation extends Inspectable implements Mutable, Serializable
 
     @Override
     public void registerChange() {
-        changes++;
+        changes = (int) (Math.random() * 10000);
     }
 
     @Override
