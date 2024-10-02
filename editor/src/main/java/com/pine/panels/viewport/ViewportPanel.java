@@ -5,6 +5,8 @@ import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
+import com.pine.service.AbstractCameraService;
+import com.pine.service.CameraFirstPersonService;
 import com.pine.service.CameraThirdPersonService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
@@ -33,6 +35,11 @@ public class ViewportPanel extends AbstractDockPanel {
     @PInject
     public CameraThirdPersonService cameraThirdPersonService;
 
+    @PInject
+    public CameraFirstPersonService cameraFirstPersonService;
+
+    private AbstractCameraService cameraService;
+
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     private final ImVec2 INV_X = new ImVec2(1, 0);
@@ -41,6 +48,7 @@ public class ViewportPanel extends AbstractDockPanel {
     private GizmoConfigPanel gizmoPanel;
     private ViewportContext context;
     private ImGuiIO io;
+    private boolean isFirstMovement;
 
     @Override
     public void onInitialize() {
@@ -54,21 +62,15 @@ public class ViewportPanel extends AbstractDockPanel {
 
     @Override
     public void tick() {
-        if (io.getMouseWheel() != 0) {
-            cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
-        }
-        if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
-            cameraThirdPersonService.changeCenter(context.camera);
-        }
         cameraRepository.setCurrentCamera(context.camera);
+        updateCamera();
         engine.setTargetFBO(fbo);
         engine.render();
+
     }
 
     @Override
     public void renderInternal() {
-        afterWindow();
-
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
 
@@ -78,8 +80,13 @@ public class ViewportPanel extends AbstractDockPanel {
         gizmo.renderInternal();
     }
 
-    private void afterWindow() {
-        repo.inputFocused = ImGui.isWindowFocused() && (ImGui.isMouseDown(2) || ImGui.isMouseDown(1));
+    private void updateCamera() {
+        if (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode)) {
+            cameraService.handleInput(context.camera, isFirstMovement);
+            isFirstMovement = false;
+        } else {
+            isFirstMovement = true;
+        }
         repo.fasterPressed = ImGui.isKeyPressed(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyPressed(ImGuiKey.W);
         repo.backwardPressed = ImGui.isKeyPressed(ImGuiKey.S);
@@ -91,5 +98,17 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = size.y;
         repo.viewportW = size.x;
+
+        if (context.camera.orbitalMode) {
+            cameraService = cameraThirdPersonService;
+            if (io.getMouseWheel() != 0) {
+                cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
+            }
+            if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
+                cameraThirdPersonService.changeCenter(context.camera);
+            }
+        } else {
+            cameraService = cameraFirstPersonService;
+        }
     }
 }

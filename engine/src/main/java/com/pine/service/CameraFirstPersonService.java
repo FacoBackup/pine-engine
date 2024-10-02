@@ -8,7 +8,7 @@ import com.pine.service.camera.Camera;
 import org.joml.Vector3f;
 
 @PBean
-public class CameraFirstPersonService implements CameraService {
+public class CameraFirstPersonService extends AbstractCameraService {
     private static final float PI_2 = (float) ((float) Math.PI / 2.0);
     private final Vector3f toApplyTranslation = new Vector3f(0);
     private final Vector3f xAxis = new Vector3f();
@@ -22,7 +22,7 @@ public class CameraFirstPersonService implements CameraService {
     public CameraRepository cameraRepository;
 
     @Override
-    public void handleKeyboard(Camera camera) {
+    public void handleInputInternal(Camera camera) {
         Vector3f forward = new Vector3f(
                 (float) -Math.sin(camera.yaw) * (float) Math.cos(camera.pitch),  // -sin(yaw)
                 (float) Math.sin(camera.pitch),                                  // sin(pitch)

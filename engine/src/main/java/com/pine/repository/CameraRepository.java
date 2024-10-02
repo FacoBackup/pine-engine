@@ -17,7 +17,7 @@ import java.util.Map;
 
 @PBean
 public class CameraRepository extends Inspectable implements SerializableRepository {
-    @MutableField(label = "First person camera sensitivity")
+    @MutableField(label = "Camera rotation sensitivity")
     public float sensitivity = 1;
 
     @MutableField(label = "Camera Movement speed")
@@ -106,7 +106,6 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     public final Frustum frustum = new Frustum();
     public float lastMouseX;
     public float lastMouseY;
-    public boolean firstMouseMove = true;
     public Camera currentCamera = new Camera();
     public float deltaX;
     public float deltaY;

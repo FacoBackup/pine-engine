@@ -1,24 +1,17 @@
-package com.pine.tasks;
+package com.pine.service;
 
 import com.pine.EngineUtils;
-import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreUBORepository;
 import com.pine.repository.RuntimeRepository;
-import com.pine.service.CameraFirstPersonService;
-import com.pine.service.CameraService;
-import com.pine.service.CameraThirdPersonService;
 import com.pine.service.camera.Camera;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
+import com.pine.tasks.SyncTask;
 
 @PBean
-public class CameraTask extends AbstractTask implements Loggable {
+public class CameraSyncService implements SyncTask {
     private static final double LOG_2 = Math.log(2);
-    private static final float MIN_MAX_PITCH = (float) Math.toRadians(89.0f);
 
     @PInject
     public CameraRepository repository;
@@ -35,58 +28,26 @@ public class CameraTask extends AbstractTask implements Loggable {
     @PInject
     public CameraThirdPersonService cameraThirdPersonService;
 
-    private CameraService cameraService;
+    private AbstractCameraService cameraService;
     private Camera camera;
 
     @Override
-    protected void tickInternal() {
-        try {
-            camera = repository.currentCamera;
-
-            if (camera.orbitalMode) {
-                cameraService = cameraThirdPersonService;
-            } else {
-                cameraService = cameraFirstPersonService;
-            }
-
-            if (runtimeRepository.inputFocused) {
-                handleMouse();
-                cameraService.handleKeyboard(camera);
-            } else {
-                repository.firstMouseMove = true;
-            }
-
-            if (!camera.isFrozen()) {
-                updateMatrices();
-                updateUBOBuffer();
-                camera.freezeVersion();
-            }
-        } catch (Exception e) {
-            getLogger().error("Error processing camera", e);
-        }
-    }
-
-    private void handleMouse() {
-        float mouseX = runtimeRepository.mouseX;
-        float mouseY = runtimeRepository.mouseY;
-
-        if (repository.firstMouseMove) {
-            repository.lastMouseX = mouseX;
-            repository.lastMouseY = mouseY;
-            repository.firstMouseMove = false;
+    public void sync() {
+        camera = repository.currentCamera;
+        if (camera == null) {
+            return;
         }
 
-        if (mouseX != repository.lastMouseX && mouseY != repository.lastMouseY) {
-            repository.deltaX = (mouseX - repository.lastMouseX) * repository.sensitivity;
-            repository.deltaY = (repository.lastMouseY - mouseY) * repository.sensitivity;
+        if (camera.orbitalMode) {
+            cameraService = cameraThirdPersonService;
+        } else {
+            cameraService = cameraFirstPersonService;
+        }
 
-            camera.yaw -= (float) Math.toRadians(repository.deltaX);
-            camera.pitch += (float) Math.toRadians(repository.deltaY);
-            camera.pitch = Math.max(-MIN_MAX_PITCH, Math.min(MIN_MAX_PITCH, camera.pitch));
-
-            repository.lastMouseX = mouseX;
-            repository.lastMouseY = mouseY;
-            camera.registerChange();
+        if (!camera.isFrozen()) {
+            updateMatrices();
+            updateUBOBuffer();
+            camera.freezeVersion();
         }
     }
 
@@ -97,7 +58,7 @@ public class CameraTask extends AbstractTask implements Loggable {
         repository.frustum.extractPlanes(repository.viewProjectionMatrix);
     }
 
-    public void updateView() {
+    private void updateView() {
         cameraService.createViewMatrix(camera);
         repository.viewMatrix.invert(repository.invViewMatrix);
         repository.staticViewMatrix.set(repository.viewMatrix);
