@@ -84,7 +84,7 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
     protected void renderInternal() {
         GL46.glDisable(GL46.GL_DEPTH_TEST);
         shaderService.bind(shaderRepository.atmosphereShader);
-        cameraRepository.currentCamera.invSkyboxProjectionMatrix.get(invSkyProjectionMatrixB);
+        cameraRepository.invSkyboxProjectionMatrix.get(invSkyProjectionMatrixB);
 
         typeB.put(0, atmosphere.renderingType.getId());
         elapsedTimeB.put(0, atmosphere.elapsedTime);

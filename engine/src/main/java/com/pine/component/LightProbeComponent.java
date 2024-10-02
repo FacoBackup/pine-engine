@@ -5,7 +5,6 @@ import com.pine.inspection.MutableField;
 import com.pine.theme.Icons;
 
 import java.util.LinkedList;
-import java.util.Set;
 
 @PBean
 public class LightProbeComponent extends AbstractComponent<LightProbeComponent> {
@@ -22,11 +21,6 @@ public class LightProbeComponent extends AbstractComponent<LightProbeComponent> 
     }
 
     public LightProbeComponent() {}
-
-    @Override
-    public Set<Class<? extends EntityComponent>> getDependencies() {
-        return Set.of(TransformationComponent.class);
-    }
 
     @Override
     public String getTitle() {

@@ -5,7 +5,7 @@ import com.pine.PInject;
 import com.pine.component.Entity;
 import com.pine.component.PrimitiveComponent;
 import com.pine.component.ResourceRef;
-import com.pine.component.TransformationComponent;
+import com.pine.component.Transformation;
 import com.pine.repository.WorldRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.loader.AbstractResourceLoader;
@@ -30,8 +30,6 @@ import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.*;
-
-import static com.pine.tasks.RenderingTask.TRANSFORMATION_COMP;
 
 @PBean
 public class MeshLoader extends AbstractResourceLoader {
@@ -125,17 +123,16 @@ public class MeshLoader extends AbstractResourceLoader {
             requestProcessingService.addRequest(new AddComponentRequest(PrimitiveComponent.class, entity));
             var primitiveComponent = (PrimitiveComponent) entity.components.get(PrimitiveComponent.class.getSimpleName());
             primitiveComponent.primitive = new ResourceRef<>(primitive.id());
-        } else {
-            requestProcessingService.addRequest(new AddComponentRequest(TransformationComponent.class, entity));
         }
-        createPrimitiveTransformation((TransformationComponent) entity.components.get(TRANSFORMATION_COMP), root);
+
+        createPrimitiveTransformation(entity.transformation, root);
 
         for (var child : root.children) {
             traverseTree(child, entity, processed, scene, request, depth + 1);
         }
     }
 
-    private void createPrimitiveTransformation(TransformationComponent t, MeshInstance instance) {
+    private void createPrimitiveTransformation(Transformation t, MeshInstance instance) {
         Matrix4f transformation = instance.transformation;
         transformation.getTranslation(t.translation);
         transformation.getUnnormalizedRotation(t.rotation);

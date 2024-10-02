@@ -39,21 +39,24 @@ public class EditorWindow extends AbstractWindow {
         engine.prepare(displayW, displayH);
         engine.addModules(List.of(new ToolsModule()));
         appendChild(new ToasterPanel());
+        try {
+            DockDTO dockCenter = new DockDTO(EditorDock.Viewport);
+            DockDTO rightUp = new DockDTO(EditorDock.Hierarchy);
+            DockDTO rightDown = new DockDTO(EditorDock.Inspector);
+            DockDTO downLeft = new DockDTO(EditorDock.Console);
+            DockDTO downRight = new DockDTO(EditorDock.Files);
 
-        DockDTO dockCenter = new DockDTO(EditorDock.Viewport);
-        DockDTO rightUp = new DockDTO(EditorDock.Hierarchy);
-        DockDTO rightDown = new DockDTO(EditorDock.Inspector);
-        DockDTO downLeft = new DockDTO(EditorDock.Console);
-        DockDTO downRight = new DockDTO(EditorDock.Files);
+            dockCenter.setSizeRatioForNodeAtDir(0.17f);
+            rightUp.setSizeRatioForNodeAtDir(0.4f);
+            rightDown.setSizeRatioForNodeAtDir(0.6f);
+            downLeft.setSizeRatioForNodeAtDir(0.22f);
+            downRight.setSizeRatioForNodeAtDir(0.5f);
 
-        dockCenter.setSizeRatioForNodeAtDir(0.17f);
-        rightUp.setSizeRatioForNodeAtDir(0.4f);
-        rightDown.setSizeRatioForNodeAtDir(0.6f);
-        downLeft.setSizeRatioForNodeAtDir(0.22f);
-        downRight.setSizeRatioForNodeAtDir(0.5f);
-
-        dockService.setDockGroupTemplate(new DockGroup("Viewport", dockCenter, List.of(downLeft, downRight), Collections.emptyList(), List.of(rightUp, rightDown)));
-        dockService.createDockGroup();
+            dockService.setDockGroupTemplate(new DockGroup("Viewport", dockCenter, List.of(downLeft, downRight), Collections.emptyList(), List.of(rightUp, rightDown)));
+            dockService.createDockGroup();
+        } catch (Exception e) {
+            getLogger().error(e.getMessage(), e);
+        }
         projectService.loadProject();
     }
 

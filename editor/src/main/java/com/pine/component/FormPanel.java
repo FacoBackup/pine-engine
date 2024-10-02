@@ -29,13 +29,16 @@ public class FormPanel extends AbstractView {
 
         for (FieldDTO field : data.getFieldsAnnotated()) {
             switch (field.getType()) {
-                case STRING:
-                    appendChild(new StringField(field, changeHandler));
-                    break;
                 case CUSTOM:
                     if (ResourceRef.class.isAssignableFrom(field.getField().getType())) {
                         appendChild(new ResourceField(field, changeHandler));
                     }
+                    if(Transformation.class.isAssignableFrom(field.getField().getType())){
+                        appendChild(new TransformationField(field, changeHandler));
+                    }
+                    break;
+                case STRING:
+                    appendChild(new StringField(field, changeHandler));
                     break;
                 case INT:
                     appendChild(new IntField(field, changeHandler));

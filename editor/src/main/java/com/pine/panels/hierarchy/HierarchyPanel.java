@@ -4,7 +4,7 @@ import com.pine.PInject;
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
 import com.pine.component.InstancedPrimitiveComponent;
-import com.pine.component.TransformationComponent;
+import com.pine.component.Transformation;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.repository.EditorStateRepository;
 import com.pine.repository.WorldRepository;
@@ -17,15 +17,18 @@ import imgui.ImVec2;
 import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImString;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
 
 
 public class HierarchyPanel extends AbstractDockPanel {
+    private static final byte BYTE = 1;
     private static final String INSTANCED_COMPONENT = InstancedPrimitiveComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
+    private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
 
     @PInject
     public SelectionService selectionService;
@@ -43,11 +46,13 @@ public class HierarchyPanel extends AbstractDockPanel {
     private Entity onDrag;
     private final ImString search = new ImString();
     private boolean isOnSearch = false;
+    private HierarchyContext context;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
         appendChild(header = new HierarchyHeaderPanel(search));
+        context = (HierarchyContext) getContext();
     }
 
 
@@ -56,69 +61,94 @@ public class HierarchyPanel extends AbstractDockPanel {
         header.render();
         isOnSearch = search.isNotEmpty();
 
-        if (ImGui.beginTable("##hierarchy", 3, ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody)) {
+        if (ImGui.beginTable("##hierarchy" + imguiId, 3, FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.NoHide);
             ImGui.tableSetupColumn(Icons.visibility, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableHeadersRow();
 
-            for (Entity pinned : stateRepository.pinnedEntities) {
-                renderNode(pinned, true);
+            for (Entity pinned : stateRepository.pinnedEntities.values()) {
+                renderNodePinned(pinned);
             }
-            renderNode(world.rootEntity, false);
+            renderNode(world.rootEntity);
         }
         ImGui.endTable();
     }
 
-    private boolean renderNode(Entity node, boolean isPinned) {
-        if ((isOnSearch && !node.isSearchMatch && Objects.equals(node.searchMatchedWith, search.get()))) {
-            return false;
-        }
-        if (isOnSearch) {
-            node.isSearchMatch = node.getTitle().contains(search.get());
-            node.searchMatchedWith = search.get();
-        } else {
-            node.isSearchMatch = true;
-            node.searchMatchedWith = null;
-        }
-
+    private void renderNodePinned(Entity node) {
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
-        if (!isPinned) {
-            int flags = getFlags(node);
-
-            boolean open = ImGui.treeNodeEx(node.getIcon() + node.getTitle() + "##" + node.id, flags);
-            if (node != world.rootEntity) {
-                handleDragDrop(node);
-                renderEntityColumns(node, false);
-            }
-            renderEntityChildren(node, open);
+        if (node.selected) {
+            ImGui.textColored(stateRepository.getAccentColor(), getNodeLabel(node, false));
         } else {
-            if (node.selected) {
-                ImGui.textColored(stateRepository.getAccentColor(), node.getIcon() + node.getTitle());
-            } else {
-                ImGui.text(node.getIcon() + node.getTitle());
-            }
-            renderEntityColumns(node, true);
+            ImGui.text(getNodeLabel(node, false));
         }
-        return node.isSearchMatch;
+        renderEntityColumns(node, true);
     }
 
-    private void renderEntityChildren(Entity node, boolean open) {
+    private boolean renderNode(Entity node) {
+        if ((isOnSearch && context.searchMatch.containsKey(node.id) && Objects.equals(context.searchMatchWith.get(node.id), search.get()))) {
+            return false;
+        }
+
+        boolean isSearchMatch = matchSearch(node);
+        ImGui.tableNextRow();
+        ImGui.tableNextColumn();
+        int flags = getFlags(node);
+        boolean open = ImGui.treeNodeEx(getNodeLabel(node, true), flags);
+
+        if (node != world.rootEntity) {
+            handleDragDrop(node);
+            renderEntityColumns(node, false);
+        }
         if (open) {
-            if (isOnSearch) {
-                for (var child : node.children) {
-                    node.isSearchMatch = node.isSearchMatch || renderNode(child, false);
-                }
+            context.opened.put(node.id, ImGuiTreeNodeFlags.DefaultOpen);
+            renderEntityChildren(node);
+        } else {
+            context.opened.put(node.id, ImGuiTreeNodeFlags.None);
+        }
+
+        return isSearchMatch;
+    }
+
+    private @NotNull String getNodeLabel(Entity node, boolean addId) {
+        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() +  (addId ? ("##" + node.id + imguiId) : "");
+    }
+
+    private boolean matchSearch(Entity node) {
+        boolean isSearchMatch = false;
+        if (isOnSearch) {
+            isSearchMatch = node.getTitle().contains(search.get());
+            if (isSearchMatch) {
+                context.searchMatch.put(node.id, BYTE);
             } else {
-                renderComponents(node);
-                for (var child : node.children) {
-                    renderNode(child, false);
+                context.searchMatch.remove(node.id);
+            }
+            context.searchMatchWith.put(node.id, search.get());
+        } else {
+            context.searchMatch.remove(node.id);
+            context.searchMatchWith.remove(node.id);
+        }
+        return isSearchMatch;
+    }
+
+    private void renderEntityChildren(Entity node) {
+        if (isOnSearch) {
+            for (var child : node.transformation.children) {
+                if (context.searchMatch.containsKey(node.id) || renderNode(child.entity)) {
+                    context.searchMatch.put(node.id, BYTE);
+                } else {
+                    context.searchMatch.remove(node.id);
                 }
             }
-
-            ImGui.treePop();
+        } else {
+            renderComponents(node);
+            for (var child : node.transformation.children) {
+                renderNode(child.entity);
+            }
         }
+
+        ImGui.treePop();
     }
 
     private void renderComponents(Entity node) {
@@ -134,29 +164,31 @@ public class HierarchyPanel extends AbstractDockPanel {
             }
             EntityComponent instanced = node.components.get(INSTANCED_COMPONENT);
             if (instanced != null) {
-                List<TransformationComponent> primitives = ((InstancedPrimitiveComponent) instanced).primitives;
-                for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
-                    TransformationComponent p = primitives.get(i);
-                    ImGui.tableNextRow();
-                    ImGui.tableNextColumn();
-                    String title = Icons.content_copy + " Instance - " + i;
-                    if(stateRepository.primitiveSelected == p) {
-                        ImGui.textColored(stateRepository.getAccentColor(), title);
-                    }else {
-                        ImGui.textDisabled(title);
-                    }
-                    if (ImGui.isItemClicked()) {
-                        stateRepository.primitiveSelected = p;
-                        node.selected = true;
-                    }
-                    ImGui.tableNextColumn();
-                    ImGui.textDisabled("--");
-                    ImGui.tableNextColumn();
-                    ImGui.textDisabled("--");
-
-                }
-
+                renderInstancedComponent(node, (InstancedPrimitiveComponent) instanced);
             }
+        }
+    }
+
+    private void renderInstancedComponent(Entity node, InstancedPrimitiveComponent instanced) {
+        List<Transformation> primitives = instanced.primitives;
+        for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
+            Transformation p = primitives.get(i);
+            ImGui.tableNextRow();
+            ImGui.tableNextColumn();
+            String title = Icons.content_copy + " Instance - " + i;
+            if (stateRepository.primitiveSelected == p) {
+                ImGui.textColored(stateRepository.getAccentColor(), title);
+            } else {
+                ImGui.textDisabled(title);
+            }
+            if (ImGui.isItemClicked()) {
+                stateRepository.primitiveSelected = p;
+                node.selected = true;
+            }
+            ImGui.tableNextColumn();
+            ImGui.textDisabled("--");
+            ImGui.tableNextColumn();
+            ImGui.textDisabled("--");
         }
     }
 
@@ -168,7 +200,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         if (isOnSearch) {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
         }
-        return flags;
+        return flags | context.opened.getOrDefault(node.id, ImGuiTreeNodeFlags.None);
     }
 
     private void renderEntityColumns(Entity node, boolean isPinned) {
@@ -178,16 +210,16 @@ public class HierarchyPanel extends AbstractDockPanel {
         ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
-        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "pinned" : "") + "##v" + node.id, 20, 15)) {
+        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "##vpinned" : "##v") + node.id + imguiId, 20, 15)) {
             node.visible = !node.visible;
         }
         ImGui.tableNextColumn();
-        if (ImGui.button(((node.pinned ? Icons.lock : Icons.lock_open) + (isPinned ? "pinned" : "") + "##p" + node.id), 20, 15)) {
-            node.pinned = !node.pinned;
-            if (node.pinned) {
-                stateRepository.pinnedEntities.add(node);
+        boolean isNodePinned = stateRepository.pinnedEntities.containsKey(node.id);
+        if (ImGui.button(((isNodePinned ? Icons.lock : Icons.lock_open) + (isPinned ? "##ppinned" : "##p") + node.id) + imguiId, 20, 15)) {
+            if (isNodePinned) {
+                stateRepository.pinnedEntities.remove(node.id);
             } else {
-                stateRepository.pinnedEntities.remove(node);
+                stateRepository.pinnedEntities.put(node.id, node);
             }
         }
         ImGui.popStyleColor();
@@ -204,7 +236,6 @@ public class HierarchyPanel extends AbstractDockPanel {
             node.selected = true;
         }
     }
-
 
     private void handleDragDrop(Entity target) {
         if (ImGui.beginDragDropSource()) {

@@ -2,7 +2,6 @@
 
 uniform int shadingModel;
 
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 #include "../uber/ATTRIBUTES.glsl"
 #include "../util/STRONG_BLUR.glsl"

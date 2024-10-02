@@ -13,7 +13,6 @@ public class RuntimeRepository  {
     public boolean rightPressed = false;
     public boolean upPressed = false;
     public boolean downPressed = false;
-    public boolean inputFocused = false;
     public float mouseX = 0;
     public float mouseY = 0;
     public float viewportW = 0;

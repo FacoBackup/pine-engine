@@ -28,6 +28,8 @@ public class Engine {
     @PInject
     public ModulesService modules;
     @PInject
+    public EngineSettingsRepository settingsRepository;
+    @PInject
     public SystemService systemsService;
     @PInject
     public ResourceService resourcesService;
@@ -70,6 +72,7 @@ public class Engine {
     }
 
     public void render() {
+        GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
         for (FrameBufferObject fbo : fboRepository.all) {
             fbo.clear();
         }

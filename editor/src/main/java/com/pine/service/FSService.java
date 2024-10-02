@@ -26,11 +26,13 @@ public class FSService implements Loggable {
     }
 
     public void refreshFiles(String directory, Runnable afterProcessing) {
-        new Thread(() -> {
-            repository.getFilesByDirectory().clear();
-            repository.readFilesForcefully(directory);
-            afterProcessing.run();
-        }).start();
+        if(directory != null) {
+            new Thread(() -> {
+                repository.getFilesByDirectory().clear();
+                repository.readFilesForcefully(directory);
+                afterProcessing.run();
+            }).start();
+        }
     }
 
     public static String getUserRootPath() {

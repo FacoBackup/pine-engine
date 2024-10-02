@@ -1,6 +1,6 @@
 package com.pine.repository.rendering;
 
-import com.pine.component.TransformationComponent;
+import com.pine.component.Transformation;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
 import com.pine.service.resource.primitives.mesh.Primitive;
 
@@ -12,15 +12,15 @@ public class PrimitiveRenderRequest {
     public final MeshRuntimeData runtimeData;
     // TODO - MATERIAL
 
-    public final TransformationComponent transformation;
-    public List<TransformationComponent> transformations;
+    public final Transformation transformation;
+    public List<Transformation> transformations;
     public int renderIndex;
 
-    public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, TransformationComponent transformation) {
+    public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, Transformation transformation) {
         this(primitive, runtimeData, transformation, Collections.emptyList());
     }
 
-    public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, TransformationComponent transformation, List<TransformationComponent> transformations) {
+    public PrimitiveRenderRequest(Primitive primitive, MeshRuntimeData runtimeData, Transformation transformation, List<Transformation> transformations) {
         this.primitive = primitive;
         this.runtimeData = runtimeData;
         this.transformation = transformation;

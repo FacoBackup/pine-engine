@@ -1,17 +1,18 @@
 package com.pine;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public final class Message {
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+public final class Message implements Serializable {
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final String message;
     private final MessageSeverity severity;
     private final Date displayStartTime = new Date();
-    private final String messageWithTime;
+    private final String dateString;
 
     public Message(String message, MessageSeverity severity) {
-        this.messageWithTime = formatter.format(displayStartTime) + " - " + message;
+        this.dateString = formatter.format(displayStartTime);
         this.message = message;
         this.severity = severity;
     }
@@ -28,7 +29,7 @@ public final class Message {
         return displayStartTime;
     }
 
-    public String messageWithTime() {
-        return messageWithTime;
+    public String dateString() {
+        return dateString;
     }
 }

@@ -91,7 +91,7 @@ public abstract class DockPanel extends AbstractView {
             }
             if (dockService.getDockGroups().size() > 1 && ImGui.button(Icons.remove + " Remove selected##removeDockGroup")) {
                 dockService.getDockGroups().remove(dockService.getCurrentDockGroup());
-                dockService.dockRepository.setCurrentDockGroup(dockService.getDockGroups().getLast());
+                dockService.setCurrentDockGroup(dockService.getDockGroups().getLast());
             }
             if (ImGui.button(Icons.add + "##addDockGroup", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                 dockService.createDockGroup();

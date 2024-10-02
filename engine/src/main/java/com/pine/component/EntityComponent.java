@@ -1,11 +1,11 @@
 package com.pine.component;
 
 import com.pine.SerializableRepository;
-import com.pine.repository.ChangeRecord;
+import com.pine.repository.Mutable;
 
 import java.util.Set;
 
-public interface EntityComponent extends ChangeRecord, SerializableRepository {
+public interface EntityComponent extends Mutable, SerializableRepository {
     Entity getEntity();
 
     Set<Class<? extends EntityComponent>> getDependencies();

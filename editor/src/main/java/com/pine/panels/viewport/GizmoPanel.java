@@ -1,7 +1,7 @@
 package com.pine.panels.viewport;
 
 import com.pine.PInject;
-import com.pine.component.TransformationComponent;
+import com.pine.component.Transformation;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorStateRepository;
 import com.pine.view.AbstractView;
@@ -76,19 +76,19 @@ public class GizmoPanel extends AbstractView {
     }
 
     private void decomposeMatrix() {
-        TransformationComponent p = stateRepository.primitiveSelected;
-        p.matrix.set(cacheMatrix);
+        Transformation p = stateRepository.primitiveSelected;
+        p.localMatrix.set(cacheMatrix);
 
-        p.matrix.getTranslation(p.translation);
-        p.matrix.getUnnormalizedRotation(p.rotation);
-        p.matrix.getScale(p.scale);
+        p.localMatrix.getTranslation(p.translation);
+        p.localMatrix.getUnnormalizedRotation(p.rotation);
+        p.localMatrix.getScale(p.scale);
 
         p.registerChange();
     }
 
     private void recomposeMatrix() {
-        stateRepository.primitiveSelected.matrix.get(cacheMatrix);
-        cameraRepository.currentCamera.viewMatrix.get(viewMatrixCache);
-        cameraRepository.currentCamera.projectionMatrix.get(projectionMatrixCache);
+        stateRepository.primitiveSelected.localMatrix.get(cacheMatrix);
+        cameraRepository.viewMatrix.get(viewMatrixCache);
+        cameraRepository.projectionMatrix.get(projectionMatrixCache);
     }
 }

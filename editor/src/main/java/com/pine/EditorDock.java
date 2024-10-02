@@ -2,43 +2,47 @@ package com.pine;
 
 import com.pine.dock.AbstractDockPanel;
 import com.pine.dock.DockDescription;
+import com.pine.panel.AbstractPanelContext;
 import com.pine.panels.console.ConsolePanel;
+import com.pine.panels.files.FilesContext;
 import com.pine.panels.files.FilesPanel;
+import com.pine.panels.hierarchy.HierarchyContext;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
+import com.pine.panels.viewport.ViewportContext;
 import com.pine.panels.viewport.ViewportPanel;
 import com.pine.theme.Icons;
 
 import java.util.Arrays;
 
 public enum EditorDock implements DockDescription {
-    Viewport("Viewport", Icons.ipublic, 0, 0, ViewportPanel.class),
-    Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class),
-    Inspector("Inspector", Icons.search, InspectorPanel.class),
-    Console("Console", Icons.terminal, ConsolePanel.class),
-    Files("Files", Icons.folder_open, FilesPanel.class);
+    Viewport("Viewport", Icons.ipublic, 0, 0, ViewportPanel.class, ViewportContext.class),
+    Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class, HierarchyContext.class),
+    Inspector("Inspector", Icons.search, InspectorPanel.class, null),
+    Console("Console", Icons.terminal, ConsolePanel.class, null),
+    Files("Files", Icons.folder_open, FilesPanel.class, FilesContext.class);
 
     private final String title;
     private final String codePoint;
     private final float paddingX;
     private final float paddingY;
     private final Class<? extends AbstractDockPanel> view;
+    private final Class<? extends AbstractPanelContext> context;
     private static final String[] labels = new String[values().length];
     private Integer optionIndex = null;
 
-    EditorDock(String title, String codePoint, Class<? extends AbstractDockPanel> view) {
-        this(title, codePoint, -1, -1, view);
+    EditorDock(String title, String codePoint, Class<? extends AbstractDockPanel> view, Class<? extends AbstractPanelContext> context) {
+        this(title, codePoint, -1, -1, view, context);
     }
 
-    EditorDock(String title, String codePoint, float paddingX, float paddingY, Class<? extends AbstractDockPanel> view) {
+    EditorDock(String title, String codePoint, float paddingX, float paddingY, Class<? extends AbstractDockPanel> view, Class<? extends AbstractPanelContext> context) {
         this.title = title;
         this.codePoint = codePoint;
         this.paddingX = paddingX;
         this.paddingY = paddingY;
+        this.context = context;
         this.view = view;
-
     }
-
 
     @Override
     public float getPaddingX() {
@@ -84,7 +88,7 @@ public enum EditorDock implements DockDescription {
 
     @Override
     public int getOptionIndex() {
-        if(optionIndex == null){
+        if (optionIndex == null) {
             optionIndex = Arrays.asList(values()).indexOf(this);
         }
         return optionIndex;
@@ -93,5 +97,10 @@ public enum EditorDock implements DockDescription {
     @Override
     public DockDescription getDefault() {
         return EditorDock.Files;
+    }
+
+    @Override
+    public Class<? extends AbstractPanelContext> getContext() {
+        return context;
     }
 }

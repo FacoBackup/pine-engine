@@ -8,7 +8,6 @@ import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 
 import java.util.LinkedList;
-import java.util.Set;
 
 @PBean
 public class SpriteComponent extends AbstractComponent<SpriteComponent> {
@@ -27,12 +26,6 @@ public class SpriteComponent extends AbstractComponent<SpriteComponent> {
     }
 
     public SpriteComponent() {}
-
-    @Override
-    public Set<Class<? extends EntityComponent>> getDependencies() {
-        return Set.of(TransformationComponent.class);
-    }
-
 
     @Override
     public String getTitle() {

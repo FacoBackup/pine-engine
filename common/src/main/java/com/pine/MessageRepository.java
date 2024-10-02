@@ -7,12 +7,12 @@ import java.util.List;
  * Intended for grouping messages system-wide
  */
 @PBean
-public class MessageRepository {
+public class MessageRepository implements SerializableRepository {
     public static final int MAX_MESSAGES_HISTORY = 100;
     public static final int MAX_MESSAGES = 4;
     public static final long MESSAGE_DURATION = 3000;
-    private final Message[] messages = new Message[MAX_MESSAGES];
-    private final List<Message> messagesHistory = new LinkedList<>();
+    public final Message[] messages = new Message[MAX_MESSAGES];
+    public final List<Message> messagesHistory = new LinkedList<>();
 
     public void pushMessage(String message, MessageSeverity severity) {
         pushMessage(new Message(message, severity));

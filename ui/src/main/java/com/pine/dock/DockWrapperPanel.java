@@ -1,6 +1,8 @@
 package com.pine.dock;
 
 import com.pine.Loggable;
+import com.pine.MessageRepository;
+import com.pine.MessageSeverity;
 import com.pine.PInject;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
@@ -40,6 +42,10 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
 
     @PInject
     public DockService dockService;
+
+    @PInject
+    public MessageRepository messageRepository;
+
     private boolean isNotCenter;
 
     public DockWrapperPanel(DockWrapperPanel mainWindow, DockDTO dock) {
@@ -61,6 +67,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             view = dock.getDescription().getView().getConstructor().newInstance();
             view.setSize(size);
             view.setPosition(position);
+            view.setContext(dock.getContext());
             appendChild(view);
 
         } catch (Exception e) {
@@ -94,7 +101,6 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             dock.setSizeY(size.y);
 
             ImGui.getWindowPos(position);
-
             renderHeader();
             view.render();
         }
@@ -121,18 +127,24 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             if (isNotCenter) {
                 ImGui.dummy(ImGui.getContentRegionAvailX() - 55, 0);
                 if (ImGui.button((isDownDirection ? Icons.horizontal_split : Icons.vertical_split) + "##splitView" + imguiId, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-                    DockDTO dto = new DockDTO(dock.getDescription().getDefault());
-                    dto.setOrigin(dock);
-                    dto.setSplitDir(isDownDirection ? ImGuiDir.Down : ImGuiDir.Right);
-                    dto.setSizeRatioForNodeAtDir(.5f);
-                    dto.setOutAtOppositeDir(dock);
-                    DockGroup group = dockService.getCurrentDockGroup();
-                    switch (dock.getDirection()) {
-                        case LEFT -> group.left.add(group.left.indexOf(dock) + 1, dto);
-                        case RIGHT -> group.right.add(group.right.indexOf(dock) + 1, dto);
-                        case BOTTOM -> group.bottom.add(group.bottom.indexOf(dock) + 1, dto);
-                    }
-                    group.isInitialized = false;
+                  try{
+                      DockDTO dto = new DockDTO(dock.getDescription().getDefault());
+                      dto.setOrigin(dock);
+                      dto.setSplitDir(isDownDirection ? ImGuiDir.Down : ImGuiDir.Right);
+                      dto.setSizeRatioForNodeAtDir(.5f);
+                      dto.setOutAtOppositeDir(dock);
+                      DockGroup group = dockService.getCurrentDockGroup();
+                      switch (dock.getDirection()) {
+                          case LEFT -> group.left.add(group.left.indexOf(dock) + 1, dto);
+                          case RIGHT -> group.right.add(group.right.indexOf(dock) + 1, dto);
+                          case BOTTOM -> group.bottom.add(group.bottom.indexOf(dock) + 1, dto);
+                      }
+                      group.isInitialized = false;
+                      messageRepository.pushMessage("Dock space created", MessageSeverity.SUCCESS);
+                  }catch (Exception e){
+                      getLogger().error(e.getMessage(), e);
+                      messageRepository.pushMessage("Error while creating dock space", MessageSeverity.ERROR);
+                  }
                 }
 
                 if (ImGui.button(Icons.close + "##removeView" + imguiId, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {

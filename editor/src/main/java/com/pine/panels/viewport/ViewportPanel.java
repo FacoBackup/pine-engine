@@ -3,15 +3,19 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
-import com.pine.repository.EditorStateRepository;
+import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
-import com.pine.service.SelectionService;
+import com.pine.service.AbstractCameraService;
+import com.pine.service.CameraFirstPersonService;
+import com.pine.service.CameraThirdPersonService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import imgui.ImGui;
+import imgui.ImGuiIO;
 import imgui.ImVec2;
 import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiMouseButton;
 
 import static com.pine.dock.DockWrapperPanel.FRAME_SIZE;
 
@@ -23,14 +27,18 @@ public class ViewportPanel extends AbstractDockPanel {
     public RuntimeRepository repo;
 
     @PInject
+    public CameraRepository cameraRepository;
+
+    @PInject
     public ResourceService resourceService;
 
     @PInject
-    public SelectionService selectionService;
-
+    public CameraThirdPersonService cameraThirdPersonService;
 
     @PInject
-    public EditorStateRepository stateRepository;
+    public CameraFirstPersonService cameraFirstPersonService;
+
+    private AbstractCameraService cameraService;
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
@@ -38,6 +46,9 @@ public class ViewportPanel extends AbstractDockPanel {
     private final ImVec2 INV_Y = new ImVec2(0, 1);
     private GizmoPanel gizmo;
     private GizmoConfigPanel gizmoPanel;
+    private ViewportContext context;
+    private ImGuiIO io;
+    private boolean isFirstMovement;
 
     @Override
     public void onInitialize() {
@@ -45,18 +56,21 @@ public class ViewportPanel extends AbstractDockPanel {
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
         appendChild(gizmoPanel = new GizmoConfigPanel(position, sizeVec));
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
+        context = (ViewportContext) getContext();
+        io = ImGui.getIO();
     }
 
     @Override
     public void tick() {
+        cameraRepository.setCurrentCamera(context.camera);
+        updateCamera();
         engine.setTargetFBO(fbo);
         engine.render();
+
     }
 
     @Override
     public void renderInternal() {
-        afterWindow();
-
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
 
@@ -66,8 +80,13 @@ public class ViewportPanel extends AbstractDockPanel {
         gizmo.renderInternal();
     }
 
-    private void afterWindow() {
-        repo.inputFocused = ImGui.isWindowFocused() && (ImGui.isMouseDown(2) || ImGui.isMouseDown(1));
+    private void updateCamera() {
+        if (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode)) {
+            cameraService.handleInput(context.camera, isFirstMovement);
+            isFirstMovement = false;
+        } else {
+            isFirstMovement = true;
+        }
         repo.fasterPressed = ImGui.isKeyPressed(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyPressed(ImGuiKey.W);
         repo.backwardPressed = ImGui.isKeyPressed(ImGuiKey.S);
@@ -79,5 +98,17 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = size.y;
         repo.viewportW = size.x;
+
+        if (context.camera.orbitalMode) {
+            cameraService = cameraThirdPersonService;
+            if (io.getMouseWheel() != 0) {
+                cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
+            }
+            if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
+                cameraThirdPersonService.changeCenter(context.camera);
+            }
+        } else {
+            cameraService = cameraFirstPersonService;
+        }
     }
 }
