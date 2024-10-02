@@ -62,7 +62,7 @@ public class FrameCompositionSystem extends AbstractSystem implements Loggable {
         intBuffer.put(0, settingsRepository.fxaaEnabled ? 1 : 0);
         shaderService.bindUniform(useFXAA, intBuffer);
 
-        intBuffer.put(0, settingsRepository.filmGrain ? 1 : 0);
+        intBuffer.put(0, cameraRepository.filmGrain ? 1 : 0);
         shaderService.bindUniform(filmGrainEnabled, intBuffer);
 
         floatBuffer.put(0, settingsRepository.fxaaSpanMax);
@@ -74,7 +74,7 @@ public class FrameCompositionSystem extends AbstractSystem implements Loggable {
         floatBuffer.put(0, settingsRepository.fxaaReduceMul);
         shaderService.bindUniform(FXAAReduceMul, floatBuffer);
 
-        floatBuffer.put(0, settingsRepository.filmGrainStrength);
+        floatBuffer.put(0, cameraRepository.filmGrainStrength);
         shaderService.bindUniform(filmGrainStrength, floatBuffer);
 
         shaderService.bindUniform(currentFrame, fboRepository.tempColorWithDepthSampler);

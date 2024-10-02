@@ -74,8 +74,6 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
         if (instance.isValid()) {
             if (code.contains(UBODeclaration.CAMERA_VIEW.getBlockName()))
                 uboService.bindWithShader(uboRepository.cameraViewUBO, instance.getProgram());
-            if (code.contains(UBODeclaration.CAMERA_PROJECTION.getBlockName()))
-                uboService.bindWithShader(uboRepository.cameraProjectionUBO, instance.getProgram());
             if (code.contains(UBODeclaration.LENS_PP.getBlockName()))
                 uboService.bindWithShader(uboRepository.lensPostProcessingUBO, instance.getProgram());
             if (code.contains(UBODeclaration.SSAO.getBlockName()))

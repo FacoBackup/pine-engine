@@ -9,8 +9,8 @@ public abstract class AbstractComponent<T extends EntityComponent> extends Inspe
     public final LinkedList<T> bag;
 
     public final Entity entity;
-    public transient int changes = 0;
-    public transient int frozenVersion = -1;
+    public int changes = 0;
+    public int frozenVersion = -1;
 
     public AbstractComponent(Entity entity, LinkedList<?> bag) {
         this.entity = entity;
@@ -58,7 +58,7 @@ public abstract class AbstractComponent<T extends EntityComponent> extends Inspe
 
     @Override
     public void registerChange() {
-        changes++;
+        changes = (int) (Math.random() * 10000);
     }
 
     @Override

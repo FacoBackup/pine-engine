@@ -15,7 +15,7 @@ import org.joml.Vector3f;
 public class TransformationService {
     private static final float TO_RAD = (float) (Math.PI / 180);
     @PInject
-    public CameraRepository camera;
+    public CameraRepository cameraRepository;
 
     @PInject
     public RenderingRepository renderingRepository;
@@ -64,7 +64,7 @@ public class TransformationService {
     }
 
     public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f frustumBoxDimensions) {
-        distanceAux.set(camera.currentCamera.position);
+        distanceAux.set(cameraRepository.currentCamera.position);
         if (Math.abs(distanceAux.sub(translation).length()) > maxDistanceFromCamera) {
             return true;
         }
@@ -77,6 +77,6 @@ public class TransformationService {
         auxCubeMax.y = translation.y + frustumBoxDimensions.y;
         auxCubeMax.z = translation.x + frustumBoxDimensions.z;
 
-        return !camera.frustum.isCubeInFrustum(auxCubeMin, auxCubeMax);
+        return !cameraRepository.frustum.isCubeInFrustum(auxCubeMin, auxCubeMax);
     }
 }

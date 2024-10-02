@@ -1,6 +1,3 @@
-
-#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
-
 uniform Settings{
     vec4 settings;
     vec4 samples[64];

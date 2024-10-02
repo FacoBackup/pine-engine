@@ -24,30 +24,25 @@ public class CoreUBORepository implements CoreRepository {
     public UniformBufferObject cameraViewUBO;
     public UniformBufferObject lensPostProcessingUBO;
     public UniformBufferObject ssaoUBO;
-    public UniformBufferObject cameraProjectionUBO;
 
-    public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(52);
-    public final FloatBuffer cameraProjectionUBOState = MemoryUtil.memAllocFloat(35);
-    public final FloatBuffer frameCompositionUBOState = MemoryUtil.memAllocFloat(1);
+    public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(87);
     public final FloatBuffer lensPostProcessingUBOState = MemoryUtil.memAllocFloat(1);
     public final FloatBuffer ssaoUBOState = MemoryUtil.memAllocFloat(1);
 
     @Override
     public void initialize() {
-        // TODO - UNIFY INTO SINGLE UBO
         cameraViewUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
                 UBODeclaration.CAMERA_VIEW.getBlockName(),
                 new UBOData("viewProjection", GLSLType.MAT_4),
                 new UBOData("viewMatrix", GLSLType.MAT_4),
                 new UBOData("invViewMatrix", GLSLType.MAT_4),
-                new UBOData("placement", GLSLType.VEC_4)).staticResource());
-        cameraProjectionUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                UBODeclaration.CAMERA_PROJECTION.getBlockName(),
+                new UBOData("placement", GLSLType.VEC_4),
                 new UBOData("projectionMatrix", GLSLType.MAT_4),
                 new UBOData("invProjectionMatrix", GLSLType.MAT_4),
                 new UBOData("bufferResolution", GLSLType.VEC_2),
                 new UBOData("logDepthFC", GLSLType.FLOAT),
-                new UBOData("logC", GLSLType.FLOAT)).staticResource());
+                new UBOData("logC", GLSLType.FLOAT)
+        ).staticResource());
 
         // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
         lensPostProcessingUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(

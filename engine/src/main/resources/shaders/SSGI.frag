@@ -6,8 +6,6 @@
 #define DEPTH_THRESHOLD 1.2
 #define PI2 6.2831853
 
-#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
-
 in vec2 texCoords;
 
 uniform sampler2D previousFrame;

@@ -23,6 +23,7 @@ import java.util.Objects;
 
 
 public class HierarchyPanel extends AbstractDockPanel {
+    private static final byte BYTE = 1;
     private static final String INSTANCED_COMPONENT = InstancedPrimitiveComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
@@ -44,11 +45,13 @@ public class HierarchyPanel extends AbstractDockPanel {
     private Entity onDrag;
     private final ImString search = new ImString();
     private boolean isOnSearch = false;
+    private HierarchyContext context;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
         appendChild(header = new HierarchyHeaderPanel(search));
+        context = (HierarchyContext) getContext();
     }
 
 
@@ -63,7 +66,7 @@ public class HierarchyPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableHeadersRow();
 
-            for (Entity pinned : stateRepository.pinnedEntities) {
+            for (Entity pinned : stateRepository.pinnedEntities.values()) {
                 renderNode(pinned, true);
             }
             renderNode(world.rootEntity, false);
@@ -72,28 +75,28 @@ public class HierarchyPanel extends AbstractDockPanel {
     }
 
     private boolean renderNode(Entity node, boolean isPinned) {
-        if ((isOnSearch && !node.isSearchMatch && Objects.equals(node.searchMatchedWith, search.get()))) {
+        if ((isOnSearch && context.searchMatch.containsKey(node.id) && Objects.equals(context.searchMatchWith.get(node.id), search.get()))) {
             return false;
         }
-        if (isOnSearch) {
-            node.isSearchMatch = node.getTitle().contains(search.get());
-            node.searchMatchedWith = search.get();
-        } else {
-            node.isSearchMatch = true;
-            node.searchMatchedWith = null;
-        }
+
+        boolean isSearchMatch = matchSearch(node);
 
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
         if (!isPinned) {
             int flags = getFlags(node);
 
-            boolean open = ImGui.treeNodeEx((world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar)  + node.getTitle() + "##" + node.id + imguiId, flags);
+            boolean open = ImGui.treeNodeEx((world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + "##" + node.id + imguiId, flags);
             if (node != world.rootEntity) {
                 handleDragDrop(node);
                 renderEntityColumns(node, false);
             }
-            renderEntityChildren(node, open);
+            if (open) {
+                context.opened.put(node.id, ImGuiTreeNodeFlags.DefaultOpen);
+                renderEntityChildren(node);
+            }else{
+                context.opened.put(node.id, ImGuiTreeNodeFlags.None);
+            }
         } else {
             if (node.selected) {
                 ImGui.textColored(stateRepository.getAccentColor(), node.getIcon() + node.getTitle());
@@ -102,24 +105,43 @@ public class HierarchyPanel extends AbstractDockPanel {
             }
             renderEntityColumns(node, true);
         }
-        return node.isSearchMatch;
+        return isSearchMatch;
     }
 
-    private void renderEntityChildren(Entity node, boolean open) {
-        if (open) {
-            if (isOnSearch) {
-                for (var child : node.transformation.children) {
-                    node.isSearchMatch = node.isSearchMatch || renderNode(child.entity, false);
-                }
+    private boolean matchSearch(Entity node) {
+        boolean isSearchMatch = false;
+        if (isOnSearch) {
+            isSearchMatch = node.getTitle().contains(search.get());
+            if (isSearchMatch) {
+                context.searchMatch.put(node.id, BYTE);
             } else {
-                renderComponents(node);
-                for (var child : node.transformation.children) {
-                    renderNode(child.entity, false);
+                context.searchMatch.remove(node.id);
+            }
+            context.searchMatchWith.put(node.id, search.get());
+        } else {
+            context.searchMatch.remove(node.id);
+            context.searchMatchWith.remove(node.id);
+        }
+        return isSearchMatch;
+    }
+
+    private void renderEntityChildren(Entity node) {
+        if (isOnSearch) {
+            for (var child : node.transformation.children) {
+                if (context.searchMatch.containsKey(node.id) || renderNode(child.entity, false)) {
+                    context.searchMatch.put(node.id, BYTE);
+                } else {
+                    context.searchMatch.remove(node.id);
                 }
             }
-
-            ImGui.treePop();
+        } else {
+            renderComponents(node);
+            for (var child : node.transformation.children) {
+                renderNode(child.entity, false);
+            }
         }
+
+        ImGui.treePop();
     }
 
     private void renderComponents(Entity node) {
@@ -171,7 +193,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         if (isOnSearch) {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
         }
-        return flags;
+        return flags | context.opened.getOrDefault(node.id, ImGuiTreeNodeFlags.None);
     }
 
     private void renderEntityColumns(Entity node, boolean isPinned) {
@@ -181,16 +203,16 @@ public class HierarchyPanel extends AbstractDockPanel {
         ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
-        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "pinned" : "") + "##v" + node.id + imguiId, 20, 15)) {
+        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "##vpinned" : "##v") + node.id + imguiId, 20, 15)) {
             node.visible = !node.visible;
         }
         ImGui.tableNextColumn();
-        if (ImGui.button(((node.pinned ? Icons.lock : Icons.lock_open) + (isPinned ? "pinned" : "") + "##p" + node.id) + imguiId, 20, 15)) {
-            node.pinned = !node.pinned;
-            if (node.pinned) {
-                stateRepository.pinnedEntities.add(node);
+        boolean isNodePinned = stateRepository.pinnedEntities.containsKey(node.id);
+        if (ImGui.button(((isNodePinned ? Icons.lock : Icons.lock_open) + (isPinned ? "##ppinned" : "##p") + node.id) + imguiId, 20, 15)) {
+            if (isNodePinned) {
+                stateRepository.pinnedEntities.remove(node.id);
             } else {
-                stateRepository.pinnedEntities.remove(node);
+                stateRepository.pinnedEntities.put(node.id, node);
             }
         }
         ImGui.popStyleColor();
@@ -207,7 +229,6 @@ public class HierarchyPanel extends AbstractDockPanel {
             node.selected = true;
         }
     }
-
 
     private void handleDragDrop(Entity target) {
         if (ImGui.beginDragDropSource()) {

@@ -7,7 +7,6 @@ const mat4  ROTATION_MATRIX = mat4(
 );
 
 #include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
-#include "./buffer_objects/CAMERA_PROJECTION_INFO.glsl"
 
 uniform mat4 transformationMatrix;
 uniform mat4 settings;

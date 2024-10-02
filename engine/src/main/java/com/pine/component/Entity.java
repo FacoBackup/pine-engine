@@ -24,10 +24,6 @@ public class Entity extends Inspectable implements Serializable {
     public final String id;
     public final long creationDate = System.currentTimeMillis();
     public boolean visible = true;
-
-    public transient boolean isSearchMatch;
-    public String searchMatchedWith;
-    public boolean pinned;
     public boolean selected;
 
     public Entity(String id, String name) {

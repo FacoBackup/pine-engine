@@ -16,7 +16,9 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 @PBean
 public class EditorStateRepository extends Inspectable implements SerializableRepository {
@@ -73,7 +75,7 @@ public class EditorStateRepository extends Inspectable implements SerializableRe
     public final ImInt shadingModelOption = new ImInt(DebugShadingModel.RANDOM.getId());
     public boolean showOnlyEntitiesHierarchy = false;
 
-    public LinkedList<Entity> pinnedEntities = new LinkedList<>();
+    public Map<String, Entity> pinnedEntities = new HashMap<>();
     public Transformation primitiveSelected = null;
     public Entity mainSelection = null;
     public final LinkedList<Entity> selected = new LinkedList<>();

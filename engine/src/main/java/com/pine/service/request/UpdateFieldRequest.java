@@ -55,7 +55,6 @@ public class UpdateFieldRequest extends AbstractRequest {
                 case COLOR -> {
                     var field = (Color) fieldDTO.getValue();
                     field.set((float[]) newValue);
-                    field.normalize();
                 }
                 default -> fieldDTO.getField().set(fieldDTO.getInstance(), newValue);
             }

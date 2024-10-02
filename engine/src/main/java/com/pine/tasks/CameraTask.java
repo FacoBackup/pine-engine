@@ -7,12 +7,18 @@ import com.pine.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreUBORepository;
 import com.pine.repository.RuntimeRepository;
+import com.pine.service.CameraFirstPersonService;
+import com.pine.service.CameraService;
+import com.pine.service.CameraThirdPersonService;
 import com.pine.service.camera.Camera;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @PBean
 public class CameraTask extends AbstractTask implements Loggable {
     private static final double LOG_2 = Math.log(2);
+    private static final float MIN_MAX_PITCH = (float) Math.toRadians(89.0f);
 
     @PInject
     public CameraRepository repository;
@@ -23,100 +29,41 @@ public class CameraTask extends AbstractTask implements Loggable {
     @PInject
     public RuntimeRepository runtimeRepository;
 
+    @PInject
+    public CameraFirstPersonService cameraFirstPersonService;
+
+    @PInject
+    public CameraThirdPersonService cameraThirdPersonService;
+
+    private CameraService cameraService;
+    private Camera camera;
+
     @Override
     protected void tickInternal() {
         try {
+            camera = repository.currentCamera;
+
+            if (camera.orbitalMode) {
+                cameraService = cameraThirdPersonService;
+            } else {
+                cameraService = cameraFirstPersonService;
+            }
+
             if (runtimeRepository.inputFocused) {
                 handleMouse();
-                handleKeyboard();
-                rotateCamera();
+                cameraService.handleKeyboard(camera);
             } else {
                 repository.firstMouseMove = true;
             }
 
-            updateMatrices();
-            updateUBOBuffer();
+            if (!camera.isFrozen()) {
+                updateMatrices();
+                updateUBOBuffer();
+                camera.freezeVersion();
+            }
         } catch (Exception e) {
             getLogger().error("Error processing camera", e);
         }
-    }
-
-    private void rotateCamera() {
-        Quaternionf camRot = repository.currentCamera.rotationBuffer;
-
-        repository.pitchQ.identity().rotateX((float) Math.toRadians(repository.pitch));
-        camRot.identity().rotateY((float) Math.toRadians(repository.yaw)).mul(repository.pitchQ);
-        repository.currentCamera.translationBuffer.add(repository.toApplyTranslation);
-    }
-
-    private void handleKeyboard() {
-        float multiplier = runtimeRepository.fasterPressed ? 10 * repository.movementSpeed : repository.movementSpeed;
-        if (runtimeRepository.leftPressed) {
-            repository.toApplyTranslation.x -= multiplier;
-        }
-        if (runtimeRepository.rightPressed) {
-            repository.toApplyTranslation.x += multiplier;
-        }
-        if (runtimeRepository.backwardPressed) {
-            if (repository.currentCamera.isOrthographic) {
-                repository.currentCamera.orthographicProjectionSize += multiplier;
-            } else {
-                repository.toApplyTranslation.z += multiplier;
-            }
-        }
-        if (runtimeRepository.forwardPressed) {
-            if (repository.currentCamera.isOrthographic) {
-                repository.currentCamera.orthographicProjectionSize -= multiplier;
-            } else {
-                repository.toApplyTranslation.z -= multiplier;
-            }
-        }
-    }
-
-    private void updateMatrices() {
-        final Camera camera = repository.currentCamera;
-
-//        float elapsed = clock.elapsed;
-//        float tSmoothing = CameraNotificationDecoder.translationSmoothing;
-//        float incrementTranslation = tSmoothing == 0 ? 1 : 1 - (float) Math.pow(.001, elapsed * tSmoothing);
-//        repository.currentCamera.currentTranslation.lerp(repository.currentCamera.translationBuffer, incrementTranslation);
-//        repository.currentCamera.currentRotation.set(repository.currentCamera.rotationBuffer);
-        updateProjection();
-        updateView();
-        camera.viewProjectionMatrix.set(camera.projectionMatrix).mul(camera.viewMatrix);
-
-        repository.toApplyTranslation.x = 0;
-        repository.toApplyTranslation.y = 0;
-        repository.toApplyTranslation.z = 0;
-        repository.frustum.extractPlanes(camera.viewProjectionMatrix);
-    }
-
-    public void updateView() {
-        final Camera camera = repository.currentCamera;
-        camera.invViewMatrix.identity();
-
-        camera.invViewMatrix.rotate(camera.rotationBuffer).translate(camera.translationBuffer);
-        camera.invViewMatrix.invert(camera.viewMatrix);
-        camera.position.set(camera.invViewMatrix.m30(), camera.invViewMatrix.m31(), camera.invViewMatrix.m32());
-
-        camera.staticViewMatrix.set(camera.viewMatrix);
-        camera.staticViewMatrix.m30(0).m31(0).m32(0);
-    }
-
-    private void updateProjection() {
-        Camera camera = repository.currentCamera;
-
-        camera.aspectRatio = runtimeRepository.viewportW / runtimeRepository.viewportH;
-        if (camera.isOrthographic) {
-            camera.projectionMatrix.setOrtho(-camera.orthographicProjectionSize, camera.orthographicProjectionSize,
-                    -camera.orthographicProjectionSize / camera.aspectRatio, camera.orthographicProjectionSize / camera.aspectRatio,
-                    -camera.zFar, camera.zFar);
-        } else {
-            camera.projectionMatrix.setPerspective(camera.fov, camera.aspectRatio, camera.zNear, camera.zFar);
-        }
-        camera.skyboxProjectionMatrix.setPerspective(camera.fov, camera.aspectRatio, 0.1f, 1000f);
-        camera.invSkyboxProjectionMatrix.set(camera.skyboxProjectionMatrix).invert();
-        camera.invProjectionMatrix.set(camera.projectionMatrix).invert();
     }
 
     private void handleMouse() {
@@ -129,30 +76,59 @@ public class CameraTask extends AbstractTask implements Loggable {
             repository.firstMouseMove = false;
         }
 
-        float deltaX = (mouseX - repository.lastMouseX) * repository.sensitivity;
-        float deltaY = (repository.lastMouseY - mouseY) * repository.sensitivity;
+        if (mouseX != repository.lastMouseX && mouseY != repository.lastMouseY) {
+            repository.deltaX = (mouseX - repository.lastMouseX) * repository.sensitivity;
+            repository.deltaY = (repository.lastMouseY - mouseY) * repository.sensitivity;
 
-        repository.yaw -= deltaX;
-        repository.pitch += deltaY;
-        repository.pitch = Math.max(-89.0f, Math.min(89.0f, repository.pitch));
+            camera.yaw -= (float) Math.toRadians(repository.deltaX);
+            camera.pitch += (float) Math.toRadians(repository.deltaY);
+            camera.pitch = Math.max(-MIN_MAX_PITCH, Math.min(MIN_MAX_PITCH, camera.pitch));
 
-        repository.lastMouseX = mouseX;
-        repository.lastMouseY = mouseY;
+            repository.lastMouseX = mouseX;
+            repository.lastMouseY = mouseY;
+            camera.registerChange();
+        }
+    }
+
+    private void updateMatrices() {
+        updateProjection();
+        updateView();
+        repository.viewProjectionMatrix.set(repository.projectionMatrix).mul(repository.viewMatrix);
+        repository.frustum.extractPlanes(repository.viewProjectionMatrix);
+    }
+
+    public void updateView() {
+        cameraService.createViewMatrix(camera);
+        repository.viewMatrix.invert(repository.invViewMatrix);
+        repository.staticViewMatrix.set(repository.viewMatrix);
+        repository.staticViewMatrix.m30(0).m31(0).m32(0);
+    }
+
+    private void updateProjection() {
+        camera.aspectRatio = runtimeRepository.viewportW / runtimeRepository.viewportH;
+        if (camera.isOrthographic) {
+            repository.projectionMatrix.setOrtho(-camera.orthographicProjectionSize, camera.orthographicProjectionSize,
+                    -camera.orthographicProjectionSize / camera.aspectRatio, camera.orthographicProjectionSize / camera.aspectRatio,
+                    -camera.zFar, camera.zFar);
+        } else {
+            repository.projectionMatrix.setPerspective(camera.fov, camera.aspectRatio, camera.zNear, camera.zFar);
+        }
+        repository.skyboxProjectionMatrix.setPerspective(camera.fov, camera.aspectRatio, 0.1f, 1000f);
+        repository.invSkyboxProjectionMatrix.set(repository.skyboxProjectionMatrix).invert();
+        repository.invProjectionMatrix.set(repository.projectionMatrix).invert();
     }
 
     private void updateUBOBuffer() {
         var V = uboRepository.cameraViewUBOState;
-        EngineUtils.copyWithOffset(V, repository.currentCamera.viewProjectionMatrix, 0);
-        EngineUtils.copyWithOffset(V, repository.currentCamera.viewMatrix, 16);
-        EngineUtils.copyWithOffset(V, repository.currentCamera.invViewMatrix, 32);
-        EngineUtils.copyWithOffset(V, repository.currentCamera.position, 48);
+        EngineUtils.copyWithOffset(V, repository.viewProjectionMatrix, 0);
+        EngineUtils.copyWithOffset(V, repository.viewMatrix, 16);
+        EngineUtils.copyWithOffset(V, repository.invViewMatrix, 32);
+        EngineUtils.copyWithOffset(V, camera.position, 48);
+        EngineUtils.copyWithOffset(V, repository.projectionMatrix, 52);
+        EngineUtils.copyWithOffset(V, repository.invProjectionMatrix, 68);
 
-        var P = uboRepository.cameraProjectionUBOState;
-        EngineUtils.copyWithOffset(P, repository.currentCamera.projectionMatrix, 0);
-        EngineUtils.copyWithOffset(P, repository.currentCamera.invProjectionMatrix, 16);
-
-        P.put(32, runtimeRepository.viewportW);
-        P.put(33, runtimeRepository.viewportH);
-        P.put(34, (float) (2.0 / (Math.log(repository.currentCamera.projectionMatrix.get(0, 0) + 1) / LOG_2)));
+        V.put(84, runtimeRepository.viewportW);
+        V.put(85, runtimeRepository.viewportH);
+        V.put(86, (float) (2.0 / (Math.log(repository.projectionMatrix.get(0, 0) + 1) / LOG_2)));
     }
 }

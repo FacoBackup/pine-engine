@@ -7,7 +7,6 @@
 #define APERTURE 7.8
 
 #include "./POST_PROCESSING_UNIFORMS.glsl"
-#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 #include "./util/SCENE_DEPTH_UTILS.glsl"
 
 in vec2 texCoords;

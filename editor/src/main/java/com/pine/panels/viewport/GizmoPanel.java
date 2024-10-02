@@ -88,7 +88,7 @@ public class GizmoPanel extends AbstractView {
 
     private void recomposeMatrix() {
         stateRepository.primitiveSelected.localMatrix.get(cacheMatrix);
-        cameraRepository.currentCamera.viewMatrix.get(viewMatrixCache);
-        cameraRepository.currentCamera.projectionMatrix.get(projectionMatrixCache);
+        cameraRepository.viewMatrix.get(viewMatrixCache);
+        cameraRepository.projectionMatrix.get(projectionMatrixCache);
     }
 }

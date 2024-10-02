@@ -3,13 +3,17 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
+import com.pine.service.CameraThirdPersonService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import imgui.ImGui;
+import imgui.ImGuiIO;
 import imgui.ImVec2;
 import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiMouseButton;
 
 import static com.pine.dock.DockWrapperPanel.FRAME_SIZE;
 
@@ -21,7 +25,13 @@ public class ViewportPanel extends AbstractDockPanel {
     public RuntimeRepository repo;
 
     @PInject
+    public CameraRepository cameraRepository;
+
+    @PInject
     public ResourceService resourceService;
+
+    @PInject
+    public CameraThirdPersonService cameraThirdPersonService;
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
@@ -29,6 +39,8 @@ public class ViewportPanel extends AbstractDockPanel {
     private final ImVec2 INV_Y = new ImVec2(0, 1);
     private GizmoPanel gizmo;
     private GizmoConfigPanel gizmoPanel;
+    private ViewportContext context;
+    private ImGuiIO io;
 
     @Override
     public void onInitialize() {
@@ -36,10 +48,19 @@ public class ViewportPanel extends AbstractDockPanel {
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
         appendChild(gizmoPanel = new GizmoConfigPanel(position, sizeVec));
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
+        context = (ViewportContext) getContext();
+        io = ImGui.getIO();
     }
 
     @Override
     public void tick() {
+        if (io.getMouseWheel() != 0) {
+            cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
+        }
+        if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
+            cameraThirdPersonService.changeCenter(context.camera);
+        }
+        cameraRepository.setCurrentCamera(context.camera);
         engine.setTargetFBO(fbo);
         engine.render();
     }

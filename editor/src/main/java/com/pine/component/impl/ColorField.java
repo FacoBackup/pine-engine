@@ -4,11 +4,14 @@ import com.pine.component.AbstractFormField;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import imgui.ImGui;
+import imgui.flag.ImGuiColorEditFlags;
 
 import java.util.function.BiConsumer;
 
+import static java.lang.Float.NaN;
+
 public class ColorField extends AbstractFormField {
-    private final float[] values = new float[3];
+    private final float[] values = new float[4];
 
     public ColorField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
@@ -20,7 +23,8 @@ public class ColorField extends AbstractFormField {
 
     @Override
     public void renderInternal() {
-        if (ImGui.colorPicker3(dto.getLabel(), values)) {
+        ImGui.text(dto.getLabel());
+        if (ImGui.colorPicker3(dto.getId(), values, ImGuiColorEditFlags.NoSidePreview | ImGuiColorEditFlags.DisplayRGB | ImGuiColorEditFlags.NoAlpha)) {
             changerHandler.accept(dto, values);
         }
     }
