@@ -17,6 +17,7 @@ import imgui.ImVec2;
 import imgui.ImVec4;
 import imgui.flag.*;
 import imgui.type.ImString;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -67,45 +68,51 @@ public class HierarchyPanel extends AbstractDockPanel {
             ImGui.tableHeadersRow();
 
             for (Entity pinned : stateRepository.pinnedEntities.values()) {
-                renderNode(pinned, true);
+                renderNodePinned(pinned);
             }
-            renderNode(world.rootEntity, false);
+            renderNode(world.rootEntity);
         }
         ImGui.endTable();
     }
 
-    private boolean renderNode(Entity node, boolean isPinned) {
+    private void renderNodePinned(Entity node) {
+        ImGui.tableNextRow();
+        ImGui.tableNextColumn();
+        if (node.selected) {
+            ImGui.textColored(stateRepository.getAccentColor(), getNodeLabel(node, false));
+        } else {
+            ImGui.text(getNodeLabel(node, false));
+        }
+        renderEntityColumns(node, true);
+    }
+
+    private boolean renderNode(Entity node) {
         if ((isOnSearch && context.searchMatch.containsKey(node.id) && Objects.equals(context.searchMatchWith.get(node.id), search.get()))) {
             return false;
         }
 
         boolean isSearchMatch = matchSearch(node);
-
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
-        if (!isPinned) {
-            int flags = getFlags(node);
+        int flags = getFlags(node);
+        boolean open = ImGui.treeNodeEx(getNodeLabel(node, true), flags);
 
-            boolean open = ImGui.treeNodeEx((world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + "##" + node.id + imguiId, flags);
-            if (node != world.rootEntity) {
-                handleDragDrop(node);
-                renderEntityColumns(node, false);
-            }
-            if (open) {
-                context.opened.put(node.id, ImGuiTreeNodeFlags.DefaultOpen);
-                renderEntityChildren(node);
-            }else{
-                context.opened.put(node.id, ImGuiTreeNodeFlags.None);
-            }
-        } else {
-            if (node.selected) {
-                ImGui.textColored(stateRepository.getAccentColor(), node.getIcon() + node.getTitle());
-            } else {
-                ImGui.text(node.getIcon() + node.getTitle());
-            }
-            renderEntityColumns(node, true);
+        if (node != world.rootEntity) {
+            handleDragDrop(node);
+            renderEntityColumns(node, false);
         }
+        if (open) {
+            context.opened.put(node.id, ImGuiTreeNodeFlags.DefaultOpen);
+            renderEntityChildren(node);
+        } else {
+            context.opened.put(node.id, ImGuiTreeNodeFlags.None);
+        }
+
         return isSearchMatch;
+    }
+
+    private @NotNull String getNodeLabel(Entity node, boolean addId) {
+        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() +  (addId ? ("##" + node.id + imguiId) : "");
     }
 
     private boolean matchSearch(Entity node) {
@@ -128,7 +135,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     private void renderEntityChildren(Entity node) {
         if (isOnSearch) {
             for (var child : node.transformation.children) {
-                if (context.searchMatch.containsKey(node.id) || renderNode(child.entity, false)) {
+                if (context.searchMatch.containsKey(node.id) || renderNode(child.entity)) {
                     context.searchMatch.put(node.id, BYTE);
                 } else {
                     context.searchMatch.remove(node.id);
@@ -137,7 +144,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         } else {
             renderComponents(node);
             for (var child : node.transformation.children) {
-                renderNode(child.entity, false);
+                renderNode(child.entity);
             }
         }
 
