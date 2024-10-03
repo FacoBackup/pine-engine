@@ -1,4 +1,4 @@
-package com.pine;
+package com.pine.window;
 
 import com.pine.dock.AbstractDockPanel;
 import com.pine.dock.DockDescription;

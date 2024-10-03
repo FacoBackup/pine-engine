@@ -19,9 +19,6 @@ public class PInjector implements Loggable {
      */
     public PInjector(String rootPackageName) {
         this.rootPackageName = rootPackageName;
-        injectables.add(this);
-        collectInjectables();
-        initializeInjectables();
     }
 
     private void initializeInjectables() {
@@ -30,14 +27,22 @@ public class PInjector implements Loggable {
         }
 
         for (var in : injectables) {
-            if (in instanceof Initializable) {
-                ((Initializable) in).onInitialize();
+            try {
+                if (in instanceof Initializable) {
+                    ((Initializable) in).onInitialize();
+                }
+            } catch (Exception ex) {
+                getLogger().error(ex.getMessage(), ex);
             }
         }
 
         for (var in : injectables) {
-            if (in instanceof LateInitializable) {
-                ((LateInitializable) in).lateInitialize();
+            try {
+                if (in instanceof LateInitializable) {
+                    ((LateInitializable) in).lateInitialize();
+                }
+            } catch (Exception ex) {
+                getLogger().error(ex.getMessage(), ex);
             }
         }
     }
@@ -136,15 +141,15 @@ public class PInjector implements Loggable {
         return injectables.stream().filter(a -> a.getClass() == clazz).findFirst().orElse(null);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> List<T> getBeanList(Class<T> clazz) {
-        List<T> result = new ArrayList<>();
-
-        for (Object i : injectables) {
-            if (clazz.isAssignableFrom(i.getClass())) {
-                result.add((T) i);
+    public void reset() {
+        for (var injectable : injectables) {
+            if (Disposable.class.isAssignableFrom(injectable.getClass())) {
+                ((Disposable) injectable).dispose();
             }
         }
-        return result;
+        injectables.clear();
+        injectables.add(this);
+        collectInjectables();
+        initializeInjectables();
     }
 }

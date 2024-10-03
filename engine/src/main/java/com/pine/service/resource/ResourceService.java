@@ -1,5 +1,6 @@
 package com.pine.service.resource;
 
+import com.pine.Disposable;
 import com.pine.Loggable;
 import com.pine.PBean;
 import com.pine.PInject;
@@ -13,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @PBean
-public class ResourceService implements Loggable, SyncTask {
+public class ResourceService implements Loggable, SyncTask, Disposable {
     public static final int MAX_TIMEOUT = 5 * 60 * 1000;
 
     @PInject
@@ -90,8 +91,9 @@ public class ResourceService implements Loggable, SyncTask {
         return resources.values().stream().filter(r -> r.getResourceType().equals(type)).collect(Collectors.toList());
     }
 
-    public void shutdown() {
-        implementations.forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
+    @Override
+    public void dispose() {
+        resources.values().forEach(Disposable::dispose);
     }
 
     @Override

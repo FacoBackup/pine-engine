@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 @PBean
-public class EditorStateRepository extends Inspectable implements SerializableRepository {
+public class SettingsRepository extends Inspectable implements SerializableRepository {
     @MutableField(label = "Show grid")
     public boolean showGrid = true;
 

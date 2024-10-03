@@ -1,6 +1,7 @@
 package com.pine.service;
 
 import com.pine.*;
+import com.pine.repository.ContentBrowserRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
@@ -30,6 +31,9 @@ public class ProjectService implements Loggable, Initializable {
 
     @PInject
     public ProjectStateRepository projectStateRepository;
+
+    @PInject
+    public ContentBrowserRepository contentBrowserRepository;
 
     private String previousOpenedProject = null;
 
@@ -97,7 +101,7 @@ public class ProjectService implements Loggable, Initializable {
             Files.write(Path.of(CONFIG_NAME), previousOpenedProject.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             Files.write(Path.of(previousOpenedProject + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (Exception e) {
-            getLogger().warn("Could not save project cache to {}", CONFIG_NAME, e);
+            getLogger().warn("Could not save project to {}", CONFIG_NAME, e);
         }
     }
 
@@ -118,8 +122,9 @@ public class ProjectService implements Loggable, Initializable {
 
     public void newProject() {
         previousOpenedProject = selectDirectory();
+        contentBrowserRepository.initialize(previousOpenedProject);
         writeProject();
-        System.exit(0);
+        injector.reset();
         // TODO - Clear injection cache and re-create editor window
     }
 
@@ -128,11 +133,7 @@ public class ProjectService implements Loggable, Initializable {
             NativeFileDialog.NFD_Init();
             String selectedDirectory = openDirectoryDialog();
             NativeFileDialog.NFD_Quit();
-            if (selectedDirectory != null) {
-                return selectedDirectory;
-            } else {
-                return null;
-            }
+            return selectedDirectory;
         }
     }
 

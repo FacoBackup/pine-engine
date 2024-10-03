@@ -2,7 +2,7 @@ package com.pine.panels.viewport;
 
 import com.pine.PInject;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.EditorStateRepository;
+import com.pine.repository.SettingsRepository;
 import com.pine.theme.Icons;
 import com.pine.tools.types.DebugShadingModel;
 import com.pine.view.AbstractView;
@@ -14,14 +14,11 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
 import imgui.type.ImBoolean;
 
-import javax.swing.*;
-
-import static com.pine.dock.DockWrapperPanel.FRAME_SIZE;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class GizmoConfigPanel extends AbstractView {
+    public static final int SIZE = 34;
     private static final ImVec2 SPACING = new ImVec2(0, 0);
-    private static final ImVec2 PADDING = new ImVec2(4, 4);
     private static final String[] SNAP_ROTATE_OPTIONS = new String[]{"5", "10", "15", "30", "45"};
     private static final String[] SNAP_TRANSLATE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
     private static final String[] SNAP_SCALE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
@@ -33,30 +30,25 @@ public class GizmoConfigPanel extends AbstractView {
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
 
     @PInject
-    public EditorStateRepository settingsRepository;
+    public SettingsRepository settingsRepository;
 
     @PInject
     public CameraRepository cameraRepository;
 
     private final ImGuiIO io;
     private final ImVec2 size;
-    private final ImVec2 position;
 
-    public GizmoConfigPanel(ImVec2 position, ImVec2 size) {
+    public GizmoConfigPanel(ImVec2 size) {
         io = ImGui.getIO();
         this.size = size;
-        this.position = position;
     }
 
     @Override
     public void renderInternal() {
-        ImGui.setNextWindowSize(size.x, 32);
-        ImGui.setNextWindowPos(position.x, position.y + FRAME_SIZE);
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, PADDING);
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0);
-        ImGui.setNextWindowBgAlpha(0);
-        ImGui.begin("##gizmoSettings", OPEN, FLAGS);
-        ImGui.popStyleVar(2);
+        ImGui.dummy(size.x, 1);
+
+        ImGui.dummy(1, 0);
+        ImGui.sameLine();
         hotKeys();
 
         gizmoMode();
@@ -69,7 +61,8 @@ public class GizmoConfigPanel extends AbstractView {
 
         shadingMode();
 
-        ImGui.end();
+        ImGui.sameLine();
+        ImGui.dummy(1, 0);
     }
 
     private void cameraMode() {

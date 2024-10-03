@@ -64,5 +64,8 @@ public class UniformBufferObject extends AbstractResource {
         return blockPoint;
     }
 
-
+    @Override
+    public void dispose() {
+        GL46.glDeleteBuffers(buffer);
+    }
 }

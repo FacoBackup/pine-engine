@@ -1,7 +1,7 @@
 package com.pine.panels.files;
 
 import com.pine.PInject;
-import com.pine.repository.EditorStateRepository;
+import com.pine.repository.SettingsRepository;
 import com.pine.repository.FileInfoDTO;
 import com.pine.service.loader.ResourceLoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
@@ -21,7 +21,7 @@ public class FilePanel extends AbstractView {
     public ResourceLoaderService loader;
 
     @PInject
-    public EditorStateRepository settingsRepository;
+    public SettingsRepository settingsRepository;
 
     private int accentColor;
 

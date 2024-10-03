@@ -40,10 +40,4 @@ public abstract class AbstractResourceService<T extends IResource, R extends IRe
     }
 
     public abstract ResourceType getResourceType();
-
-    /**
-     * Disposes of resources
-     */
-    public void shutdown(List<IResource> resources) {
-    }
 }

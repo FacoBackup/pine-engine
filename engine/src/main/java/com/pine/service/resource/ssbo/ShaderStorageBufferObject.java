@@ -30,4 +30,9 @@ public class ShaderStorageBufferObject extends AbstractResource {
     public int getBindingPoint() {
         return bindingPoint;
     }
+
+    @Override
+    public void dispose() {
+        GL46.glDeleteBuffers(buffer);
+    }
 }

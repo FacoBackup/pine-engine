@@ -3,8 +3,8 @@ package com.pine.service.resource.primitives.texture;
 import com.pine.service.resource.resource.AbstractResource;
 import com.pine.service.resource.resource.ResourceType;
 
-public class TextureResource extends AbstractResource {
-    public TextureResource(String id, TextureCreationData dto) {
+public class Texture extends AbstractResource {
+    public Texture(String id, TextureCreationData dto) {
         super(id);
 
         // TODO
@@ -12,6 +12,11 @@ public class TextureResource extends AbstractResource {
 
     @Override
     public ResourceType getResourceType() {
-        return null;
+        return ResourceType.TEXTURE;
+    }
+
+    @Override
+    public void dispose() {
+
     }
 }

@@ -9,7 +9,7 @@ import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
-import com.pine.service.resource.primitives.mesh.Primitive;
+import com.pine.service.resource.primitives.mesh.Mesh;
 
 import java.util.ArrayList;
 
@@ -28,14 +28,14 @@ public class InstancedRequestService {
             return null;
         }
 
-        var mesh = scene.primitive.resource = scene.primitive.resource == null ? (Primitive) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
+        var mesh = scene.primitive.resource = scene.primitive.resource == null ? (Mesh) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
         if (mesh == null) {
             return null;
         }
 
         prepareInstancedRequest(scene, t, mesh);
         fillInstanceRequest(scene, t);
-        scene.renderRequest.primitive = mesh;
+        scene.renderRequest.mesh = mesh;
         return scene.renderRequest;
     }
 
@@ -56,7 +56,7 @@ public class InstancedRequestService {
         scene.runtimeData.instanceCount = realNumberOfInstances;
     }
 
-    private static void prepareInstancedRequest(InstancedPrimitiveComponent scene, Transformation t, Primitive mesh) {
+    private static void prepareInstancedRequest(InstancedPrimitiveComponent scene, Transformation t, Mesh mesh) {
         scene.runtimeData = scene.runtimeData == null ? new MeshRuntimeData(DEFAULT_RENDERING_MODE) : scene.runtimeData;
         if (scene.primitives.size() > scene.numberOfInstances) {
             scene.primitives = new ArrayList<>(scene.primitives.subList(0, scene.numberOfInstances));

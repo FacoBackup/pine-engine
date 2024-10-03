@@ -6,7 +6,7 @@ import com.pine.component.EntityComponent;
 import com.pine.component.InstancedPrimitiveComponent;
 import com.pine.component.Transformation;
 import com.pine.dock.AbstractDockPanel;
-import com.pine.repository.EditorStateRepository;
+import com.pine.repository.SettingsRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.SelectionService;
@@ -37,7 +37,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     public WorldRepository world;
 
     @PInject
-    public EditorStateRepository stateRepository;
+    public SettingsRepository stateRepository;
 
     @PInject
     public RequestProcessingService requestProcessingService;

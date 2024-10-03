@@ -13,4 +13,8 @@ public class AudioResource extends AbstractResource {
     public ResourceType getResourceType() {
         return ResourceType.AUDIO;
     }
+
+    @Override
+    public void dispose() {
+    }
 }

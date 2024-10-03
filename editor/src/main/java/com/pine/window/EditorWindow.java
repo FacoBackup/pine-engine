@@ -1,12 +1,13 @@
-package com.pine;
+package com.pine.window;
 
+import com.pine.*;
 import com.pine.dock.DockDTO;
 import com.pine.dock.DockGroup;
 import com.pine.dock.DockService;
 import com.pine.panels.EditorHeaderPanel;
 import com.pine.panels.ToasterPanel;
-import com.pine.repository.EditorStateRepository;
-import com.pine.repository.ThemeService;
+import com.pine.repository.SettingsRepository;
+import com.pine.service.ThemeService;
 import com.pine.service.ProjectService;
 import com.pine.tools.ToolsModule;
 import com.pine.view.View;
@@ -15,7 +16,6 @@ import imgui.ImVec4;
 import java.util.Collections;
 import java.util.List;
 
-import static com.pine.Engine.GLSL_VERSION;
 
 public class EditorWindow extends AbstractWindow {
     @PInject
@@ -31,12 +31,14 @@ public class EditorWindow extends AbstractWindow {
     public ThemeService themeService;
 
     @PInject
-    public EditorStateRepository settingsRepository;
+    public SettingsRepository settingsRepository;
+
+    @PInject
+    public WindowService windowService;
 
     @Override
     public void onInitializeInternal() {
-        themeService.tick();
-        engine.prepare(displayW, displayH);
+        engine.prepare(windowService.getDisplayW(), windowService.getDisplayH());
         engine.addModules(List.of(new ToolsModule()));
         appendChild(new ToasterPanel());
         try {
@@ -61,11 +63,6 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    protected float[] getBackgroundColor() {
-        return themeService.BACKGROUND_COLOR;
-    }
-
-    @Override
     protected ImVec4 getNeutralPalette() {
         return themeService.neutralPalette;
     }
@@ -78,11 +75,6 @@ public class EditorWindow extends AbstractWindow {
     @Override
     protected View getHeader() {
         return new EditorHeaderPanel();
-    }
-
-    @Override
-    protected String getGlslVersion() {
-        return GLSL_VERSION;
     }
 
     public String getWindowName() {

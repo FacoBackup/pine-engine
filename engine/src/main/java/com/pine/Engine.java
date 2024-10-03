@@ -13,7 +13,6 @@ import java.util.List;
 
 @PBean
 public class Engine {
-    public static final String GLSL_VERSION = "#version 460 core";
     public static final int MAX_ENTITIES = 100000;
     public static final int MAX_LIGHTS = 310;
 
@@ -31,8 +30,6 @@ public class Engine {
     public EngineSettingsRepository settingsRepository;
     @PInject
     public SystemService systemsService;
-    @PInject
-    public ResourceService resourcesService;
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
@@ -82,10 +79,6 @@ public class Engine {
         for (var syncTask : syncTasks) {
             syncTask.sync();
         }
-    }
-
-    public void shutdown() {
-        resourcesService.shutdown();
     }
 
     public void addModules(List<EngineExternalModule> modules) {

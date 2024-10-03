@@ -3,7 +3,7 @@ package com.pine.panels.viewport;
 import com.pine.PInject;
 import com.pine.component.Transformation;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.EditorStateRepository;
+import com.pine.repository.SettingsRepository;
 import com.pine.view.AbstractView;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GizmoPanel extends AbstractView {
     @PInject
-    public EditorStateRepository stateRepository;
+    public SettingsRepository stateRepository;
 
     @PInject
     public CameraRepository cameraRepository;

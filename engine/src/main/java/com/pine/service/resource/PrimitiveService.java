@@ -5,16 +5,16 @@ import com.pine.PInject;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
-import com.pine.service.resource.primitives.mesh.Primitive;
-import com.pine.service.resource.primitives.texture.TextureResource;
+import com.pine.service.resource.primitives.mesh.Mesh;
+import com.pine.service.resource.primitives.texture.Texture;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class PrimitiveService extends AbstractResourceService<Primitive, MeshRuntimeData, MeshCreationData> {
-    private Primitive currentMesh;
+public class PrimitiveService extends AbstractResourceService<Mesh, MeshRuntimeData, MeshCreationData> {
+    private Mesh currentMesh;
     private MeshRuntimeData drawCommand;
     private boolean isInWireframeMode = false;
 
@@ -23,7 +23,7 @@ public class PrimitiveService extends AbstractResourceService<Primitive, MeshRun
 
 
     @Override
-    protected void bindInternal(Primitive instance, MeshRuntimeData data) {
+    protected void bindInternal(Mesh instance, MeshRuntimeData data) {
         if (currentMesh != null && currentMesh != instance) {
             unbind();
         }
@@ -33,7 +33,7 @@ public class PrimitiveService extends AbstractResourceService<Primitive, MeshRun
     }
 
     @Override
-    protected void bindInternal(Primitive instance) {
+    protected void bindInternal(Mesh instance) {
        bindInternal(instance, null);
     }
 
@@ -81,11 +81,11 @@ public class PrimitiveService extends AbstractResourceService<Primitive, MeshRun
 
     @Override
     public IResource addInternal(MeshCreationData data) {
-        return new Primitive(getId(), data);
+        return new Mesh(getId(), data);
     }
 
     @Override
-    public void removeInternal(Primitive id) {
+    public void removeInternal(Mesh id) {
         // TODO - remove last used and unbind if is bound for some reason (probably will never happen)
     }
 
@@ -121,10 +121,10 @@ public class PrimitiveService extends AbstractResourceService<Primitive, MeshRun
         GL46.glDrawElements(mode, currentMesh.vertexCount, GL46.GL_UNSIGNED_INT, 0);
     }
 
-    public Primitive createTerrain(String heightMapTexture) {
+    public Mesh createTerrain(String heightMapTexture) {
         IResource byId = resourceService.getOrCreateResource(heightMapTexture);
-        if (byId instanceof TextureResource) {
-            var t = (TextureResource) byId;
+        if (byId instanceof Texture) {
+            var t = (Texture) byId;
 //            t.getWidth();
 //            t.getHeight();
             // TODO - COMPUTE TERRAIN

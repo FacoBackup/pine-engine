@@ -3,7 +3,7 @@ package com.pine.component;
 import com.pine.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceTypeField;
-import com.pine.service.resource.primitives.mesh.Primitive;
+import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 import org.joml.Vector3f;
@@ -21,7 +21,7 @@ public class PrimitiveComponent extends AbstractComponent<PrimitiveComponent> {
 
     @ResourceTypeField(type = ResourceType.PRIMITIVE)
     @MutableField(label = "Primitive")
-    public ResourceRef<Primitive> primitive;
+    public ResourceRef<Mesh> primitive;
 
     @MutableField(label = "Max distance from camera", min = 1)
     public int maxDistanceFromCamera = 300;

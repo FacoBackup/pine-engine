@@ -1,13 +1,12 @@
 package com.pine.service.resource.shader;
 
+import com.pine.GLSLVersion;
 import com.pine.service.resource.resource.AbstractResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.pine.Engine.GLSL_VERSION;
 
 public class Shader extends AbstractResource implements IShader {
     private int program;
@@ -18,7 +17,7 @@ public class Shader extends AbstractResource implements IShader {
         super(id);
         try {
             program = GL46.glCreateProgram();
-            prepareShaders(GLSL_VERSION + "\n" + dto.vertex(), GLSL_VERSION + "\n" + dto.fragment());
+            prepareShaders(GLSLVersion.getVersion() + "\n" + dto.vertex(), GLSLVersion.getVersion() + "\n" + dto.fragment());
         } catch (Exception ex) {
             getLogger().error("Error while creating shader", ex);
             valid = false;
@@ -58,6 +57,11 @@ public class Shader extends AbstractResource implements IShader {
     @Override
     public ResourceType getResourceType() {
         return ResourceType.SHADER;
+    }
+
+    @Override
+    public void dispose() {
+        GL46.glDeleteProgram(program);
     }
 }
 

@@ -7,7 +7,7 @@ import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.inspection.Inspectable;
-import com.pine.repository.EditorStateRepository;
+import com.pine.repository.SettingsRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
@@ -26,7 +26,7 @@ public class InspectorPanel extends AbstractDockPanel {
     public RequestProcessingService requestProcessingService;
 
     @PInject
-    public EditorStateRepository settingsRepository;
+    public SettingsRepository settingsRepository;
 
     @PInject
     public List<EntityComponent> components;

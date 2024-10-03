@@ -14,7 +14,7 @@ import com.pine.service.TransformationService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
-import com.pine.service.resource.primitives.mesh.Primitive;
+import com.pine.service.resource.primitives.mesh.Mesh;
 
 
 /**
@@ -101,14 +101,14 @@ public class RenderingTask extends AbstractTask implements Loggable {
         if (scene.primitive == null) {
             return null;
         }
-        var mesh = scene.primitive.resource = scene.primitive.resource == null ? (Primitive) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
+        var mesh = scene.primitive.resource = scene.primitive.resource == null ? (Mesh) resourceService.getOrCreateResource(scene.primitive.id) : scene.primitive.resource;
         if (mesh != null) {
             var culling = (CullingComponent) scene.entity.components.get(CullingComponent.class.getSimpleName());
             if (!transformationService.isCulled(transform.translation, culling.maxDistanceFromCamera, culling.frustumBoxDimensions)) {
                 if (transform.renderRequest == null) {
                     transform.renderRequest = new PrimitiveRenderRequest(mesh, DEFAULT_RENDER_REQUEST, scene.entity.transformation);
                 }
-                transform.renderRequest.primitive = mesh;
+                transform.renderRequest.mesh = mesh;
                 transformationService.extractTransformations(transform);
                 return transform.renderRequest;
             }

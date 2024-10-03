@@ -146,4 +146,18 @@ public class FrameBufferObject extends AbstractResource {
     public int getMainSampler() {
         return mainSampler;
     }
+
+    @Override
+    public void dispose() {
+        for (var sampler : samplers) {
+            GL46.glDeleteTextures(sampler);
+        }
+        if (depthSampler != null) {
+            GL46.glDeleteTextures(depthSampler);
+        }
+        GL46.glDeleteFramebuffers(FBO);
+        if (RBO != null) {
+            GL46.glDeleteFramebuffers(RBO);
+        }
+    }
 }

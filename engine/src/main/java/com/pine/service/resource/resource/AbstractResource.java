@@ -1,5 +1,7 @@
 package com.pine.service.resource.resource;
 
+import com.pine.Disposable;
+
 public abstract class AbstractResource implements IResource {
     protected final String id;
     protected boolean isStatic = false;

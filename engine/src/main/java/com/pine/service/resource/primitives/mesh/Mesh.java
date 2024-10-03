@@ -8,7 +8,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class Primitive extends AbstractResource {
+public class Mesh extends AbstractResource {
     public final int vertexCount;
     public final int triangleCount;
     public final int VAO;
@@ -17,7 +17,7 @@ public class Primitive extends AbstractResource {
     public final VertexBuffer uvVBO;
     public final VertexBuffer normalVBO;
 
-    public Primitive(String id, MeshCreationData dto) {
+    public Mesh(String id, MeshCreationData dto) {
         super(id);
         this.triangleCount = dto.indices().length / 3;
         this.vertexCount = dto.indices().length;
@@ -64,5 +64,18 @@ public class Primitive extends AbstractResource {
     @Override
     public ResourceType getResourceType() {
         return ResourceType.PRIMITIVE;
+    }
+
+    @Override
+    public void dispose() {
+        GL46.glDeleteVertexArrays(VAO);
+        GL46.glDeleteBuffers(indexVBO);
+        GL46.glDeleteBuffers(vertexVBO.getBuffer());
+        if (uvVBO != null) {
+            GL46.glDeleteBuffers(uvVBO.getBuffer());
+        }
+        if (normalVBO != null) {
+            GL46.glDeleteBuffers(normalVBO.getBuffer());
+        }
     }
 }

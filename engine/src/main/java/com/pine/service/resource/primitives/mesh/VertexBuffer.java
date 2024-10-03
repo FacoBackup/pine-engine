@@ -41,4 +41,8 @@ public class VertexBuffer {
     public void delete() {
         GL46.glDeleteBuffers(this.id);
     }
+
+    public int getBuffer() {
+        return id;
+    }
 }

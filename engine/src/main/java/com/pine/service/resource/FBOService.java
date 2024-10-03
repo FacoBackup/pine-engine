@@ -11,6 +11,8 @@ import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
+import java.util.List;
+
 @PBean
 public class FBOService extends AbstractResourceService<FrameBufferObject, EmptyRuntimeData, FBOCreationData> {
     private FrameBufferObject current;
