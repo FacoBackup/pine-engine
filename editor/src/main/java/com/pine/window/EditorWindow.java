@@ -1,14 +1,17 @@
 package com.pine.window;
 
-import com.pine.*;
+import com.pine.AbstractWindow;
+import com.pine.Engine;
+import com.pine.WindowService;
 import com.pine.dock.DockDTO;
 import com.pine.dock.DockGroup;
 import com.pine.dock.DockService;
+import com.pine.injection.PInject;
 import com.pine.panels.EditorHeaderPanel;
 import com.pine.panels.ToasterPanel;
 import com.pine.repository.SettingsRepository;
-import com.pine.service.ThemeService;
 import com.pine.service.ProjectService;
+import com.pine.service.ThemeService;
 import com.pine.tools.ToolsModule;
 import com.pine.view.View;
 import imgui.ImVec4;
@@ -38,8 +41,7 @@ public class EditorWindow extends AbstractWindow {
 
     @Override
     public void onInitializeInternal() {
-        engine.prepare(windowService.getDisplayW(), windowService.getDisplayH());
-        engine.addModules(List.of(new ToolsModule()));
+        engine.start(windowService.getDisplayW(), windowService.getDisplayH(), List.of(new ToolsModule()));
         appendChild(new ToasterPanel());
         try {
             DockDTO dockCenter = new DockDTO(EditorDock.Viewport);

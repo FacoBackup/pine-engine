@@ -1,11 +1,11 @@
 package com.pine.panels.inspector;
 
-import com.pine.PInject;
 import com.pine.component.AbstractComponent;
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
 import com.pine.component.FormPanel;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.repository.SettingsRepository;
 import com.pine.service.RequestProcessingService;

@@ -1,11 +1,11 @@
 package com.pine.service.loader.impl;
 
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.component.Entity;
 import com.pine.component.PrimitiveComponent;
 import com.pine.component.ResourceRef;
 import com.pine.component.Transformation;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;
 import com.pine.service.RequestProcessingService;
 import com.pine.service.loader.AbstractResourceLoader;

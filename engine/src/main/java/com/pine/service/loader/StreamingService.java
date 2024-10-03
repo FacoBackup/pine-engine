@@ -1,8 +1,8 @@
 package com.pine.service.loader;
 
-import com.pine.PBean;
-import com.pine.PInject;
-import com.pine.repository.ResourceLoaderRepository;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.repository.StreamingRepository;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
@@ -12,9 +12,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @PBean
-public class ResourceLoaderService {
+public class StreamingService {
     @PInject
-    public ResourceLoaderRepository repository;
+    public StreamingRepository repository;
 
     @PInject
     public List<AbstractResourceLoader> resourceLoaders;

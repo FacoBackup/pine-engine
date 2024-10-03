@@ -1,6 +1,6 @@
 package com.pine.component;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import com.pine.theme.Icons;
 
 import java.util.LinkedList;

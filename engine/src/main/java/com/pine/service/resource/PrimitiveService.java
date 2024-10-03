@@ -1,11 +1,11 @@
 package com.pine.service.resource;
 
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
-import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.primitives.texture.Texture;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;

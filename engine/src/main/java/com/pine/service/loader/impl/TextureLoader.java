@@ -1,6 +1,6 @@
 package com.pine.service.loader.impl;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import com.pine.service.loader.AbstractResourceLoader;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;

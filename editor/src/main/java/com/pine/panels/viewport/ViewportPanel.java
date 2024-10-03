@@ -1,8 +1,8 @@
 package com.pine.panels.viewport;
 
 import com.pine.Engine;
-import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.AbstractCameraService;
@@ -52,7 +52,7 @@ public class ViewportPanel extends AbstractDockPanel {
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
+        
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
         appendChild(gizmoPanel = new GizmoConfigPanel(sizeVec));
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
@@ -66,7 +66,6 @@ public class ViewportPanel extends AbstractDockPanel {
         updateCamera();
         engine.setTargetFBO(fbo);
         engine.render();
-
     }
 
     @Override

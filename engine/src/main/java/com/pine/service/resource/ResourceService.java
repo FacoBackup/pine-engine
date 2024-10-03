@@ -1,11 +1,11 @@
 package com.pine.service.resource;
 
-import com.pine.Disposable;
 import com.pine.Loggable;
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.Disposable;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.ClockRepository;
-import com.pine.service.loader.ResourceLoaderService;
+import com.pine.service.loader.StreamingService;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.resource.resource.*;
 import com.pine.tasks.SyncTask;
@@ -24,7 +24,7 @@ public class ResourceService implements Loggable, SyncTask, Disposable {
     public ClockRepository clock;
 
     @PInject
-    public ResourceLoaderService loader;
+    public StreamingService loader;
 
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();

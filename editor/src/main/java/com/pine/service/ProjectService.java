@@ -1,6 +1,10 @@
 package com.pine.service;
 
 import com.pine.*;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.injection.PInjector;
+import com.pine.injection.PostCreation;
 import com.pine.repository.ContentBrowserRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @PBean
-public class ProjectService implements Loggable, Initializable {
+public class ProjectService implements Loggable {
     private static final String IDENTIFIER = "project.pine";
     private static final String CONFIG_NAME = System.getProperty("user.home") + File.separator + IDENTIFIER;
 
@@ -37,7 +41,7 @@ public class ProjectService implements Loggable, Initializable {
 
     private String previousOpenedProject = null;
 
-    @Override
+    @PostCreation
     public void onInitialize() {
         var file = new File(CONFIG_NAME);
         if (file.exists()) {
@@ -124,7 +128,7 @@ public class ProjectService implements Loggable, Initializable {
         previousOpenedProject = selectDirectory();
         contentBrowserRepository.initialize(previousOpenedProject);
         writeProject();
-        injector.reset();
+        injector.boot();
         // TODO - Clear injection cache and re-create editor window
     }
 

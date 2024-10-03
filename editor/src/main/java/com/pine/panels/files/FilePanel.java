@@ -1,9 +1,9 @@
 package com.pine.panels.files;
 
-import com.pine.PInject;
-import com.pine.repository.SettingsRepository;
+import com.pine.injection.PInject;
 import com.pine.repository.FileInfoDTO;
-import com.pine.service.loader.ResourceLoaderService;
+import com.pine.repository.SettingsRepository;
+import com.pine.service.loader.StreamingService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
@@ -18,7 +18,7 @@ public class FilePanel extends AbstractView {
     private FilesContext context;
 
     @PInject
-    public ResourceLoaderService loader;
+    public StreamingService loader;
 
     @PInject
     public SettingsRepository settingsRepository;
@@ -32,7 +32,7 @@ public class FilePanel extends AbstractView {
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
+        
         context = (FilesContext) getContext();
         iconCodepoint = item.isDirectory() ? Icons.folder : Icons.file_open;
         if (item.isDirectory()) {

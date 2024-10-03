@@ -1,11 +1,11 @@
 package com.pine.component.impl;
 
-import com.pine.PInject;
 import com.pine.component.AbstractFormField;
 import com.pine.component.ResourceRef;
+import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.ResourceTypeField;
-import com.pine.repository.ResourceLoaderRepository;
+import com.pine.repository.StreamingRepository;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.resource.resource.ResourceType;
 import imgui.ImGui;
@@ -19,7 +19,7 @@ import java.util.function.BiConsumer;
 public class ResourceField extends AbstractFormField {
     private final ResourceType type;
     @PInject
-    public ResourceLoaderRepository repository;
+    public StreamingRepository repository;
 
     private final ImInt selected = new ImInt(-1);
     private final List<AbstractLoaderResponse.ResourceInfo> items = new ArrayList<>();

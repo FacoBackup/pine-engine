@@ -1,9 +1,9 @@
 package com.pine.tasks;
 
 import com.pine.Loggable;
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.component.*;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RenderingRepository;
 import com.pine.repository.WorldRepository;
@@ -12,9 +12,9 @@ import com.pine.service.InstancedRequestService;
 import com.pine.service.LightService;
 import com.pine.service.TransformationService;
 import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
-import com.pine.service.resource.primitives.mesh.Mesh;
 
 
 /**

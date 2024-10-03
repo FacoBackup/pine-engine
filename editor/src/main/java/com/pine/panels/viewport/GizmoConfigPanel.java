@@ -1,6 +1,6 @@
 package com.pine.panels.viewport;
 
-import com.pine.PInject;
+import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.SettingsRepository;
 import com.pine.theme.Icons;

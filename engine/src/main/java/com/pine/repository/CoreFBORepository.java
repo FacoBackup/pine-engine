@@ -1,8 +1,8 @@
 package com.pine.repository;
 
 import com.pine.Engine;
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.service.resource.PrimitiveService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.ShaderService;
@@ -29,6 +29,8 @@ public class CoreFBORepository implements CoreRepository {
     public ResourceService resources;
     @PInject
     public EngineSettingsRepository configuration;
+    @PInject
+    public RuntimeRepository runtimeRepository;
 
 
     public FrameBufferObject sceneDepth;
@@ -54,8 +56,8 @@ public class CoreFBORepository implements CoreRepository {
     @Override
     public void initialize() {
 
-        final int halfResW = engine.getDisplayW() / 2;
-        final int halfResH = engine.getDisplayH() / 2;
+        final int halfResW = runtimeRepository.getDisplayW() / 2;
+        final int halfResH = runtimeRepository.getDisplayH() / 2;
 
         sceneDepth = (FrameBufferObject) resources.addResource(new FBOCreationData(true, true));
         tempColorWithDepth = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true).addSampler().staticResource());
@@ -67,8 +69,8 @@ public class CoreFBORepository implements CoreRepository {
         ssaoBlurred = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
 
         int Q = 7;
-        int w = engine.getDisplayW();
-        int h = engine.getDisplayH();
+        int w = runtimeRepository.getDisplayW();
+        int h = runtimeRepository.getDisplayH();
         for (int i = 0; i < Q; i++) {
             w /= 2;
             h /= 2;

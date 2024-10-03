@@ -1,7 +1,7 @@
 package com.pine.repository;
 
 import com.pine.Loggable;
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.File;

@@ -1,8 +1,9 @@
 package com.pine.service.resource;
 
 import com.pine.Engine;
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
@@ -11,14 +12,15 @@ import com.pine.service.resource.resource.IResource;
 import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
-import java.util.List;
-
 @PBean
 public class FBOService extends AbstractResourceService<FrameBufferObject, EmptyRuntimeData, FBOCreationData> {
     private FrameBufferObject current;
 
     @PInject
     public Engine engine;
+
+    @PInject
+    public RuntimeRepository runtimeRepository;
 
     @Override
     protected void unbind() {
@@ -44,15 +46,15 @@ public class FBOService extends AbstractResourceService<FrameBufferObject, Empty
 
     @Override
     protected IResource addInternal(FBOCreationData data) {
-        int w = engine.getDisplayW();
-        int h = engine.getDisplayH();
+        int w = runtimeRepository.getDisplayW();
+        int h = runtimeRepository.getDisplayH();
         if (data.getW() != null) {
             w = data.getW();
         }
         if (data.getH() != null) {
             h = data.getH();
         }
-        var fbo = new FrameBufferObject(w, h);
+        var fbo = new FrameBufferObject(w, h, getId());
         data.getSamplers().forEach(color -> {
             if (color.w() == null || color.h() == null) {
                 fbo.sampler(color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());

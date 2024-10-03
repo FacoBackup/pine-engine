@@ -1,9 +1,9 @@
 package com.pine.service;
 
-import com.pine.Initializable;
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.Updatable;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.injection.PostCreation;
 import com.pine.repository.SettingsRepository;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
@@ -11,7 +11,7 @@ import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 
 @PBean
-public class ThemeService implements Updatable, Initializable {
+public class ThemeService implements Updatable {
     public ImVec4 neutralPalette;
     public ImVec4 palette0;
     public ImVec4 palette1;
@@ -120,7 +120,7 @@ public class ThemeService implements Updatable, Initializable {
         palette6 = new ImVec4(10f / 255f, 10f / 255f, 10f / 255f, 1); // dark dark really dark, actually not that dark but dark
     }
 
-    @Override
+    @PostCreation
     public void onInitialize() {
         setDarkMode();
     }

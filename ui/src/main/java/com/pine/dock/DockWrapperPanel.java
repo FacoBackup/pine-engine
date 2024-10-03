@@ -3,7 +3,7 @@ package com.pine.dock;
 import com.pine.Loggable;
 import com.pine.MessageRepository;
 import com.pine.MessageSeverity;
-import com.pine.PInject;
+import com.pine.injection.PInject;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;

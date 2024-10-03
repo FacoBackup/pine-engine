@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
 import com.pine.Loggable;
-import com.pine.PInject;
+import com.pine.injection.PInject;
 import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.GLSLType;

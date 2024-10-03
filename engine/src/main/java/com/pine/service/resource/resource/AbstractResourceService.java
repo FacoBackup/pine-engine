@@ -2,8 +2,6 @@ package com.pine.service.resource.resource;
 
 import com.pine.Loggable;
 
-import java.util.List;
-
 public abstract class AbstractResourceService<T extends IResource, R extends IResourceRuntimeData, C extends ResourceCreationData> implements Loggable {
 
     private String nextId;

@@ -1,8 +1,8 @@
 package com.pine.service.resource;
 
 import com.pine.FSUtil;
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.CoreUBORepository;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.resource.AbstractResourceService;

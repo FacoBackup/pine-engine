@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import com.pine.service.resource.primitives.audio.AudioDTO;
 import com.pine.service.resource.primitives.audio.AudioResource;
 import com.pine.service.resource.resource.AbstractResourceService;

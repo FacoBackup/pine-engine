@@ -1,7 +1,7 @@
 package com.pine.dock;
 
-import com.pine.PBean;
 import com.pine.SerializableRepository;
+import com.pine.injection.PBean;
 
 import java.util.ArrayList;
 import java.util.List;

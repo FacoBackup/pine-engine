@@ -1,7 +1,7 @@
 package com.pine.dock;
 
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import imgui.ImGui;
 import imgui.flag.ImGuiDir;
 import imgui.internal.ImGuiDockNode;

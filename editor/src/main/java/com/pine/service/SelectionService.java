@@ -1,8 +1,8 @@
 package com.pine.service;
 
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.component.Entity;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
 import com.pine.repository.WorldRepository;
 

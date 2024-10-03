@@ -1,9 +1,9 @@
 package com.pine.panels;
 
-import com.pine.PInject;
 import com.pine.WindowService;
-import com.pine.service.ThemeService;
+import com.pine.injection.PInject;
 import com.pine.service.ProjectService;
+import com.pine.service.ThemeService;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;

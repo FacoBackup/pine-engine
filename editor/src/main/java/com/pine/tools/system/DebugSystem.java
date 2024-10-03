@@ -1,6 +1,6 @@
 package com.pine.tools.system;
 
-import com.pine.PInject;
+import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -68,7 +68,6 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
         GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
         transformationIndex = toolsResourceRepository.debugShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
         lightCount = toolsResourceRepository.debugShader.addUniformDeclaration("lightCount", GLSLType.INT);

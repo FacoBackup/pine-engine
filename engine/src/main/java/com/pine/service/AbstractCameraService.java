@@ -1,6 +1,6 @@
 package com.pine.service;
 
-import com.pine.PInject;
+import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.camera.Camera;

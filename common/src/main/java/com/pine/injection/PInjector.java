@@ -1,18 +1,21 @@
-package com.pine;
+package com.pine.injection;
 
+import com.pine.Loggable;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class PInjector implements Loggable {
     private final List<Object> injectables = new ArrayList<>();
     private final String rootPackageName;
+
+    private static record ToInitialize(int order, Method method, Object in) {
+    }
 
     /**
      * Scans classpath for EngineInjectable, injects dependencies and initializes them
@@ -25,23 +28,21 @@ public class PInjector implements Loggable {
         for (var in : injectables) {
             inject(in);
         }
-
+        List<ToInitialize> toInitializeList = new ArrayList<>();
         for (var in : injectables) {
-            try {
-                if (in instanceof Initializable) {
-                    ((Initializable) in).onInitialize();
-                }
-            } catch (Exception ex) {
-                getLogger().error(ex.getMessage(), ex);
+            var method = Arrays.stream(in.getClass().getDeclaredMethods())
+                    .filter(m -> m.isAnnotationPresent(PostCreation.class))
+                    .findFirst()
+                    .orElse(null);
+            if (method != null) {
+                toInitializeList.add(new ToInitialize(method.getAnnotation(PostCreation.class).order(), method, in));
             }
         }
-
-        for (var in : injectables) {
-            try {
-                if (in instanceof LateInitializable) {
-                    ((LateInitializable) in).lateInitialize();
-                }
-            } catch (Exception ex) {
+        toInitializeList.sort(Comparator.comparingInt(ToInitialize::order));
+        for(ToInitialize toInitialize : toInitializeList) {
+            try{
+                toInitialize.method().invoke(toInitialize.in);
+            }catch (Exception ex){
                 getLogger().error(ex.getMessage(), ex);
             }
         }
@@ -141,7 +142,7 @@ public class PInjector implements Loggable {
         return injectables.stream().filter(a -> a.getClass() == clazz).findFirst().orElse(null);
     }
 
-    public void reset() {
+    public void boot() {
         for (var injectable : injectables) {
             if (Disposable.class.isAssignableFrom(injectable.getClass())) {
                 ((Disposable) injectable).dispose();

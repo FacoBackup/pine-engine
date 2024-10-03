@@ -1,6 +1,6 @@
 package com.pine.component;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceTypeField;
 import com.pine.service.resource.primitives.mesh.Mesh;

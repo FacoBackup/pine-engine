@@ -21,8 +21,8 @@ public class FrameBufferObject extends AbstractResource {
     private final float[] resolution = new float[2];
     private int mainSampler;
 
-    public FrameBufferObject(int width, int height) {
-        super(null);
+    public FrameBufferObject(int width, int height, String id) {
+        super(id);
         this.width = width;
         this.height = height;
         this.resolution[0] = width;

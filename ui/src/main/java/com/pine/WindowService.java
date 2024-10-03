@@ -1,5 +1,6 @@
 package com.pine;
 
+import com.pine.injection.*;
 import com.pine.theme.Icons;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;
@@ -15,18 +16,20 @@ import java.nio.IntBuffer;
 import java.util.Objects;
 
 @PBean
-public class WindowService implements Disposable, Loggable, Initializable {
+public class WindowService implements Disposable, Loggable {
     private static boolean shouldStop = false;
     private static final CharSequence WINDOW_NAME = "Pine Engine";
     private final ImGuiImplGlfw imGuiGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiGl3 = new ImGuiImplGl3();
     private long handle = -1;
-    private boolean visible = true;
     private int displayW;
     private int displayH;
-    private AbstractWindow windowImpl;
+    public static Class<? extends AbstractWindow> windowImpl;
 
-    @Override
+    @PInject
+    public PInjector injector;
+
+    @PostCreation(order = Integer.MAX_VALUE)
     public void onInitialize() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> shouldStop = true));
 
@@ -45,21 +48,27 @@ public class WindowService implements Disposable, Loggable, Initializable {
 
         applySpacing();
         applyFonts();
+
+        start();
     }
 
     public void start() {
-        while (!GLFW.glfwWindowShouldClose(handle) && !shouldStop) {
-            if (windowImpl != null) {
+        try {
+            AbstractWindow instance = windowImpl.getConstructor().newInstance();
+            injector.inject(instance);
+            instance.initializeWindow();
+            while (!GLFW.glfwWindowShouldClose(handle) && !shouldStop) {
                 try {
                     prepareFrame();
-                    if (visible) {
-                        windowImpl.render();
-                    }
+                    instance.render();
                     render();
                 } catch (Exception e) {
                     getLogger().error(e.getMessage(), e);
                 }
+
             }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage(), ex);
         }
     }
 
@@ -68,7 +77,6 @@ public class WindowService implements Disposable, Loggable, Initializable {
     }
 
     private void createGlfwContext() {
-
         GLFWErrorCallback.createPrint(System.err).set();
 
         if (!GLFW.glfwInit()) {
@@ -112,12 +120,6 @@ public class WindowService implements Disposable, Loggable, Initializable {
             @Override
             public void invoke(long l) {
                 GLFW.glfwSetWindowShouldClose(handle, true);
-            }
-        });
-        GLFW.glfwSetWindowIconifyCallback(handle, new GLFWWindowIconifyCallback() {
-            @Override
-            public void invoke(long window, boolean iconified) {
-                visible = !iconified;
             }
         });
     }
@@ -218,9 +220,4 @@ public class WindowService implements Disposable, Loggable, Initializable {
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
     }
-
-    public void setWindowImpl(AbstractWindow windowImpl) {
-        this.windowImpl = windowImpl;
-    }
-
 }

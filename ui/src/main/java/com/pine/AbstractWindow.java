@@ -1,24 +1,13 @@
 package com.pine;
 
 import com.pine.dock.DockPanel;
-import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import com.pine.view.View;
-import imgui.*;
+import imgui.ImGui;
+import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiConfigFlags;
-import imgui.gl3.ImGuiImplGl3;
-import imgui.glfw.ImGuiImplGlfw;
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL46;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.IntBuffer;
-import java.util.Objects;
-
-public abstract class AbstractWindow extends AbstractView implements Initializable {
+public abstract class AbstractWindow extends AbstractView  {
     protected final DockPanel root = new DockPanel() {
         @Override
         protected ImVec4 getAccentColor() {
@@ -26,8 +15,7 @@ public abstract class AbstractWindow extends AbstractView implements Initializab
         }
     };
 
-    @Override
-    final public void onInitialize() {
+    final public void initializeWindow() {
         appendChild(root);
         onInitializeInternal();
         root.setHeader(getHeader());

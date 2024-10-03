@@ -55,8 +55,8 @@ public class FrameCompositionSystem extends AbstractSystem implements Loggable {
     protected void renderInternal() {
         shaderService.bind(shaderRepository.frameComposition);
 
-        floatBuffer.put(0, engine.getInvDisplayW());
-        floatBuffer.put(1, engine.getInvDisplayH());
+        floatBuffer.put(0, runtimeRepository.getInvDisplayW());
+        floatBuffer.put(1, runtimeRepository.getInvDisplayH());
         shaderService.bindUniform(inverseFilterTextureSize, floatBuffer);
 
         intBuffer.put(0, settingsRepository.fxaaEnabled ? 1 : 0);

@@ -1,15 +1,15 @@
 package com.pine.service;
 
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.component.CullingComponent;
 import com.pine.component.InstancedPrimitiveComponent;
 import com.pine.component.Transformation;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.primitives.mesh.MeshRenderingMode;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
-import com.pine.service.resource.primitives.mesh.Mesh;
 
 import java.util.ArrayList;
 

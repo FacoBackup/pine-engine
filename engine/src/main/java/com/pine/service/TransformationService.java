@@ -1,9 +1,9 @@
 package com.pine.service;
 
 import com.pine.EngineUtils;
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.component.Transformation;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.CoreSSBORepository;
 import com.pine.repository.RenderingRepository;

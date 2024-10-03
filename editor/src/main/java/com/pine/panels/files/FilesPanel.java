@@ -1,7 +1,7 @@
 package com.pine.panels.files;
 
-import com.pine.PInject;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.injection.PInject;
 import com.pine.service.FSService;
 import imgui.ImGui;
 
@@ -11,7 +11,7 @@ public class FilesPanel extends AbstractDockPanel {
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
+        
         refreshFiles();
         getContext().subscribe(this::refreshFiles);
 

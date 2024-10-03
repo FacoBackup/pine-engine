@@ -1,7 +1,7 @@
 package com.pine.repository;
 
-import com.pine.PBean;
 import com.pine.SerializableRepository;
+import com.pine.injection.PBean;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
 

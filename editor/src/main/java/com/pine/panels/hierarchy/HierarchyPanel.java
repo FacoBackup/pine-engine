@@ -1,11 +1,11 @@
 package com.pine.panels.hierarchy;
 
-import com.pine.PInject;
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
 import com.pine.component.InstancedPrimitiveComponent;
 import com.pine.component.Transformation;
 import com.pine.dock.AbstractDockPanel;
+import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.RequestProcessingService;
@@ -50,7 +50,7 @@ public class HierarchyPanel extends AbstractDockPanel {
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
+        
         appendChild(header = new HierarchyHeaderPanel(search));
         context = (HierarchyContext) getContext();
     }

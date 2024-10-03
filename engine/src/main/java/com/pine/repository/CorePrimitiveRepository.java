@@ -1,13 +1,13 @@
 package com.pine.repository;
 
 import com.pine.Engine;
-import com.pine.PBean;
-import com.pine.PInject;
-import com.pine.service.loader.ResourceLoaderService;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.service.loader.StreamingService;
 import com.pine.service.loader.impl.response.MeshLoaderResponse;
 import com.pine.service.resource.ResourceService;
-import com.pine.service.resource.primitives.mesh.MeshCreationData;
 import com.pine.service.resource.primitives.mesh.Mesh;
+import com.pine.service.resource.primitives.mesh.MeshCreationData;
 
 @PBean
 public class CorePrimitiveRepository implements CoreRepository {
@@ -16,7 +16,7 @@ public class CorePrimitiveRepository implements CoreRepository {
     @PInject
     public ResourceService resources;
     @PInject
-    public ResourceLoaderService resourceLoader;
+    public StreamingService resourceLoader;
 
     public Mesh planeMesh;
     public Mesh quadMesh;
