@@ -1,6 +1,6 @@
 package com.pine.tasks;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 
 @PBean
 public class PhysicsTask extends AbstractTask {

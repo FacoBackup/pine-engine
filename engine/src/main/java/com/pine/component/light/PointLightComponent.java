@@ -1,7 +1,7 @@
 package com.pine.component.light;
 
-import com.pine.PBean;
 import com.pine.component.Entity;
+import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.type.LightType;
 

@@ -1,8 +1,8 @@
 package com.pine.repository;
 
 import com.pine.Engine;
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.ubo.UBOCreationData;

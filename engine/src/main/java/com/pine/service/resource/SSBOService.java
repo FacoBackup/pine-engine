@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import com.pine.service.resource.primitives.EmptyRuntimeData;
 import com.pine.service.resource.resource.AbstractResourceService;
 import com.pine.service.resource.resource.IResource;

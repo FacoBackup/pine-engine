@@ -1,10 +1,11 @@
 package com.pine.service.resource;
 
 import com.pine.Loggable;
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.Disposable;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.ClockRepository;
-import com.pine.service.loader.ResourceLoaderService;
+import com.pine.service.loader.StreamingService;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.resource.resource.*;
 import com.pine.tasks.SyncTask;
@@ -13,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @PBean
-public class ResourceService implements Loggable, SyncTask {
+public class ResourceService implements Loggable, SyncTask, Disposable {
     public static final int MAX_TIMEOUT = 5 * 60 * 1000;
 
     @PInject
@@ -23,7 +24,7 @@ public class ResourceService implements Loggable, SyncTask {
     public ClockRepository clock;
 
     @PInject
-    public ResourceLoaderService loader;
+    public StreamingService loader;
 
     private final Map<String, IResource> resources = new HashMap<>();
     private final Map<String, Long> sinceLastUse = new HashMap<>();
@@ -90,8 +91,9 @@ public class ResourceService implements Loggable, SyncTask {
         return resources.values().stream().filter(r -> r.getResourceType().equals(type)).collect(Collectors.toList());
     }
 
-    public void shutdown() {
-        implementations.forEach(i -> i.shutdown(getAllByType(i.getResourceType())));
+    @Override
+    public void dispose() {
+        resources.values().forEach(Disposable::dispose);
     }
 
     @Override

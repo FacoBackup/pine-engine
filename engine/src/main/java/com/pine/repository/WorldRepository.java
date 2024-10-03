@@ -1,11 +1,11 @@
 package com.pine.repository;
 
-import com.pine.PBean;
-import com.pine.PInject;
-import com.pine.PInjector;
 import com.pine.SerializableRepository;
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.injection.PInjector;
 
 import java.util.List;
 

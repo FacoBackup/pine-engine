@@ -1,8 +1,8 @@
 package com.pine.service.system;
 
-import com.pine.PBean;
-import com.pine.PInject;
-import com.pine.PInjector;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.injection.PInjector;
 import com.pine.service.system.impl.AtmosphereSystem;
 import com.pine.service.system.impl.DepthPrePassSystem;
 import com.pine.service.system.impl.FrameCompositionSystem;

@@ -1,8 +1,8 @@
 package com.pine.service;
 
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.SerializableRepository;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 
 import java.util.List;
 

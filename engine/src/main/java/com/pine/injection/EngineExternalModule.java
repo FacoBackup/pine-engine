@@ -1,12 +1,11 @@
 package com.pine.injection;
 
-import com.pine.Initializable;
 import com.pine.service.system.AbstractSystem;
 
 import java.util.Collections;
 import java.util.List;
 
-public interface EngineExternalModule extends Initializable {
+public interface EngineExternalModule {
     /**
      * Should return a list containing the previous registered systems and the new ones included
      *
@@ -17,7 +16,6 @@ public interface EngineExternalModule extends Initializable {
         return systems;
     }
 
-    @Override
     default void onInitialize() {
     }
 

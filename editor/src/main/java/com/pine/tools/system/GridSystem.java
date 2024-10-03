@@ -1,8 +1,8 @@
 package com.pine.tools.system;
 
 import com.pine.EngineUtils;
-import com.pine.PInject;
-import com.pine.repository.EditorStateRepository;
+import com.pine.injection.PInject;
+import com.pine.repository.SettingsRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL46;
 
 public class GridSystem extends AbstractSystem {
     @PInject
-    public EditorStateRepository engineConfig;
+    public SettingsRepository engineConfig;
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
@@ -42,6 +42,7 @@ public class GridSystem extends AbstractSystem {
 
     @Override
     protected void renderInternal() {
+        GL46.glDisable(GL46.GL_CULL_FACE);
         shaderService.bind(toolsResourceRepository.gridShader);
         buffer[0] = engineConfig.gridColor;
         buffer[1] = engineConfig.gridScale;
@@ -52,5 +53,6 @@ public class GridSystem extends AbstractSystem {
         EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.sceneDepthSampler);
 
         primitiveService.bind(primitiveRepository.planeMesh);
+        GL46.glEnable(GL46.GL_CULL_FACE);
     }
 }

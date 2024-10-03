@@ -21,8 +21,8 @@ public class FrameBufferObject extends AbstractResource {
     private final float[] resolution = new float[2];
     private int mainSampler;
 
-    public FrameBufferObject(int width, int height) {
-        super(null);
+    public FrameBufferObject(int width, int height, String id) {
+        super(id);
         this.width = width;
         this.height = height;
         this.resolution[0] = width;
@@ -145,5 +145,19 @@ public class FrameBufferObject extends AbstractResource {
 
     public int getMainSampler() {
         return mainSampler;
+    }
+
+    @Override
+    public void dispose() {
+        for (var sampler : samplers) {
+            GL46.glDeleteTextures(sampler);
+        }
+        if (depthSampler != null) {
+            GL46.glDeleteTextures(depthSampler);
+        }
+        GL46.glDeleteFramebuffers(FBO);
+        if (RBO != null) {
+            GL46.glDeleteFramebuffers(RBO);
+        }
     }
 }

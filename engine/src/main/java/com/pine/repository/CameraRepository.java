@@ -1,19 +1,13 @@
 package com.pine.repository;
 
-import com.pine.Initializable;
-import com.pine.PBean;
 import com.pine.SerializableRepository;
+import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.service.camera.Camera;
 import com.pine.service.camera.Frustum;
 import com.pine.theme.Icons;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @PBean
 public class CameraRepository extends Inspectable implements SerializableRepository {

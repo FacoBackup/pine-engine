@@ -1,10 +1,9 @@
-package com.pine.repository;
+package com.pine.service.modules;
 
-import com.pine.Initializable;
-import com.pine.PBean;
-import com.pine.PInject;
-import com.pine.PInjector;
 import com.pine.injection.EngineExternalModule;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.injection.PInjector;
 import com.pine.service.system.SystemService;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @PBean
-public class ModulesService {
+public class EngineModulesService {
 
     @PInject
     public SystemService systemService;

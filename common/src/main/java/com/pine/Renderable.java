@@ -1,12 +1,11 @@
 package com.pine;
 
-public interface Renderable extends Loggable, Initializable {
+public interface Renderable extends Loggable {
     default void tick() {
     }
 
     void render();
 
-    @Override
     default void onInitialize() {
     }
 }

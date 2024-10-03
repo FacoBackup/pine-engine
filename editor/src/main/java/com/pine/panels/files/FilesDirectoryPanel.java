@@ -13,7 +13,7 @@ public class FilesDirectoryPanel extends AbstractView {
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
+        
         table = appendChild(new TableView());
         table.setGetView(item -> new FilePanel((FileInfoDTO) item));
         table.setHeaderColumns(List.of(

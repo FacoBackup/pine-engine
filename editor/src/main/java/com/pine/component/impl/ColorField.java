@@ -8,8 +8,6 @@ import imgui.flag.ImGuiColorEditFlags;
 
 import java.util.function.BiConsumer;
 
-import static java.lang.Float.NaN;
-
 public class ColorField extends AbstractFormField {
     private final float[] values = new float[4];
 

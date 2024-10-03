@@ -1,9 +1,9 @@
 package com.pine.repository;
 
-import com.pine.PBean;
 import com.pine.SerializableRepository;
 import com.pine.component.Entity;
 import com.pine.component.Transformation;
+import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 @PBean
-public class EditorStateRepository extends Inspectable implements SerializableRepository {
+public class SettingsRepository extends Inspectable implements SerializableRepository {
     @MutableField(label = "Show grid")
     public boolean showGrid = true;
 

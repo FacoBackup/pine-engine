@@ -1,7 +1,7 @@
 package com.pine.tools.system;
 
-import com.pine.PInject;
-import com.pine.repository.EditorStateRepository;
+import com.pine.injection.PInject;
+import com.pine.repository.SettingsRepository;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.primitives.GLSLType;
@@ -17,7 +17,7 @@ import java.nio.IntBuffer;
 public class DebugSystem extends AbstractSystem {
 
     @PInject
-    public EditorStateRepository editorSettings;
+    public SettingsRepository editorSettings;
 
     private UniformDTO transformationIndex;
     private UniformDTO lightCount;
@@ -68,7 +68,6 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     public void onInitialize() {
-        super.onInitialize();
         GL46.glClear(GL46.GL_DEPTH_BUFFER_BIT);
         transformationIndex = toolsResourceRepository.debugShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
         lightCount = toolsResourceRepository.debugShader.addUniformDeclaration("lightCount", GLSLType.INT);
@@ -175,7 +174,7 @@ public class DebugSystem extends AbstractSystem {
         for (PrimitiveRenderRequest request : requests) {
             intBoolBuffer.put(0, request.transformation.renderIndex);
             shaderService.bindUniform(transformationIndex, intBoolBuffer);
-            primitiveService.bind(request.primitive, request.runtimeData);
+            primitiveService.bind(request.mesh, request.runtimeData);
         }
     }
 }

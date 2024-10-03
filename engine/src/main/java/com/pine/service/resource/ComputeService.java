@@ -1,7 +1,7 @@
 package com.pine.service.resource;
 
-import com.pine.PBean;
-import com.pine.PInject;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.service.resource.compute.Compute;
 import com.pine.service.resource.compute.ComputeCreationData;
 import com.pine.service.resource.compute.ComputeRuntimeData;

@@ -1,10 +1,13 @@
 package com.pine;
 
 import com.pine.injection.EngineExternalModule;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.*;
-import com.pine.service.resource.ResourceService;
+import com.pine.service.modules.EngineModulesService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
+import com.pine.tasks.AbstractTask;
 import com.pine.tasks.SyncTask;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
@@ -13,26 +16,16 @@ import java.util.List;
 
 @PBean
 public class Engine {
-    public static final String GLSL_VERSION = "#version 460 core";
     public static final int MAX_ENTITIES = 100000;
     public static final int MAX_LIGHTS = 310;
-
-    private int displayW;
-    private int displayH;
-
-    private int invDisplayW;
-    private int invDisplayH;
-
     private FrameBufferObject targetFBO;
 
     @PInject
-    public ModulesService modules;
+    public EngineModulesService modules;
     @PInject
     public EngineSettingsRepository settingsRepository;
     @PInject
     public SystemService systemsService;
-    @PInject
-    public ResourceService resourcesService;
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
@@ -46,20 +39,21 @@ public class Engine {
     @PInject
     public CorePrimitiveRepository primitiveRepository;
     @PInject
+    public RuntimeRepository runtimeRepository;
+    @PInject
     public List<SyncTask> syncTasks;
+    @PInject
+    public List<AbstractTask> tasks;
+    private boolean ready = false;
 
-    public void prepare(int displayW, int displayH) {
-        this.displayW = displayW;
-        this.displayH = displayH;
-        this.invDisplayW = 1 / displayW;
-        this.invDisplayH = 1 / displayH;
-        GL46.glEnable(GL46.GL_BLEND);
-        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
-//        GL46.glEnable(GL46.GL_CULL_FACE);
-//        GL46.glCullFace(GL46.GL_BACK);
-        GL46.glEnable(GL46.GL_DEPTH_TEST);
-        GL46.glDepthFunc(GL46.GL_LESS);
-        GL46.glFrontFace(GL46.GL_CCW);
+    public void start(int displayW, int displayH, List<EngineExternalModule> modules) {
+        runtimeRepository.setDisplayW(displayW);
+        runtimeRepository.setDisplayH(displayH);
+        runtimeRepository.setInvDisplayW(1f / displayW);
+        runtimeRepository.setInvDisplayH(1f / displayH);
+
+        setupGL();
+
         primitiveRepository.initialize();
         ssboRepository.initialize();
         uboRepository.initialize();
@@ -69,27 +63,37 @@ public class Engine {
         systemsService.initialize();
 
         targetFBO = fboRepository.tempColorWithDepth;
+
+        this.modules.addModules(modules);
+        tasks.forEach(AbstractTask::start);
+        ready = true;
+    }
+
+    private static void setupGL() {
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_SRC_ALPHA, GL46.GL_ONE_MINUS_SRC_ALPHA);
+        GL46.glEnable(GL46.GL_CULL_FACE);
+        GL46.glCullFace(GL46.GL_BACK);
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
+        GL46.glDepthFunc(GL46.GL_LESS);
+        GL46.glFrontFace(GL46.GL_CCW);
     }
 
     public void render() {
-        GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
+        if (!ready) {
+            return;
+        }
+
         for (FrameBufferObject fbo : fboRepository.all) {
             fbo.clear();
         }
         if (targetFBO != null) {
+            GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
             targetFBO.clear();
         }
         for (var syncTask : syncTasks) {
             syncTask.sync();
         }
-    }
-
-    public void shutdown() {
-        resourcesService.shutdown();
-    }
-
-    public void addModules(List<EngineExternalModule> modules) {
-        this.modules.addModules(modules);
     }
 
     public void setTargetFBO(@NotNull FrameBufferObject fbo) {
@@ -98,21 +102,5 @@ public class Engine {
 
     public FrameBufferObject getTargetFBO() {
         return targetFBO;
-    }
-
-    public int getDisplayH() {
-        return displayH;
-    }
-
-    public int getDisplayW() {
-        return displayW;
-    }
-
-    public int getInvDisplayH() {
-        return invDisplayH;
-    }
-
-    public int getInvDisplayW() {
-        return invDisplayW;
     }
 }

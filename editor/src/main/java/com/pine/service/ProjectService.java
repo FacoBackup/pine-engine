@@ -1,6 +1,11 @@
 package com.pine.service;
 
 import com.pine.*;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.injection.PInjector;
+import com.pine.injection.PostCreation;
+import com.pine.repository.ContentBrowserRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.PointerBuffer;
@@ -15,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 @PBean
-public class ProjectService implements Loggable, Initializable {
+public class ProjectService implements Loggable {
     private static final String IDENTIFIER = "project.pine";
     private static final String CONFIG_NAME = System.getProperty("user.home") + File.separator + IDENTIFIER;
 
@@ -31,9 +36,12 @@ public class ProjectService implements Loggable, Initializable {
     @PInject
     public ProjectStateRepository projectStateRepository;
 
+    @PInject
+    public ContentBrowserRepository contentBrowserRepository;
+
     private String previousOpenedProject = null;
 
-    @Override
+    @PostCreation
     public void onInitialize() {
         var file = new File(CONFIG_NAME);
         if (file.exists()) {
@@ -97,7 +105,7 @@ public class ProjectService implements Loggable, Initializable {
             Files.write(Path.of(CONFIG_NAME), previousOpenedProject.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             Files.write(Path.of(previousOpenedProject + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (Exception e) {
-            getLogger().warn("Could not save project cache to {}", CONFIG_NAME, e);
+            getLogger().warn("Could not save project to {}", CONFIG_NAME, e);
         }
     }
 
@@ -118,8 +126,9 @@ public class ProjectService implements Loggable, Initializable {
 
     public void newProject() {
         previousOpenedProject = selectDirectory();
+        contentBrowserRepository.initialize(previousOpenedProject);
         writeProject();
-        System.exit(0);
+        injector.boot();
         // TODO - Clear injection cache and re-create editor window
     }
 
@@ -128,11 +137,7 @@ public class ProjectService implements Loggable, Initializable {
             NativeFileDialog.NFD_Init();
             String selectedDirectory = openDirectoryDialog();
             NativeFileDialog.NFD_Quit();
-            if (selectedDirectory != null) {
-                return selectedDirectory;
-            } else {
-                return null;
-            }
+            return selectedDirectory;
         }
     }
 

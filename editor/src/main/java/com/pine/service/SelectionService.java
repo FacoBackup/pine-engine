@@ -1,9 +1,9 @@
 package com.pine.service;
 
-import com.pine.PBean;
-import com.pine.PInject;
 import com.pine.component.Entity;
-import com.pine.repository.EditorStateRepository;
+import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.repository.SettingsRepository;
 import com.pine.repository.WorldRepository;
 
 import java.util.LinkedList;
@@ -11,7 +11,7 @@ import java.util.LinkedList;
 @PBean
 public class SelectionService {
     @PInject
-    public EditorStateRepository stateRepository;
+    public SettingsRepository stateRepository;
 
     @PInject
     public WorldRepository worldRepository;

@@ -1,6 +1,6 @@
 package com.pine.repository;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import com.pine.tasks.SyncTask;
 
 @PBean

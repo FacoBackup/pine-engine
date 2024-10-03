@@ -1,11 +1,11 @@
 package com.pine.component;
 
-import com.pine.PBean;
+import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.rendering.PrimitiveRenderRequest;
+import com.pine.service.resource.primitives.mesh.Mesh;
 import com.pine.service.resource.primitives.mesh.MeshRuntimeData;
-import com.pine.service.resource.primitives.mesh.Primitive;
 import com.pine.service.resource.resource.ResourceType;
 import com.pine.theme.Icons;
 
@@ -27,7 +27,7 @@ public class InstancedPrimitiveComponent extends AbstractComponent<InstancedPrim
 
     @ResourceTypeField(type = ResourceType.PRIMITIVE)
     @MutableField(label = "Primitive")
-    public ResourceRef<Primitive> primitive;
+    public ResourceRef<Mesh> primitive;
 
     @MutableField(label = "Number of instances", min = 1)
     public int numberOfInstances = 10;

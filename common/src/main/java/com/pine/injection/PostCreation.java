@@ -1,8 +1,9 @@
-package com.pine;
+package com.pine.injection;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PBean {
+public @interface PostCreation {
+    int order() default 0;
 }

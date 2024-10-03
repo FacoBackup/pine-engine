@@ -1,7 +1,7 @@
 package com.pine.view;
 
-import com.pine.PInject;
-import com.pine.PInjector;
+import com.pine.injection.PInject;
+import com.pine.injection.PInjector;
 import com.pine.panel.AbstractPanelContext;
 
 import java.util.ArrayList;
