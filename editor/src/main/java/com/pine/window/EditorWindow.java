@@ -62,6 +62,7 @@ public class EditorWindow extends AbstractWindow {
             getLogger().error(e.getMessage(), e);
         }
         projectService.loadProject();
+        engine.setTargetDirectory(projectService.getProjectDirectory());
     }
 
     @Override

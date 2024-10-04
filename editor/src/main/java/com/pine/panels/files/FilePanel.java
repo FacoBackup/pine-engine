@@ -73,7 +73,7 @@ public class FilePanel extends AbstractView {
             if (item.isDirectory()) {
                 ((FilesContext) getContext()).setDirectory(item.absolutePath());
             } else {
-                loader.load(item.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+                loader.load(item.absolutePath(), new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
             }
         }
     }

@@ -32,7 +32,7 @@ public class FilesHeaderPanel extends AbstractView {
 
     @Override
     public void onInitialize() {
-        
+
         filesContext = (FilesContext) getContext();
         searchPath.set(filesContext.getDirectory());
         filesContext.subscribe(() -> {
@@ -57,16 +57,13 @@ public class FilesHeaderPanel extends AbstractView {
             }
         }
 
-        FileInfoDTO selected = filesContext.getSelectedFile();
-        if (selected != null && !selected.isDirectory()) {
-            ImGui.sameLine();
-            if (ImGui.button(Icons.file_open + " Import File##importFile")) {
-                FileInfoDTO file = filesContext.getSelectedFile();
-                if (file != null && !file.isDirectory()) {
-                    var response = resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
-                    if (response == null || !response.isLoaded) {
-                        messageRepository.pushMessage(new Message("Error while importing file " + file.absolutePath(), MessageSeverity.ERROR));
-                    }
+        ImGui.sameLine();
+        if (ImGui.button(Icons.file_open + " Import File##importFile")) {
+            FileInfoDTO file = filesContext.getSelectedFile();
+            if (file != null && !file.isDirectory()) {
+                var response = resourceLoader.load(file.absolutePath(), new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+                if (response == null || !response.isLoaded) {
+                    messageRepository.pushMessage(new Message("Error while importing file " + file.absolutePath(), MessageSeverity.ERROR));
                 }
             }
         }

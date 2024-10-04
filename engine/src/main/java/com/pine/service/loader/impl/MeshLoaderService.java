@@ -19,14 +19,12 @@ import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.AddEntityRequest;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.service.resource.ResourceService;
-import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.mesh.MeshStreamData;
 import org.joml.Matrix4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
 import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.util.*;
 
 @PBean
@@ -50,9 +48,6 @@ public class MeshLoaderService extends AbstractLoaderService {
     public ResourceService resources;
 
     @PInject
-    public StreamingService streamingService;
-
-    @PInject
     public RequestProcessingService requestProcessingService;
 
     @PInject
@@ -60,20 +55,11 @@ public class MeshLoaderService extends AbstractLoaderService {
 
     @Nullable
     private AIScene loadScene(LoadRequest resource) {
-        AIScene scene = null;
-        if (resource.isStaticResource()) {
-            ByteBuffer byteBuffer = loadStaticResource(resource.path());
-            if (byteBuffer != null) {
-                scene = Assimp.aiImportFileFromMemory(byteBuffer, FLAGS, (CharBuffer) null);
-            }
-        } else {
-            scene = Assimp.aiImportFile(resource.path(), FLAGS);
-        }
-        return scene;
+        return Assimp.aiImportFile(resource.path(), FLAGS);
     }
 
     @Override
-    public AbstractLoaderResponse load(LoadRequest request, @Nullable AbstractLoaderExtraInfo extraInfo) {
+    public AbstractLoaderResponse<?> load(LoadRequest request, @Nullable AbstractLoaderExtraInfo extraInfo) {
         var extra = (MeshLoaderExtraInfo) extraInfo;
         try {
             Map<Integer, List<MeshInstance>> byPrimitive = new HashMap<>();
@@ -82,7 +68,7 @@ public class MeshLoaderService extends AbstractLoaderService {
 
             if (scene == null) {
                 getLogger().error("Failed to load mesh at {}", request.path());
-                return new MeshLoaderResponse(false, request, Collections.emptyList());
+                return new MeshLoaderResponse(false, Collections.emptyList());
             }
 
             if (extra == null || !extra.isInstantiateHierarchy()) {
@@ -102,10 +88,10 @@ public class MeshLoaderService extends AbstractLoaderService {
                 meshes.addAll(processed.values());
             }
             Assimp.aiReleaseImport(scene);
-            return new MeshLoaderResponse(true, request, meshes);
+            return new MeshLoaderResponse(true, meshes);
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
-            return new MeshLoaderResponse(false, request, Collections.emptyList());
+            return new MeshLoaderResponse(false, Collections.emptyList());
         }
     }
 
@@ -123,7 +109,7 @@ public class MeshLoaderService extends AbstractLoaderService {
         if (primitive != null) {
             requestProcessingService.addRequest(new AddComponentRequest(MeshComponent.class, entity));
             var primitiveComponent = (MeshComponent) entity.components.get(MeshComponent.class.getSimpleName());
-            primitiveComponent.primitive = primitive;
+            primitiveComponent.lod0 = primitive;
         }
 
         createPrimitiveTransformation(entity.transformation, root);
@@ -227,9 +213,11 @@ public class MeshLoaderService extends AbstractLoaderService {
                     uvs[i * 2 + 1] = nUV.get(i).y();
                 }
             }
-            // TODO - WRITE OUTPUT AND CREATE LODs
-            // TODO - LINK OUTPUT WITH STREAMABLE RESOURCE
-            return streamingService.addNew(MeshStreamableResource.class, mesh.mName().dataString());
+
+            MeshStreamableResource instance = streamingService.addNew(MeshStreamableResource.class, mesh.mName().dataString());
+            MeshStreamData data = new MeshStreamData(vertices, indices, normals, uvs);
+            persist(instance, data);
+            return instance;
         }
         return null;
     }

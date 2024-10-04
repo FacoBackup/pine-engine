@@ -2,7 +2,7 @@ package com.pine.panels.hierarchy;
 
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
-import com.pine.component.InstancedMeshComponent;
+import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
@@ -25,7 +25,7 @@ import java.util.Objects;
 
 public class HierarchyPanel extends AbstractDockPanel {
     private static final byte BYTE = 1;
-    private static final String INSTANCED_COMPONENT = InstancedMeshComponent.class.getSimpleName();
+    private static final String MESH_COMPONENT = MeshComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
     private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
@@ -162,14 +162,16 @@ public class HierarchyPanel extends AbstractDockPanel {
                 ImGui.tableNextColumn();
                 ImGui.textDisabled("--");
             }
-            EntityComponent instanced = node.components.get(INSTANCED_COMPONENT);
-            if (instanced != null) {
-                renderInstancedComponent(node, (InstancedMeshComponent) instanced);
+            if (node.components.containsKey(MESH_COMPONENT)) {
+                MeshComponent meshComponent = (MeshComponent) node.components.get(MESH_COMPONENT);
+                if(meshComponent.isInstancedRendering) {
+                    renderInstancedComponent(node, meshComponent);
+                }
             }
         }
     }
 
-    private void renderInstancedComponent(Entity node, InstancedMeshComponent instanced) {
+    private void renderInstancedComponent(Entity node, MeshComponent instanced) {
         List<Transformation> primitives = instanced.primitives;
         for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
             Transformation p = primitives.get(i);

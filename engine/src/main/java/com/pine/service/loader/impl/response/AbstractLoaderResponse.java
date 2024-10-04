@@ -2,7 +2,6 @@ package com.pine.service.loader.impl.response;
 
 import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.loader.impl.info.LoadRequest;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,16 +11,14 @@ import java.util.List;
  * than only one instance.
  * Also includes basic information like file path and if the loading process was successful
  */
-public abstract class AbstractLoaderResponse<T extends AbstractStreamableResource> implements Serializable {
+public abstract class AbstractLoaderResponse<T extends AbstractStreamableResource<?>> implements Serializable {
     public abstract StreamableResourceType getResourceType();
 
     public final boolean isLoaded;
-    public final LoadRequest request;
     public final List<T> loadedResources;
 
-    public AbstractLoaderResponse(boolean isLoaded, LoadRequest request, List<T> loadedResources) {
+    public AbstractLoaderResponse(boolean isLoaded, List<T> loadedResources) {
         this.isLoaded = isLoaded;
-        this.request = request;
         this.loadedResources = loadedResources;
     }
 }

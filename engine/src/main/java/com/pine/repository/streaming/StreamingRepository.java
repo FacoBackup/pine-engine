@@ -12,7 +12,6 @@ import java.util.Map;
 @PBean
 public class StreamingRepository implements SerializableRepository {
     public final List<AbstractStreamableResource<?>> streamableResources = new ArrayList<>();
-
     public transient final Map<String, AbstractStreamableResource<?>> schedule = new HashMap<>();
     public transient final Map<String, StreamLoadData> loadedResources = new HashMap<>();
 

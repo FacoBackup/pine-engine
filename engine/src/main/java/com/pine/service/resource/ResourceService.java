@@ -16,10 +16,7 @@ import java.util.UUID;
 public class ResourceService implements Loggable, Disposable {
 
     @PInject
-    public List<AbstractResourceService<?, ?>> implementations;
-
-    @PInject
-    public ClockRepository clock;
+    public List<AbstractResourceService> implementations;
 
     @PInject
     public LoaderService loader;
@@ -42,7 +39,6 @@ public class ResourceService implements Loggable, Disposable {
             return null;
         }
         resources.put(fixedId, instance);
-        sinceLastUse.put(instance.getId(), System.currentTimeMillis());
         return instance;
     }
 

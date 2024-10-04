@@ -8,8 +8,7 @@ import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
-import com.pine.repository.streaming.MeshStreamableResource;
-import com.pine.service.rendering.InstancedRequestService;
+import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
@@ -20,12 +19,7 @@ import com.pine.service.streaming.StreamingService;
  */
 @PBean
 public class RenderingTask extends AbstractTask implements Loggable {
-
-    public static String INSTANCED_COMP = InstancedMeshComponent.class.getSimpleName();
-    public static String PRIMITIVE_COMP = MeshComponent.class.getSimpleName();
-
-    @PInject
-    public StreamingService streamingService;
+    public static String MESH_COMP = MeshComponent.class.getSimpleName();
 
     @PInject
     public CameraRepository camera;
@@ -43,7 +37,7 @@ public class RenderingTask extends AbstractTask implements Loggable {
     public TransformationService transformationService;
 
     @PInject
-    public InstancedRequestService instancedRequestService;
+    public RenderingRequestService renderingRequestService;
 
     private int renderIndex = 0;
 
@@ -71,21 +65,23 @@ public class RenderingTask extends AbstractTask implements Loggable {
     private void traverseTree(Entity entity) {
         Transformation t = entity.transformation;
         transformationService.updateMatrix(t);
-        if (entity.components.containsKey(INSTANCED_COMP)) {
-            RenderingRequest request = instancedRequestService.prepareInstanced((InstancedMeshComponent) entity.components.get(INSTANCED_COMP), t);
-            if (request != null) {
-                request.renderIndex = renderIndex;
-                renderIndex += request.transformations.size() + 1;
-                renderingRepository.newRequests.add(request);
-            }
-        }
-
-        if (entity.components.containsKey(PRIMITIVE_COMP)) {
-            RenderingRequest request = preparePrimitive((MeshComponent) entity.components.get(PRIMITIVE_COMP), t);
-            if (request != null) {
-                request.renderIndex = renderIndex;
-                renderIndex++;
-                renderingRepository.newRequests.add(request);
+        if (entity.components.containsKey(MESH_COMP)) {
+            var meshComponent = (MeshComponent) entity.components.get(MESH_COMP);
+            meshComponent.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
+            if (meshComponent.isInstancedRendering) {
+                RenderingRequest request = renderingRequestService.prepareInstanced(meshComponent, t);
+                if (request != null) {
+                    request.renderIndex = renderIndex;
+                    renderIndex += request.transformations.size() + 1;
+                    renderingRepository.newRequests.add(request);
+                }
+            } else {
+                RenderingRequest request = renderingRequestService.prepareNormal(meshComponent, t);
+                if (request != null) {
+                    request.renderIndex = renderIndex;
+                    renderIndex++;
+                    renderingRepository.newRequests.add(request);
+                }
             }
         }
 
@@ -94,23 +90,4 @@ public class RenderingTask extends AbstractTask implements Loggable {
         }
     }
 
-    private RenderingRequest preparePrimitive(MeshComponent scene, Transformation transform) {
-        MeshStreamableResource mesh = scene.primitive;
-        if (mesh == null || !mesh.isLoaded) {
-            if (mesh != null) {
-                streamingService.stream(scene.primitive);
-            }
-            return null;
-        }
-        var culling = (CullingComponent) scene.entity.components.get(CullingComponent.class.getSimpleName());
-        if (!transformationService.isCulled(transform.translation, culling.maxDistanceFromCamera, culling.frustumBoxDimensions)) {
-            if (transform.renderRequest == null) {
-                transform.renderRequest = new RenderingRequest(mesh, scene.entity.transformation);
-            }
-            transform.renderRequest.mesh = mesh;
-            transformationService.extractTransformations(transform);
-            return transform.renderRequest;
-        }
-        return null;
-    }
 }

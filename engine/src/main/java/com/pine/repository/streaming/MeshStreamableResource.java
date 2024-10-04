@@ -17,6 +17,10 @@ public class MeshStreamableResource extends AbstractStreamableResource<MeshStrea
     public VertexBuffer uvVBO;
     public VertexBuffer normalVBO;
 
+    public MeshStreamableResource(String pathToFile, String id) {
+        super(pathToFile, id);
+    }
+
     @Override
     protected void loadInternal(MeshStreamData dto) {
         this.triangleCount = dto.indices().length / 3;

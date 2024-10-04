@@ -4,6 +4,10 @@ import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
 
 public class AudioStreamableResource extends AbstractStreamableResource<AudioStreamData> {
+    public AudioStreamableResource(String pathToFile, String id) {
+        super(pathToFile, id);
+    }
+
     @Override
     protected void disposeInternal() {
 

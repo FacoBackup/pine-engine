@@ -14,6 +14,7 @@ import com.pine.tasks.SyncTask;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
+import java.io.File;
 import java.util.List;
 
 @PBean
@@ -47,6 +48,7 @@ public class Engine {
     @PInject
     public List<AbstractTask> tasks;
     private boolean ready = false;
+    private String targetDirectory;
 
     public void start(int displayW, int displayH, List<EngineExternalModule> modules) {
         runtimeRepository.setDisplayW(displayW);
@@ -104,5 +106,13 @@ public class Engine {
 
     public FrameBufferObject getTargetFBO() {
         return targetFBO;
+    }
+
+    public String getTargetDirectory() {
+        return targetDirectory;
+    }
+
+    public void setTargetDirectory(String targetDirectory) {
+        this.targetDirectory = targetDirectory;
     }
 }

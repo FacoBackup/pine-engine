@@ -1,39 +1,60 @@
 package com.pine.service.loader;
 
+import com.pine.Engine;
 import com.pine.Loggable;
+import com.pine.injection.PInject;
+import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
 import com.pine.service.loader.impl.info.LoadRequest;
 import com.pine.service.loader.impl.response.AbstractLoaderResponse;
+import com.pine.service.streaming.StreamLoadData;
+import com.pine.service.streaming.StreamingService;
 import org.lwjgl.BufferUtils;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public abstract class AbstractLoaderService implements Loggable {
+    @PInject
+    public Engine engine;
 
-    public abstract AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo);
+    @PInject
+    public StreamingService streamingService;
+
+    public abstract AbstractLoaderResponse<?> load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo);
+
+    public String getPathToPersist(AbstractStreamableResource<?> resource) {
+        return engine.getTargetDirectory() + File.separator + resource.id;
+    }
+
+    public void persist(AbstractStreamableResource<?> resource, StreamLoadData streamData) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getPathToPersist(resource)))) {
+            out.writeObject(streamData);
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage(), ex);
+        }
+    }
+
+    public void persist(AbstractStreamableResource<?> resource, String origin) {
+        Path source = Paths.get(origin);
+        Path target = Paths.get(getPathToPersist(resource));
+
+        try {
+            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("File copied successfully!");
+        } catch (Exception e) {
+            getLogger().error(e.getMessage(), e);
+        }
+    }
 
     public abstract StreamableResourceType getResourceType();
-
-    @Nullable
-    protected ByteBuffer loadStaticResource(String path) {
-        try {
-            try (InputStream inputStream = LoaderService.class.getClassLoader().getResourceAsStream(path)) {
-                if(inputStream != null) {
-                    byte[] bytes = inputStream.readAllBytes();
-                    ByteBuffer byteBuffer = BufferUtils.createByteBuffer(bytes.length + 1);
-                    byteBuffer.put(bytes);
-                    byteBuffer.put((byte) 0);
-                    byteBuffer.flip();
-
-                    return byteBuffer;
-                }
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
-    }
 }

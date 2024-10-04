@@ -20,18 +20,18 @@ public class LoaderService {
     public List<AbstractLoaderService> resourceLoaders;
 
     @Nullable
-    public AbstractLoaderResponse load(String path, boolean isStaticResource) {
-        return load(path, isStaticResource, null);
+    public AbstractLoaderResponse<?> load(String path) {
+        return load(path, null);
     }
 
     @Nullable
-    public AbstractLoaderResponse load(String path, boolean isStaticResource, @Nullable AbstractLoaderExtraInfo extraInfo) {
-        var dto = new LoadRequest(path, isStaticResource, extraInfo);
+    public AbstractLoaderResponse<?> load(String path, @Nullable AbstractLoaderExtraInfo extraInfo) {
+        var dto = new LoadRequest(path, extraInfo);
         return load(dto);
     }
 
     @Nullable
-    public AbstractLoaderResponse load(LoadRequest loadRequest) {
+    public AbstractLoaderResponse<?> load(LoadRequest loadRequest) {
         final String extension = loadRequest.path().substring(loadRequest.path().lastIndexOf(".") + 1);
         for (AbstractLoaderService i : resourceLoaders) {
             if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
@@ -42,13 +42,13 @@ public class LoaderService {
     }
 
     @NotNull
-    private AbstractLoaderResponse process(@Nullable AbstractLoaderExtraInfo extraInfo, AbstractLoaderService i, LoadRequest dto) {
-        AbstractLoaderResponse metadata;
+    private AbstractLoaderResponse<?> process(@Nullable AbstractLoaderExtraInfo extraInfo, AbstractLoaderService i, LoadRequest dto) {
+        AbstractLoaderResponse<?> response;
         if (extraInfo != null && extraInfo.getResourceType() == i.getResourceType()) {
-            metadata = i.load(dto, extraInfo);
+            response = i.load(dto, extraInfo);
         } else {
-            metadata = i.load(dto, null);
+            response = i.load(dto, null);
         }
-        return metadata;
+        return response;
     }
 }

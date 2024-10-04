@@ -16,7 +16,7 @@ public class AudioLoaderService extends AbstractLoaderService {
 
     @Override
     public AbstractLoaderResponse load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
-        return new AudioLoaderResponse(false, resource, Collections.emptyList());
+        return new AudioLoaderResponse(false, Collections.emptyList());
     }
 
     @Override

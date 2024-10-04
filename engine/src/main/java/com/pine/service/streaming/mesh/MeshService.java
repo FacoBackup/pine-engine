@@ -1,5 +1,8 @@
 package com.pine.service.streaming.mesh;
 
+import com.pine.MessageSeverity;
+import com.pine.SerializableRepository;
+import com.pine.SerializationState;
 import com.pine.injection.PBean;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.MeshStreamableResource;
@@ -7,8 +10,12 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.AbstractStreamableService;
 import org.lwjgl.opengl.GL46;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+
 @PBean
-public class MeshService extends AbstractStreamableService<MeshStreamableResource> {
+public class MeshService extends AbstractStreamableService<MeshStreamableResource, MeshStreamData> {
     private RenderingMode renderingMode;
     private int instanceCount;
     private boolean isInWireframeMode = false;
@@ -93,5 +100,17 @@ public class MeshService extends AbstractStreamableService<MeshStreamableResourc
     @Override
     public StreamableResourceType getResourceType() {
         return StreamableResourceType.MESH;
+    }
+
+    @Override
+    public MeshStreamData stream(MeshStreamableResource instance) {
+        try {
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(instance.pathToFile))) {
+                return (MeshStreamData) in.readObject();
+            }
+        } catch (Exception e) {
+            getLogger().error(e.getMessage(), e);
+        }
+        return null;
     }
 }

@@ -34,35 +34,40 @@ public class ProjectService implements Loggable {
     public PInjector injector;
 
     @PInject
+    public NativeDialogService nativeDialogService;
+
+    @PInject
     public ProjectStateRepository projectStateRepository;
 
     @PInject
     public ContentBrowserRepository contentBrowserRepository;
 
-    private String previousOpenedProject = null;
+    private String projectDirectory = null;
 
     @PostCreation
     public void onInitialize() {
         var file = new File(CONFIG_NAME);
         if (file.exists()) {
             try {
-                previousOpenedProject = Files.readString(Path.of(file.getAbsolutePath()));
-                if (!new File(previousOpenedProject).exists()) {
-                    previousOpenedProject = null;
+                projectDirectory = Files.readString(Path.of(file.getAbsolutePath()));
+                if (!new File(projectDirectory).exists()) {
+                    projectDirectory = null;
                 }
             } catch (Exception e) {
                 getLogger().warn("No previous project to be opened was found, starting as a clean instance");
+            }
+            if (projectDirectory == null) {
+                projectDirectory = System.getProperty("user.home") + File.separator + "pineEngineDefaultProject";
+                fsService.createDirectory(projectDirectory);
             }
         }
     }
 
     public void loadProject() {
-        if (previousOpenedProject == null) {
-            return;
-        }
+
         var t = new Thread(() -> {
             try {
-                File file = new File(previousOpenedProject + File.separator + getRepositoryIdentifier());
+                File file = new File(projectDirectory + File.separator + getRepositoryIdentifier());
                 if (!file.exists()) {
                     return;
                 }
@@ -83,13 +88,10 @@ public class ProjectService implements Loggable {
     }
 
     public void save() {
-        if (previousOpenedProject == null) {
-            previousOpenedProject = selectDirectory();
-        }
         writeProject();
 
         try {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(previousOpenedProject + File.separator + getRepositoryIdentifier()))) {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(projectDirectory + File.separator + getRepositoryIdentifier()))) {
                 out.writeObject(projectStateRepository);
             }
         } catch (Exception e) {
@@ -102,8 +104,8 @@ public class ProjectService implements Loggable {
 
     private void writeProject() {
         try {
-            Files.write(Path.of(CONFIG_NAME), previousOpenedProject.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.write(Path.of(previousOpenedProject + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(Path.of(CONFIG_NAME), projectDirectory.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(Path.of(projectDirectory + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (Exception e) {
             getLogger().warn("Could not save project to {}", CONFIG_NAME, e);
         }
@@ -114,43 +116,25 @@ public class ProjectService implements Loggable {
     }
 
     public void openProject() {
-        String selected = selectDirectory();
+        String selected = nativeDialogService.selectDirectory();
         if (selected != null) {
             List<File> files = fsService.readFilesInDirectory(selected);
             if (files.stream().anyMatch(a -> a.getName().contains(IDENTIFIER))) {
-                previousOpenedProject = selected;
+                projectDirectory = selected;
                 loadProject();
             }
         }
     }
 
     public void newProject() {
-        previousOpenedProject = selectDirectory();
-        contentBrowserRepository.initialize(previousOpenedProject);
+        projectDirectory = nativeDialogService.selectDirectory();
+        contentBrowserRepository.initialize(projectDirectory);
         writeProject();
         injector.boot();
-        // TODO - Clear injection cache and re-create editor window
     }
 
-    private static String selectDirectory() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            NativeFileDialog.NFD_Init();
-            String selectedDirectory = openDirectoryDialog();
-            NativeFileDialog.NFD_Quit();
-            return selectedDirectory;
-        }
-    }
 
-    private static String openDirectoryDialog() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            PointerBuffer outPath = stack.mallocPointer(1);
-            int result = NativeFileDialog.NFD_PickFolder(outPath, System.getProperty("user.home"));
-            if (result == NativeFileDialog.NFD_OKAY) {
-                String path = outPath.getStringUTF8(0);
-                NativeFileDialog.nNFD_FreePath(outPath.get(0));
-                return path;
-            }
-        }
+    public String getProjectDirectory() {
         return null;
     }
 }

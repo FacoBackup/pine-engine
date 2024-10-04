@@ -1,5 +1,6 @@
 package com.pine.service.streaming;
 
+import com.pine.Engine;
 import com.pine.Loggable;
 import com.pine.injection.Disposable;
 import com.pine.injection.PBean;
@@ -10,6 +11,8 @@ import com.pine.repository.streaming.StreamingRepository;
 import com.pine.tasks.SyncTask;
 
 import javax.annotation.Nullable;
+import java.io.File;
+import java.util.UUID;
 
 /**
  * Responsible for instantiating resources, creating requests for loading resources and disposing of loaded resources
@@ -22,6 +25,9 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     @PInject
     public ClockRepository clock;
 
+    @PInject
+    public Engine engine;
+
     public static final int MAX_TIMEOUT = 60 * 1000;
 
     private long sinceLastCleanup;
@@ -29,7 +35,8 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     @Nullable
     public <T extends AbstractStreamableResource<?>> T addNew(Class<T> clazz, String name) {
         try {
-            T newInstance = clazz.getConstructor().newInstance();
+            String id = UUID.randomUUID().toString();
+            T newInstance = clazz.getConstructor(String.class, String.class).newInstance(engine.getTargetDirectory() + File.separator + "resources" + File.separator + id, id);
             newInstance.name = name;
             repository.streamableResources.add(newInstance);
             return newInstance;

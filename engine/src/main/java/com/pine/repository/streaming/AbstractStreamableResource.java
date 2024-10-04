@@ -7,9 +7,15 @@ import java.util.UUID;
 
 public abstract class AbstractStreamableResource<T extends StreamLoadData> implements Disposable {
     public transient boolean isLoaded = false;
-    public final String id = UUID.randomUUID().toString();
+    public final String id;
     public String name;
+    public final String pathToFile;
     public transient long lastUse;
+
+    public AbstractStreamableResource(String pathToFile, String id) {
+        this.pathToFile = pathToFile;
+        this.id = id;
+    }
 
     public abstract StreamableResourceType getResourceType();
 
