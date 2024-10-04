@@ -1,6 +1,7 @@
 package com.pine.service.system.impl;
 
 import com.pine.Loggable;
+import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
@@ -28,6 +29,7 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected void renderInternal() {
+        meshService.setRenderingMode(RenderingMode.TRIANGLES);
         ssboService.bind(ssboRepository.transformationSSBO);
         shaderService.bind(shaderRepository.depthPrePassShader);
         List<RenderingRequest> requests = renderingRepository.requests;
@@ -37,7 +39,6 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
             transformationIndexBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, transformationIndexBuffer);
             meshService.bind(request.mesh);
-            meshService.setRenderingMode(renderingRepository.renderingMode);
             meshService.setInstanceCount(request.transformations.size());
             meshService.draw();
             instancedOffset += request.transformations.size();

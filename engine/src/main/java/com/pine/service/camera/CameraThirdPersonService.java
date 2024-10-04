@@ -10,11 +10,46 @@ public class CameraThirdPersonService extends AbstractCameraService {
 
     @PInject
     public CameraRepository cameraRepository;
+    public boolean isChangingCenter = false;
 
-    public void changeCenter(Camera camera) {
-        camera.orbitCenter.x = cameraRepository.deltaX * .005f;
-        camera.orbitCenter.y -= cameraRepository.deltaY * .005f;
-        camera.registerChange();
+    @Override
+    public void handleInput(Camera camera, boolean isFirstMovement) {
+        if (!isChangingCenter) {
+            super.handleInput(camera, isFirstMovement);
+        }
+    }
+
+    public void changeCenter(Camera camera, boolean isFirstMovement) {
+        updateDelta(isFirstMovement);
+
+        Vector3f forward = new Vector3f(
+                (float) -Math.sin(camera.yaw) * (float) Math.cos(camera.pitch),  // -sin(yaw)
+                (float) Math.sin(camera.pitch),                                  // sin(pitch)
+                (float) -Math.cos(camera.yaw) * (float) Math.cos(camera.pitch)   // -cos(yaw)
+        );
+        Vector3f right = new Vector3f(
+                (float) Math.sin(camera.yaw - PI_2),
+                0,
+                (float) Math.cos(camera.yaw - PI_2)
+        );
+        forward.normalize();
+        right.normalize();
+
+        if (cameraRepository.lastMouseY > 0) {
+            camera.orbitCenter.add(right.mul(cameraRepository.deltaY * .05f));
+            camera.registerChange();
+        } else {
+            camera.orbitCenter.sub(right.mul(cameraRepository.deltaY * .05f));
+            camera.registerChange();
+        }
+        if (cameraRepository.lastMouseX > 0) {
+            camera.orbitCenter.sub(forward.mul(cameraRepository.deltaX * .05f));
+            camera.registerChange();
+        } else {
+            camera.orbitCenter.add(forward.mul(cameraRepository.deltaX * .05f));
+            camera.registerChange();
+        }
+        camera.orbitCenter.y = 0;
     }
 
     public void zoom(Camera camera, float amount) {

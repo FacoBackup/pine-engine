@@ -18,7 +18,6 @@ public class RenderingRepository {
     public int offset = 0;
     public int pendingTransformationsInternal = 0;
     public final Map<String, Boolean> auxAddedToBufferEntities = new HashMap<>();
-    public RenderingMode renderingMode = RenderingMode.TRIANGLES;
 
     public void switchRequests() {
         pendingTransformations = pendingTransformationsInternal;

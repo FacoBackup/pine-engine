@@ -21,7 +21,8 @@ public enum DebugShadingModel implements SelectableEnum, Serializable {
     RANDOM("Random", 13),
     OVERDRAW("Overdraw", 14),
     LIGHT_COMPLEXITY("Lighting complexity", 15),
-    LIGHT_QUANTITY("Light quantity", 16);
+    LIGHT_QUANTITY("Light quantity", 16),
+    WIREFRAME("Wireframe", 17);
 
     private final int id;
     private final String label;

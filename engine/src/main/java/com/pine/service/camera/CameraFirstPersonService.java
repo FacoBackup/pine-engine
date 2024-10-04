@@ -8,7 +8,6 @@ import org.joml.Vector3f;
 
 @PBean
 public class CameraFirstPersonService extends AbstractCameraService {
-    private static final float PI_2 = (float) ((float) Math.PI / 2.0);
     private final Vector3f toApplyTranslation = new Vector3f(0);
     private final Vector3f xAxis = new Vector3f();
     private final Vector3f yAxis = new Vector3f();

@@ -16,15 +16,13 @@ import imgui.type.ImBoolean;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
-public class GizmoConfigPanel extends AbstractView {
+public class ViewportHeaderPanel extends AbstractView {
     public static final int SIZE = 34;
     private static final ImVec2 SPACING = new ImVec2(0, 0);
     private static final String[] SNAP_ROTATE_OPTIONS = new String[]{"5", "10", "15", "30", "45"};
     private static final String[] SNAP_TRANSLATE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
     private static final String[] SNAP_SCALE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
     private static final String[] GIZMO_MODE_OPTIONS = new String[]{Icons.language + " World", Icons.place + " Local"};
-    private static final ImBoolean OPEN = new ImBoolean(true);
-    private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove;
     private static final String[] SHADING_MODE_OPTIONS = DebugShadingModel.getLabels();
     private static final ImVec2 MEDIUM_SPACING = new ImVec2(5, 0);
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
@@ -38,7 +36,7 @@ public class GizmoConfigPanel extends AbstractView {
     private final ImGuiIO io;
     private final ImVec2 size;
 
-    public GizmoConfigPanel(ImVec2 size) {
+    public ViewportHeaderPanel(ImVec2 size) {
         io = ImGui.getIO();
         this.size = size;
     }
@@ -66,6 +64,17 @@ public class GizmoConfigPanel extends AbstractView {
     }
 
     private void cameraMode() {
+        largeSpacing();
+        ImGui.text("Camera");
+
+        if(cameraRepository.currentCamera.orbitalMode) {
+            ImGui.sameLine();
+            if (ImGui.button(Icons.center_focus_strong + "##centerCamera", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
+                cameraRepository.currentCamera.orbitCenter.zero();
+                cameraRepository.currentCamera.registerChange();
+            }
+        }
+
         ImGui.sameLine();
         if (ImGui.button(cameraRepository.currentCamera.orbitalMode ? "Orbital " + Icons.trip_origin : "Free " + Icons.outbound + "##cameraMode")) {
             cameraRepository.currentCamera.orbitalMode = !cameraRepository.currentCamera.orbitalMode;
@@ -75,12 +84,23 @@ public class GizmoConfigPanel extends AbstractView {
 
     private void shadingMode() {
         ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 230, 0);
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 382, 0);
         ImGui.sameLine();
 
-        ImGui.text(Icons.texture);
+        ImGui.text("Shading");
+
         ImGui.sameLine();
-        ImGui.setNextItemWidth(200);
+        if (renderOption(Icons.grid_on + "Wireframe##wireframeShading", settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
+            settingsRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
+        }
+
+        ImGui.sameLine();
+        if (renderOption(Icons.palette + "Random##randomShading", settingsRepository.debugShadingModel == DebugShadingModel.RANDOM, false)) {
+            settingsRepository.debugShadingModel = DebugShadingModel.RANDOM;
+        }
+
+        ImGui.sameLine();
+        ImGui.setNextItemWidth(150);
         if (ImGui.combo("##shadingMode", settingsRepository.shadingModelOption, SHADING_MODE_OPTIONS)) {
             settingsRepository.debugShadingModel = DebugShadingModel.values()[settingsRepository.shadingModelOption.get()];
         }
