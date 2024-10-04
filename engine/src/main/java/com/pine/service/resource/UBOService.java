@@ -1,11 +1,7 @@
 package com.pine.service.resource;
 
 import com.pine.injection.PBean;
-import com.pine.service.resource.primitives.EmptyRuntimeData;
-import com.pine.service.resource.primitives.GLSLType;
-import com.pine.service.resource.resource.AbstractResourceService;
-import com.pine.service.resource.resource.IResource;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
 import com.pine.service.resource.ubo.UniformBufferObject;
@@ -15,13 +11,8 @@ import java.nio.FloatBuffer;
 import java.util.List;
 
 @PBean
-public class UBOService extends AbstractResourceService<UniformBufferObject, EmptyRuntimeData, UBOCreationData> {
+public class UBOService extends AbstractResourceService<UniformBufferObject, UBOCreationData> {
     private UniformBufferObject currentUBO;
-
-    @Override
-    protected void bindInternal(UniformBufferObject instance, EmptyRuntimeData data) {
-        bindInternal(instance);
-    }
 
     @Override
     protected void bindInternal(UniformBufferObject instance) {
@@ -45,8 +36,8 @@ public class UBOService extends AbstractResourceService<UniformBufferObject, Emp
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.UBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.UBO;
     }
 
     public void bindWithShader(UniformBufferObject ubo, int shaderProgram) {

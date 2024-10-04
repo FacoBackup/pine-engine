@@ -6,7 +6,7 @@ import com.pine.MessageSeverity;
 import com.pine.injection.PInject;
 import com.pine.repository.FileInfoDTO;
 import com.pine.service.FSService;
-import com.pine.service.loader.StreamingService;
+import com.pine.service.loader.LoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
@@ -22,7 +22,7 @@ public class FilesHeaderPanel extends AbstractView {
     @PInject
     public FSService fsService;
     @PInject
-    public StreamingService resourceLoader;
+    public LoaderService resourceLoader;
     @PInject
     public MessageRepository messageRepository;
 

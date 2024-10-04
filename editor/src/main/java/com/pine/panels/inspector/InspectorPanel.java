@@ -8,7 +8,7 @@ import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.repository.SettingsRepository;
-import com.pine.service.RequestProcessingService;
+import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
 import com.pine.theme.Icons;

@@ -2,9 +2,9 @@ package com.pine.tools.system;
 
 import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
-import com.pine.repository.rendering.PrimitiveRenderRequest;
+import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import com.pine.tools.repository.ToolsResourceRepository;
@@ -171,10 +171,13 @@ public class DebugSystem extends AbstractSystem {
         shaderService.bindUniform(shadowAtlas, fboRepository.shadowsSampler);
 
         var requests = renderingRepository.requests;
-        for (PrimitiveRenderRequest request : requests) {
+        for (RenderingRequest request : requests) {
             intBoolBuffer.put(0, request.transformation.renderIndex);
             shaderService.bindUniform(transformationIndex, intBoolBuffer);
-            primitiveService.bind(request.mesh, request.runtimeData);
+            meshService.bind(request.mesh);
+            meshService.setInstanceCount(request.transformations.size());
+            meshService.setRenderingMode(renderingRepository.renderingMode);
+            meshService.draw();
         }
     }
 }

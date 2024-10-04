@@ -1,10 +1,6 @@
 package com.pine.service.resource;
 
 import com.pine.injection.PBean;
-import com.pine.service.resource.primitives.EmptyRuntimeData;
-import com.pine.service.resource.resource.AbstractResourceService;
-import com.pine.service.resource.resource.IResource;
-import com.pine.service.resource.resource.ResourceType;
 import com.pine.service.resource.ssbo.SSBOCreationData;
 import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import org.lwjgl.opengl.GL46;
@@ -12,12 +8,7 @@ import org.lwjgl.opengl.GL46;
 import java.nio.FloatBuffer;
 
 @PBean
-public class SSBOService extends AbstractResourceService<ShaderStorageBufferObject, EmptyRuntimeData, SSBOCreationData> {
-
-    @Override
-    protected void bindInternal(ShaderStorageBufferObject instance, EmptyRuntimeData data) {
-        bindInternal(instance);
-    }
+public class SSBOService extends AbstractResourceService<ShaderStorageBufferObject, SSBOCreationData> {
 
     @Override
     protected void bindInternal(ShaderStorageBufferObject instance) {
@@ -40,8 +31,8 @@ public class SSBOService extends AbstractResourceService<ShaderStorageBufferObje
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.SSBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.SSBO;
     }
 
     public void updateBuffer(ShaderStorageBufferObject ssbo, FloatBuffer data, int offset) {

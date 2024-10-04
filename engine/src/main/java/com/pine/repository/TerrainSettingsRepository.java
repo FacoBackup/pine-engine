@@ -1,13 +1,10 @@
 package com.pine.repository;
 
 import com.pine.SerializableRepository;
-import com.pine.component.ResourceRef;
 import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.inspection.ResourceTypeField;
-import com.pine.service.resource.primitives.texture.Texture;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.repository.streaming.TextureStreamableResource;
 import com.pine.theme.Icons;
 
 @PBean
@@ -15,9 +12,8 @@ public class TerrainSettingsRepository extends Inspectable implements Serializab
     @MutableField(label = "Casts shadows")
     public boolean castsShadows = true;
 
-    @ResourceTypeField(type = ResourceType.TEXTURE)
     @MutableField(label = "Height map")
-    public ResourceRef<Texture> heightMapTexture;
+    public TextureStreamableResource heightMapTexture;
 
     @MutableField(label = "Height Scale")
     public float heightScale = 1;

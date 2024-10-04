@@ -4,7 +4,7 @@ import com.pine.EngineUtils;
 import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import com.pine.tools.repository.ToolsResourceRepository;
@@ -52,7 +52,7 @@ public class GridSystem extends AbstractSystem {
         GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
         EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.sceneDepthSampler);
 
-        primitiveService.bind(primitiveRepository.planeMesh);
+        meshService.bind(primitiveRepository.planeMesh);
         GL46.glEnable(GL46.GL_CULL_FACE);
     }
 }

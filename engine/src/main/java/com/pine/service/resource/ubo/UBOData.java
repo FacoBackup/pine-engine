@@ -1,6 +1,6 @@
 package com.pine.service.resource.ubo;
 
-import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.GLSLType;
 
 public class UBOData {
     private final String name;

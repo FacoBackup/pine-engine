@@ -1,14 +1,14 @@
 package com.pine.service.resource.ssbo;
 
-import com.pine.service.resource.resource.AbstractResource;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.AbstractResource;
+import com.pine.service.resource.LocalResourceType;
 import org.lwjgl.opengl.GL46;
 
 public class ShaderStorageBufferObject extends AbstractResource {
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.SSBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.SSBO;
     }
 
     private final int bindingPoint;

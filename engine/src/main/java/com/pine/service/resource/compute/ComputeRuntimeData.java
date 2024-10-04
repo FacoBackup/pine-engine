@@ -1,9 +1,8 @@
 package com.pine.service.resource.compute;
 
-import com.pine.service.resource.shader.ShaderRuntimeData;
 import org.lwjgl.opengl.GL46;
 
-public class ComputeRuntimeData extends ShaderRuntimeData {
+public class ComputeRuntimeData {
     public final int memoryBarrier;
     public final int groupX;
     public final int groupY;

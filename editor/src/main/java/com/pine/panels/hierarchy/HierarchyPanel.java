@@ -2,14 +2,14 @@ package com.pine.panels.hierarchy;
 
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
-import com.pine.component.InstancedPrimitiveComponent;
+import com.pine.component.InstancedMeshComponent;
 import com.pine.component.Transformation;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.service.RequestProcessingService;
 import com.pine.service.SelectionService;
+import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -25,7 +25,7 @@ import java.util.Objects;
 
 public class HierarchyPanel extends AbstractDockPanel {
     private static final byte BYTE = 1;
-    private static final String INSTANCED_COMPONENT = InstancedPrimitiveComponent.class.getSimpleName();
+    private static final String INSTANCED_COMPONENT = InstancedMeshComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
     private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
@@ -164,12 +164,12 @@ public class HierarchyPanel extends AbstractDockPanel {
             }
             EntityComponent instanced = node.components.get(INSTANCED_COMPONENT);
             if (instanced != null) {
-                renderInstancedComponent(node, (InstancedPrimitiveComponent) instanced);
+                renderInstancedComponent(node, (InstancedMeshComponent) instanced);
             }
         }
     }
 
-    private void renderInstancedComponent(Entity node, InstancedPrimitiveComponent instanced) {
+    private void renderInstancedComponent(Entity node, InstancedMeshComponent instanced) {
         List<Transformation> primitives = instanced.primitives;
         for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
             Transformation p = primitives.get(i);

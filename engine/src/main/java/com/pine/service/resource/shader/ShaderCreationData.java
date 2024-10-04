@@ -1,7 +1,7 @@
 package com.pine.service.resource.shader;
 
-import com.pine.service.resource.resource.ResourceCreationData;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.LocalResourceType;
+import com.pine.service.resource.ResourceCreationData;
 
 public final class ShaderCreationData extends ResourceCreationData {
     public static final String LOCAL_SHADER = "shaders/";
@@ -16,8 +16,8 @@ public final class ShaderCreationData extends ResourceCreationData {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.SHADER;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.SHADER;
     }
 
     public String vertex() {

@@ -1,7 +1,7 @@
 package com.pine.service.resource.ubo;
 
-import com.pine.service.resource.resource.ResourceCreationData;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.LocalResourceType;
+import com.pine.service.resource.ResourceCreationData;
 
 import java.util.List;
 
@@ -15,8 +15,8 @@ public class UBOCreationData extends ResourceCreationData {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.UBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.UBO;
     }
 
     public List<UBOData> data() {

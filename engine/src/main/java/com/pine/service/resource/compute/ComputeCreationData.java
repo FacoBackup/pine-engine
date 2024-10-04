@@ -1,7 +1,7 @@
 package com.pine.service.resource.compute;
 
-import com.pine.service.resource.resource.ResourceCreationData;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.LocalResourceType;
+import com.pine.service.resource.ResourceCreationData;
 import com.pine.service.resource.shader.ShaderCreationData;
 
 public final class ComputeCreationData extends ResourceCreationData {
@@ -14,8 +14,8 @@ public final class ComputeCreationData extends ResourceCreationData {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.COMPUTE;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.COMPUTE;
     }
 
     public String code() {

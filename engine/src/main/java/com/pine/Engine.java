@@ -3,8 +3,10 @@ package com.pine;
 import com.pine.injection.EngineExternalModule;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.*;
-import com.pine.service.modules.EngineModulesService;
+import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.RuntimeRepository;
+import com.pine.repository.core.*;
+import com.pine.service.module.EngineModulesService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.tasks.AbstractTask;
@@ -37,7 +39,7 @@ public class Engine {
     @PInject
     public CoreComputeRepository computeRepository;
     @PInject
-    public CorePrimitiveRepository primitiveRepository;
+    public CoreMeshRepository primitiveRepository;
     @PInject
     public RuntimeRepository runtimeRepository;
     @PInject

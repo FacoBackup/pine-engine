@@ -3,9 +3,18 @@ package com.pine.service.system;
 
 import com.pine.Engine;
 import com.pine.injection.PInject;
-import com.pine.repository.*;
-import com.pine.service.resource.*;
+import com.pine.repository.CameraRepository;
+import com.pine.repository.ClockRepository;
+import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.RuntimeRepository;
+import com.pine.repository.core.*;
+import com.pine.repository.rendering.RenderingRepository;
+import com.pine.service.resource.ComputeService;
+import com.pine.service.resource.SSBOService;
+import com.pine.service.resource.ShaderService;
+import com.pine.service.resource.UBOService;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.streaming.mesh.MeshService;
 
 public abstract class AbstractSystem {
     @PInject
@@ -27,7 +36,7 @@ public abstract class AbstractSystem {
     @PInject
     public SSBOService ssboService;
     @PInject
-    public PrimitiveService primitiveService;
+    public MeshService meshService;
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
@@ -41,7 +50,7 @@ public abstract class AbstractSystem {
     @PInject
     public CoreComputeRepository computeRepository;
     @PInject
-    public CorePrimitiveRepository primitiveRepository;
+    public CoreMeshRepository primitiveRepository;
 
     final public void render() {
         if (!isRenderable()) {

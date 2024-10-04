@@ -1,8 +1,8 @@
 package com.pine.service.resource.ubo;
 
+import com.pine.service.resource.AbstractResource;
+import com.pine.service.resource.LocalResourceType;
 import com.pine.service.resource.UBOService;
-import com.pine.service.resource.resource.AbstractResource;
-import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ public class UniformBufferObject extends AbstractResource {
     private static int blockPointIncrement = 0;
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.UBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.UBO;
     }
 
     private final List<UBOItem> items = new ArrayList<>();

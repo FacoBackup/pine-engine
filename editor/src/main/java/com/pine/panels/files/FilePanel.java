@@ -3,7 +3,7 @@ package com.pine.panels.files;
 import com.pine.injection.PInject;
 import com.pine.repository.FileInfoDTO;
 import com.pine.repository.SettingsRepository;
-import com.pine.service.loader.StreamingService;
+import com.pine.service.loader.LoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
@@ -18,7 +18,7 @@ public class FilePanel extends AbstractView {
     private FilesContext context;
 
     @PInject
-    public StreamingService loader;
+    public LoaderService loader;
 
     @PInject
     public SettingsRepository settingsRepository;

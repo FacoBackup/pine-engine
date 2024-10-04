@@ -1,7 +1,7 @@
 package com.pine.service.resource.fbo;
 
-import com.pine.service.resource.resource.ResourceCreationData;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.LocalResourceType;
+import com.pine.service.resource.ResourceCreationData;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
@@ -61,8 +61,8 @@ public class FBOCreationData extends ResourceCreationData {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.FBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.FBO;
     }
 
     public boolean isDepthTest() {

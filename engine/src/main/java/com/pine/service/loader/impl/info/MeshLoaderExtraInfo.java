@@ -1,6 +1,6 @@
 package com.pine.service.loader.impl.info;
 
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.repository.streaming.StreamableResourceType;
 
 public final class MeshLoaderExtraInfo extends AbstractLoaderExtraInfo {
     private Integer meshIndex;
@@ -32,7 +32,7 @@ public final class MeshLoaderExtraInfo extends AbstractLoaderExtraInfo {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.PRIMITIVE;
+    public StreamableResourceType getResourceType() {
+        return StreamableResourceType.MESH;
     }
 }

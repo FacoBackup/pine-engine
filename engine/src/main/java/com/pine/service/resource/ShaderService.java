@@ -3,12 +3,11 @@ package com.pine.service.resource;
 import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.CoreUBORepository;
-import com.pine.service.resource.primitives.GLSLType;
-import com.pine.service.resource.resource.AbstractResourceService;
-import com.pine.service.resource.resource.IResource;
-import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.shader.*;
+import com.pine.repository.core.CoreUBORepository;
+import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.ShaderCreationData;
+import com.pine.service.resource.shader.UniformDTO;
 import com.pine.type.UBODeclaration;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL46;
@@ -19,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @PBean
-public class ShaderService extends AbstractResourceService<Shader, ShaderRuntimeData, ShaderCreationData> {
+public class ShaderService extends AbstractResourceService<Shader, ShaderCreationData> {
     private int currentSamplerIndex = 0;
     private Shader currentShader;
 
@@ -30,23 +29,12 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     public CoreUBORepository uboRepository;
 
     @Override
-    protected void bindInternal(Shader instance, ShaderRuntimeData data) {
+    protected void bindInternal(Shader instance) {
         if (currentShader == instance) {
             return;
         }
         currentShader = instance;
         bindProgram(instance);
-        if (data != null) {
-            var uniforms = instance.getUniforms();
-            for (var entry : data.getUniformData().entrySet()) {
-                bindUniform(uniforms.get(entry.getKey()), entry.getValue());
-            }
-        }
-    }
-
-    @Override
-    protected void bindInternal(Shader instance) {
-        bindInternal(instance, null);
     }
 
     @Override
@@ -115,8 +103,8 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderRuntime
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.SHADER;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.SHADER;
     }
 
     public void bindProgram(IShader shader) {

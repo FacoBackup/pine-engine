@@ -1,8 +1,9 @@
 package com.pine.service.resource.shader;
 
 import com.pine.GLSLVersion;
-import com.pine.service.resource.resource.AbstractResource;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.AbstractResource;
+import com.pine.service.resource.IShader;
+import com.pine.service.resource.LocalResourceType;
 import org.lwjgl.opengl.GL46;
 
 import java.util.HashMap;
@@ -55,8 +56,8 @@ public class Shader extends AbstractResource implements IShader {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.SHADER;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.SHADER;
     }
 
     @Override
