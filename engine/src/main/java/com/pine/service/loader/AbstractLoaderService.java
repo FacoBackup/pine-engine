@@ -32,12 +32,8 @@ public abstract class AbstractLoaderService implements Loggable {
 
     public abstract AbstractLoaderResponse<?> load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo);
 
-    public String getPathToPersist(AbstractStreamableResource<?> resource) {
-        return engine.getTargetDirectory() + File.separator + resource.id;
-    }
-
     public void persist(AbstractStreamableResource<?> resource, StreamLoadData streamData) {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getPathToPersist(resource)))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(resource.pathToFile))) {
             out.writeObject(streamData);
         } catch (Exception ex) {
             getLogger().error(ex.getMessage(), ex);
@@ -46,7 +42,7 @@ public abstract class AbstractLoaderService implements Loggable {
 
     public void persist(AbstractStreamableResource<?> resource, String origin) {
         Path source = Paths.get(origin);
-        Path target = Paths.get(getPathToPersist(resource));
+        Path target = Paths.get(resource.pathToFile);
 
         try {
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);

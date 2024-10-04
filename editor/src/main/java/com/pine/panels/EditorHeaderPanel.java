@@ -12,9 +12,6 @@ import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class EditorHeaderPanel extends AbstractView {
     @PInject
-    public ThemeService themeService;
-
-    @PInject
     public WindowService windowService;
 
     @PInject
