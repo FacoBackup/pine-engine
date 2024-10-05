@@ -1,13 +1,10 @@
 package com.pine.component.impl;
 
 import com.pine.component.AbstractFormField;
-import com.pine.component.ResourceRef;
 import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
-import com.pine.inspection.ResourceTypeField;
-import com.pine.repository.StreamingRepository;
-import com.pine.service.loader.impl.response.AbstractLoaderResponse;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.repository.streaming.*;
+import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.type.ImInt;
 
@@ -17,19 +14,24 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class ResourceField extends AbstractFormField {
-    private final ResourceType type;
+
     @PInject
     public StreamingRepository repository;
 
+    private final StreamableResourceType type;
     private final ImInt selected = new ImInt(-1);
-    private final List<AbstractLoaderResponse.ResourceInfo> items = new ArrayList<>();
+    private final List<AbstractStreamableResource<?>> items = new ArrayList<>();
     private String[] itemsArr = new String[0];
 
     public ResourceField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
-        ResourceTypeField annotation = dto.getField().getAnnotation(ResourceTypeField.class);
-        if (annotation != null) {
-            type = annotation.type();
+
+        if (dto.getField().getType() == MeshStreamableResource.class) {
+            type = StreamableResourceType.MESH;
+        } else if (dto.getField().getType() == TextureStreamableResource.class) {
+            type = StreamableResourceType.TEXTURE;
+        } else if (dto.getField().getType() == AudioStreamableResource.class) {
+            type = StreamableResourceType.AUDIO;
         } else {
             type = null;
         }
@@ -38,12 +40,12 @@ public class ResourceField extends AbstractFormField {
     @Override
     public void onInitialize() {
         refresh();
-        var cast = (ResourceRef<?>) dto.getValue();
+        AbstractStreamableResource<?> value = (AbstractStreamableResource<?>) dto.getValue();
 
-        if (cast != null) {
+        if (value != null) {
             for (int i = 0; i < items.size(); i++) {
                 var item = items.get(i);
-                if (Objects.equals(item.id, cast.id)) {
+                if (Objects.equals(item.id, value.id)) {
                     selected.set(i);
                 }
             }
@@ -52,9 +54,9 @@ public class ResourceField extends AbstractFormField {
 
     private void refresh() {
         items.clear();
-        for (var history : repository.loadedResources) {
-            if(type == null || type == history.getResourceType()) {
-                items.addAll(history.records);
+        for (var history : repository.streamableResources) {
+            if (type == null || type == history.getResourceType()) {
+                items.add(history);
             }
         }
         itemsArr = new String[items.size()];
@@ -68,7 +70,12 @@ public class ResourceField extends AbstractFormField {
     public void renderInternal() {
         ImGui.text(dto.getLabel());
         if (ImGui.combo(imguiId, selected, itemsArr)) {
-            changerHandler.accept(dto, new ResourceRef<>(items.get(selected.get()).id));
+            changerHandler.accept(dto, items.get(selected.get()));
+        }
+
+        ImGui.sameLine();
+        if (ImGui.button(Icons.remove + "Remove" + imguiId)) {
+            changerHandler.accept(dto, null);
         }
 
         if (ImGui.button("Refresh" + imguiId + "1")) {

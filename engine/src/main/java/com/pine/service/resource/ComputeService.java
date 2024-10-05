@@ -5,27 +5,15 @@ import com.pine.injection.PInject;
 import com.pine.service.resource.compute.Compute;
 import com.pine.service.resource.compute.ComputeCreationData;
 import com.pine.service.resource.compute.ComputeRuntimeData;
-import com.pine.service.resource.resource.AbstractResourceService;
-import com.pine.service.resource.resource.IResource;
-import com.pine.service.resource.resource.ResourceType;
 import com.pine.service.resource.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class ComputeService extends AbstractResourceService<Compute, ComputeRuntimeData, ComputeCreationData> {
+public class ComputeService extends AbstractResourceService<Compute, ComputeCreationData> {
     private final static ComputeRuntimeData DEFAULT_COMPUTE = ComputeRuntimeData.ofNormalWorkGroup(GL46.GL_SHADER_STORAGE_BARRIER_BIT);
 
     @PInject
     public ShaderService shaderService;
-
-    @Override
-    protected void bindInternal(Compute instance, ComputeRuntimeData data) {
-        GL46.glUseProgram(instance.getProgram());
-        var uniforms = instance.getUniforms();
-        for (var entry : data.getUniformData().entrySet()) {
-            shaderService.bindUniform(uniforms.get(entry.getKey()), entry.getValue());
-        }
-    }
 
     @Override
     protected void bindInternal(Compute instance) {
@@ -68,8 +56,8 @@ public class ComputeService extends AbstractResourceService<Compute, ComputeRunt
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.COMPUTE;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.COMPUTE;
     }
 
     public void bindUniform(UniformDTO uniformDTO, Object value) {

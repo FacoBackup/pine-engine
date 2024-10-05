@@ -3,6 +3,7 @@ package com.pine.window;
 import com.pine.AbstractWindow;
 import com.pine.Engine;
 import com.pine.WindowService;
+import com.pine.dock.AbstractDockHeader;
 import com.pine.dock.DockDTO;
 import com.pine.dock.DockGroup;
 import com.pine.dock.DockService;
@@ -62,6 +63,7 @@ public class EditorWindow extends AbstractWindow {
             getLogger().error(e.getMessage(), e);
         }
         projectService.loadProject();
+        engine.setTargetDirectory(projectService.getProjectDirectory());
     }
 
     @Override
@@ -71,11 +73,11 @@ public class EditorWindow extends AbstractWindow {
 
     @Override
     protected ImVec4 getAccentColor() {
-        return settingsRepository.getAccentColor();
+        return settingsRepository.accent;
     }
 
     @Override
-    protected View getHeader() {
+    protected AbstractDockHeader getHeader() {
         return new EditorHeaderPanel();
     }
 

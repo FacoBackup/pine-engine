@@ -4,7 +4,7 @@ import com.pine.Loggable;
 import com.pine.injection.PInject;
 import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import org.lwjgl.opengl.GL46;
@@ -113,7 +113,7 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
         shaderService.bindUniform(threshold, thresholdB);
         shaderService.bindUniform(samples, samplesB);
 
-        primitiveService.bind(primitiveRepository.quadMesh);
+        meshService.bind(primitiveRepository.quadMesh);
         GL46.glEnable(GL46.GL_DEPTH_TEST);
     }
 }

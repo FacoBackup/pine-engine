@@ -1,15 +1,15 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.component.Entity;
-import com.pine.component.EntityComponent;
-import com.pine.component.InstancedPrimitiveComponent;
+import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.service.RequestProcessingService;
 import com.pine.service.SelectionService;
+import com.pine.service.rendering.RequestProcessingService;
+import com.pine.service.request.DeleteEntityRequest;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -25,7 +25,7 @@ import java.util.Objects;
 
 public class HierarchyPanel extends AbstractDockPanel {
     private static final byte BYTE = 1;
-    private static final String INSTANCED_COMPONENT = InstancedPrimitiveComponent.class.getSimpleName();
+    private static final String MESH_COMPONENT = MeshComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
     private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
@@ -50,17 +50,25 @@ public class HierarchyPanel extends AbstractDockPanel {
 
     @Override
     public void onInitialize() {
-        
         appendChild(header = new HierarchyHeaderPanel(search));
         context = (HierarchyContext) getContext();
     }
 
+    @Override
+    public void tick() {
+        isOnSearch = search.isNotEmpty();
+        if (ImGui.isKeyDown(ImGuiKey.Delete) && !stateRepository.selected.isEmpty()) {
+            requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected));
+            stateRepository.selected.forEach(s -> stateRepository.pinnedEntities.remove(s.id));
+            stateRepository.selected.clear();
+            stateRepository.mainSelection = null;
+            stateRepository.primitiveSelected = null;
+        }
+    }
 
     @Override
     public void renderInternal() {
         header.render();
-        isOnSearch = search.isNotEmpty();
-
         if (ImGui.beginTable("##hierarchy" + imguiId, 3, FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.NoHide);
             ImGui.tableSetupColumn(Icons.visibility, ImGuiTableColumnFlags.WidthFixed, 20f);
@@ -79,7 +87,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
         if (node.selected) {
-            ImGui.textColored(stateRepository.getAccentColor(), getNodeLabel(node, false));
+            ImGui.textColored(stateRepository.accent, getNodeLabel(node, false));
         } else {
             ImGui.text(getNodeLabel(node, false));
         }
@@ -112,7 +120,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     }
 
     private @NotNull String getNodeLabel(Entity node, boolean addId) {
-        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() +  (addId ? ("##" + node.id + imguiId) : "");
+        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (addId ? ("##" + node.id + imguiId) : "");
     }
 
     private boolean matchSearch(Entity node) {
@@ -162,14 +170,16 @@ public class HierarchyPanel extends AbstractDockPanel {
                 ImGui.tableNextColumn();
                 ImGui.textDisabled("--");
             }
-            EntityComponent instanced = node.components.get(INSTANCED_COMPONENT);
-            if (instanced != null) {
-                renderInstancedComponent(node, (InstancedPrimitiveComponent) instanced);
+            if (node.components.containsKey(MESH_COMPONENT)) {
+                MeshComponent meshComponent = (MeshComponent) node.components.get(MESH_COMPONENT);
+                if (meshComponent.isInstancedRendering) {
+                    renderInstancedComponent(node, meshComponent);
+                }
             }
         }
     }
 
-    private void renderInstancedComponent(Entity node, InstancedPrimitiveComponent instanced) {
+    private void renderInstancedComponent(Entity node, MeshComponent instanced) {
         List<Transformation> primitives = instanced.primitives;
         for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
             Transformation p = primitives.get(i);
@@ -177,7 +187,7 @@ public class HierarchyPanel extends AbstractDockPanel {
             ImGui.tableNextColumn();
             String title = Icons.content_copy + " Instance - " + i;
             if (stateRepository.primitiveSelected == p) {
-                ImGui.textColored(stateRepository.getAccentColor(), title);
+                ImGui.textColored(stateRepository.accent, title);
             } else {
                 ImGui.textDisabled(title);
             }

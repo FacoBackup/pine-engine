@@ -1,6 +1,6 @@
 package com.pine.service.resource.ssbo;
 
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.LocalResourceType;
 import com.pine.service.resource.ubo.UBOCreationData;
 
 public final class SSBOCreationData extends UBOCreationData {
@@ -18,8 +18,8 @@ public final class SSBOCreationData extends UBOCreationData {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.SSBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.SSBO;
     }
 
     public long getExpectedSize() {

@@ -1,9 +1,10 @@
 package com.pine.service.system.impl;
 
 import com.pine.Loggable;
-import com.pine.repository.rendering.PrimitiveRenderRequest;
+import com.pine.repository.rendering.RenderingMode;
+import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import org.lwjgl.system.MemoryUtil;
@@ -28,15 +29,18 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected void renderInternal() {
+        meshService.setRenderingMode(RenderingMode.TRIANGLES);
         ssboService.bind(ssboRepository.transformationSSBO);
         shaderService.bind(shaderRepository.depthPrePassShader);
-        List<PrimitiveRenderRequest> requests = renderingRepository.requests;
+        List<RenderingRequest> requests = renderingRepository.requests;
         int instancedOffset = 0;
         for (int i = 0; i < requests.size(); i++) {
             var request = requests.get(i);
             transformationIndexBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, transformationIndexBuffer);
-            primitiveService.bind(request.mesh, request.runtimeData);
+            meshService.bind(request.mesh);
+            meshService.setInstanceCount(request.transformations.size());
+            meshService.draw();
             instancedOffset += request.transformations.size();
         }
     }

@@ -4,9 +4,12 @@ import com.pine.Message;
 import com.pine.MessageRepository;
 import com.pine.MessageSeverity;
 import com.pine.injection.PInject;
-import com.pine.repository.FileInfoDTO;
+import com.pine.repository.ContentBrowserRepository;
+import com.pine.repository.fs.ResourceEntry;
+import com.pine.repository.fs.ResourceEntryType;
 import com.pine.service.FSService;
-import com.pine.service.loader.StreamingService;
+import com.pine.service.NativeDialogService;
+import com.pine.service.loader.LoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
@@ -22,53 +25,88 @@ public class FilesHeaderPanel extends AbstractView {
     @PInject
     public FSService fsService;
     @PInject
-    public StreamingService resourceLoader;
+    public LoaderService resourceLoader;
     @PInject
     public MessageRepository messageRepository;
+    @PInject
+    public NativeDialogService nativeDialogService;
 
-    private FilesContext filesContext;
+    @PInject
+    public ContentBrowserRepository contentBrowserRepository;
+
+
     private final ImString searchPath = new ImString();
 
+    private FilesContext context;
 
     @Override
     public void onInitialize() {
-        
-        filesContext = (FilesContext) getContext();
-        searchPath.set(filesContext.getDirectory());
-        filesContext.subscribe(() -> {
-            searchPath.set(filesContext.getDirectory());
+        context = (FilesContext) getContext();
+        searchPath.set(context.currentDirectory.path);
+        context.subscribe(() -> {
+            searchPath.set(context.currentDirectory.path);
         });
     }
 
     @Override
     public void renderInternal() {
         if (ImGui.button(Icons.create_new_folder + "##mkdir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            fsService.createDirectory(filesContext.getDirectory() + File.separator + "New folder");
+            context.currentDirectory.children.add(new ResourceEntry("New Directory (" + context.currentDirectory.children.size() + ")", ResourceEntryType.DIRECTORY, 0, context.currentDirectory.path + File.separator + "New folder", context.currentDirectory, null));
         }
-        ImGui.sameLine();
-        if (ImGui.button(Icons.arrow_upward + "##goUpDir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            filesContext.setDirectory(fsService.getParentDir(filesContext.getDirectory()));
+        if (context.currentDirectory.parent != null) {
+            ImGui.sameLine();
+            if (ImGui.button(Icons.arrow_upward + "##goUpDir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
+                context.setDirectory(context.currentDirectory.parent);
+            }
         }
         ImGui.sameLine();
         if (ImGui.inputText("##searchPath", searchPath, ImGuiInputTextFlags.EnterReturnsTrue)) {
-            if (fsService.exists(searchPath.get())) {
-                var context = ((FilesContext) getContext());
-                context.setDirectory(searchPath.get());
-            }
+            searchFiles();
         }
 
-        FileInfoDTO selected = filesContext.getSelectedFile();
-        if (selected != null && !selected.isDirectory()) {
-            ImGui.sameLine();
-            if (ImGui.button(Icons.file_open + " Import File##importFile")) {
-                FileInfoDTO file = filesContext.getSelectedFile();
-                if (file != null && !file.isDirectory()) {
-                    var response = resourceLoader.load(file.absolutePath(), false, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
-                    if (response == null || !response.isLoaded) {
-                        messageRepository.pushMessage(new Message("Error while importing file " + file.absolutePath(), MessageSeverity.ERROR));
-                    }
-                }
+        ImGui.sameLine();
+        if (ImGui.button(Icons.file_open + " Import File##importFile")) {
+            importFile();
+        }
+    }
+
+    private void searchFiles() {
+        if (fsService.exists(searchPath.get())) {
+            var context = ((FilesContext) getContext());
+            ResourceEntry entry = findRecursively(searchPath.get(), contentBrowserRepository.root);
+            if (entry != null && entry.type == ResourceEntryType.DIRECTORY) {
+                context.setDirectory(entry);
+            } else {
+                searchPath.set(context.currentDirectory.path);
+                messageRepository.pushMessage("Directory not found", MessageSeverity.ERROR);
             }
         }
+    }
+
+    private void importFile() {
+        String filePath = nativeDialogService.selectFile();
+        if (filePath != null) {
+            var response = resourceLoader.load(filePath, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+            if (response == null || !response.isLoaded) {
+                messageRepository.pushMessage(new Message("Error while importing file " + filePath, MessageSeverity.ERROR));
+            } else {
+                response.loadedResources.forEach(r -> {
+                    context.currentDirectory.children.add(new ResourceEntry(r.name, contentBrowserRepository.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
+                });
+            }
+        }
+    }
+
+    private ResourceEntry findRecursively(String search, ResourceEntry entry) {
+        if (entry.name.equalsIgnoreCase(search)) {
+            return entry;
+        }
+        for (ResourceEntry c : entry.children) {
+            ResourceEntry found = findRecursively(search, c);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
     }
 }

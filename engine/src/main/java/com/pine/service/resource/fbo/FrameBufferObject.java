@@ -1,8 +1,8 @@
 package com.pine.service.resource.fbo;
 
 import com.pine.EngineUtils;
-import com.pine.service.resource.resource.AbstractResource;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.service.resource.AbstractResource;
+import com.pine.service.resource.LocalResourceType;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
@@ -139,8 +139,8 @@ public class FrameBufferObject extends AbstractResource {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.FBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.FBO;
     }
 
     public int getMainSampler() {

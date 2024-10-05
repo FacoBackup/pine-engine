@@ -1,9 +1,9 @@
 package com.pine.service.resource.compute;
 
 import com.pine.GLSLVersion;
-import com.pine.service.resource.resource.AbstractResource;
-import com.pine.service.resource.resource.ResourceType;
-import com.pine.service.resource.shader.IShader;
+import com.pine.service.resource.AbstractResource;
+import com.pine.service.resource.IShader;
+import com.pine.service.resource.LocalResourceType;
 import com.pine.service.resource.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;
 
@@ -57,8 +57,8 @@ public class Compute extends AbstractResource implements IShader {
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.COMPUTE;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.COMPUTE;
     }
 
     @Override

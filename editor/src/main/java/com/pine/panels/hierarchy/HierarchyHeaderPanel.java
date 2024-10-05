@@ -2,7 +2,7 @@ package com.pine.panels.hierarchy;
 
 import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
-import com.pine.service.RequestProcessingService;
+import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;

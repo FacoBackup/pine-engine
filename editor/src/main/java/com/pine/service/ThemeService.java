@@ -22,16 +22,18 @@ public class ThemeService implements Updatable {
     public ImVec4 palette6;
     public final float[] BACKGROUND_COLOR = new float[]{.0f, .0f, .0f};
     private boolean previousTheme = false;
+    private float prevLength;
 
     @PInject
     public SettingsRepository settingsRepository;
 
     @Override
     public void tick() {
-        if (previousTheme == settingsRepository.isDarkMode) {
+        if (previousTheme == settingsRepository.isDarkMode && settingsRepository.accentColor.length() == prevLength) {
             return;
         }
-        previousTheme =settingsRepository. isDarkMode;
+        prevLength = settingsRepository.accentColor.length();
+        previousTheme = settingsRepository.isDarkMode;
 
         ImGuiStyle style = ImGui.getStyle();
         ImVec4[] colors = style.getColors();
@@ -45,7 +47,7 @@ public class ThemeService implements Updatable {
         }
 
         colors[ImGuiCol.Text] = palette6;
-        colors[ImGuiCol.TextDisabled] = palette6;
+        colors[ImGuiCol.TextDisabled] = new ImVec4(palette6.x / 2f, palette6.y / 2f, palette6.z / 2f, 1);
         colors[ImGuiCol.WindowBg] = palette1;
         colors[ImGuiCol.ChildBg] = palette1;
         colors[ImGuiCol.PopupBg] = palette1;
@@ -80,18 +82,24 @@ public class ThemeService implements Updatable {
         colors[ImGuiCol.NavWindowingDimBg] = palette2;
         colors[ImGuiCol.ModalWindowDimBg] = palette2;
 
-        colors[ImGuiCol.FrameBgHovered] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.FrameBgActive] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.CheckMark] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.SliderGrabActive] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.Button] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.ButtonHovered] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.Header] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.HeaderHovered] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.HeaderActive] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.ResizeGripHovered] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.ResizeGripActive] = settingsRepository.getAccentColor();
-        colors[ImGuiCol.TextSelectedBg] = settingsRepository.getAccentColor();
+        settingsRepository.accent.y = settingsRepository.accentColor.y;
+        settingsRepository.accent.z = settingsRepository.accentColor.z;
+        settingsRepository.accent.x = settingsRepository.accentColor.x;
+        settingsRepository.accent.w = 1;
+        settingsRepository.accentU32 = ImGui.getColorU32(settingsRepository.accent);
+
+        colors[ImGuiCol.FrameBgHovered] = settingsRepository.accent;
+        colors[ImGuiCol.FrameBgActive] = settingsRepository.accent;
+        colors[ImGuiCol.CheckMark] = settingsRepository.accent;
+        colors[ImGuiCol.SliderGrabActive] = settingsRepository.accent;
+        colors[ImGuiCol.Button] = settingsRepository.accent;
+        colors[ImGuiCol.ButtonHovered] = settingsRepository.accent;
+        colors[ImGuiCol.Header] = settingsRepository.accent;
+        colors[ImGuiCol.HeaderHovered] = settingsRepository.accent;
+        colors[ImGuiCol.HeaderActive] = settingsRepository.accent;
+        colors[ImGuiCol.ResizeGripHovered] = settingsRepository.accent;
+        colors[ImGuiCol.ResizeGripActive] = settingsRepository.accent;
+        colors[ImGuiCol.TextSelectedBg] = settingsRepository.accent;
 
         BACKGROUND_COLOR[0] = colors[ImGuiCol.WindowBg].x;
         BACKGROUND_COLOR[1] = colors[ImGuiCol.WindowBg].y;

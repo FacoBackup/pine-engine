@@ -1,7 +1,5 @@
 package com.pine.service.resource.shader;
 
-import com.pine.service.resource.primitives.GLSLType;
-
 import java.util.List;
 
 public class UniformDTO  {

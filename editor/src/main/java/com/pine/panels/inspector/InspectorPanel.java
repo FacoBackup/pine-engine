@@ -8,7 +8,7 @@ import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.repository.SettingsRepository;
-import com.pine.service.RequestProcessingService;
+import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
 import com.pine.theme.Icons;
@@ -82,7 +82,9 @@ public class InspectorPanel extends AbstractDockPanel {
         ImGui.spacing();
         ImGui.spacing();
         for (var additional : additionalInspectable) {
-            renderOption(additional);
+            if (additional != null) {
+                renderOption(additional);
+            }
         }
 
         ImGui.nextColumn();
@@ -106,7 +108,7 @@ public class InspectorPanel extends AbstractDockPanel {
     private void renderOption(Inspectable repo) {
         int popStyle = 0;
         if (Objects.equals(currentInspection, repo)) {
-            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.getAccentColor());
+            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.accent);
             popStyle++;
         }
 

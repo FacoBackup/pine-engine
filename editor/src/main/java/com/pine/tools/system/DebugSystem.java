@@ -2,12 +2,14 @@ package com.pine.tools.system;
 
 import com.pine.injection.PInject;
 import com.pine.repository.SettingsRepository;
-import com.pine.repository.rendering.PrimitiveRenderRequest;
+import com.pine.repository.rendering.RenderingMode;
+import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import com.pine.tools.repository.ToolsResourceRepository;
+import com.pine.tools.types.DebugShadingModel;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -63,7 +65,7 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.tempColorWithDepth;
+        return engine.getTargetFBO();
     }
 
     @Override
@@ -108,6 +110,11 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     protected void renderInternal() {
+        if(editorSettings.debugShadingModel == DebugShadingModel.WIREFRAME){
+            meshService.setRenderingMode(RenderingMode.WIREFRAME);
+        }else{
+            meshService.setRenderingMode(RenderingMode.TRIANGLES);
+        }
         ssboService.bind(ssboRepository.transformationSSBO);
         ssboService.bind(ssboRepository.lightMetadataSSBO);
         shaderService.bind(toolsResourceRepository.debugShader);
@@ -171,10 +178,16 @@ public class DebugSystem extends AbstractSystem {
         shaderService.bindUniform(shadowAtlas, fboRepository.shadowsSampler);
 
         var requests = renderingRepository.requests;
-        for (PrimitiveRenderRequest request : requests) {
-            intBoolBuffer.put(0, request.transformation.renderIndex);
+        int instancedOffset = 0;
+        for (int i = 0, requestsSize = requests.size(); i < requestsSize; i++) {
+            RenderingRequest request = requests.get(i);
+            intBoolBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, intBoolBuffer);
-            primitiveService.bind(request.mesh, request.runtimeData);
+            meshService.bind(request.mesh);
+            meshService.setInstanceCount(request.transformations.size());
+            meshService.draw();
+            instancedOffset += request.transformations.size();
         }
+
     }
 }

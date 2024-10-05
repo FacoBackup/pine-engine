@@ -1,16 +1,13 @@
 package com.pine.tools.system;
 
 import com.pine.Engine;
-import com.pine.component.CullingComponent;
+import com.pine.component.MeshComponent;
 import com.pine.injection.PInject;
 import com.pine.service.system.AbstractSystem;
 
 public class CullingVisualizationSystem extends AbstractSystem {
     @PInject
-    public Engine engine;
-
-    @PInject
-    public CullingComponent cullingComponents;
+    public MeshComponent meshes;
 
 //    @Override
 //    protected FBO getTargetFBO() {

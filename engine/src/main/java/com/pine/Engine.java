@@ -3,8 +3,10 @@ package com.pine;
 import com.pine.injection.EngineExternalModule;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.*;
-import com.pine.service.modules.EngineModulesService;
+import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.RuntimeRepository;
+import com.pine.repository.core.*;
+import com.pine.service.module.EngineModulesService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.tasks.AbstractTask;
@@ -12,10 +14,14 @@ import com.pine.tasks.SyncTask;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @PBean
-public class Engine {
+public class Engine implements Loggable {
     public static final int MAX_ENTITIES = 100000;
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
@@ -37,7 +43,7 @@ public class Engine {
     @PInject
     public CoreComputeRepository computeRepository;
     @PInject
-    public CorePrimitiveRepository primitiveRepository;
+    public CoreMeshRepository primitiveRepository;
     @PInject
     public RuntimeRepository runtimeRepository;
     @PInject
@@ -45,6 +51,7 @@ public class Engine {
     @PInject
     public List<AbstractTask> tasks;
     private boolean ready = false;
+    private String targetDirectory;
 
     public void start(int displayW, int displayH, List<EngineExternalModule> modules) {
         runtimeRepository.setDisplayW(displayW);
@@ -102,5 +109,21 @@ public class Engine {
 
     public FrameBufferObject getTargetFBO() {
         return targetFBO;
+    }
+
+    public String getResourceTargetDirectory() {
+        return targetDirectory + File.separator + "resources" + File.separator;
+    }
+
+    public void setTargetDirectory(String targetDirectory) {
+        this.targetDirectory = targetDirectory;
+        try {
+            Path path = Paths.get(getResourceTargetDirectory());
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage(), ex);
+        }
     }
 }

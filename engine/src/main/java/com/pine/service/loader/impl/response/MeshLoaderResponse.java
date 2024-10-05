@@ -1,29 +1,18 @@
 package com.pine.service.loader.impl.response;
 
-import com.pine.service.loader.impl.info.LoadRequest;
-import com.pine.service.resource.resource.ResourceType;
+import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.repository.streaming.StreamableResourceType;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class MeshLoaderResponse extends AbstractLoaderResponse {
-    private  List<MeshInstanceMetadata> meshes;
+public class MeshLoaderResponse extends AbstractLoaderResponse<MeshStreamableResource> {
+    public MeshLoaderResponse(boolean isLoaded, List<MeshStreamableResource> loadedResources) {
+        super(isLoaded, loadedResources);
+    }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.PRIMITIVE;
+    public StreamableResourceType getResourceType() {
+        return StreamableResourceType.MESH;
     }
 
-    public MeshLoaderResponse(boolean isLoaded, LoadRequest request, List<MeshInstanceMetadata> meshes) {
-        super(isLoaded, request, meshes.stream().map(a -> new AbstractLoaderResponse.ResourceInfo(a.id(), a.name())).collect(Collectors.toList()));
-        this.meshes = meshes;
-    }
-
-    public List<MeshInstanceMetadata> getMeshes() {
-        return meshes;
-    }
-
-    public void setMeshes(List<MeshInstanceMetadata> meshes) {
-        this.meshes = meshes;
-    }
 }

@@ -2,7 +2,7 @@ package com.pine.service.system.impl;
 
 import com.pine.Loggable;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.primitives.GLSLType;
+import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import org.lwjgl.system.MemoryUtil;
@@ -81,6 +81,6 @@ public class FrameCompositionSystem extends AbstractSystem implements Loggable {
 
         floatBuffer.put(0, lookupNoise());
         shaderService.bindUniform(filmGrainSeed, floatBuffer);
-        primitiveService.bind(primitiveRepository.quadMesh);
+        meshService.bind(primitiveRepository.quadMesh);
     }
 }

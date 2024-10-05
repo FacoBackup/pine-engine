@@ -3,7 +3,7 @@ package com.pine.component;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.repository.Mutable;
-import com.pine.repository.rendering.PrimitiveRenderRequest;
+import com.pine.repository.rendering.RenderingRequest;
 import com.pine.theme.Icons;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -31,9 +31,10 @@ public class Transformation extends Inspectable implements Mutable, Serializable
 
     public int changes = 0;
     public int frozenVersion = -1;
-    public transient PrimitiveRenderRequest renderRequest;
-    public transient int renderIndex;
+    public RenderingRequest renderRequest;
+    public int renderIndex;
     public int parentChangeId = -1;
+    public boolean isCulled = false;
 
     public Transformation(Entity entity, boolean isInstance) {
         this.entity = entity;

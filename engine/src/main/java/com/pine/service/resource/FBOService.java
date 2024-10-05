@@ -6,14 +6,10 @@ import com.pine.injection.PInject;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.primitives.EmptyRuntimeData;
-import com.pine.service.resource.resource.AbstractResourceService;
-import com.pine.service.resource.resource.IResource;
-import com.pine.service.resource.resource.ResourceType;
 import org.lwjgl.opengl.GL46;
 
 @PBean
-public class FBOService extends AbstractResourceService<FrameBufferObject, EmptyRuntimeData, FBOCreationData> {
+public class FBOService extends AbstractResourceService<FrameBufferObject, FBOCreationData> {
     private FrameBufferObject current;
 
     @PInject
@@ -30,16 +26,10 @@ public class FBOService extends AbstractResourceService<FrameBufferObject, Empty
     }
 
     @Override
-    protected void bindInternal(FrameBufferObject instance, EmptyRuntimeData data) {
+    protected void bindInternal(FrameBufferObject instance) {
         if (current == instance) {
             return;
         }
-        current = instance;
-        current.use();
-    }
-
-    @Override
-    protected void bindInternal(FrameBufferObject instance) {
         current = instance;
         current.use();
     }
@@ -86,7 +76,7 @@ public class FBOService extends AbstractResourceService<FrameBufferObject, Empty
     }
 
     @Override
-    public ResourceType getResourceType() {
-        return ResourceType.FBO;
+    public LocalResourceType getResourceType() {
+        return LocalResourceType.FBO;
     }
 }
