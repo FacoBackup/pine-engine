@@ -10,6 +10,7 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.DebugShadingModel;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -65,7 +66,7 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return engine.getTargetFBO();
+        return fboRepository.auxBuffer;
     }
 
     @Override
@@ -110,6 +111,7 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     protected void renderInternal() {
+        GL46.glEnable(GL11.GL_DEPTH_TEST);
         if(editorSettings.debugShadingModel == DebugShadingModel.WIREFRAME){
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
         }else{

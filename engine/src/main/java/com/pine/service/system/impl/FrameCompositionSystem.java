@@ -80,7 +80,7 @@ public class FrameCompositionSystem extends AbstractQuadPassSystem {
         floatBuffer.put(0, cameraRepository.filmGrainStrength);
         shaderService.bindUniform(filmGrainStrength, floatBuffer);
 
-        shaderService.bindUniform(currentFrame, fboRepository.auxSampler);
+        shaderService.bindUniform(currentFrame, fboRepository.sceneDepthSampler);
 
         floatBuffer.put(0, lookupNoise());
         shaderService.bindUniform(filmGrainSeed, floatBuffer);

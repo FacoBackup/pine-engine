@@ -1,7 +1,7 @@
 flat in int renderingIndex;
 in float depthFunc;
 
-layout (location = 0) out float depth;
+layout (location = 0) out vec4 depth;
 
 float encode() {
     float half_co = depthFunc * 0.5;
@@ -10,5 +10,5 @@ float encode() {
 }
 
 void main() {
-    depth = encode;
+    depth = vec4(encode(), 0., 0., 1.);
 }
