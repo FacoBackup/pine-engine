@@ -3,10 +3,10 @@ package com.pine.service.resource.compute;
 import org.lwjgl.opengl.GL46;
 
 public class ComputeRuntimeData {
-    public final int memoryBarrier;
-    public final int groupX;
-    public final int groupY;
-    public final int groupZ;
+    public int memoryBarrier;
+    public int groupX;
+    public int groupY;
+    public int groupZ;
 
     private ComputeRuntimeData(int memoryBarrier, int groupX, int groupY, int groupZ) {
         this.memoryBarrier = memoryBarrier;
@@ -14,6 +14,8 @@ public class ComputeRuntimeData {
         this.groupY = groupY;
         this.groupZ = groupZ;
     }
+
+    public ComputeRuntimeData() {}
 
     public static ComputeRuntimeData ofLargeWorkGroup(Integer memoryBarrier) {
         return new ComputeRuntimeData(memoryBarrier == null ? GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT : memoryBarrier, 32, 32, 1);

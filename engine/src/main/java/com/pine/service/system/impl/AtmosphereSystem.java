@@ -1,19 +1,17 @@
 package com.pine.service.system.impl;
 
-import com.pine.Loggable;
 import com.pine.injection.PInject;
 import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.AbstractSystem;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class AtmosphereSystem extends AbstractSystem implements Loggable {
+public class AtmosphereSystem extends AbstractQuadPassSystem {
 
     @PInject
     public AtmosphereSettingsRepository atmosphere;
@@ -72,7 +70,12 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.tempColorWithDepth;
+        return fboRepository.auxBuffer;
+    }
+
+    @Override
+    protected boolean shouldClearFBO() {
+        return true;
     }
 
     @Override
@@ -81,9 +84,12 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
     }
 
     @Override
-    protected void renderInternal() {
-        GL46.glDisable(GL46.GL_DEPTH_TEST);
-        shaderService.bind(shaderRepository.atmosphereShader);
+    protected Shader getShader() {
+        return shaderRepository.atmosphereShader;
+    }
+
+    @Override
+    protected void bindUniforms() {
         cameraRepository.invSkyboxProjectionMatrix.get(invSkyProjectionMatrixB);
 
         typeB.put(0, atmosphere.renderingType.getId());
@@ -112,8 +118,5 @@ public class AtmosphereSystem extends AbstractSystem implements Loggable {
         shaderService.bindUniform(mieHeight, mieHeightB);
         shaderService.bindUniform(threshold, thresholdB);
         shaderService.bindUniform(samples, samplesB);
-
-        meshService.bind(primitiveRepository.quadMesh);
-        GL46.glEnable(GL46.GL_DEPTH_TEST);
     }
 }

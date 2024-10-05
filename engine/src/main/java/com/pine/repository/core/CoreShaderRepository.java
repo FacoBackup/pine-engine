@@ -31,12 +31,14 @@ public class CoreShaderRepository implements CoreRepository{
     public Shader upSamplingShader;
     public Shader atmosphereShader;
     public Shader terrainShader;
+    public Shader brdfShader;
 
     @PInject
     public ResourceService resources;
 
     @Override
     public void initialize(){
+        brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SPRITE.vert", LOCAL_SHADER + "SPRITE.frag").staticResource());
         depthPrePassShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEPTH_PRE_PASS.vert", LOCAL_SHADER + "DEPTH_PRE_PASS.frag").staticResource());

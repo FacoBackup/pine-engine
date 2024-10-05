@@ -69,7 +69,7 @@ public class Engine implements Loggable {
         computeRepository.initialize();
         systemsService.initialize();
 
-        targetFBO = fboRepository.tempColorWithDepth;
+        targetFBO = fboRepository.auxBuffer;
 
         this.modules.addModules(modules);
         tasks.forEach(AbstractTask::start);
@@ -91,11 +91,11 @@ public class Engine implements Loggable {
             return;
         }
 
+        GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
         for (FrameBufferObject fbo : fboRepository.all) {
             fbo.clear();
         }
         if (targetFBO != null) {
-            GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
             targetFBO.clear();
         }
         for (var syncTask : syncTasks) {

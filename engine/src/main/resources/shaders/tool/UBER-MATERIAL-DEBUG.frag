@@ -64,7 +64,7 @@ void main() {
 
         if (!inRange) discard;
     } else {
-        normalVec = naturalNormal;
+        N = normalVec = naturalNormal;
         viewSpacePosition = viewSpacePositionFromDepth(gl_FragCoord.z, quadUV);
         worldSpacePosition = worldPosition;
         texCoords = naturalTextureUV;
@@ -108,7 +108,7 @@ void main() {
             fragColor = vec4(texCoords, 0., 1.);
             break;
             case RANDOM:
-            fragColor = vec4(randomColor(length(renderIndex)), 1.);
+            fragColor = vec4(randomColor(renderIndex + 1), 1.);
             break;
             case WIREFRAME:
             fragColor = vec4(vec3(1., 0., 1.), 1.);

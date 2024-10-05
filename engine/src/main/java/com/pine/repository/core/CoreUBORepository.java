@@ -40,8 +40,7 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("projectionMatrix", GLSLType.MAT_4),
                 new UBOData("invProjectionMatrix", GLSLType.MAT_4),
                 new UBOData("bufferResolution", GLSLType.VEC_2),
-                new UBOData("logDepthFC", GLSLType.FLOAT),
-                new UBOData("logC", GLSLType.FLOAT)
+                new UBOData("logDepthFC", GLSLType.FLOAT)
         ).staticResource());
 
         // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME

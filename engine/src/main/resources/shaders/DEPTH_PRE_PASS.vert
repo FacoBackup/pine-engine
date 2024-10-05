@@ -11,7 +11,6 @@ out float depthFunc;
 
 void main() {
     depthFunc = logDepthFC;
-
     renderingIndex = (transformationIndex + gl_InstanceID);
     gl_Position = viewProjection * modelMatrices[renderingIndex] * vec4(position, 1.0);
 }
