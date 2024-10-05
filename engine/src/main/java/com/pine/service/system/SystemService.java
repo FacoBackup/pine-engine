@@ -18,6 +18,7 @@ public class SystemService implements SyncTask {
             new ShaderDataSyncSystem(),
             new GBufferPassSystem(),
             new AtmosphereSystem(),
+            new GBufferShadingPassSystem(),
             new FrameCompositionSystem()
     );
 

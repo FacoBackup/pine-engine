@@ -31,6 +31,7 @@ public class GBufferPassSystem extends AbstractSystem implements Loggable {
 
     @Override
     protected void renderInternal() {
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
         GL46.glDisable(GL11.GL_BLEND);
         meshService.setRenderingMode(RenderingMode.TRIANGLES);
         ssboService.bind(ssboRepository.transformationSSBO);

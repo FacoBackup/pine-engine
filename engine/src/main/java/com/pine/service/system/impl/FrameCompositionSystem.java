@@ -3,6 +3,7 @@ package com.pine.service.system.impl;
 import com.pine.Loggable;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractSystem;
 import org.lwjgl.system.MemoryUtil;
@@ -10,7 +11,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class FrameCompositionSystem extends AbstractSystem implements Loggable {
+public class FrameCompositionSystem extends AbstractQuadPassSystem {
     private UniformDTO inverseFilterTextureSize;
     private UniformDTO useFXAA;
     private UniformDTO filmGrainEnabled;
@@ -52,8 +53,12 @@ public class FrameCompositionSystem extends AbstractSystem implements Loggable {
     }
 
     @Override
-    protected void renderInternal() {
-        shaderService.bind(shaderRepository.frameComposition);
+    protected Shader getShader() {
+        return shaderRepository.frameComposition;
+    }
+
+    @Override
+    protected void bindUniforms() {
 
         floatBuffer.put(0, runtimeRepository.getInvDisplayW());
         floatBuffer.put(1, runtimeRepository.getInvDisplayH());
@@ -81,7 +86,5 @@ public class FrameCompositionSystem extends AbstractSystem implements Loggable {
 
         floatBuffer.put(0, lookupNoise());
         shaderService.bindUniform(filmGrainSeed, floatBuffer);
-        meshService.bind(primitiveRepository.quadMesh);
-        meshService.draw();
     }
 }
