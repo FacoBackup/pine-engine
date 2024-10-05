@@ -3,10 +3,7 @@ package com.pine.service.system;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
-import com.pine.service.system.impl.AtmosphereSystem;
-import com.pine.service.system.impl.DepthPrePassSystem;
-import com.pine.service.system.impl.FrameCompositionSystem;
-import com.pine.service.system.impl.ShaderDataSyncSystem;
+import com.pine.service.system.impl.*;
 import com.pine.tasks.SyncTask;
 
 import java.util.List;
@@ -17,8 +14,9 @@ public class SystemService implements SyncTask {
     public PInjector pInjector;
 
     private List<AbstractSystem> systems = List.of(
+            new BRDFGenSystem(),
             new ShaderDataSyncSystem(),
-            new DepthPrePassSystem(),
+            new GBufferPassSystem(),
             new AtmosphereSystem(),
             new FrameCompositionSystem()
     );

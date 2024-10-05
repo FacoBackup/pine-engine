@@ -51,7 +51,7 @@ public class GridSystem extends AbstractSystem {
         buffer[3] = engineConfig.gridOpacity;
 
         GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
-        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.sceneDepthSampler);
+        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.gBufferDepth);
 
         meshService.bind(primitiveRepository.planeMesh);
         meshService.setRenderingMode(RenderingMode.TRIANGLES);

@@ -12,7 +12,11 @@ public abstract class AbstractResourceService<T extends IResource, C extends Res
 
     public IResource add(ResourceCreationData data, String fixedId) {
         this.nextId = fixedId;
-        return addInternal((C) data);
+        var result = addInternal((C) data);
+        if (result != null && data.isStaticResource()) {
+            result.makeStatic();
+        }
+        return result;
     }
 
     public void remove(IResource resource) {

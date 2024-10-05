@@ -173,7 +173,7 @@ public class DebugSystem extends AbstractSystem {
 
         shaderService.bindUniform(SSGI, fboRepository.ssgiSampler);
 
-        shaderService.bindUniform(previousFrame, fboRepository.tempColorWithDepthSampler);
+        shaderService.bindUniform(previousFrame, fboRepository.auxSampler);
 
         shaderService.bindUniform(shadowAtlas, fboRepository.shadowsSampler);
 

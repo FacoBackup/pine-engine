@@ -7,10 +7,8 @@ layout (location = 0) in vec3 position;
 uniform int transformationIndex;
 
 out flat int renderingIndex;
-out float depthFunc;
 
 void main() {
-    depthFunc = logDepthFC;
 
     renderingIndex = (transformationIndex + gl_InstanceID);
     gl_Position = viewProjection * modelMatrices[renderingIndex] * vec4(position, 1.0);
