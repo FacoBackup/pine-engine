@@ -34,7 +34,7 @@ public class CameraFirstPersonService extends AbstractCameraService {
         forward.normalize();
         right.normalize();
 
-        float multiplier = runtimeRepository.fasterPressed ? 10 * cameraRepository.movementSpeed : cameraRepository.movementSpeed;
+        float multiplier = runtimeRepository.fasterPressed ? 2 * cameraRepository.movementSpeed : cameraRepository.movementSpeed;
         if (runtimeRepository.leftPressed) {
             camera.position.add(right.mul(multiplier));
             camera.registerChange();

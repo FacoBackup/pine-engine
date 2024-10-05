@@ -82,7 +82,9 @@ public class InspectorPanel extends AbstractDockPanel {
         ImGui.spacing();
         ImGui.spacing();
         for (var additional : additionalInspectable) {
-            renderOption(additional);
+            if (additional != null) {
+                renderOption(additional);
+            }
         }
 
         ImGui.nextColumn();

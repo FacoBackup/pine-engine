@@ -178,12 +178,16 @@ public class DebugSystem extends AbstractSystem {
         shaderService.bindUniform(shadowAtlas, fboRepository.shadowsSampler);
 
         var requests = renderingRepository.requests;
-        for (RenderingRequest request : requests) {
-            intBoolBuffer.put(0, request.transformation.renderIndex);
+        int instancedOffset = 0;
+        for (int i = 0, requestsSize = requests.size(); i < requestsSize; i++) {
+            RenderingRequest request = requests.get(i);
+            intBoolBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, intBoolBuffer);
             meshService.bind(request.mesh);
             meshService.setInstanceCount(request.transformations.size());
             meshService.draw();
+            instancedOffset += request.transformations.size();
         }
+
     }
 }

@@ -1,7 +1,6 @@
 package com.pine.panels.hierarchy;
 
 import com.pine.component.Entity;
-import com.pine.component.EntityComponent;
 import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
 import com.pine.dock.AbstractDockPanel;
@@ -10,6 +9,7 @@ import com.pine.repository.SettingsRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
 import com.pine.service.rendering.RequestProcessingService;
+import com.pine.service.request.DeleteEntityRequest;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -50,17 +50,25 @@ public class HierarchyPanel extends AbstractDockPanel {
 
     @Override
     public void onInitialize() {
-        
         appendChild(header = new HierarchyHeaderPanel(search));
         context = (HierarchyContext) getContext();
     }
 
+    @Override
+    public void tick() {
+        isOnSearch = search.isNotEmpty();
+        if (ImGui.isKeyDown(ImGuiKey.Delete) && !stateRepository.selected.isEmpty()) {
+            requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected));
+            stateRepository.selected.forEach(s -> stateRepository.pinnedEntities.remove(s.id));
+            stateRepository.selected.clear();
+            stateRepository.mainSelection = null;
+            stateRepository.primitiveSelected = null;
+        }
+    }
 
     @Override
     public void renderInternal() {
         header.render();
-        isOnSearch = search.isNotEmpty();
-
         if (ImGui.beginTable("##hierarchy" + imguiId, 3, FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.NoHide);
             ImGui.tableSetupColumn(Icons.visibility, ImGuiTableColumnFlags.WidthFixed, 20f);
@@ -112,7 +120,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     }
 
     private @NotNull String getNodeLabel(Entity node, boolean addId) {
-        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() +  (addId ? ("##" + node.id + imguiId) : "");
+        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (addId ? ("##" + node.id + imguiId) : "");
     }
 
     private boolean matchSearch(Entity node) {
@@ -164,7 +172,7 @@ public class HierarchyPanel extends AbstractDockPanel {
             }
             if (node.components.containsKey(MESH_COMPONENT)) {
                 MeshComponent meshComponent = (MeshComponent) node.components.get(MESH_COMPONENT);
-                if(meshComponent.isInstancedRendering) {
+                if (meshComponent.isInstancedRendering) {
                     renderInstancedComponent(node, meshComponent);
                 }
             }

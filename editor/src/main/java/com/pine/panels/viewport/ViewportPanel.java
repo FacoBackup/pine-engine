@@ -88,13 +88,13 @@ public class ViewportPanel extends AbstractDockPanel {
         } else {
             isFirstMovement = true;
         }
-        repo.fasterPressed = ImGui.isKeyPressed(ImGuiKey.LeftShift);
-        repo.forwardPressed = ImGui.isKeyPressed(ImGuiKey.W);
-        repo.backwardPressed = ImGui.isKeyPressed(ImGuiKey.S);
-        repo.leftPressed = ImGui.isKeyPressed(ImGuiKey.A);
-        repo.rightPressed = ImGui.isKeyPressed(ImGuiKey.D);
-        repo.upPressed = ImGui.isKeyPressed(ImGuiKey.Space);
-        repo.downPressed = ImGui.isKeyPressed(ImGuiKey.LeftCtrl);
+        repo.fasterPressed = ImGui.isKeyDown(ImGuiKey.LeftShift);
+        repo.forwardPressed = ImGui.isKeyDown(ImGuiKey.W);
+        repo.backwardPressed = ImGui.isKeyDown(ImGuiKey.S);
+        repo.leftPressed = ImGui.isKeyDown(ImGuiKey.A);
+        repo.rightPressed = ImGui.isKeyDown(ImGuiKey.D);
+        repo.upPressed = ImGui.isKeyDown(ImGuiKey.Space);
+        repo.downPressed = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = size.y;

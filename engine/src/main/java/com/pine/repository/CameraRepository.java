@@ -15,7 +15,7 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     public float sensitivity = 1;
 
     @MutableField(label = "Camera Movement speed")
-    public float movementSpeed = 5.0f;
+    public float movementSpeed = 1.0f;
 
     @MutableField(label = "Orbit camera zoom sensitivity")
     public float zoomSensitivity = 5.0f;

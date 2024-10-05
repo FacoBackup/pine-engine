@@ -29,6 +29,7 @@ uniform int shadingModel;
 #define OVERDRAW 14
 #define LIGHT_COMPLEXITY 15
 #define LIGHT_QUANTITY 16
+#define WIREFRAME 17
 
 
 float rand(vec2 co) {
@@ -108,6 +109,9 @@ void main() {
             break;
             case RANDOM:
             fragColor = vec4(randomColor(length(renderIndex)), 1.);
+            break;
+            case WIREFRAME:
+            fragColor = vec4(vec3(1., 0., 1.), 1.);
             break;
             case LIGHT_QUANTITY:
             case LIGHT_COMPLEXITY:{
