@@ -8,13 +8,14 @@ public class ResourceEntry implements Serializable {
     public String name;
     public final ResourceEntryType type;
     public final float size;
-    public final long creationDate = System.currentTimeMillis();
-    public final String absolutePath;
+    public final long creationDate ;
+    public final String path;
     public List<ResourceEntry> children = new ArrayList<>();
 
-    public ResourceEntry(ResourceEntryType type, float size, String absolutePath) {
+    public ResourceEntry(ResourceEntryType type, float size, String path, long creationDate) {
         this.type = type;
         this.size = size;
-        this.absolutePath = absolutePath;
+        this.path = path;
+        this.creationDate = creationDate;
     }
 }

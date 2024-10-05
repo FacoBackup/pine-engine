@@ -112,6 +112,10 @@ public class Engine {
         return targetDirectory;
     }
 
+    public String getResourceTargetDirectory() {
+        return targetDirectory + File.separator + "resources" + File.separator;
+    }
+
     public void setTargetDirectory(String targetDirectory) {
         this.targetDirectory = targetDirectory;
     }

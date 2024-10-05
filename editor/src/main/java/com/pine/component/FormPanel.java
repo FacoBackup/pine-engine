@@ -3,6 +3,7 @@ package com.pine.component;
 import com.pine.component.impl.*;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
+import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 
@@ -30,7 +31,7 @@ public class FormPanel extends AbstractView {
         for (FieldDTO field : data.getFieldsAnnotated()) {
             switch (field.getType()) {
                 case CUSTOM:
-                    if (ResourceRef.class.isAssignableFrom(field.getField().getType())) {
+                    if (AbstractStreamableResource.class.isAssignableFrom(field.getField().getType())) {
                         appendChild(new ResourceField(field, changeHandler));
                     }
                     if(Transformation.class.isAssignableFrom(field.getField().getType())){

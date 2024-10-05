@@ -35,7 +35,8 @@ public class LoaderService {
         final String extension = loadRequest.path().substring(loadRequest.path().lastIndexOf(".") + 1);
         for (AbstractLoaderService i : resourceLoaders) {
             if (i.getResourceType().getFileExtensions().indexOf(extension) > 0) {
-                return process(loadRequest.extraInfo(), i, loadRequest);
+                AbstractLoaderExtraInfo extra = loadRequest.extraInfo();
+                return process(extra != null && extra.getResourceType() == i.getResourceType() ? extra : null, i, loadRequest);
             }
         }
         return null;

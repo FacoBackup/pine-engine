@@ -14,7 +14,7 @@ public class DockGroup implements Serializable {
     public final List<DockDTO> left = new ArrayList<>();
     public final List<DockDTO> right = new ArrayList<>();
 
-    transient public boolean isInitialized = false;
+    public transient boolean isInitialized = false;
 
     public DockGroup(String title,
                      DockDTO center,

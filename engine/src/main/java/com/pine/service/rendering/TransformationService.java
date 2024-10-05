@@ -28,7 +28,7 @@ public class TransformationService {
     private final Vector3f auxCubeMin = new Vector3f();
     private final Matrix4f auxMat4 = new Matrix4f();
 
-    public void updateMatrix(Transformation st){
+    public void updateMatrix(Transformation st) {
         updateMatrix(st, st.parent);
     }
 
@@ -62,7 +62,8 @@ public class TransformationService {
         st.registerChange();
         st.freezeVersion();
     }
-    public float getDistanceFromCamera(Vector3f translation){
+
+    public float getDistanceFromCamera(Vector3f translation) {
         distanceAux.set(cameraRepository.currentCamera.position);
         return Math.abs(distanceAux.sub(translation).length());
     }

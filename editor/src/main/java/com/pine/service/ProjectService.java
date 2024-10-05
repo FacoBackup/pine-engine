@@ -120,19 +120,20 @@ public class ProjectService implements Loggable {
         if (selected != null) {
             List<File> files = fsService.readFilesInDirectory(selected);
             if (files.stream().anyMatch(a -> a.getName().contains(IDENTIFIER))) {
-                projectDirectory = selected;
-                loadProject();
+                saveAndRestart(selected);
             }
         }
     }
 
-    public void newProject() {
-        projectDirectory = nativeDialogService.selectDirectory();
-        contentBrowserRepository.initialize(projectDirectory);
+    private void saveAndRestart(String selected) {
+        projectDirectory = selected;
         writeProject();
         injector.boot();
     }
 
+    public void newProject() {
+        saveAndRestart(nativeDialogService.selectDirectory());
+    }
 
     public String getProjectDirectory() {
         return null;

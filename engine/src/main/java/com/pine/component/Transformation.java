@@ -31,11 +31,10 @@ public class Transformation extends Inspectable implements Mutable, Serializable
 
     public int changes = 0;
     public int frozenVersion = -1;
-    public transient RenderingRequest renderRequest;
-    public transient int renderIndex;
+    public RenderingRequest renderRequest;
+    public int renderIndex;
     public int parentChangeId = -1;
     public boolean isCulled = false;
-
 
     public Transformation(Entity entity, boolean isInstance) {
         this.entity = entity;

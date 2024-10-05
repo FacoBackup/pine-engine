@@ -105,7 +105,7 @@ public class MeshService extends AbstractStreamableService<MeshStreamableResourc
     @Override
     public MeshStreamData stream(MeshStreamableResource instance) {
         try {
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(instance.pathToFile))) {
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(engine.getResourceTargetDirectory() + instance.pathToFile))) {
                 return (MeshStreamData) in.readObject();
             }
         } catch (Exception e) {
