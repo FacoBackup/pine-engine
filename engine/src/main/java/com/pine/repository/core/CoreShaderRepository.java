@@ -2,6 +2,7 @@ package com.pine.repository.core;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.service.resource.IResource;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;
@@ -32,12 +33,14 @@ public class CoreShaderRepository implements CoreRepository{
     public Shader atmosphereShader;
     public Shader terrainShader;
     public Shader brdfShader;
+    public Shader debugVoxelShader;
 
     @PInject
     public ResourceService resources;
 
     @Override
     public void initialize(){
+        debugVoxelShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.vert", ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.frag"));
         brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SPRITE.vert", LOCAL_SHADER + "SPRITE.frag").staticResource());

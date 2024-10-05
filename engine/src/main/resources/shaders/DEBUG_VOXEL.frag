@@ -1,6 +1,6 @@
 out vec4 fragColor;
 
-in float renderId;
+in flat int instanceID;
 
 float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
@@ -13,5 +13,5 @@ vec3 randomColor(float seed) {
 }
 
 void main() {
-    fragColor = vec4(randomColor(renderId), 1.);
+    fragColor = vec4(randomColor(float(instanceID)), 1.);
 }

@@ -82,6 +82,23 @@ public class ViewportPanel extends AbstractDockPanel {
 
     private void updateCamera() {
         boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+        if (context.camera.orbitalMode) {
+            cameraService = cameraThirdPersonService;
+            if (focused) {
+                if (io.getMouseWheel() != 0 && ImGui.isWindowHovered()) {
+                    cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
+                }
+                if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
+                    cameraThirdPersonService.isChangingCenter = true;
+                    cameraThirdPersonService.changeCenter(context.camera, isFirstMovement);
+                } else {
+                    cameraThirdPersonService.isChangingCenter = false;
+                }
+            }
+        } else {
+            cameraService = cameraFirstPersonService;
+        }
+
         if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode))) {
             cameraService.handleInput(context.camera, isFirstMovement);
             isFirstMovement = false;
@@ -100,21 +117,5 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.viewportH = size.y;
         repo.viewportW = size.x;
 
-        if (context.camera.orbitalMode) {
-            cameraService = cameraThirdPersonService;
-            if (focused) {
-                if (io.getMouseWheel() != 0 && ImGui.isWindowHovered()) {
-                    cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
-                }
-                if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
-                    cameraThirdPersonService.isChangingCenter = true;
-                    cameraThirdPersonService.changeCenter(context.camera, isFirstMovement);
-                } else {
-                    cameraThirdPersonService.isChangingCenter = false;
-                }
-            }
-        } else {
-            cameraService = cameraFirstPersonService;
-        }
     }
 }

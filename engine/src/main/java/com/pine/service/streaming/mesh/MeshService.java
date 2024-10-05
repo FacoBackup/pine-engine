@@ -49,6 +49,7 @@ public class MeshService extends AbstractStreamableService<MeshStreamableResourc
             case LINES -> draw(GL46.GL_LINES);
             default -> draw(GL46.GL_TRIANGLES);
         }
+        setInstanceCount(0);
     }
 
     private void wireframe() {
