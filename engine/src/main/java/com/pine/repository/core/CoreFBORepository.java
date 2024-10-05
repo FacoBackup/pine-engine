@@ -44,6 +44,7 @@ public class CoreFBORepository implements CoreRepository {
 
     public int gBufferAlbedoEmissive;
     public int gBufferMetallicRoughnessAO;
+    public int gBufferNormal;
     public int gBufferDepth;
     public int auxSampler;
     public int ssgiSampler;
@@ -63,15 +64,20 @@ public class CoreFBORepository implements CoreRepository {
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
 
-        gBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(true, true)
-                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, true, false)
-                .addSampler(1, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, true, false)
+        gBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
+                .addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
+                .addSampler(1, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
+                .addSampler(2, GL46.GL_RGBA16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
+                .addSampler(3, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false)
                 .staticResource());
-        gBufferMetallicRoughnessAO = gBuffer.getSamplers().getFirst();
-        gBufferAlbedoEmissive = gBuffer.getSamplers().getLast();
-        gBufferDepth = gBuffer.getDepthSampler();
+        gBufferMetallicRoughnessAO = gBuffer.getSamplers().get(0);
+        gBufferAlbedoEmissive = gBuffer.getSamplers().get(1);
+        gBufferNormal = gBuffer.getSamplers().get(2);
+        gBufferDepth = gBuffer.getSamplers().get(3);
 
-        auxBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true).addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, true, false).staticResource());
+        auxBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
+                .addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, true, false)
+                .staticResource());
 
         ssgi = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
         ssgiFallback = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false).staticResource());
@@ -103,7 +109,7 @@ public class CoreFBORepository implements CoreRepository {
         shadowsSampler = shadows.getDepthSampler();
 
 
-        brdfFBO = (FrameBufferObject) resources.addResource(new FBOCreationData(512, 512).addSampler(0, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_FLOAT, false, false).staticResource());
+        brdfFBO = (FrameBufferObject) resources.addResource(new FBOCreationData(512, 512).addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false).staticResource());
         brdfSampler = brdfFBO.getSamplers().getFirst();
 
         all.add(auxBuffer);
