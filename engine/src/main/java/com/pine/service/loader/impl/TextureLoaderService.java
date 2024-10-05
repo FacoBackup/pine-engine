@@ -25,7 +25,7 @@ public class TextureLoaderService extends AbstractLoaderService {
     public AbstractLoaderResponse<?> load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo) {
         TextureStreamableResource textureInstance = streamingService.addNew(TextureStreamableResource.class, FSUtil.getNameFromPath(resource.path()));
         if (textureInstance != null) {
-            persist(textureInstance, resource.path());
+            textureInstance.size = persist(textureInstance, resource.path());
             return new TextureLoaderResponse(true, List.of(textureInstance));
         }
         return new TextureLoaderResponse(false, Collections.emptyList());

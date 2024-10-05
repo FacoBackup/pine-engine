@@ -13,9 +13,9 @@ public class MeshStreamableResource extends AbstractStreamableResource<MeshStrea
     public int triangleCount;
     public int VAO;
     public int indexVBO;
-    public VertexBuffer vertexVBO;
-    public VertexBuffer uvVBO;
-    public VertexBuffer normalVBO;
+    public transient VertexBuffer vertexVBO;
+    public transient VertexBuffer uvVBO;
+    public transient VertexBuffer normalVBO;
 
     public MeshStreamableResource(String pathToFile, String id) {
         super(pathToFile, id);

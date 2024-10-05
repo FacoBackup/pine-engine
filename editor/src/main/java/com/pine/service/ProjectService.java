@@ -136,6 +136,6 @@ public class ProjectService implements Loggable {
     }
 
     public String getProjectDirectory() {
-        return null;
+        return projectDirectory;
     }
 }

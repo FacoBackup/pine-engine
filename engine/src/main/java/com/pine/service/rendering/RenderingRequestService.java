@@ -67,6 +67,9 @@ public class RenderingRequestService {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
             transform.renderRequest.mesh = mesh;
+            if (!transform.renderRequest.transformations.isEmpty()) {
+                transform.renderRequest.transformations.clear();
+            }
             transformationService.extractTransformations(transform);
             return transform.renderRequest;
         }

@@ -1,5 +1,6 @@
 package com.pine.tasks;
 
+import com.pine.Loggable;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.streaming.StreamingRepository;
@@ -12,7 +13,7 @@ import java.util.List;
  * Creates StreamLoadData for all the requests and inserts it inside the StreamingRepository.loadedResources map
  */
 @PBean
-public class StreamingTask extends AbstractTask {
+public class StreamingTask extends AbstractTask implements Loggable {
     @PInject
     public StreamingRepository streamingRepository;
 
@@ -29,8 +30,11 @@ public class StreamingTask extends AbstractTask {
         for (var scheduled : streamingRepository.schedule.values()) {
             for (var service : services) {
                 if (service.getResourceType() == scheduled.getResourceType()) {
+                    getLogger().warn("Streaming resource {}", scheduled.id);
                     StreamLoadData streamData = service.stream(scheduled);
-                    streamingRepository.loadedResources.put(scheduled.id, streamData);
+                    if (streamData != null) {
+                        streamingRepository.loadedResources.put(scheduled.id, streamData);
+                    }
                 }
             }
         }

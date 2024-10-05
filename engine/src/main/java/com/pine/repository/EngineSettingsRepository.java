@@ -11,7 +11,7 @@ import com.pine.theme.Icons;
 public class EngineSettingsRepository extends Inspectable implements SerializableRepository {
 
     @MutableField(label = "Background color")
-    public Color backgroundColor = new Color();
+    public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
 
     @MutableField(label = "FXAA Enabled")
     public boolean fxaaEnabled = false;

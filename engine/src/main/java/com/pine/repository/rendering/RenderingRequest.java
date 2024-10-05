@@ -3,10 +3,11 @@ package com.pine.repository.rendering;
 import com.pine.component.Transformation;
 import com.pine.repository.streaming.MeshStreamableResource;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class RenderingRequest {
+public class RenderingRequest implements Serializable {
     public MeshStreamableResource mesh;
     // TODO - MATERIAL
 

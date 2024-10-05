@@ -1,5 +1,6 @@
 package com.pine;
 
+import com.pine.dock.AbstractDockHeader;
 import com.pine.dock.DockPanel;
 import com.pine.view.AbstractView;
 import com.pine.view.View;
@@ -24,7 +25,7 @@ public abstract class AbstractWindow extends AbstractView  {
 
     protected abstract void onInitializeInternal();
 
-    protected abstract View getHeader();
+    protected abstract AbstractDockHeader getHeader();
 
     @Override
     final public void render() {

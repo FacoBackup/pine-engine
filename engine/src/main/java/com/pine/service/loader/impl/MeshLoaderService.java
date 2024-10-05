@@ -215,9 +215,11 @@ public class MeshLoaderService extends AbstractLoaderService {
             }
 
             MeshStreamableResource instance = streamingService.addNew(MeshStreamableResource.class, mesh.mName().dataString());
-            MeshStreamData data = new MeshStreamData(vertices, indices, normals, uvs);
-            persist(instance, data);
-            return instance;
+            if (instance != null) {
+                MeshStreamData data = new MeshStreamData(vertices, indices, normals, uvs);
+                instance.size = persist(instance, data);
+                return instance;
+            }
         }
         return null;
     }

@@ -65,7 +65,7 @@ public class DebugSystem extends AbstractSystem {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.tempColorWithDepth;
+        return engine.getTargetFBO();
     }
 
     @Override

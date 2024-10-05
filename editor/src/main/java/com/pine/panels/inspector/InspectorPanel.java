@@ -106,7 +106,7 @@ public class InspectorPanel extends AbstractDockPanel {
     private void renderOption(Inspectable repo) {
         int popStyle = 0;
         if (Objects.equals(currentInspection, repo)) {
-            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.getAccentColor());
+            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.accent);
             popStyle++;
         }
 

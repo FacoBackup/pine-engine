@@ -16,7 +16,7 @@ public class Camera implements Mutable, Serializable {
     public float orbitRadius = 1;
     public boolean orbitalMode = false;
     public boolean isOrthographic = false;
-    public float zFar = 5000;
+    public float zFar = 100;
     public float zNear = .1f;
     public float fov = (float) Math.toRadians(60);
     public float aspectRatio = 1;

@@ -32,24 +32,28 @@ public abstract class AbstractLoaderService implements Loggable {
 
     public abstract AbstractLoaderResponse<?> load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo);
 
-    public void persist(AbstractStreamableResource<?> resource, StreamLoadData streamData) {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(engine.getResourceTargetDirectory() + resource.pathToFile))) {
+    public float persist(AbstractStreamableResource<?> resource, StreamLoadData streamData) {
+        String path = engine.getResourceTargetDirectory() + resource.pathToFile;
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path))) {
             out.writeObject(streamData);
         } catch (Exception ex) {
             getLogger().error(ex.getMessage(), ex);
         }
+        return new File(path).length();
     }
 
-    public void persist(AbstractStreamableResource<?> resource, String origin) {
+    public float persist(AbstractStreamableResource<?> resource, String origin) {
+        String path = engine.getResourceTargetDirectory() + resource.pathToFile;
         Path source = Paths.get(origin);
-        Path target = Paths.get(engine.getResourceTargetDirectory() + resource.pathToFile);
+        Path target = Paths.get(path);
 
         try {
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("File copied successfully!");
+            return new File(origin).length();
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
+        return -1;
     }
 
     public abstract StreamableResourceType getResourceType();

@@ -14,6 +14,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
+import imgui.extension.imguizmo.ImGuizmo;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 
@@ -80,7 +81,8 @@ public class ViewportPanel extends AbstractDockPanel {
     }
 
     private void updateCamera() {
-        if (ImGui.isWindowFocused() && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode))) {
+        boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+        if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode))) {
             cameraService.handleInput(context.camera, isFirstMovement);
             isFirstMovement = false;
         } else {
@@ -100,8 +102,8 @@ public class ViewportPanel extends AbstractDockPanel {
 
         if (context.camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
-            if (ImGui.isWindowFocused()) {
-                if (io.getMouseWheel() != 0) {
+            if (focused) {
+                if (io.getMouseWheel() != 0 && ImGui.isWindowHovered()) {
                     cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
                 }
                 if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {

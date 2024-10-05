@@ -47,7 +47,7 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
 
     // INSTANCING
     @MutableField(label = "Enable instancing")
-    public boolean isInstancedRendering = true;
+    public boolean isInstancedRendering = false;
 
     @MutableField(label = "Number of instances", min = 1)
     public int numberOfInstances = 10;

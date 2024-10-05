@@ -69,7 +69,6 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             view.setPosition(position);
             view.setContext(dock.getContext());
             appendChild(view);
-
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }

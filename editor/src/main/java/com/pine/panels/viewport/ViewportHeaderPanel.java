@@ -33,11 +33,9 @@ public class ViewportHeaderPanel extends AbstractView {
     @PInject
     public CameraRepository cameraRepository;
 
-    private final ImGuiIO io;
     private final ImVec2 size;
 
     public ViewportHeaderPanel(ImVec2 size) {
-        io = ImGui.getIO();
         this.size = size;
     }
 
@@ -67,7 +65,7 @@ public class ViewportHeaderPanel extends AbstractView {
         largeSpacing();
         ImGui.text("Camera");
 
-        if(cameraRepository.currentCamera.orbitalMode) {
+        if (cameraRepository.currentCamera.orbitalMode) {
             ImGui.sameLine();
             if (ImGui.button(Icons.center_focus_strong + "##centerCamera", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                 cameraRepository.currentCamera.orbitCenter.zero();
@@ -92,11 +90,13 @@ public class ViewportHeaderPanel extends AbstractView {
         ImGui.sameLine();
         if (renderOption(Icons.grid_on + "Wireframe##wireframeShading", settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
             settingsRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
+            settingsRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getId());
         }
 
         ImGui.sameLine();
         if (renderOption(Icons.palette + "Random##randomShading", settingsRepository.debugShadingModel == DebugShadingModel.RANDOM, false)) {
             settingsRepository.debugShadingModel = DebugShadingModel.RANDOM;
+            settingsRepository.shadingModelOption.set(DebugShadingModel.RANDOM.getId());
         }
 
         ImGui.sameLine();
@@ -104,12 +104,6 @@ public class ViewportHeaderPanel extends AbstractView {
         if (ImGui.combo("##shadingMode", settingsRepository.shadingModelOption, SHADING_MODE_OPTIONS)) {
             settingsRepository.debugShadingModel = DebugShadingModel.values()[settingsRepository.shadingModelOption.get()];
         }
-    }
-
-    private void framerate() {
-        largeSpacing();
-        int framerate = Math.max(1, (int) io.getFramerate());
-        ImGui.text(1000 / framerate + "ms | " + framerate + "fps");
     }
 
     private void gizmoGrid() {
@@ -218,7 +212,7 @@ public class ViewportHeaderPanel extends AbstractView {
     private boolean renderOption(String label, boolean selected, boolean fixedSize) {
         int popStyle = 0;
         if (selected) {
-            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.getAccentColor());
+            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.accent);
             popStyle++;
         }
         boolean value;

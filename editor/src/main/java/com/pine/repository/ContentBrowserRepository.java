@@ -29,19 +29,28 @@ public class ContentBrowserRepository implements SerializableRepository {
     @PostCreation(order = Integer.MAX_VALUE)
     public void initialize() {
         if (root == null) {
-            root = new ResourceEntry(ResourceEntryType.DIRECTORY, 0, "", System.currentTimeMillis());
+            root = new ResourceEntry("Content Browser", ResourceEntryType.DIRECTORY, 0, "", null, null);
             streamingRepository.streamableResources.forEach(s -> {
                 var file = new File(engine.getResourceTargetDirectory() + s.pathToFile);
-                root.children.add(new ResourceEntry(getType(s.getResourceType()), file.length(), file.getAbsolutePath().replace(projectService.getProjectDirectory(), ""), file.lastModified()));
+                root.children.add(new ResourceEntry(s.name, getType(s.getResourceType()), file.length(), file.getAbsolutePath().replace(projectService.getProjectDirectory(), ""), root, s));
             });
         }
     }
 
-    private ResourceEntryType getType(StreamableResourceType type) {
+    public ResourceEntryType getType(StreamableResourceType type) {
         return switch (type) {
             case MESH -> ResourceEntryType.MESH;
             case TEXTURE -> ResourceEntryType.TEXTURE;
             case AUDIO -> ResourceEntryType.AUDIO;
         };
+    }
+
+    public void delete(ResourceEntry selected) {
+        if (selected != root) {
+            selected.parent.children.remove(selected);
+            if (selected.type != ResourceEntryType.DIRECTORY) {
+                new File(engine.getResourceTargetDirectory() + selected.streamableResource.pathToFile).delete();
+            }
+        }
     }
 }

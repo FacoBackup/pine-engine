@@ -59,9 +59,7 @@ public class ConsolePanel extends AbstractDockPanel {
                 ImGui.tableNextColumn();
                 ImGui.text(log.message());
             }
+            ImGui.endTable();
         }
-        ImGui.endTable();
-
-
     }
 }

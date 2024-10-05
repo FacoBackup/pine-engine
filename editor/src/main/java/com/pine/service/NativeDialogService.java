@@ -37,29 +37,26 @@ public class NativeDialogService {
         return null;
     }
 
-    private static String openFileDialog() {
+    public String selectFile() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             String defaultPath = null;
-
-            NFDFilterItem.Buffer filterList = NFDFilterItem.malloc(2, stack);
+            String selectedPath = null;
 
             StreamableResourceType[] values = StreamableResourceType.values();
+            NFDFilterItem.Buffer filterList = NFDFilterItem.malloc(values.length, stack);
             for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
                 var type = values[i];
-                try (var cur = filterList.get(i)) {
-                    cur.name(stack.UTF8(type.name())).spec(stack.UTF8(String.join(",", type.getFileExtensions())));
-                }
+                filterList.get(i).name(stack.UTF8(type.name())).spec(stack.UTF8(String.join(",", type.getFileExtensions())));
             }
 
             PointerBuffer outPath = stack.mallocPointer(1);
 
             int result = NFD_OpenDialog(outPath, filterList, defaultPath);
             if (result == NFD_OKAY) {
-                String selectedPath = outPath.getStringUTF8(0);
-                System.out.println("Selected file: " + selectedPath);
+                selectedPath = outPath.getStringUTF8(0);
                 NativeFileDialog.nNFD_FreePath(outPath.get(0));
             }
-            return null;
+            return selectedPath;
         }
     }
 }

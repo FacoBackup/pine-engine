@@ -2,6 +2,8 @@ package com.pine.service.streaming;
 
 import com.pine.repository.streaming.StreamableResourceType;
 
-public interface StreamLoadData {
+import java.io.Serializable;
+
+public interface StreamLoadData extends Serializable {
     StreamableResourceType getResourceType();
 }

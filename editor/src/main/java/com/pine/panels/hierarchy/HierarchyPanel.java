@@ -79,7 +79,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
         if (node.selected) {
-            ImGui.textColored(stateRepository.getAccentColor(), getNodeLabel(node, false));
+            ImGui.textColored(stateRepository.accent, getNodeLabel(node, false));
         } else {
             ImGui.text(getNodeLabel(node, false));
         }
@@ -179,7 +179,7 @@ public class HierarchyPanel extends AbstractDockPanel {
             ImGui.tableNextColumn();
             String title = Icons.content_copy + " Instance - " + i;
             if (stateRepository.primitiveSelected == p) {
-                ImGui.textColored(stateRepository.getAccentColor(), title);
+                ImGui.textColored(stateRepository.accent, title);
             } else {
                 ImGui.textDisabled(title);
             }

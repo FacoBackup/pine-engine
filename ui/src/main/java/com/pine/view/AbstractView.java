@@ -47,7 +47,7 @@ public class AbstractView implements View {
     @Override
     public <T extends View> T appendChild(T child) {
         injector.inject(child);
-        this.getChildren().add(child);
+        children.add(child);
 
         if (child.getContext() == null || this.getContext() != null) {
             child.setContext(this.getContext());

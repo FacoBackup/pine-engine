@@ -36,7 +36,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     public <T extends AbstractStreamableResource<?>> T addNew(Class<T> clazz, String name) {
         try {
             String id = UUID.randomUUID().toString();
-            T newInstance = clazz.getConstructor(String.class, String.class).newInstance( "resources" + File.separator + id, id);
+            T newInstance = clazz.getConstructor(String.class, String.class).newInstance(id + ".dat", id);
             newInstance.name = name;
             repository.streamableResources.add(newInstance);
             return newInstance;
@@ -61,6 +61,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     public void sync() {
         for (AbstractStreamableResource<?> resource : repository.schedule.values()) {
             if (repository.loadedResources.containsKey(resource.id)) {
+                getLogger().warn("Loading streamed resource {}", resource.id);
                 resource.load(repository.loadedResources.get(resource.id));
                 repository.loadedResources.remove(resource.id);
                 repository.schedule.remove(resource.id);

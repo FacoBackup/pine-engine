@@ -15,10 +15,13 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL46;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @PBean
-public class Engine {
+public class Engine implements Loggable {
     public static final int MAX_ENTITIES = 100000;
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
@@ -108,15 +111,19 @@ public class Engine {
         return targetFBO;
     }
 
-    public String getTargetDirectory() {
-        return targetDirectory;
-    }
-
     public String getResourceTargetDirectory() {
         return targetDirectory + File.separator + "resources" + File.separator;
     }
 
     public void setTargetDirectory(String targetDirectory) {
         this.targetDirectory = targetDirectory;
+        try {
+            Path path = Paths.get(getResourceTargetDirectory());
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage(), ex);
+        }
     }
 }

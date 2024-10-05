@@ -34,7 +34,7 @@ public abstract class DockPanel extends AbstractView {
     @PInject
     public DockService dockService;
 
-    private View headerView;
+    private AbstractDockHeader headerView;
 
     protected abstract ImVec4 getAccentColor();
 
@@ -73,7 +73,7 @@ public abstract class DockPanel extends AbstractView {
     private void menuBar() {
         if (ImGui.beginMenuBar()) {
             if (headerView != null) {
-                headerView.render();
+                headerView.begin();
             }
             ImGui.dummy(25, 0);
             for (var dockGroup : dockService.getDockGroups()) {
@@ -96,6 +96,9 @@ public abstract class DockPanel extends AbstractView {
             if (ImGui.button(Icons.add + "##addDockGroup", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                 dockService.createDockGroup();
             }
+            if (headerView != null) {
+                headerView.end();
+            }
             ImGui.endMenuBar();
         }
     }
@@ -112,7 +115,7 @@ public abstract class DockPanel extends AbstractView {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, new ImVec2(0.0f, 0.0f));
     }
 
-    public void setHeader(View view) {
+    public void setHeader(AbstractDockHeader view) {
         if (view != null) {
             headerView = appendChild(view);
             removeChild(headerView);
