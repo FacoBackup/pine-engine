@@ -41,7 +41,7 @@ public class CoreShaderRepository implements CoreRepository{
         brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SPRITE.vert", LOCAL_SHADER + "SPRITE.frag").staticResource());
-        depthPrePassShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "G_BUFFER.vert", LOCAL_SHADER + "G_BUFFER.frag").staticResource());
+        depthPrePassShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEPTH_PRE_PASS.vert", LOCAL_SHADER + "DEPTH_PRE_PASS.frag").staticResource());
         toScreenShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "TO_SCREEN.frag").staticResource());
         downscaleShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "BILINEAR_DOWNSCALE.glsl").staticResource());
         bilateralBlurShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "BILATERAL_BLUR.glsl").staticResource());

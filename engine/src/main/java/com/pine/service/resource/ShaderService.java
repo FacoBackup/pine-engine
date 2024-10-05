@@ -84,7 +84,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
 
         final var resultBuilder = new StringBuilder();
         while (matcher.find()) {
-            String fileName = ShaderCreationData.LOCAL_SHADER + matcher.group(0).replaceAll("^#include \"(./|../)", "").replaceAll("\"", "");
+            String fileName = ShaderCreationData.LOCAL_SHADER + matcher.group(0).replaceAll("#include \"(./|../)", "").replaceAll("\"", "");
             String replacement = new String(FSUtil.loadResource(fileName));
             matcher.appendReplacement(resultBuilder, replacement);
         }

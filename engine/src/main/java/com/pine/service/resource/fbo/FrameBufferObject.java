@@ -20,7 +20,6 @@ public class FrameBufferObject extends AbstractResource {
     private final List<Integer> attachments = new ArrayList<>();
     private final float[] resolution = new float[2];
     private int mainSampler;
-    private int mainSamplerPrecision;
 
     public FrameBufferObject(int width, int height, String id) {
         super(id);
@@ -119,10 +118,10 @@ public class FrameBufferObject extends AbstractResource {
         samplers.add(texture);
         if (samplers.size() == 1) {
             mainSampler = texture;
-            mainSamplerPrecision = precision;
         }
         attachments.add(GL46.GL_COLOR_ATTACHMENT0 + attachment);
         GL46.glDrawBuffers(attachments.stream().mapToInt(i -> i).toArray());
+
     }
 
     public void use() {
@@ -160,9 +159,5 @@ public class FrameBufferObject extends AbstractResource {
         if (RBO != null) {
             GL46.glDeleteFramebuffers(RBO);
         }
-    }
-
-    public void bindForCompute(int texture, int precision, int mode, int unit) {
-        GL46.glBindImageTexture(unit, texture, 0, false, 0, mode, precision);
     }
 }
