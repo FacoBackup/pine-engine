@@ -58,8 +58,20 @@ public class VoxelizerService implements SyncTask, Loggable {
         RenderingRequest request = renderingRepository.requests.getFirst();
         MeshStreamData rawMeshData = meshService.stream(request.mesh);
         traverseMesh(rawMeshData, request.transformation.globalMatrix);
-        // TODO - USE PRE DEFINED DIMENSIONS FOR VOXELIZED SCENE
-        buildOctree(new Vector3f(-bounding), new Vector3f(bounding), 0);
+
+
+        float sceneWidth = voxelizerRepository.sceneMax.x - voxelizerRepository.sceneMin.x;
+        float sceneHeight = voxelizerRepository.sceneMax.y - voxelizerRepository.sceneMin.y;
+        float sceneDepth = voxelizerRepository.sceneMax.z - voxelizerRepository.sceneMin.z;
+        float sceneSize = Math.max(sceneWidth, Math.max(sceneHeight, sceneDepth));
+
+        voxelizerRepository.voxelSize = sceneSize / voxelizerRepository.gridResolution;
+
+        final int calculatedDepth = (int) Math.floor(Math.log(voxelizerRepository.gridResolution / voxelizerRepository.voxelSize) / Math.log(2));
+        voxelizerRepository.computedMaxDepth = Math.min(calculatedDepth, 10);
+
+
+        buildOctree(new Vector3f(voxelizerRepository.sceneMin), new Vector3f(voxelizerRepository.sceneMax), 0);
         needsPackaging = true;
     }
 
@@ -71,7 +83,6 @@ public class VoxelizerService implements SyncTask, Loggable {
 
     private void fillStorage() {
         int offset = 0;
-        getLogger().warn("Size: {} First child mask: {} First child index: {}", voxelizerRepository.octreeBuffer.size(), voxelizerRepository.octreeBuffer.get(24).childMask, voxelizerRepository.octreeBuffer.get(24).firstChildIndex);
         for (var octree : voxelizerRepository.octreeBuffer) {
             voxelizerRepository.octreeMemBuffer.put(offset, octree.childMask);
             offset++;
@@ -113,15 +124,15 @@ public class VoxelizerService implements SyncTask, Loggable {
         voxelizerRepository.voxelDataMemBuffer = null;
     }
 
-    private boolean pointInTriangle(Vector4f A, Vector4f B, Vector4f C, float x, float y, float z, float voxelSize) {
+    private boolean pointInTriangle(Vector4f A, Vector4f B, Vector4f C, float x, float y, float z) {
         // Compute the voxel center and half-size
         Vector3f voxelCenter = new Vector3f(
-                currentMeshMinBounds.x + x * voxelSize + voxelSize / 2,
-                currentMeshMinBounds.y + y * voxelSize + voxelSize / 2,
-                currentMeshMinBounds.z + z * voxelSize + voxelSize / 2
+                currentMeshMinBounds.x + x * voxelizerRepository.voxelSize + voxelizerRepository.voxelSize / 2,
+                currentMeshMinBounds.y + y * voxelizerRepository.voxelSize + voxelizerRepository.voxelSize / 2,
+                currentMeshMinBounds.z + z * voxelizerRepository.voxelSize + voxelizerRepository.voxelSize / 2
         );
 
-        Vector3f halfSize = new Vector3f(voxelSize / 2, voxelSize / 2, voxelSize / 2);
+        Vector3f halfSize = new Vector3f(voxelizerRepository.voxelSize / 2, voxelizerRepository.voxelSize / 2, voxelizerRepository.voxelSize / 2);
         // Implement a robust triangle-box intersection test (e.g., SAT)
         return true;//satTriangleBoxIntersect(A, B, C, voxelCenter, halfSize);
     }
@@ -141,8 +152,6 @@ public class VoxelizerService implements SyncTask, Loggable {
             currentMeshMaxBounds.max(v);
         }
 
-        float voxelSize = (currentMeshMaxBounds.x - currentMeshMinBounds.x) / voxelizerRepository.gridResolution;  // Assuming uniform grid size
-
         for (int i = 0; i < indices.length; i += 3) {
             Vector4f v0 = new Vector4f(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2], 1).mul(globalMatrix);
             Vector4f v1 = new Vector4f(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2], 1).mul(globalMatrix);
@@ -154,25 +163,21 @@ public class VoxelizerService implements SyncTask, Loggable {
 
             // Determine the range of voxels intersected by the triangle
 
-            int minX = (int) ((triMin.x - currentMeshMinBounds.x) / voxelSize);  // Find voxel index
-            int maxX = (int) ((triMax.x - currentMeshMinBounds.x) / voxelSize);
+            int minX = (int) ((triMin.x - currentMeshMinBounds.x) / voxelizerRepository.voxelSize);  // Find voxel index
+            int maxX = (int) ((triMax.x - currentMeshMinBounds.x) / voxelizerRepository.voxelSize);
 
-            int minY = (int) ((triMin.y - currentMeshMinBounds.y) / voxelSize);
-            int maxY = (int) ((triMax.y - currentMeshMinBounds.y) / voxelSize);
+            int minY = (int) ((triMin.y - currentMeshMinBounds.y) / voxelizerRepository.voxelSize);
+            int maxY = (int) ((triMax.y - currentMeshMinBounds.y) / voxelizerRepository.voxelSize);
 
-            int minZ = (int) ((triMin.z - currentMeshMinBounds.z) / voxelSize);
-            int maxZ = (int) ((triMax.z - currentMeshMinBounds.z) / voxelSize);
+            int minZ = (int) ((triMin.z - currentMeshMinBounds.z) / voxelizerRepository.voxelSize);
+            int maxZ = (int) ((triMax.z - currentMeshMinBounds.z) / voxelizerRepository.voxelSize);
 
 
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     for (int z = minZ; z <= maxZ; ++z) {
-                        if (pointInTriangle(v0, v1, v2, x, y, z, voxelSize)) {
-                            try {
-                                voxelizerRepository.voxelGrid[x][y][z] = OCCUPIED_VOXEL;
-                            } catch (Exception e) {
-                                getLogger().warn("Out of bounds {} {} {}", x, y, z);
-                            }
+                        if (pointInTriangle(v0, v1, v2, x, y, z)) {
+                            voxelizerRepository.voxelGrid[x][y][z] = OCCUPIED_VOXEL;
                         }
                     }
                 }
@@ -187,29 +192,28 @@ public class VoxelizerService implements SyncTask, Loggable {
             voxelizerRepository.octreeBuffer.add(node);
         }
 
-        // If depth is too large or the region is empty, mark this as a leaf node (No need to add empty voxel to grid
-        if (depth == voxelizerRepository.maxDepth || regionIsEmpty(min, max)) {
+        boolean isEmpty = regionIsEmpty(min, max);
+        // If depth is too large or the region is empty, mark this as a leaf node
+        if (depth == voxelizerRepository.computedMaxDepth || isEmpty) {
             node.voxelDataIndex = storeVoxelData(min, max);
             return node;
         }
+        node.voxelDataIndex = 0;
+        node.firstChildIndex = voxelizerRepository.octreeBuffer.size() ;
 
-        node.firstChildIndex = voxelizerRepository.octreeBuffer.size() * INFO_PER_VOXEL;
-        // Subdivide the current region into 8 octants
         for (int i = 0; i < 8; i++) {
             Vector3f childMin = computeChildMin(i, min, max);
             Vector3f childMax = computeChildMax(i, min, max);
 
-            // Recursively build the child node
             Octree childNode = buildOctree(childMin, childMax, depth + 1);
             voxelizerRepository.octreeBuffer.add(childNode);
-            node.childMask |= (1 << i);  // Mark the child as non-empty
+            node.childMask |= (1 << i);
         }
 
         return node;
     }
 
     boolean regionIsEmpty(Vector3f min, Vector3f max) {
-        // Check if any voxel within the region contains data (e.g., intersects the mesh)
         for (int x = (int) min.x; x < max.x; ++x) {
             for (int y = (int) min.y; y < max.y; ++y) {
                 for (int z = (int) min.z; z < max.z; ++z) {
@@ -219,17 +223,14 @@ public class VoxelizerService implements SyncTask, Loggable {
                 }
             }
         }
-        return true;  // No voxels in this region are occupied
+        return true;
     }
 
     private Vector3f computeChildMin(int childIndex, Vector3f min, Vector3f max) {
         Vector3f size = new Vector3f();
-        max.sub(min, size);  // Size of the parent region
+        max.sub(min, size);
 
-        // Compute the half-size of the parent region
         Vector3f halfSize = new Vector3f(size).mul(0.5f);
-
-        // Determine the position of the child octant
         float x = (childIndex & 1) == 0 ? min.x : min.x + halfSize.x;
         float y = (childIndex & 2) == 0 ? min.y : min.y + halfSize.y;
         float z = (childIndex & 4) == 0 ? min.z : min.z + halfSize.z;
@@ -239,12 +240,10 @@ public class VoxelizerService implements SyncTask, Loggable {
 
     private Vector3f computeChildMax(int childIndex, Vector3f min, Vector3f max) {
         Vector3f size = new Vector3f();
-        max.sub(min, size);  // Size of the parent region
+        max.sub(min, size);
 
-        // Compute the half-size of the parent region
         Vector3f halfSize = new Vector3f(size).mul(0.5f);
 
-        // Determine the position of the child octant's max corner
         float x = (childIndex & 1) == 0 ? min.x + halfSize.x : max.x;
         float y = (childIndex & 2) == 0 ? min.y + halfSize.y : max.y;
         float z = (childIndex & 4) == 0 ? min.z + halfSize.z : max.z;
@@ -253,8 +252,6 @@ public class VoxelizerService implements SyncTask, Loggable {
     }
 
     private int storeVoxelData(Vector3f min, Vector3f max) {
-        // Store voxel material or color data in a separate buffer
-        // Could be based on averaging voxel content or just occupancy
-        return 10;
+        return 2;
     }
 }

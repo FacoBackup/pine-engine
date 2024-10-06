@@ -6,6 +6,7 @@ import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import com.pine.theme.Icons;
+import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -26,9 +27,13 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
     @MutableField(label = "Voxel grid resolution", max = 512, min = 32)
     public int gridResolution = 128;
 
-    @MutableField(label = "Voxel grid max subdivisions", max = 64, min = 4)
-    public int maxDepth = 32;
+    @MutableField(label = "Scene min size", max = -1)
+    public Vector3f sceneMin = new Vector3f(-64);
 
+    @MutableField(label = "Scene max size", min = 1)
+    public Vector3f sceneMax = new Vector3f(64);
+
+    public int computedMaxDepth = 4;
     public float voxelSize = 1;
 
     @Override

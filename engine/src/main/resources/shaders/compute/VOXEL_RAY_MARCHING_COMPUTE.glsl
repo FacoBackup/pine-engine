@@ -1,4 +1,4 @@
-layout(local_size_x = 1, local_size_y = 1) in;
+layout (local_size_x = 1, local_size_y = 1) in;
 
 layout (binding = 0) uniform writeonly image2D outputImage;
 
@@ -16,29 +16,10 @@ layout(std430, binding = 13) buffer VoxelDataBuffer {
     vec3 voxelData[];// Color, material or other voxel data
 };
 
+uniform vec3 sceneMinBoundingBox;
+uniform vec3 sceneMaxBoundingBox;
 
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
-
-
-bool pointInTriangle(vec3 P, vec3 A, vec3 B, vec3 C) {
-    vec3 v0 = C - A;
-    vec3 v1 = B - A;
-    vec3 v2 = P - A;
-
-    float dot00 = dot(v0, v0);
-    float dot01 = dot(v0, v1);
-    float dot02 = dot(v0, v2);
-    float dot11 = dot(v1, v1);
-    float dot12 = dot(v1, v2);
-
-    float invDenom = 1.0 / (dot00 * dot11 - dot01 * dot01);
-    float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-    float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-    return (u >= 0) && (v >= 0) && (u + v <= 1);
-}
-
-shared int voxelIndex = 0;
 
 vec3 createRay() {
     vec2 pxNDS = (gl_GlobalInvocationID.xy/bufferResolution) * 2. - 1.;
@@ -51,7 +32,6 @@ vec3 createRay() {
 }
 
 uint countSetBitsBefore(uint mask, int childIndex) {
-    // Count how many bits are set in the childMask before the childIndex.
     uint count = 0;
     for (int i = 0; i < childIndex; ++i) {
         if ((mask & (uint(1) << i)) != 0) {
@@ -146,8 +126,8 @@ void main() {
 
     bool hit = false;
     vec3 hitColor = vec3(0);
-    vec3 minBoundingBox = vec3(-64);
-    vec3 maxBoundingBox = vec3(64.);
+    vec3 minBoundingBox = sceneMinBoundingBox;
+    vec3 maxBoundingBox = sceneMaxBoundingBox;
 
     int currentOctant = 0;
     while (!hit) {
@@ -157,34 +137,14 @@ void main() {
         if (intersects) {
             if (currentNode.childMask == 0) {
                 //            voxelData[currentNode.voxelDataIndex]
-                if(currentOctant == 0){
-                    hitColor = vec3(randomColor(float(currentNodeIndex)));
-                } else if(currentOctant == 1){
-                    hitColor = vec3(1., 0., 0.);
-                }else if(currentOctant == 2){
-                    hitColor = vec3(1., 1., 0.);
-                }else if(currentOctant == 3){
-                    hitColor = vec3(1., 1., 1.);
-                }else if(currentOctant == 4){
-                    hitColor = vec3(1., 0., 1.);
-                }else if(currentOctant == 5){
-                    hitColor = vec3(0, 1., 1.);
-                }else if(currentOctant == 6){
-                    hitColor = vec3(0, 1., 0.);
-                }else if(currentOctant == 7){
-                    hitColor = vec3(1., 0., 0.);
-                }
+                hitColor = vec3(randomColor(float(currentNodeIndex)));
                 hit = true;
+                break;
             } else {
                 vec3 center = (minBoundingBox + maxBoundingBox) * 0.5;
-                int childIndex = getIntersectingChild(rayOrigin, rayDirection, center);
-                if ((currentNode.childMask & (uint(1) << childIndex)) != 0) {
-                    currentOctant = childIndex;
-                    uint offset = countSetBitsBefore(currentNode.childMask, childIndex);
-                    currentNodeIndex = currentNode.firstChildIndex + offset;
-                } else {
-                    break;
-                }
+                currentOctant = getIntersectingChild(rayOrigin, rayDirection, center);
+                uint offset = countSetBitsBefore(currentNode.childMask, currentOctant);
+                currentNodeIndex = currentNode.firstChildIndex + offset;
             }
         } else {
             break;
