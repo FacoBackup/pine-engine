@@ -29,18 +29,16 @@ import java.util.*;
 
 @PBean
 public class MeshLoaderService extends AbstractLoaderService {
-    private static final int FLAGS = Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs | Assimp.aiProcess_GlobalScale | Assimp.aiProcess_GenNormals;
+    private static final int FLAGS = Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs | Assimp.aiProcess_GlobalScale | Assimp.aiProcess_FindInstances | Assimp.aiProcess_PreTransformVertices | Assimp.aiProcess_GenNormals;
 
     private static class MeshInstance {
         public final List<MeshInstance> children = new ArrayList<>();
         public final MeshInstance parent;
         public Integer primitive;
-        public Matrix4f transformation;
         public String name;
 
-        private MeshInstance(MeshInstance parent, Matrix4f transformation) {
+        private MeshInstance(MeshInstance parent) {
             this.parent = parent;
-            this.transformation = transformation;
         }
     }
 
@@ -80,7 +78,7 @@ public class MeshLoaderService extends AbstractLoaderService {
                     }
                 }
             } else {
-                MeshInstance root = new MeshInstance(null, getTransformationMatrix(scene.mRootNode()));
+                MeshInstance root = new MeshInstance(null);
                 root.name = scene.mName().dataString();
                 traverseNode(scene.mRootNode(), root, byPrimitive);
                 Map<Integer, MeshStreamableResource> processed = new HashMap<>();
@@ -112,23 +110,13 @@ public class MeshLoaderService extends AbstractLoaderService {
             primitiveComponent.lod0 = primitive;
         }
 
-        createPrimitiveTransformation(entity.transformation, root);
-
         for (var child : root.children) {
             traverseTree(child, entity, processed, scene, depth + 1);
         }
     }
 
-    private void createPrimitiveTransformation(Transformation t, MeshInstance instance) {
-        Matrix4f transformation = instance.transformation;
-        transformation.getTranslation(t.translation);
-        transformation.getUnnormalizedRotation(t.rotation);
-        transformation.getScale(t.scale);
-    }
-
     private void traverseNode(AINode node, MeshInstance parent, Map<Integer, List<MeshInstance>> byPrimitive) {
-        Matrix4f transformationMatrix = getTransformationMatrix(node);
-        MeshInstance newInstance = new MeshInstance(parent, transformationMatrix);
+        MeshInstance newInstance = new MeshInstance(parent);
         newInstance.name = node.mName().dataString();
 
         parent.children.add(newInstance);
@@ -144,34 +132,6 @@ public class MeshLoaderService extends AbstractLoaderService {
             AINode child = AINode.create(node.mChildren().get(i));
             traverseNode(child, newInstance, byPrimitive);
         }
-    }
-
-    private Matrix4f getTransformationMatrix(AINode node) {
-        AIMatrix4x4 aiMatrix = node.mTransformation();
-        Matrix4f jomlMatrix = new Matrix4f();
-
-        jomlMatrix.m00(aiMatrix.a1());
-        jomlMatrix.m01(aiMatrix.a2());
-        jomlMatrix.m02(aiMatrix.a3());
-        jomlMatrix.m03(aiMatrix.a4());
-
-        jomlMatrix.m10(aiMatrix.b1());
-        jomlMatrix.m11(aiMatrix.b2());
-        jomlMatrix.m12(aiMatrix.b3());
-        jomlMatrix.m13(aiMatrix.b4());
-
-        jomlMatrix.m20(aiMatrix.c1());
-        jomlMatrix.m21(aiMatrix.c2());
-        jomlMatrix.m22(aiMatrix.c3());
-        jomlMatrix.m23(aiMatrix.c4());
-
-        jomlMatrix.m30(aiMatrix.d1());
-        jomlMatrix.m31(aiMatrix.d2());
-        jomlMatrix.m32(aiMatrix.d3());
-        jomlMatrix.m33(aiMatrix.d4());
-
-        jomlMatrix.transpose();
-        return jomlMatrix;
     }
 
     private MeshStreamableResource processPrimitive(AIMesh mesh, int index, @Nullable MeshLoaderExtraInfo extra) {

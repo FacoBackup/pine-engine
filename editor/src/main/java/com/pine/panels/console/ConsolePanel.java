@@ -41,7 +41,8 @@ public class ConsolePanel extends AbstractDockPanel {
             ImGui.tableHeadersRow();
 
             List<Message> messagesHistory = messageRepository.getMessagesHistory();
-            for (Message log : messagesHistory) {
+            for (int i = 0, messagesHistorySize = messagesHistory.size(); i < messagesHistorySize; i++) {
+                Message log = messagesHistory.get(i);
                 if (hasSearchValue && !log.message().contains(searchValue.get())) {
                     continue;
                 }

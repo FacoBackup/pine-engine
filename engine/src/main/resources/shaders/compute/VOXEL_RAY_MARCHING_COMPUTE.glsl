@@ -61,73 +61,138 @@ uint countSetBitsBefore(uint mask, int childIndex) {
     return count;
 }
 
-bool intersectNodeBoundingBox(OctreeNode node, vec3 rayOrigin, vec3 rayDirection) {
-    // Implement ray-box intersection test
-    // Return true if the ray intersects the bounding box of this node, false otherwise.
-    // This would depend on the node's bounding box, which you may store as part of the octree structure.
-    return false;
+bool intersectNodeBoundingBox(vec3 rayOrigin, vec3 rayDirection, vec3 minBounds, vec3 maxBounds) {
+    vec3 invDir = 1.0 / rayDirection;
+
+    vec3 tMin = (minBounds - rayOrigin) * invDir;
+    vec3 tMax = (maxBounds - rayOrigin) * invDir;
+
+    vec3 t1 = min(tMin, tMax);
+    vec3 t2 = max(tMin, tMax);
+
+    float tEnter = max(max(t1.x, t1.y), t1.z);
+    float tExit = min(min(t2.x, t2.y), t2.z);
+
+    return tEnter <= tExit && tExit > 0.0;
 }
 
-int getIntersectingChild(vec3 rayOrigin, vec3 rayDirection, OctreeNode node) {
-    // Compute which of the 8 children (octants) the ray intersects first.
-    // This depends on how you've stored the bounds for each octant.
-    // Simplified example (assumes a centered box subdivision):
+int getIntersectingChild(vec3 rayOrigin, vec3 rayDirection, vec3 nodeCenter) {
+    int childIndex = 0;
+    if (rayOrigin.x > nodeCenter.x) {
+        childIndex |= 1;// Positive X octant
+    }
+    if (rayOrigin.y > nodeCenter.y) {
+        childIndex |= 2;// Positive Y octant
+    }
+    if (rayOrigin.z > nodeCenter.z) {
+        childIndex |= 4;// Positive Z octant
+    }
+    return childIndex;
+}
 
-    int octant = 0;
-    if (rayDirection.x > 0) octant |= 1;
-    if (rayDirection.y > 0) octant |= 2;
-    if (rayDirection.z > 0) octant |= 4;
+void computeNodeBounds(in vec3 parentMinBounds, in vec3 parentMaxBounds, int octant, out vec3 minBounds, out vec3 maxBounds) {
+    vec3 center = (parentMinBounds + parentMaxBounds) * 0.5;
 
-    return octant;
+    switch (octant) {
+        case 0:// Lower-left-front
+        minBounds = parentMinBounds;
+        maxBounds = center;
+        break;
+        case 1:// Lower-right-front
+        minBounds = vec3(center.x, parentMinBounds.y, parentMinBounds.z);
+        maxBounds = vec3(parentMaxBounds.x, center.y, center.z);
+        break;
+        case 2:// Upper-left-front
+        minBounds = vec3(parentMinBounds.x, center.y, parentMinBounds.z);
+        maxBounds = vec3(center.x, parentMaxBounds.y, center.z);
+        break;
+        case 3:// Upper-right-front
+        minBounds = vec3(center.x, center.y, parentMinBounds.z);
+        maxBounds = vec3(parentMaxBounds.x, parentMaxBounds.y, center.z);
+        break;
+        case 4:// Lower-left-back
+        minBounds = vec3(parentMinBounds.x, parentMinBounds.y, center.z);
+        maxBounds = vec3(center.x, center.y, parentMaxBounds.z);
+        break;
+        case 5:// Lower-right-back
+        minBounds = vec3(center.x, parentMinBounds.y, center.z);
+        maxBounds = vec3(parentMaxBounds.x, center.y, parentMaxBounds.z);
+        break;
+        case 6:// Upper-left-back
+        minBounds = vec3(parentMinBounds.x, center.y, center.z);
+        maxBounds = vec3(center.x, parentMaxBounds.y, parentMaxBounds.z);
+        break;
+        case 7:// Upper-right-back
+        minBounds = center;
+        maxBounds = parentMaxBounds;
+        break;
+    }
+}
+
+float rand(vec2 co) {
+    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+vec3 randomColor(float seed) {
+    float r = rand(vec2(seed));
+    float g = rand(vec2(seed + r));
+    return vec3(r, g, rand(vec2(seed + g)));
 }
 
 void main() {
-    // Ray data
+    vec3 rayOrigin = placement.xyz;
+    vec3 rayDirection = createRay();
 
-    vec3 rayOrigin = placement.xyz;// Ray starting position
-    vec3 rayDirection = createRay();// Normalized ray direction
-
-    // Octree traversal
-    uint currentNodeIndex = 0;// Start with the root node (usually index 0)
+    uint currentNodeIndex = 0;
 
     bool hit = false;
-    vec3 hitColor;// Store voxel color or data
+    vec3 hitColor = vec3(0);
+    vec3 minBoundingBox = vec3(-64);
+    vec3 maxBoundingBox = vec3(64.);
 
+    int currentOctant = 0;
     while (!hit) {
-        // Fetch the current node
         OctreeNode currentNode = nodes[currentNodeIndex];
-
-        // Ray-box intersection (optional, depending on how you store bounding volumes)
-        // If the ray doesn't hit the node's bounding box, you can skip this node.
-        bool intersects = intersectNodeBoundingBox(currentNode, rayOrigin, rayDirection);
-        if (!intersects) {
-            break;// Exit the loop if no intersection is found
-        }
-
-        // Check if it's a leaf node by checking if the childMask is 0
-        if (currentNode.childMask == 0) {
-            // Leaf node hit, fetch voxel data
-            hitColor = voxelData[currentNode.voxelDataIndex];
-            hit = true;// Mark that we found a hit
-            break;// Exit the traversal
-        }
-
-        // Otherwise, it's an internal node; we need to determine which child to traverse
-        int childIndex = getIntersectingChild(rayOrigin, rayDirection, currentNode);
-
-        // Use the childMask to check if the selected child exists
-        if ((currentNode.childMask & (uint(1) << childIndex)) == 0) {
-            // No child in this octant, terminate the traversal or move to another branch
+        computeNodeBounds(minBoundingBox, maxBoundingBox, currentOctant, minBoundingBox, maxBoundingBox);
+        bool intersects = intersectNodeBoundingBox(rayOrigin, rayDirection, minBoundingBox, maxBoundingBox);
+        if (intersects) {
+            if (currentNode.childMask == 0) {
+                //            voxelData[currentNode.voxelDataIndex]
+                if(currentOctant == 0){
+                    hitColor = vec3(randomColor(float(currentNodeIndex)));
+                } else if(currentOctant == 1){
+                    hitColor = vec3(1., 0., 0.);
+                }else if(currentOctant == 2){
+                    hitColor = vec3(1., 1., 0.);
+                }else if(currentOctant == 3){
+                    hitColor = vec3(1., 1., 1.);
+                }else if(currentOctant == 4){
+                    hitColor = vec3(1., 0., 1.);
+                }else if(currentOctant == 5){
+                    hitColor = vec3(0, 1., 1.);
+                }else if(currentOctant == 6){
+                    hitColor = vec3(0, 1., 0.);
+                }else if(currentOctant == 7){
+                    hitColor = vec3(1., 0., 0.);
+                }
+                hit = true;
+            } else {
+                vec3 center = (minBoundingBox + maxBoundingBox) * 0.5;
+                int childIndex = getIntersectingChild(rayOrigin, rayDirection, center);
+                if ((currentNode.childMask & (uint(1) << childIndex)) != 0) {
+                    currentOctant = childIndex;
+                    uint offset = countSetBitsBefore(currentNode.childMask, childIndex);
+                    currentNodeIndex = currentNode.firstChildIndex + offset;
+                } else {
+                    break;
+                }
+            }
+        } else {
             break;
         }
-
-        // Calculate the index of the child node
-        uint offset = countSetBitsBefore(currentNode.childMask, childIndex);
-        currentNodeIndex = currentNode.firstChildIndex + offset;// Traverse to child node
     }
 
     if (hit){
         ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
-        imageStore(outputImage, coords, vec4(1., 0., 1., 1.));
+        imageStore(outputImage, coords, vec4(hitColor, 1.));
     }
 }

@@ -26,8 +26,8 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
     @MutableField(label = "Voxel grid resolution", max = 512, min = 32)
     public int gridResolution = 128;
 
-    @MutableField(label = "Voxel grid max subdivisions", max = 16, min = 4)
-    public int maxDepth = 4;
+    @MutableField(label = "Voxel grid max subdivisions", max = 64, min = 4)
+    public int maxDepth = 32;
 
     public float voxelSize = 1;
 
