@@ -98,7 +98,6 @@ public class ViewportPanel extends AbstractDockPanel {
         } else {
             cameraService = cameraFirstPersonService;
         }
-
         if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode))) {
             cameraService.handleInput(context.camera, isFirstMovement);
             isFirstMovement = false;
@@ -114,8 +113,7 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.downPressed = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
-        repo.viewportH = size.y;
-        repo.viewportW = size.x;
-
+        repo.viewportH = sizeVec.y;
+        repo.viewportW = sizeVec.x;
     }
 }

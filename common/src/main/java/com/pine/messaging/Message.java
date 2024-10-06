@@ -1,4 +1,4 @@
-package com.pine;
+package com.pine.messaging;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;

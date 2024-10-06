@@ -1,10 +1,9 @@
 package com.pine.service.resource;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 import com.pine.injection.Disposable;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.ClockRepository;
 import com.pine.service.loader.LoaderService;
 
 import java.util.HashMap;
@@ -47,4 +46,11 @@ public class ResourceService implements Loggable, Disposable {
         resources.values().forEach(Disposable::dispose);
     }
 
+    public void remove(String id) {
+        IResource iResource = resources.get(id);
+        if(iResource != null) {
+            iResource.dispose();
+            resources.remove(id);
+        }
+    }
 }

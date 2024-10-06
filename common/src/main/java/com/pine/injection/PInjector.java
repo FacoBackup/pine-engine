@@ -1,6 +1,6 @@
 package com.pine.injection;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 

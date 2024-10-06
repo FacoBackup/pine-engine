@@ -1,5 +1,6 @@
 package com.pine.repository;
 
+import com.pine.Mutable;
 import com.pine.SerializableRepository;
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;

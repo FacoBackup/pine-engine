@@ -1,6 +1,6 @@
 package com.pine.service.system.impl;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 import com.pine.service.system.AbstractSystem;
 
 public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {

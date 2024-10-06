@@ -9,6 +9,7 @@ import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.*;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.repository.voxelization.VoxelizerRepository;
 import com.pine.service.resource.ComputeService;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ShaderService;
@@ -50,7 +51,9 @@ public abstract class AbstractSystem {
     @PInject
     public CoreComputeRepository computeRepository;
     @PInject
-    public CoreMeshRepository primitiveRepository;
+    public CoreMeshRepository meshRepository;
+    @PInject
+    public VoxelizerRepository voxelizerRepository;
 
     final public void render() {
         if (!isRenderable()) {

@@ -16,7 +16,6 @@ public class SystemService implements SyncTask {
     private List<AbstractSystem> systems = List.of(
             new BRDFGenSystem(),
             new ShaderDataSyncSystem(),
-            new VoxelizationSystem(),
             new DepthPrePassSystem(),
             new AtmosphereSystem(),
             new VoxelVisualizerSystem(),

@@ -1,6 +1,6 @@
 package com.pine.dock;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 import com.pine.panel.AbstractPanelContext;
 import imgui.type.ImInt;
 

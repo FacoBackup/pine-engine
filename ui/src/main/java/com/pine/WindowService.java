@@ -1,6 +1,7 @@
 package com.pine;
 
 import com.pine.injection.*;
+import com.pine.messaging.Loggable;
 import com.pine.theme.Icons;
 import imgui.*;
 import imgui.flag.ImGuiConfigFlags;

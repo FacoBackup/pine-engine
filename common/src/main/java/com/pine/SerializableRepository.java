@@ -1,6 +1,7 @@
 package com.pine;
 
 import com.pine.injection.PInject;
+import com.pine.messaging.Loggable;
 import imgui.ImVec4;
 import imgui.type.ImInt;
 import org.joml.Vector3f;

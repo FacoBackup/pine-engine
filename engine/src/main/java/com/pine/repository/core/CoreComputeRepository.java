@@ -12,11 +12,11 @@ import static com.pine.service.resource.shader.ShaderCreationData.LOCAL_SHADER;
 public class CoreComputeRepository implements CoreRepository {
     @PInject
     public ResourceService resources;
-    public Compute voxelizationCompute;
+    public Compute voxelRaymarchingCompute;
 
 
     @Override
     public void initialize() {
-        voxelizationCompute = (Compute) resources.addResource(new ComputeCreationData(LOCAL_SHADER + "compute/VOXELIZATION_COMPUTE.glsl").staticResource());
+        voxelRaymarchingCompute = (Compute) resources.addResource(new ComputeCreationData(LOCAL_SHADER + "compute/VOXEL_RAY_MARCHING_COMPUTE.glsl").staticResource());
     }
 }
