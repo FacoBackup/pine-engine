@@ -23,7 +23,9 @@ import static com.pine.repository.voxelization.VoxelizerRepository.OCCUPIED_VOXE
 @PBean
 public class VoxelizerService implements SyncTask, Loggable {
 
-    private static final int INFO_PER_VOXEL = 3;
+    private static final int INFO_PER_VOXEL = 4;
+    private static final int INFO_PER_VOXEL_DATA = 4;
+
     @PInject
     public MeshService meshService;
 
@@ -52,7 +54,7 @@ public class VoxelizerService implements SyncTask, Loggable {
 
     public void buildFromScratch() {
         voxelizerRepository.voxelGrid = new byte[voxelizerRepository.gridResolution + 1][voxelizerRepository.gridResolution + 1][voxelizerRepository.gridResolution + 1];
-        voxelizerRepository.voxelDataBuffer = new float[(int) (3 * Math.pow(voxelizerRepository.gridResolution, 3))];
+        voxelizerRepository.voxelDataBuffer.clear();
         bounding = voxelizerRepository.gridResolution / 2;
 
         RenderingRequest request = renderingRepository.requests.getFirst();
@@ -90,10 +92,12 @@ public class VoxelizerService implements SyncTask, Loggable {
             offset++;
             voxelizerRepository.octreeMemBuffer.put(offset, octree.voxelDataIndex);
             offset++;
+            voxelizerRepository.octreeMemBuffer.put(offset, octree.octant);
+            offset++;
         }
 
-        for (int i = 0; i < voxelizerRepository.voxelDataBuffer.length; i++) {
-            voxelizerRepository.voxelDataMemBuffer.put(i, voxelizerRepository.voxelDataBuffer[i]);
+        for (int i = 0; i < voxelizerRepository.voxelDataBuffer.size(); i++) {
+            voxelizerRepository.voxelDataMemBuffer.put(i, voxelizerRepository.voxelDataBuffer.get(i));
         }
     }
 
@@ -103,7 +107,7 @@ public class VoxelizerService implements SyncTask, Loggable {
             resourceService.remove(voxelizerRepository.voxelDataSSBO.getId());
         }
         voxelizerRepository.octreeMemBuffer = MemoryUtil.memAllocInt(voxelizerRepository.octreeBuffer.size() * INFO_PER_VOXEL);
-        voxelizerRepository.voxelDataMemBuffer = MemoryUtil.memAllocFloat(voxelizerRepository.voxelDataBuffer.length);
+        voxelizerRepository.voxelDataMemBuffer = MemoryUtil.memAllocFloat((int) (INFO_PER_VOXEL_DATA * Math.pow(voxelizerRepository.gridResolution, 3)));
     }
 
     private void createStorage() {
@@ -163,14 +167,14 @@ public class VoxelizerService implements SyncTask, Loggable {
 
             // Determine the range of voxels intersected by the triangle
 
-            int minX = (int) ((triMin.x - currentMeshMinBounds.x) / voxelizerRepository.voxelSize);  // Find voxel index
-            int maxX = (int) ((triMax.x - currentMeshMinBounds.x) / voxelizerRepository.voxelSize);
+            int minX = (int) ((triMin.x - voxelizerRepository.sceneMin.x) / voxelizerRepository.voxelSize);  // Find voxel index
+            int maxX = (int) ((triMax.x - voxelizerRepository.sceneMin.x) / voxelizerRepository.voxelSize);
 
-            int minY = (int) ((triMin.y - currentMeshMinBounds.y) / voxelizerRepository.voxelSize);
-            int maxY = (int) ((triMax.y - currentMeshMinBounds.y) / voxelizerRepository.voxelSize);
+            int minY = (int) ((triMin.y - voxelizerRepository.sceneMin.y) / voxelizerRepository.voxelSize);
+            int maxY = (int) ((triMax.y - voxelizerRepository.sceneMin.y) / voxelizerRepository.voxelSize);
 
-            int minZ = (int) ((triMin.z - currentMeshMinBounds.z) / voxelizerRepository.voxelSize);
-            int maxZ = (int) ((triMax.z - currentMeshMinBounds.z) / voxelizerRepository.voxelSize);
+            int minZ = (int) ((triMin.z - voxelizerRepository.sceneMin.z) / voxelizerRepository.voxelSize);
+            int maxZ = (int) ((triMax.z - voxelizerRepository.sceneMin.z) / voxelizerRepository.voxelSize);
 
 
             for (int x = minX; x <= maxX; ++x) {
@@ -192,22 +196,29 @@ public class VoxelizerService implements SyncTask, Loggable {
             voxelizerRepository.octreeBuffer.add(node);
         }
 
+        node.voxelDataIndex = storeVoxelData(min, max, depth);
         boolean isEmpty = regionIsEmpty(min, max);
         // If depth is too large or the region is empty, mark this as a leaf node
         if (depth == voxelizerRepository.computedMaxDepth || isEmpty) {
-            node.voxelDataIndex = storeVoxelData(min, max);
             return node;
         }
-        node.voxelDataIndex = 0;
-        node.firstChildIndex = voxelizerRepository.octreeBuffer.size() ;
+        node.firstChildIndex = voxelizerRepository.octreeBuffer.size();
 
         for (int i = 0; i < 8; i++) {
+            voxelizerRepository.octreeBuffer.add(new Octree());
+        }
+
+        for (int i = 0; i < 8; i++) {
+            Octree octree = voxelizerRepository.octreeBuffer.get(i);
+            node.childMask |= (1 << i);
             Vector3f childMin = computeChildMin(i, min, max);
             Vector3f childMax = computeChildMax(i, min, max);
 
             Octree childNode = buildOctree(childMin, childMax, depth + 1);
-            voxelizerRepository.octreeBuffer.add(childNode);
-            node.childMask |= (1 << i);
+            octree.childMask = childNode.childMask;
+            octree.voxelDataIndex = childNode.voxelDataIndex;
+            octree.firstChildIndex = childNode.firstChildIndex;
+            octree.octant = i;
         }
 
         return node;
@@ -251,7 +262,12 @@ public class VoxelizerService implements SyncTask, Loggable {
         return new Vector3f(x, y, z);
     }
 
-    private int storeVoxelData(Vector3f min, Vector3f max) {
+    private int storeVoxelData(Vector3f min, Vector3f max, int depth) {
+        Vector3f center = new Vector3f(min).add(max).mul(.5f);
+        voxelizerRepository.voxelDataBuffer.add(center.x);
+        voxelizerRepository.voxelDataBuffer.add(center.y);
+        voxelizerRepository.voxelDataBuffer.add(center.z);
+        voxelizerRepository.voxelDataBuffer.add((float) (voxelizerRepository.gridResolution/Math.pow(2, depth)));
         return 2;
     }
 }

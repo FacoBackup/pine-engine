@@ -19,7 +19,7 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
     public final List<Octree> octreeBuffer = new ArrayList<>();
     public transient IntBuffer octreeMemBuffer = null;
     public transient FloatBuffer voxelDataMemBuffer = null;
-    public float[] voxelDataBuffer = null;
+    public List<Float> voxelDataBuffer = new ArrayList<>();
     public transient byte[][][] voxelGrid = null;
     public transient ShaderStorageBufferObject octreeSSBO;
     public transient ShaderStorageBufferObject voxelDataSSBO;

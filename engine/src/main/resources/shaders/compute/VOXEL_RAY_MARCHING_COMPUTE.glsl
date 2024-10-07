@@ -6,6 +6,7 @@ struct OctreeNode {
     uint childMask;// 8-bit mask for children
     uint firstChildIndex;// Index of the first child in the SSBO
     uint voxelDataIndex;// Index to voxel data, only valid for leaf nodes
+    uint octant;
 };
 
 layout(std430, binding = 12) buffer OctreeBuffer {
@@ -13,7 +14,7 @@ layout(std430, binding = 12) buffer OctreeBuffer {
 };
 
 layout(std430, binding = 13) buffer VoxelDataBuffer {
-    vec3 voxelData[];// Color, material or other voxel data
+    vec4 voxelData[]; // Position + size
 };
 
 uniform vec3 sceneMinBoundingBox;
@@ -31,6 +32,7 @@ vec3 createRay() {
     return normalize(dirWorld);
 }
 
+// REMOVES EMPTY CHILDREN FROM INFLUENCING INDEX
 uint countSetBitsBefore(uint mask, int childIndex) {
     uint count = 0;
     for (int i = 0; i < childIndex; ++i) {
@@ -56,21 +58,29 @@ bool intersectNodeBoundingBox(vec3 rayOrigin, vec3 rayDirection, vec3 minBounds,
     return tEnter <= tExit && tExit > 0.0;
 }
 
-int getIntersectingChild(vec3 rayOrigin, vec3 rayDirection, vec3 nodeCenter) {
+int getIntersectingChild(vec3 rayOrigin, vec3 rayDirection, vec3 voxelCenter) {
     int childIndex = 0;
-    if (rayOrigin.x > nodeCenter.x) {
-        childIndex |= 1;// Positive X octant
+    if (rayDirection.x >= 0) {
+        if (rayOrigin.x > voxelCenter.x) childIndex |= 1;// Positive X
+    } else {
+        if (rayOrigin.x <= voxelCenter.x) childIndex |= 1;// Negative X
     }
-    if (rayOrigin.y > nodeCenter.y) {
-        childIndex |= 2;// Positive Y octant
+
+    if (rayDirection.y >= 0) {
+        if (rayOrigin.y > voxelCenter.y) childIndex |= 2;// Positive Y
+    } else {
+        if (rayOrigin.y <= voxelCenter.y) childIndex |= 2;// Negative Y
     }
-    if (rayOrigin.z > nodeCenter.z) {
-        childIndex |= 4;// Positive Z octant
+
+    if (rayDirection.z >= 0) {
+        if (rayOrigin.z > voxelCenter.z) childIndex |= 4;// Positive Z
+    } else {
+        if (rayOrigin.z <= voxelCenter.z) childIndex |= 4;// Negative Z
     }
     return childIndex;
 }
 
-void computeNodeBounds(in vec3 parentMinBounds, in vec3 parentMaxBounds, int octant, out vec3 minBounds, out vec3 maxBounds) {
+void computeNodeBounds(in vec3 parentMinBounds, in vec3 parentMaxBounds, uint octant, out vec3 minBounds, out vec3 maxBounds) {
     vec3 center = (parentMinBounds + parentMaxBounds) * 0.5;
 
     switch (octant) {
@@ -128,22 +138,22 @@ void main() {
     vec3 hitColor = vec3(0);
     vec3 minBoundingBox = sceneMinBoundingBox;
     vec3 maxBoundingBox = sceneMaxBoundingBox;
-
-    int currentOctant = 0;
+    float stepSize = 1.;
     while (!hit) {
         OctreeNode currentNode = nodes[currentNodeIndex];
-        computeNodeBounds(minBoundingBox, maxBoundingBox, currentOctant, minBoundingBox, maxBoundingBox);
-        bool intersects = intersectNodeBoundingBox(rayOrigin, rayDirection, minBoundingBox, maxBoundingBox);
+        vec4 localData = voxelData[currentNode.voxelDataIndex];
+        vec3 maxBound = localData.xyz + localData.w/2;
+        vec3 minBound = localData.xyz - localData.w/2;
+//        computeNodeBounds(minBoundingBox, maxBoundingBox, currentNode.octant, minBoundingBox, maxBoundingBox);
+        bool intersects = intersectNodeBoundingBox(rayOrigin, rayDirection, minBound, maxBound);
         if (intersects) {
             if (currentNode.childMask == 0) {
-                //            voxelData[currentNode.voxelDataIndex]
                 hitColor = vec3(randomColor(float(currentNodeIndex)));
                 hit = true;
                 break;
             } else {
-                vec3 center = (minBoundingBox + maxBoundingBox) * 0.5;
-                currentOctant = getIntersectingChild(rayOrigin, rayDirection, center);
-                uint offset = countSetBitsBefore(currentNode.childMask, currentOctant);
+//                rayOrigin += stepSize * rayDirection;
+                uint offset = countSetBitsBefore(currentNode.childMask, getIntersectingChild(rayOrigin, rayDirection, localData.xyz));
                 currentNodeIndex = currentNode.firstChildIndex + offset;
             }
         } else {
