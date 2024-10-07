@@ -14,7 +14,7 @@ layout(std430, binding = 12) buffer OctreeBuffer {
 };
 
 layout(std430, binding = 13) buffer VoxelDataBuffer {
-    vec4 voxelData[]; // Position + size
+    vec4 voxelData[];// Position + size
 };
 
 uniform vec3 sceneMinBoundingBox;
@@ -58,24 +58,16 @@ bool intersectNodeBoundingBox(vec3 rayOrigin, vec3 rayDirection, vec3 minBounds,
     return tEnter <= tExit && tExit > 0.0;
 }
 
-int getIntersectingChild(vec3 rayOrigin, vec3 rayDirection, vec3 voxelCenter) {
+int getIntersectingChild(vec3 rayOrigin, vec3 rayDirection, vec3 nodeCenter) {
     int childIndex = 0;
-    if (rayDirection.x >= 0) {
-        if (rayOrigin.x > voxelCenter.x) childIndex |= 1;// Positive X
-    } else {
-        if (rayOrigin.x <= voxelCenter.x) childIndex |= 1;// Negative X
+    if (rayOrigin.x > nodeCenter.x) {
+        childIndex |= 1;// Positive X octant
     }
-
-    if (rayDirection.y >= 0) {
-        if (rayOrigin.y > voxelCenter.y) childIndex |= 2;// Positive Y
-    } else {
-        if (rayOrigin.y <= voxelCenter.y) childIndex |= 2;// Negative Y
+    if (rayOrigin.y > nodeCenter.y) {
+        childIndex |= 2;// Positive Y octant
     }
-
-    if (rayDirection.z >= 0) {
-        if (rayOrigin.z > voxelCenter.z) childIndex |= 4;// Positive Z
-    } else {
-        if (rayOrigin.z <= voxelCenter.z) childIndex |= 4;// Negative Z
+    if (rayOrigin.z > nodeCenter.z) {
+        childIndex |= 4;// Positive Z octant
     }
     return childIndex;
 }
@@ -138,23 +130,31 @@ void main() {
     vec3 hitColor = vec3(0);
     vec3 minBoundingBox = sceneMinBoundingBox;
     vec3 maxBoundingBox = sceneMaxBoundingBox;
-    float stepSize = 1.;
+
+    int currentOctant = 0;
+    float t = 0;
     while (!hit) {
         OctreeNode currentNode = nodes[currentNodeIndex];
-        vec4 localData = voxelData[currentNode.voxelDataIndex];
-        vec3 maxBound = localData.xyz + localData.w/2;
-        vec3 minBound = localData.xyz - localData.w/2;
-//        computeNodeBounds(minBoundingBox, maxBoundingBox, currentNode.octant, minBoundingBox, maxBoundingBox);
-        bool intersects = intersectNodeBoundingBox(rayOrigin, rayDirection, minBound, maxBound);
+        vec3 minBounds = vec3(0.);
+        vec3 maxBounds = vec3(0.);
+        computeNodeBounds(minBoundingBox, maxBoundingBox, currentNode.octant, minBounds, maxBounds);
+        bool intersects = intersectNodeBoundingBox(rayOrigin + rayDirection * t, rayDirection, minBounds, maxBounds);
         if (intersects) {
             if (currentNode.childMask == 0) {
+                //            voxelData[currentNode.voxelDataIndex]
                 hitColor = vec3(randomColor(float(currentNodeIndex)));
                 hit = true;
                 break;
-            } else {
-//                rayOrigin += stepSize * rayDirection;
-                uint offset = countSetBitsBefore(currentNode.childMask, getIntersectingChild(rayOrigin, rayDirection, localData.xyz));
+            } else if ((currentNode.childMask & (uint(1) << uint(currentNode.firstChildIndex))) != 0) {
+                t += .01;
+                vec3 center = (minBounds + maxBounds) * 0.5;
+                currentOctant = getIntersectingChild(rayOrigin, rayDirection, center);
+                uint offset = countSetBitsBefore(currentNode.childMask, currentOctant);
                 currentNodeIndex = currentNode.firstChildIndex + offset;
+                minBoundingBox = minBounds;
+                maxBoundingBox = maxBounds;
+            } else {
+                break;
             }
         } else {
             break;

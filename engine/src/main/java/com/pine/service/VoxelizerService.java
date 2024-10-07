@@ -42,6 +42,7 @@ public class VoxelizerService implements SyncTask, Loggable {
     private Vector3f currentMeshMaxBounds;
     private int bounding;
     private boolean needsPackaging = true;
+    int voxelDataIndex = 0;
 
     @Override
     public void sync() {
@@ -192,33 +193,30 @@ public class VoxelizerService implements SyncTask, Loggable {
     private Octree buildOctree(Vector3f min, Vector3f max, int depth) {
         Octree node = new Octree();
         if (depth == 0) {
+            voxelDataIndex = 0;
+            voxelizerRepository.voxelDataBuffer.clear();
             voxelizerRepository.octreeBuffer.clear();
             voxelizerRepository.octreeBuffer.add(node);
         }
 
         node.voxelDataIndex = storeVoxelData(min, max, depth);
-        boolean isEmpty = regionIsEmpty(min, max);
+        voxelDataIndex++;
+
         // If depth is too large or the region is empty, mark this as a leaf node
-        if (depth == voxelizerRepository.computedMaxDepth || isEmpty) {
+        if (depth == voxelizerRepository.computedMaxDepth || regionIsEmpty(min, max)) {
             return node;
         }
         node.firstChildIndex = voxelizerRepository.octreeBuffer.size();
 
         for (int i = 0; i < 8; i++) {
-            voxelizerRepository.octreeBuffer.add(new Octree());
-        }
-
-        for (int i = 0; i < 8; i++) {
-            Octree octree = voxelizerRepository.octreeBuffer.get(i);
-            node.childMask |= (1 << i);
             Vector3f childMin = computeChildMin(i, min, max);
             Vector3f childMax = computeChildMax(i, min, max);
 
             Octree childNode = buildOctree(childMin, childMax, depth + 1);
-            octree.childMask = childNode.childMask;
-            octree.voxelDataIndex = childNode.voxelDataIndex;
-            octree.firstChildIndex = childNode.firstChildIndex;
-            octree.octant = i;
+
+            node.childMask |= (1 << i);
+            childNode.octant = i;
+            voxelizerRepository.octreeBuffer.add(childNode);
         }
 
         return node;
@@ -268,6 +266,6 @@ public class VoxelizerService implements SyncTask, Loggable {
         voxelizerRepository.voxelDataBuffer.add(center.y);
         voxelizerRepository.voxelDataBuffer.add(center.z);
         voxelizerRepository.voxelDataBuffer.add((float) (voxelizerRepository.gridResolution/Math.pow(2, depth)));
-        return 2;
+        return voxelDataIndex;
     }
 }
