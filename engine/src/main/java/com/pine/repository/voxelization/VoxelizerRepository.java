@@ -5,6 +5,7 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
+import com.pine.service.svo.SparseVoxelOctree;
 import com.pine.theme.Icons;
 import org.joml.Vector3f;
 
@@ -33,8 +34,9 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
     @MutableField(label = "Scene max size", min = 1)
     public Vector3f sceneMax = new Vector3f(64);
 
-    public int computedMaxDepth = 4;
-    public float voxelSize = 1;
+    @MutableField(label = "Scene max size", min = 1, max = 10)
+    public int maxDepth = 4;
+    public SparseVoxelOctree sparseVoxelOctree;
 
     @Override
     public String getTitle() {

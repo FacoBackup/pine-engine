@@ -3,19 +3,15 @@ package com.pine.panels.viewport;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.SettingsRepository;
-import com.pine.service.VoxelizerService;
+import com.pine.service.svo.VoxelizerService;
 import com.pine.theme.Icons;
 import com.pine.tools.types.DebugShadingModel;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
-import imgui.type.ImBoolean;
-
-import javax.swing.*;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
