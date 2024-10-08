@@ -32,10 +32,12 @@ public class VoxelizerService implements SyncTask, Loggable {
     public ResourceService resourceService;
 
     private boolean needsPackaging = true;
+    private int currentOctreeMemIndex = 0;
+    private int currentVoxelDataMemIndex = 0;
 
     @Override
     public void sync() {
-        if (voxelizerRepository.sparseVoxelOctree != null || !needsPackaging) {
+        if (voxelizerRepository.sparseVoxelOctree == null || !needsPackaging) {
             return;
         }
         packageData();
@@ -59,11 +61,20 @@ public class VoxelizerService implements SyncTask, Loggable {
     }
 
     private void fillStorage(OctreeNode root) {
-//        root
-        // TODO
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, root.getChildMask());
+        currentOctreeMemIndex++;
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, currentVoxelDataMemIndex);
+        currentOctreeMemIndex++;
+
+        voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex, root.getData().r());
+        voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 1, root.getData().g());
+        voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 2, root.getData().b());
+        currentVoxelDataMemIndex += 3;
     }
 
     private void cleanStorage() {
+        currentOctreeMemIndex = 0;
+        currentVoxelDataMemIndex = 0;
         if (voxelizerRepository.octreeSSBO != null) {
             resourceService.remove(voxelizerRepository.octreeSSBO.getId());
             resourceService.remove(voxelizerRepository.voxelDataSSBO.getId());
