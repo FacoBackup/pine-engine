@@ -19,11 +19,8 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
     public transient ShaderStorageBufferObject octreeSSBO;
     public transient ShaderStorageBufferObject voxelDataSSBO;
 
-    @MutableField(label = "Voxel grid resolution", max = 512, min = 32)
-    public int gridResolution = 128;
-
-    @MutableField(label = "Scene size", max = -1)
-    public float size = 1;
+    @MutableField(label = "Grid size", min = 0)
+    public int gridResolution = 20;
 
     @MutableField(label = "Center")
     public Vector3f center = new Vector3f(0);
@@ -36,7 +33,7 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
 
     @Override
     public String getTitle() {
-        return "Scene voxelization";
+        return "Voxelized scene";
     }
 
     @Override

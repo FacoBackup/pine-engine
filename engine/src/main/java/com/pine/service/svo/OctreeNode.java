@@ -68,4 +68,8 @@ public class OctreeNode implements Serializable {
     public int getDataIndex() {
         return dataIndex;
     }
+
+    public boolean isLeaf() {
+        return isLeaf;
+    }
 }

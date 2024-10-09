@@ -35,7 +35,7 @@ public class VoxelVisualizerSystem extends AbstractSystem {
         centerScaleBuffer.put(0, voxelizerRepository.center.x);
         centerScaleBuffer.put(1, voxelizerRepository.center.y);
         centerScaleBuffer.put(2, voxelizerRepository.center.z);
-        centerScaleBuffer.put(3, voxelizerRepository.size);
+        centerScaleBuffer.put(3, voxelizerRepository.gridResolution);
         computeService.bindUniform(centerScale, centerScaleBuffer);
 
         COMPUTE_RUNTIME_DATA.groupX = fboRepository.auxBuffer.width;

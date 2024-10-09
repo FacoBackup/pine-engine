@@ -3,8 +3,8 @@ layout (local_size_x = 1, local_size_y = 1) in;
 layout (binding = 0) uniform writeonly image2D outputImage;
 
 struct OctreeNode {
-    uint metadata;// First 16 bits are the index pointing to the position of this voxel's children | 8 bits are the child mask | 8 bits indicate if the node is a leaf
-    uint voxelDataIndex;// Index to voxel data, only valid for leaf nodes
+    int metadata;// First 16 bits are the index pointing to the position of this voxel's children | 8 bits are the child mask | 8 bits indicate if the node is a leaf
+    int voxelDataIndex;// Index to voxel data, only valid for leaf nodes
 };
 
 layout(std430, binding = 12) buffer OctreeBuffer {
@@ -87,9 +87,10 @@ vec4 trace(Ray ray) {
         index = stack[stackPos].index;
         scale = stack[stackPos].scale;
         OctreeNode voxel_node = voxels[index];
-        uint voxel_group_offset = voxel_node.metadata >> 16;
-        uint voxel_child_mask = (voxel_node.metadata & 0x0000FF00u) >> 8u;
-        uint voxel_leaf_mask = voxel_node.metadata & 0x000000FFu;
+        uint metadata = uint(voxel_node.metadata);
+        uint voxel_group_offset = metadata >> 16;
+        uint voxel_child_mask = (metadata & 0x0000FF00u) >> 8u;
+        uint voxel_leaf_mask = metadata & 0x000000FFu;
         uint accumulated_offset = 0u;
         for (uint i = 0u; i < 8u; ++i) {
             bool empty = (voxel_child_mask & (1u << i)) == 0u;
@@ -110,7 +111,7 @@ vec4 trace(Ray ray) {
                 continue;
             }
             if (is_leaf){ //not empty, but a leaf
-                return vec4(randomColor(float(index)), 1.);
+                return vec4(voxelData[uint(voxel_node.voxelDataIndex)], 1.);
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
                 finalColor.z += 0.4f;
