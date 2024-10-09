@@ -16,15 +16,15 @@ uniform vec4 centerScale;
 
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 
+const vec3 NNN = vec3(0, 0, 0);
+const vec3 PNN = vec3(1, 0, 0);
+const vec3 NPN = vec3(0, 1, 0);
+const vec3 PPN = vec3(1, 1, 0);
+const vec3 NNP = vec3(0, 0, 1);
+const vec3 PNP = vec3(1, 0, 1);
+const vec3 NPP = vec3(0, 1, 1);
 const vec3 PPP = vec3(1, 1, 1);
-const vec3 PNP = vec3(1, -1, 1);
-const vec3 PNN = vec3(1, -1, -1);
-const vec3 NPN = vec3(-1, 1, -1);
-const vec3 NNN = vec3(-1, -1, -1);
-const vec3 NNP = vec3(-1, -1, 1);
-const vec3 NPP = vec3(-1, 1, 1);
-const vec3 PPN = vec3(1, 1, -1);
-const vec3 POS[8] = vec3[8](PNN, PNP, PPN, PPP, NNN, NNP, NPN, NPP);
+const vec3 POS[8] = vec3[8](NNN, PNN, NPN, PPN, NNP, PNP, NPP, PPP);
 
 float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
@@ -109,28 +109,26 @@ vec4 trace(Ray ray) {
         uint accumulated_offset = 0u;
         for (uint i = 0u; i < 8u; ++i) {
             bool empty = (voxel_child_mask & (1u << i)) == 0u;
-            bool is_leaf = (voxel_leaf_mask & (1u << i)) != 0u;
             if (empty){ //empty
                 continue;
             }
 
+            bool is_leaf = (voxel_leaf_mask & (1u << i)) != 0u;
             vec3 new_center = center + scale * POS[i];
             vec3 minBox = new_center - scale;
             vec3 maxBox = new_center + scale;
 
-
             if (!intersect(minBox, maxBox, ray)){
                 if (!is_leaf){
-                    accumulated_offset +=1u;
+                    accumulated_offset += 1u;
                 }
                 continue;
             }
             if (is_leaf){ //not empty, but a leaf
-                return vec4(unpackColor(voxel_node.color), 1.);
+                return vec4(randomColor(float(index)), 1.);
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
-                finalColor.z += 0.4f;
-                accumulated_offset+=1u;
+                accumulated_offset += 1u;
             }
         }
     }

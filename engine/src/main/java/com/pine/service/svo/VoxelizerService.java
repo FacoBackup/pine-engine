@@ -44,10 +44,15 @@ public class VoxelizerService implements SyncTask, Loggable {
 //        MeshStreamData rawMeshData = meshService.stream(request.mesh);
 //        traverseMesh(rawMeshData, request.transformation.globalMatrix);
 //        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(1, 0, 5f), new VoxelData(1, 0, 0));
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(-5), new VoxelData(1, 0, 0));
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(10), new VoxelData(0, 1, 0));
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(2), new VoxelData(0, 0, 1));
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(5), new VoxelData(.5f, 0, 1));
+        long start = System.currentTimeMillis();
+        float scale = .2f;
+        int qtd = 1000;
+        for (int j = 0; j < qtd; j++) {
+            for (int k = 0; k < qtd; k++) {
+                voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(j * scale, 0, k * scale), new VoxelData(1, 0, 0));
+            }
+        }
+        getLogger().warn("Took {}ms", System.currentTimeMillis() - start);
         needsPackaging = true;
     }
 
@@ -90,6 +95,12 @@ public class VoxelizerService implements SyncTask, Loggable {
             resourceService.remove(voxelizerRepository.octreeSSBO.getId());
         }
         voxelizerRepository.octreeMemBuffer = MemoryUtil.memAllocInt(voxelizerRepository.sparseVoxelOctree.getNodeQuantity() * OctreeNode.INFO_PER_VOXEL);
+
+
+        int sizeInBits = voxelizerRepository.sparseVoxelOctree.getNodeQuantity() * OctreeNode.INFO_PER_VOXEL * 32;
+        getLogger().warn("Node quantity {}", voxelizerRepository.sparseVoxelOctree.getNodeQuantity());
+        getLogger().warn("Buffer size {}bits {}bytes {}mb", sizeInBits, (sizeInBits / 8), (sizeInBits / 8) * 1e+6);
+
     }
 
     private void createStorage() {

@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.Serializable;
-import java.util.Vector;
 
 public class SparseVoxelOctree implements Serializable {
     private final int resolution;
