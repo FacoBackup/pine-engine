@@ -44,7 +44,7 @@ public class VoxelizerService implements SyncTask, Loggable {
 //        MeshStreamData rawMeshData = meshService.stream(request.mesh);
 //        traverseMesh(rawMeshData, request.transformation.globalMatrix);
 //        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(1, 0, 5f), new VoxelData(1, 0, 0));
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(-10f), new VoxelData(1, 0, 0));
+        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(-5), new VoxelData(1, 0, 0));
         voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(10), new VoxelData(0, 1, 0));
         voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(2), new VoxelData(0, 0, 1));
         voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(5), new VoxelData(.5f, 0, 1));
@@ -76,22 +76,11 @@ public class VoxelizerService implements SyncTask, Loggable {
     }
 
     private void putData(OctreeNode root) {
-        VoxelData data = root.getData();
-        int dataIndex = currentVoxelDataMemIndex / VoxelData.INFO_PER_VOXEL;
-        boolean isRepeatedData = dataByIndex.containsKey(data);
         root.setDataIndex(currentOctreeMemIndex);
         voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, 0); // Placeholder for the actual voxel metadata
         currentOctreeMemIndex++;
-        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, isRepeatedData ? dataByIndex.get(data) : dataIndex);
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, root.getData().compress());
         currentOctreeMemIndex++;
-
-        if (!isRepeatedData) {
-            dataByIndex.put(data, dataIndex);
-            voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex, data.r());
-            voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 1, data.g());
-            voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 2, data.b());
-            currentVoxelDataMemIndex += 3;
-        }
     }
 
     private void cleanStorage() {
@@ -99,10 +88,8 @@ public class VoxelizerService implements SyncTask, Loggable {
         currentVoxelDataMemIndex = 0;
         if (voxelizerRepository.octreeSSBO != null) {
             resourceService.remove(voxelizerRepository.octreeSSBO.getId());
-            resourceService.remove(voxelizerRepository.voxelDataSSBO.getId());
         }
         voxelizerRepository.octreeMemBuffer = MemoryUtil.memAllocInt(voxelizerRepository.sparseVoxelOctree.getNodeQuantity() * OctreeNode.INFO_PER_VOXEL);
-        voxelizerRepository.voxelDataMemBuffer = MemoryUtil.memAllocFloat(voxelizerRepository.sparseVoxelOctree.getNodeQuantity() * VoxelData.INFO_PER_VOXEL);
     }
 
     private void createStorage() {
@@ -111,16 +98,9 @@ public class VoxelizerService implements SyncTask, Loggable {
                 voxelizerRepository.octreeMemBuffer
         ));
 
-        voxelizerRepository.voxelDataSSBO = (ShaderStorageBufferObject) resourceService.addResource(new SSBOCreationData(
-                13,
-                voxelizerRepository.voxelDataMemBuffer
-        ));
-
         MemoryUtil.memFree(voxelizerRepository.octreeMemBuffer);
-        MemoryUtil.memFree(voxelizerRepository.voxelDataMemBuffer);
 
         voxelizerRepository.octreeMemBuffer = null;
-        voxelizerRepository.voxelDataMemBuffer = null;
         dataByIndex.clear();
         currentVoxelDataMemIndex = 0;
         currentOctreeMemIndex = 0;

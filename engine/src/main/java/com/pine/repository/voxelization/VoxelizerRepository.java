@@ -15,9 +15,7 @@ import java.nio.IntBuffer;
 @PBean
 public class VoxelizerRepository extends Inspectable implements SerializableRepository {
     public transient IntBuffer octreeMemBuffer = null;
-    public transient FloatBuffer voxelDataMemBuffer = null;
     public transient ShaderStorageBufferObject octreeSSBO;
-    public transient ShaderStorageBufferObject voxelDataSSBO;
 
     @MutableField(label = "Grid size", min = 0)
     public int gridResolution = 20;

@@ -27,8 +27,7 @@ public class VoxelVisualizerSystem extends AbstractSystem {
     @Override
     protected void renderInternal() {
         ssboService.bind(voxelizerRepository.octreeSSBO);
-        ssboService.bind(voxelizerRepository.voxelDataSSBO);
-        computeService.bind(computeRepository.voxelRaymarchingCompute);
+         computeService.bind(computeRepository.voxelRaymarchingCompute);
 
         fboRepository.auxBuffer.bindForCompute();
 

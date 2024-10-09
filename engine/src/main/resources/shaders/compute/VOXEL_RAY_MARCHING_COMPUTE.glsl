@@ -4,16 +4,13 @@ layout (binding = 0) uniform writeonly image2D outputImage;
 
 struct OctreeNode {
     int metadata;// First 16 bits are the index pointing to the position of this voxel's children | 8 bits are the child mask | 8 bits indicate if the node is a leaf
-    int voxelDataIndex;// Index to voxel data, only valid for leaf nodes
+    int color;// Compressed RGB value 10 bits for red 10 bits for green and 10 bits for blue
 };
 
 layout(std430, binding = 12) buffer OctreeBuffer {
     OctreeNode voxels[];
 };
 
-layout(std430, binding = 13) buffer VoxelDataBuffer {
-    vec3 voxelData[];// Color
-};
 
 uniform vec4 centerScale;
 
@@ -67,6 +64,24 @@ bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
     return t1 > max(t0, 0.0);
 }
 
+vec3 unpackColor(int color) {
+    int rInt = (color >> 20) & 0x3FF; // 10 bits for r (mask: 0x3FF is 1023 in binary)
+    int gInt = (color >> 10) & 0x3FF; // 10 bits for g
+    int bInt = color & 0x3FF;         // 10 bits for b
+
+    // Convert the quantized integers back to floats in the range [0, 1]
+    float r = rInt / 1023.0f;
+    float g = gInt / 1023.0f;
+    float b = bInt / 1023.0f;
+
+    // Scale back to the original [-1, 1] range
+    r = r * 2.0f - 1.0f;
+    g = g * 2.0f - 1.0f;
+    b = b * 2.0f - 1.0f;
+
+    return vec3(r, g, b);
+}
+
 // Based on https://www.shadertoy.com/view/MlBfRV
 vec4 trace(Ray ray) {
     vec3 center = centerScale.xyz;
@@ -111,7 +126,7 @@ vec4 trace(Ray ray) {
                 continue;
             }
             if (is_leaf){ //not empty, but a leaf
-                return vec4(voxelData[uint(voxel_node.voxelDataIndex)], 1.);
+                return vec4(unpackColor(voxel_node.color), 1.);
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
                 finalColor.z += 0.4f;
