@@ -13,6 +13,9 @@ import com.pine.tasks.SyncTask;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @PBean
 public class VoxelizerService implements SyncTask, Loggable {
 
@@ -32,8 +35,9 @@ public class VoxelizerService implements SyncTask, Loggable {
     public ResourceService resourceService;
 
     private boolean needsPackaging = true;
-    private int currentOctreeMemIndex = 0;
+    private Map<VoxelData, Integer> dataByIndex = new HashMap<>();
     private int currentVoxelDataMemIndex = 0;
+    private int currentOctreeMemIndex = 0;
 
     @Override
     public void sync() {
@@ -50,26 +54,52 @@ public class VoxelizerService implements SyncTask, Loggable {
 //        RenderingRequest request = renderingRepository.requests.getFirst();
 //        MeshStreamData rawMeshData = meshService.stream(request.mesh);
 //        traverseMesh(rawMeshData, request.transformation.globalMatrix);
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(1, 0, .5f), new VoxelData(1, 0, 0));
+//        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(1, 0, 5f), new VoxelData(1, 0, 0));
+        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(2), new VoxelData(1, 1, 1));
+        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(5), new VoxelData(1, 0, 1));
         needsPackaging = true;
     }
 
     private void packageData() {
         cleanStorage();
-        fillStorage(voxelizerRepository.sparseVoxelOctree.getRoot());
+        fillStorage(voxelizerRepository.sparseVoxelOctree.getRoot(), false);
         createStorage();
     }
 
-    private void fillStorage(OctreeNode root) {
-        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, root.getChildMask());
+    private void fillStorage(OctreeNode root, boolean isRecursion) {
+        if (!isRecursion) {
+            putData(root);
+        }
+        // Generates uint for the voxel metadata based on its children's location on the buffer
+        voxelizerRepository.octreeMemBuffer.put(root.getDataIndex(), root.packVoxelData(currentOctreeMemIndex -1));
+        for (var child : root.getChildren()) {
+            if (child != null) {
+                putData(child);
+            }
+        }
+        for (var child : root.getChildren()) {
+            if (child != null) {
+                fillStorage(child, true);
+            }
+        }
+    }
+
+    private void putData(OctreeNode root) {
+        VoxelData data = root.getData();
+        boolean isRepeatedData = dataByIndex.containsKey(data);
+        root.setDataIndex(currentOctreeMemIndex);
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, 0); // Placeholder for the actual voxel metadata
         currentOctreeMemIndex++;
-        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, currentVoxelDataMemIndex);
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, isRepeatedData? dataByIndex.get(data) : currentVoxelDataMemIndex/3);
         currentOctreeMemIndex++;
 
-        voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex, root.getData().r());
-        voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 1, root.getData().g());
-        voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 2, root.getData().b());
-        currentVoxelDataMemIndex += 3;
+        if (!isRepeatedData) {
+            dataByIndex.put(data, currentVoxelDataMemIndex/3);
+            voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex, data.r());
+            voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 1, data.g());
+            voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 2, data.b());
+            currentVoxelDataMemIndex += 3;
+        }
     }
 
     private void cleanStorage() {
@@ -99,5 +129,8 @@ public class VoxelizerService implements SyncTask, Loggable {
 
         voxelizerRepository.octreeMemBuffer = null;
         voxelizerRepository.voxelDataMemBuffer = null;
+        dataByIndex.clear();
+        currentVoxelDataMemIndex = 0;
+        currentOctreeMemIndex = 0;
     }
 }

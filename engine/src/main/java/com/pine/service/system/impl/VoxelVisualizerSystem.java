@@ -11,14 +11,12 @@ import java.nio.FloatBuffer;
 
 public class VoxelVisualizerSystem extends AbstractSystem {
     private static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
-    private final FloatBuffer sceneSizes = MemoryUtil.memAllocFloat(3);
-    private UniformDTO sceneMinBoundingBox;
-    private UniformDTO sceneMaxBoundingBox;
+    private final FloatBuffer centerScaleBuffer = MemoryUtil.memAllocFloat(4);
+    private UniformDTO centerScale;
 
     @Override
     public void onInitialize() {
-        sceneMinBoundingBox = computeRepository.voxelRaymarchingCompute.addUniformDeclaration("sceneMinBoundingBox", GLSLType.VEC_3);
-        sceneMaxBoundingBox = computeRepository.voxelRaymarchingCompute.addUniformDeclaration("sceneMaxBoundingBox", GLSLType.VEC_3);
+        centerScale = computeRepository.voxelRaymarchingCompute.addUniformDeclaration("centerScale", GLSLType.VEC_4);
     }
 
     @Override
@@ -34,11 +32,11 @@ public class VoxelVisualizerSystem extends AbstractSystem {
 
         fboRepository.auxBuffer.bindForCompute();
 
-        voxelizerRepository.sceneMin.get(sceneSizes);
-        computeService.bindUniform(sceneMinBoundingBox, sceneSizes);
-
-        voxelizerRepository.sceneMax.get(sceneSizes);
-        computeService.bindUniform(sceneMaxBoundingBox, sceneSizes);
+        centerScaleBuffer.put(0, voxelizerRepository.center.x);
+        centerScaleBuffer.put(1, voxelizerRepository.center.y);
+        centerScaleBuffer.put(2, voxelizerRepository.center.z);
+        centerScaleBuffer.put(3, voxelizerRepository.size);
+        computeService.bindUniform(centerScale, centerScaleBuffer);
 
         COMPUTE_RUNTIME_DATA.groupX = fboRepository.auxBuffer.width;
         COMPUTE_RUNTIME_DATA.groupY = fboRepository.auxBuffer.height;

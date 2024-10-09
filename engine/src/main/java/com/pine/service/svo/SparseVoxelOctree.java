@@ -34,9 +34,9 @@ public class SparseVoxelOctree implements Serializable {
 
         float size = (float) (resolution / Math.pow(2, depth));
         Vector3i childPos = new Vector3i(
-                (int) (((point.x >= (size * position.x)) ? 1 : 0) + size / 2),
-                (int) (((point.y >= (size * position.y)) ? 1 : 0) + size / 2),
-                (int) (((point.z >= (size * position.z)) ? 1 : 0) + size / 2)
+                ((point.x >= (size * position.x) + size / 2) ? 1 : 0),
+                ((point.y >= (size * position.y) + size / 2) ? 1 : 0),
+                ((point.z >= (size * position.z) + size / 2) ? 1 : 0)
         );
 
         int childIndex = (childPos.x << 0) | (childPos.y << 1) | (childPos.z << 2);
