@@ -4,7 +4,6 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.repository.voxelization.Octree;
 import com.pine.repository.voxelization.VoxelizerRepository;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.ssbo.SSBOCreationData;
@@ -20,23 +19,14 @@ import java.util.Map;
 @PBean
 public class VoxelizerService implements SyncTask, Loggable {
 
-    private static final int INFO_PER_VOXEL = 4;
-    private static final int INFO_PER_VOXEL_DATA = 4;
-
-    @PInject
-    public MeshService meshService;
-
     @PInject
     public VoxelizerRepository voxelizerRepository;
-
-    @PInject
-    public RenderingRepository renderingRepository;
 
     @PInject
     public ResourceService resourceService;
 
     private boolean needsPackaging = true;
-    private Map<VoxelData, Integer> dataByIndex = new HashMap<>();
+    private final Map<VoxelData, Integer> dataByIndex = new HashMap<>();
     private int currentVoxelDataMemIndex = 0;
     private int currentOctreeMemIndex = 0;
 
@@ -64,39 +54,31 @@ public class VoxelizerService implements SyncTask, Loggable {
 
     private void packageData() {
         cleanStorage();
-        fillStorage(voxelizerRepository.sparseVoxelOctree.getRoot(), false);
+        fillStorage(voxelizerRepository.sparseVoxelOctree.getRoot());
         createStorage();
     }
 
-    private void fillStorage(OctreeNode root, boolean isRecursion) {
-//        if (!isRecursion) {
-//            putData(root);
-//        }
+    private void fillStorage(OctreeNode root) {
         // Generates uint for the voxel metadata based on its children's location on the buffer
-        voxelizerRepository.octreeMemBuffer.put(root.getDataIndex(), root.packVoxelData(currentOctreeMemIndex / OctreeNode.INFO_PER_VOXEL));
+        putData(root);
         for (var child : root.getChildren()) {
             if (child != null) {
-                putData(child);
-            }
-        }
-        for (var child : root.getChildren()) {
-            if (child != null) {
-                fillStorage(child, true);
+                fillStorage(child);
             }
         }
     }
 
     private void putData(OctreeNode root) {
         VoxelData data = root.getData();
+        int dataIndex = currentVoxelDataMemIndex / VoxelData.INFO_PER_VOXEL;
         boolean isRepeatedData = dataByIndex.containsKey(data);
-        root.setDataIndex(currentOctreeMemIndex);
-        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, 0); // Placeholder for the actual voxel metadata
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, root.packVoxelData((currentOctreeMemIndex / OctreeNode.INFO_PER_VOXEL) + 1)); // Placeholder for the actual voxel metadata
         currentOctreeMemIndex++;
-        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, isRepeatedData ? dataByIndex.get(data) : currentVoxelDataMemIndex / 3);
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, isRepeatedData ? dataByIndex.get(data) : dataIndex);
         currentOctreeMemIndex++;
 
         if (!isRepeatedData) {
-            dataByIndex.put(data, currentVoxelDataMemIndex / 3);
+            dataByIndex.put(data, dataIndex);
             voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex, data.r());
             voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 1, data.g());
             voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 2, data.b());

@@ -18,7 +18,7 @@ public class OctreeNode implements Serializable {
     private int leafMask = 0;
 
     /**
-     * Indicates whether a child is present at the index represented by the bit
+     * Indicates whether a child is present at the index represented by the bit set to 1
      */
     private int childMask = 0;
 
