@@ -110,7 +110,7 @@ vec4 trace(Ray ray) {
                 continue;
             }
             if (is_leaf){ //not empty, but a leaf
-                return vec4(vec3(1., 0., 1.), 1.);
+                return vec4(randomColor(float(index)), 1.);
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
                 finalColor.z += 0.4f;

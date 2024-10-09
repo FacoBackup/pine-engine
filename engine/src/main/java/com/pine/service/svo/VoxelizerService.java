@@ -4,6 +4,7 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.repository.voxelization.Octree;
 import com.pine.repository.voxelization.VoxelizerRepository;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.ssbo.SSBOCreationData;
@@ -55,8 +56,9 @@ public class VoxelizerService implements SyncTask, Loggable {
 //        MeshStreamData rawMeshData = meshService.stream(request.mesh);
 //        traverseMesh(rawMeshData, request.transformation.globalMatrix);
 //        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(1, 0, 5f), new VoxelData(1, 0, 0));
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(2), new VoxelData(1, 1, 1));
-        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(5), new VoxelData(1, 0, 1));
+        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(-.2f), new VoxelData(1, 0, 0));
+        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(1f, 10, 1), new VoxelData(0, 1, 0));
+        voxelizerRepository.sparseVoxelOctree.insert(new Vector3f(.2f), new VoxelData(1, 0, 1));
         needsPackaging = true;
     }
 
@@ -67,11 +69,11 @@ public class VoxelizerService implements SyncTask, Loggable {
     }
 
     private void fillStorage(OctreeNode root, boolean isRecursion) {
-        if (!isRecursion) {
-            putData(root);
-        }
+//        if (!isRecursion) {
+//            putData(root);
+//        }
         // Generates uint for the voxel metadata based on its children's location on the buffer
-        voxelizerRepository.octreeMemBuffer.put(root.getDataIndex(), root.packVoxelData(currentOctreeMemIndex -1));
+        voxelizerRepository.octreeMemBuffer.put(root.getDataIndex(), root.packVoxelData(currentOctreeMemIndex / OctreeNode.INFO_PER_VOXEL));
         for (var child : root.getChildren()) {
             if (child != null) {
                 putData(child);
@@ -90,11 +92,11 @@ public class VoxelizerService implements SyncTask, Loggable {
         root.setDataIndex(currentOctreeMemIndex);
         voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, 0); // Placeholder for the actual voxel metadata
         currentOctreeMemIndex++;
-        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, isRepeatedData? dataByIndex.get(data) : currentVoxelDataMemIndex/3);
+        voxelizerRepository.octreeMemBuffer.put(currentOctreeMemIndex, isRepeatedData ? dataByIndex.get(data) : currentVoxelDataMemIndex / 3);
         currentOctreeMemIndex++;
 
         if (!isRepeatedData) {
-            dataByIndex.put(data, currentVoxelDataMemIndex/3);
+            dataByIndex.put(data, currentVoxelDataMemIndex / 3);
             voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex, data.r());
             voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 1, data.g());
             voxelizerRepository.voxelDataMemBuffer.put(currentVoxelDataMemIndex + 2, data.b());
