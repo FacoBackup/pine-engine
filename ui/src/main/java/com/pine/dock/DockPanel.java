@@ -3,7 +3,6 @@ package com.pine.dock;
 import com.pine.injection.PInject;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
-import com.pine.view.View;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
@@ -18,8 +17,8 @@ import imgui.type.ImInt;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public abstract class DockPanel extends AbstractView {
-    private static final ImBoolean OPEN = new ImBoolean(true);
-    private static final int FLAGS = ImGuiWindowFlags.MenuBar |
+    public static final ImBoolean OPEN = new ImBoolean(true);
+    public static final int FLAGS = ImGuiWindowFlags.MenuBar |
             ImGuiWindowFlags.NoDocking |
             ImGuiWindowFlags.NoTitleBar |
             ImGuiWindowFlags.NoCollapse |
@@ -41,20 +40,17 @@ public abstract class DockPanel extends AbstractView {
     @Override
     public void renderInternal() {
         DockGroup group = dockService.getCurrentDockGroup();
-        if(group == null){
+        if (group == null) {
             return;
         }
-        final ImGuiViewport viewport = ImGui.getMainViewport();
         dockService.updateForRemoval(this);
-
-        setupPosition(viewport);
-        setupStyles();
+        beginMainWindowSetup();
         ImGui.begin(NAME, OPEN, FLAGS);
 
         int windowId = ImGui.getID(NAME);
         dockMainId.set(windowId);
 
-        ImGui.popStyleVar(3);
+        endMainWindowSetup();
 
         menuBar();
 
@@ -68,6 +64,22 @@ public abstract class DockPanel extends AbstractView {
 
         super.renderInternal();
         ImGui.end();
+    }
+
+    public static void beginMainWindowSetup() {
+        ImGuiViewport viewport = ImGui.getMainViewport();
+        ImGui.setNextWindowPos(new ImVec2(viewport.getPos().x, viewport.getPos().y));
+        ImGui.setNextWindowSize(new ImVec2(viewport.getSize().x, viewport.getSize().y));
+        ImGui.setNextWindowViewport(viewport.getID());
+
+
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, new ImVec2(0.0f, 0.0f));
+    }
+
+    public static void endMainWindowSetup() {
+        ImGui.popStyleVar(3);
     }
 
     private void menuBar() {
@@ -101,18 +113,6 @@ public abstract class DockPanel extends AbstractView {
             }
             ImGui.endMenuBar();
         }
-    }
-
-    private static void setupPosition(ImGuiViewport viewport) {
-        ImGui.setNextWindowPos(new ImVec2(viewport.getPos().x, viewport.getPos().y));
-        ImGui.setNextWindowSize(new ImVec2(viewport.getSize().x, viewport.getSize().y));
-        ImGui.setNextWindowViewport(viewport.getID());
-    }
-
-    private static void setupStyles() {
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowRounding, 0.0f);
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
-        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, new ImVec2(0.0f, 0.0f));
     }
 
     public void setHeader(AbstractDockHeader view) {

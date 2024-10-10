@@ -17,6 +17,7 @@ import org.joml.Vector2f;
 
 import java.io.Serializable;
 
+import static com.pine.dock.DockPanel.OPEN;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public final class DockWrapperPanel extends AbstractView implements Loggable, Serializable {
@@ -91,7 +92,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             sizeInitialized = true;
         }
         beforeWindow();
-        if (ImGui.begin(dock.getInternalId(), FLAGS)) {
+        if (ImGui.begin(dock.getInternalId(), OPEN, FLAGS)) {
             ImGui.getWindowSize(sizeInternal);
             size.x = sizeInternal.x;
             size.y = sizeInternal.y;
@@ -102,8 +103,8 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             ImGui.getWindowPos(position);
             renderHeader();
             view.render();
+            ImGui.end();
         }
-        ImGui.end();
 
         ImGui.popStyleVar(stylePushCount);
         stylePushCount = 0;
@@ -150,7 +151,6 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
                     dockService.prepareForRemoval(dock, this);
                 }
             }
-
             ImGui.endMenuBar();
         }
     }

@@ -8,9 +8,6 @@ import com.pine.injection.PostCreation;
 import com.pine.messaging.Loggable;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
-import com.pine.repository.ContentBrowserRepository;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -21,11 +18,8 @@ import java.util.List;
 
 @PBean
 public class ProjectService implements Loggable {
-    private static final String IDENTIFIER = "project.pine";
-    private static final String CONFIG_NAME = System.getProperty("user.home") + File.separator + IDENTIFIER;
-
-    @PInject
-    public MessageRepository messageRepository;
+    public static final String IDENTIFIER = "project.pine";
+    public static final String CONFIG_NAME = System.getProperty("user.home") + File.separator + IDENTIFIER;
 
     @PInject
     public FSService fsService;
@@ -37,10 +31,7 @@ public class ProjectService implements Loggable {
     public NativeDialogService nativeDialogService;
 
     @PInject
-    public ProjectStateRepository projectStateRepository;
-
-    @PInject
-    public ContentBrowserRepository contentBrowserRepository;
+    public SerializationService serializationService;
 
     private String projectDirectory = null;
 
@@ -57,62 +48,19 @@ public class ProjectService implements Loggable {
                 getLogger().warn("No previous project to be opened was found, starting as a clean instance");
             }
             if (projectDirectory == null) {
-                projectDirectory = System.getProperty("user.home") + File.separator + "pineEngineDefaultProject";
+                projectDirectory = System.getProperty("user.home") + File.separator + "pine-engine-default-project";
                 fsService.createDirectory(projectDirectory);
             }
         }
     }
 
     public void loadProject() {
-
-        var t = new Thread(() -> {
-            try {
-                File file = new File(projectDirectory + File.separator + getRepositoryIdentifier());
-                if (!file.exists()) {
-                    return;
-                }
-                messageRepository.pushMessage("Loading project", MessageSeverity.WARN);
-                try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()))) {
-                    var bean = (SerializableRepository) injector.getBean(ProjectStateRepository.class);
-                    ProjectStateRepository o = (ProjectStateRepository) in.readObject();
-                    bean.merge(o);
-                }
-                messageRepository.pushMessage("Project loaded successfully", MessageSeverity.SUCCESS);
-                SerializationState.loaded.clear();
-            } catch (Exception e) {
-                messageRepository.pushMessage("Error while loading project", MessageSeverity.ERROR);
-                getLogger().error(e.getMessage(), e);
-            }
-        });
-        t.start();
+        serializationService.deserialize(projectDirectory);
     }
 
     public void save() {
-        writeProject();
-
-        try {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(projectDirectory + File.separator + getRepositoryIdentifier()))) {
-                out.writeObject(projectStateRepository);
-            }
-        } catch (Exception e) {
-            messageRepository.pushMessage("Could not save project", MessageSeverity.ERROR);
-            getLogger().warn("Could not save project", e);
-            return;
-        }
-        messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
-    }
-
-    private void writeProject() {
-        try {
-            Files.write(Path.of(CONFIG_NAME), projectDirectory.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            Files.write(Path.of(projectDirectory + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (Exception e) {
-            getLogger().warn("Could not save project to {}", CONFIG_NAME, e);
-        }
-    }
-
-    private @NotNull String getRepositoryIdentifier() {
-        return DigestUtils.sha1Hex(ProjectStateRepository.class.getCanonicalName()) + ".dat";
+        serializationService.writeProjectMetadata(projectDirectory);
+        serializationService.serialize(projectDirectory);
     }
 
     public void openProject() {
@@ -127,7 +75,7 @@ public class ProjectService implements Loggable {
 
     private void saveAndRestart(String selected) {
         projectDirectory = selected;
-        writeProject();
+        serializationService.writeProjectMetadata(projectDirectory);
         injector.boot();
     }
 

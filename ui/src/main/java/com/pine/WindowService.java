@@ -58,6 +58,10 @@ public class WindowService implements Disposable, Loggable {
             AbstractWindow instance = windowImpl.getConstructor().newInstance();
             injector.inject(instance);
             instance.initializeWindow();
+
+            setupWindow(instance.getWindowScaleX(), instance.getWindowScaleY());
+            GLFW.glfwShowWindow(handle);
+
             while (!GLFW.glfwWindowShouldClose(handle) && !shouldStop) {
                 try {
                     prepareFrame();
@@ -96,24 +100,26 @@ public class WindowService implements Disposable, Loggable {
             throw new RuntimeException("Failed to create the GLFW window");
         }
 
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            final IntBuffer pWidth = stack.mallocInt(1);
-            final IntBuffer pHeight = stack.mallocInt(1);
-
-            GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
-            GLFW.glfwSetWindowPos(handle, (displayW - pWidth.get(0)) / 2, (displayH - pHeight.get(0)) / 2);
-        }
+        setupWindow(1, 1);
 
         GLFW.glfwMakeContextCurrent(handle);
         GL.createCapabilities();
         GLFW.glfwSwapInterval(GLFW.GLFW_TRUE);
 
-        GLFW.glfwMaximizeWindow(handle);
-        GLFW.glfwShowWindow(handle);
-
         clearBuffer();
         renderBuffer();
         initGlfwEvents();
+    }
+
+    private void setupWindow(float widthScale, float heightScale) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            final IntBuffer pWidth = stack.mallocInt(1);
+            final IntBuffer pHeight = stack.mallocInt(1);
+
+            GLFW.glfwGetWindowSize(handle, pWidth, pHeight);
+            GLFW.glfwSetWindowPos(handle, (int) ((displayW - pWidth.get(0) * widthScale) / 2), (int) ((displayH - pHeight.get(0) * heightScale) / 2));
+            GLFW.glfwSetWindowSize(handle, (int) (pWidth.get(0) * widthScale), (int) (pHeight.get(0) * heightScale));
+        }
     }
 
     private void initGlfwEvents() {
@@ -220,5 +226,9 @@ public class WindowService implements Disposable, Loggable {
         GLFW.glfwDestroyWindow(handle);
         GLFW.glfwTerminate();
         Objects.requireNonNull(GLFW.glfwSetErrorCallback(null)).free();
+    }
+
+    public void maximize() {
+        GLFW.glfwMaximizeWindow(handle);
     }
 }

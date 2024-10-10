@@ -79,8 +79,8 @@ public class HierarchyPanel extends AbstractDockPanel {
                 renderNodePinned(pinned);
             }
             renderNode(world.rootEntity);
+            ImGui.endTable();
         }
-        ImGui.endTable();
     }
 
     private void renderNodePinned(Entity node) {
