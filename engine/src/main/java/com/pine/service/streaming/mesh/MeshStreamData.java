@@ -1,6 +1,5 @@
 package com.pine.service.streaming.mesh;
 
-import org.joml.Vector3f;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamLoadData;
 

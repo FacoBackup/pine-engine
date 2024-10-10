@@ -1,8 +1,8 @@
-package com.pine.component.impl;
+package com.pine.panels.component.impl;
 
-import com.pine.component.AbstractFormField;
 import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
+import com.pine.panels.component.AbstractFormField;
 import com.pine.repository.streaming.*;
 import com.pine.theme.Icons;
 import imgui.ImGui;

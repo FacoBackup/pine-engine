@@ -1,8 +1,9 @@
-package com.pine.component;
+package com.pine.panels.component;
 
-import com.pine.component.impl.*;
+import com.pine.component.Transformation;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
+import com.pine.panels.component.impl.*;
 import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.view.AbstractView;
 import imgui.ImGui;

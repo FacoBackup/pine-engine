@@ -2,7 +2,6 @@ package com.pine.repository.fs;
 
 
 import com.pine.repository.streaming.AbstractStreamableResource;
-import com.pine.repository.streaming.MeshStreamableResource;
 
 import java.io.Serializable;
 import java.util.ArrayList;

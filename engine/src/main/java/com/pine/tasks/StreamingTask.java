@@ -1,8 +1,8 @@
 package com.pine.tasks;
 
-import com.pine.messaging.Loggable;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamLoadData;
@@ -30,7 +30,7 @@ public class StreamingTask extends AbstractTask implements Loggable {
         for (var scheduled : streamingRepository.schedule.values()) {
             for (var service : services) {
                 if (service.getResourceType() == scheduled.getResourceType()) {
-                    getLogger().warn("Streaming resource {}", scheduled.id);
+                    getLogger().info("Streaming resource {}", scheduled.id);
                     StreamLoadData streamData = service.stream(scheduled);
                     if (streamData != null) {
                         streamingRepository.loadedResources.put(scheduled.id, streamData);

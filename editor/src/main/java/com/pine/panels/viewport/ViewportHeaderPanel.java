@@ -11,7 +11,10 @@ import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
-import imgui.flag.*;
+import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiComboFlags;
+import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiStyleVar;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 

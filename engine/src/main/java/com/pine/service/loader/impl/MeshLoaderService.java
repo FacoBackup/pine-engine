@@ -2,7 +2,6 @@ package com.pine.service.loader.impl;
 
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
-import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;
@@ -20,7 +19,6 @@ import com.pine.service.request.AddEntityRequest;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.streaming.mesh.MeshStreamData;
-import org.joml.Matrix4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
 
@@ -63,15 +61,17 @@ public class MeshLoaderService extends AbstractLoaderService {
             Map<Integer, List<MeshInstance>> byPrimitive = new HashMap<>();
             List<MeshStreamableResource> meshes = new ArrayList<>();
             AIScene scene = loadScene(request);
+            getLogger().info("Loading scene from file {}", request.path());
 
             if (scene == null) {
-                getLogger().error("Failed to load mesh at {}", request.path());
+                getLogger().error("Failed to load scene at {}", request.path());
                 return new MeshLoaderResponse(false, Collections.emptyList());
             }
 
             if (extra == null || !extra.isInstantiateHierarchy()) {
                 PointerBuffer meshList = scene.mMeshes();
                 if (meshList != null) {
+                    getLogger().info("Importing {} meshes", scene.mNumMeshes());
                     for (int i = 0; i < scene.mNumMeshes(); i++) {
                         AIMesh mesh = AIMesh.create(meshList.get(i));
                         meshes.add(processPrimitive(mesh, i, extra));
@@ -105,6 +105,7 @@ public class MeshLoaderService extends AbstractLoaderService {
         requestProcessingService.addRequest(new HierarchyRequest(parent, entity));
         entity.name = root.name;
         if (primitive != null) {
+            getLogger().info("Creating entity with mesh component for mesh {}", primitive.name);
             requestProcessingService.addRequest(new AddComponentRequest(MeshComponent.class, entity));
             var primitiveComponent = (MeshComponent) entity.components.get(MeshComponent.class.getSimpleName());
             primitiveComponent.lod0 = primitive;

@@ -7,11 +7,8 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.nfd.NFDFilterItem;
 import org.lwjgl.util.nfd.NativeFileDialog;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import static org.lwjgl.util.nfd.NativeFileDialog.*;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OpenDialog;
 
 @PBean
 public class NativeDialogService {

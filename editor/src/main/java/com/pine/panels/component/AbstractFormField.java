@@ -1,4 +1,4 @@
-package com.pine.component;
+package com.pine.panels.component;
 
 import com.pine.inspection.FieldDTO;
 import com.pine.view.AbstractView;

@@ -4,7 +4,6 @@ import com.pine.Engine;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.streaming.MeshStreamableResource;
-import com.pine.service.loader.LoaderService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.streaming.mesh.MeshStreamData;
 

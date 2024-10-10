@@ -1,9 +1,9 @@
-package com.pine.component.impl;
+package com.pine.panels.component.impl;
 
-import com.pine.component.AbstractFormField;
-import com.pine.component.FormPanel;
 import com.pine.component.Transformation;
 import com.pine.inspection.FieldDTO;
+import com.pine.panels.component.AbstractFormField;
+import com.pine.panels.component.FormPanel;
 
 import java.util.function.BiConsumer;
 

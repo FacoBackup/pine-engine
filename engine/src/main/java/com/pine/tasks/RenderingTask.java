@@ -1,15 +1,17 @@
 package com.pine.tasks;
 
-import com.pine.messaging.Loggable;
-import com.pine.component.*;
+import com.pine.component.Entity;
+import com.pine.component.MeshComponent;
+import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
-import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.LightService;
+import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.TransformationService;
 
 

@@ -44,10 +44,6 @@ public class Shader extends AbstractResource implements IShader {
 
         GL46.glLinkProgram(program);
         GL46.glFlush();
-        int error = GL46.glGetError();
-        if(error != 0) {
-            getLogger().error("Shader status {} {}", error, GL46.glGetString(error));
-        }
     }
 
     @Override

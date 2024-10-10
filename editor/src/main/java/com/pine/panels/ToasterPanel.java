@@ -1,8 +1,8 @@
 package com.pine.panels;
 
+import com.pine.injection.PInject;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
-import com.pine.injection.PInject;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -18,6 +18,7 @@ public class ToasterPanel extends AbstractView {
     @Override
     public void renderInternal() {
         Message[] messages = messageRepository.getMessages();
+        int usedIndices = 0;
         for (int i = 0; i < MessageRepository.MAX_MESSAGES; i++) {
             var message = messages[i];
             if (message == null) {
@@ -28,15 +29,16 @@ public class ToasterPanel extends AbstractView {
                 continue;
             }
             ImVec2 viewportDimensions = ImGui.getMainViewport().getSize();
-            ImGui.setNextWindowPos(5, viewportDimensions.y - 40 * (i + 1));
+            ImGui.setNextWindowPos(5, viewportDimensions.y - 40 * (usedIndices + 1));
             ImGui.setNextWindowSize(viewportDimensions.x * .35F, 35);
             ImGui.pushStyleColor(ImGuiCol.Border, message.severity().getColor());
             ImGui.pushStyleColor(ImGuiCol.WindowBg, message.severity().getColor());
-            ImGui.begin("##toaster" + i, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings);
+            ImGui.begin("##toaster" + usedIndices, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings);
             ImGui.popStyleColor();
             ImGui.popStyleColor();
             ImGui.text(message.message());
             ImGui.end();
+            usedIndices++;
         }
     }
 }

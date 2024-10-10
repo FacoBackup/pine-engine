@@ -1,9 +1,9 @@
 package com.pine.dock;
 
+import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
-import com.pine.injection.PInject;
 import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;

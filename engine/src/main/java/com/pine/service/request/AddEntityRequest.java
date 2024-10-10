@@ -1,10 +1,10 @@
 package com.pine.service.request;
 
+import com.pine.component.Entity;
+import com.pine.component.EntityComponent;
 import com.pine.messaging.Loggable;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageSeverity;
-import com.pine.component.Entity;
-import com.pine.component.EntityComponent;
 import com.pine.repository.WorldRepository;
 
 import java.util.List;
