@@ -1,6 +1,5 @@
 package com.pine.tools.system;
 
-import com.pine.Engine;
 import com.pine.component.MeshComponent;
 import com.pine.injection.PInject;
 import com.pine.service.system.AbstractSystem;

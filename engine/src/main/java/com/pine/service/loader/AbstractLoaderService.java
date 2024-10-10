@@ -1,8 +1,8 @@
 package com.pine.service.loader;
 
 import com.pine.Engine;
-import com.pine.messaging.Loggable;
 import com.pine.injection.PInject;
+import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
@@ -30,16 +30,23 @@ public abstract class AbstractLoaderService implements Loggable {
     public abstract AbstractLoaderResponse<?> load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo);
 
     public float persist(AbstractStreamableResource<?> resource, StreamLoadData streamData) {
+        log(resource);
         String path = engine.getResourceTargetDirectory() + resource.pathToFile;
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path))) {
             out.writeObject(streamData);
         } catch (Exception ex) {
-            getLogger().error(ex.getMessage(), ex);
+            getLogger().error("Error while persisting {}", resource.id, ex);
         }
         return new File(path).length();
     }
 
+    private void log(AbstractStreamableResource<?> resource) {
+        getLogger().info("Persisting resource {} of type {}", resource.getResourceType(), resource.id);
+    }
+
     public float persist(AbstractStreamableResource<?> resource, String origin) {
+        log(resource);
+
         String path = engine.getResourceTargetDirectory() + resource.pathToFile;
         Path source = Paths.get(origin);
         Path target = Paths.get(path);
@@ -48,7 +55,7 @@ public abstract class AbstractLoaderService implements Loggable {
             Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             return new File(origin).length();
         } catch (Exception e) {
-            getLogger().error(e.getMessage(), e);
+            getLogger().error("Error while persisting {}", resource.id, e);
         }
         return -1;
     }

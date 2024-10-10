@@ -5,10 +5,7 @@ import com.pine.repository.streaming.MeshStreamableResource;
 import com.pine.service.streaming.StreamingService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class RenderingRequestServiceTest {
     RenderingRequestService service = Mockito.spy(new RenderingRequestService());

@@ -1,7 +1,7 @@
-package com.pine.component.impl;
+package com.pine.panels.component.impl;
 
-import com.pine.component.AbstractFormField;
 import com.pine.inspection.FieldDTO;
+import com.pine.panels.component.AbstractFormField;
 import imgui.ImGui;
 import imgui.type.ImString;
 

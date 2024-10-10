@@ -2,10 +2,8 @@ package com.pine.service.resource.ssbo;
 
 import com.pine.service.resource.LocalResourceType;
 import com.pine.service.resource.ResourceCreationData;
-import com.pine.service.resource.ubo.UBOCreationData;
 
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 
 public final class SSBOCreationData extends ResourceCreationData {
     private final int bindingPoint;

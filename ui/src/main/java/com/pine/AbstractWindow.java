@@ -3,7 +3,6 @@ package com.pine;
 import com.pine.dock.AbstractDockHeader;
 import com.pine.dock.DockPanel;
 import com.pine.view.AbstractView;
-import com.pine.view.View;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiCol;

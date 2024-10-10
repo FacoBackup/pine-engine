@@ -1,8 +1,8 @@
 package com.pine.component;
 
+import com.pine.Mutable;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.Mutable;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.theme.Icons;
 import org.joml.Matrix4f;

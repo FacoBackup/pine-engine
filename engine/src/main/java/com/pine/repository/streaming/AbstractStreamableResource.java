@@ -4,7 +4,6 @@ import com.pine.injection.Disposable;
 import com.pine.service.streaming.StreamLoadData;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 public abstract class AbstractStreamableResource<T extends StreamLoadData> implements Disposable, Serializable {
     public transient boolean isLoaded = false;

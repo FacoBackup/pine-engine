@@ -48,32 +48,39 @@ public class SerializationService implements Loggable {
             Files.write(Path.of(CONFIG_NAME), projectDirectory.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             Files.write(Path.of(projectDirectory + File.separator + IDENTIFIER), new Date().toString().getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (Exception e) {
-            getLogger().warn("Could not save project to {}", CONFIG_NAME, e);
+            getLogger().error("Could not save project information", e);
         }
     }
 
     public void serialize(String projectDirectory) {
+        getLogger().info("Beginning project serialization to {}", projectDirectory);
+        long start = System.currentTimeMillis();
         try {
             for (var repositoryEntry : repositoryMap.entrySet()) {
                 try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(projectDirectory + File.separator + repositoryEntry.getKey()))) {
                     out.writeObject(repositoryEntry.getValue());
                 }
             }
+            long end = System.currentTimeMillis() - start;
+            getLogger().info("Serialization took {}ms", end);
         } catch (Exception e) {
             messageRepository.pushMessage("Could not save project", MessageSeverity.ERROR);
-            getLogger().warn("Could not save project", e);
+            getLogger().error("Could not save project", e);
             return;
         }
         messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
     }
 
     public void deserialize(String projectDirectory) {
+        getLogger().info("Loading project from {}", projectDirectory);
+        long start = System.currentTimeMillis();
         isDeserializationDone = false;
         Thread thread = new Thread(() -> {
             try {
                 for (String repositoryId : repositoryMap.keySet()) {
                     loadRepository(projectDirectory, repositoryId);
                 }
+                getLogger().info("Project load took {}ms", System.currentTimeMillis() - start);
             } catch (Exception e) {
                 messageRepository.pushMessage("Error while loading project", MessageSeverity.ERROR);
                 getLogger().error(e.getMessage(), e);

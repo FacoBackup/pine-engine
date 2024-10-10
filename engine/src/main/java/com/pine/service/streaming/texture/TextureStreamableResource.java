@@ -2,9 +2,6 @@ package com.pine.service.streaming.texture;
 
 import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.resource.AbstractResource;
-import com.pine.service.resource.LocalResourceType;
-import com.pine.service.streaming.StreamLoadData;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
 

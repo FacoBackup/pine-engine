@@ -1,9 +1,9 @@
 package com.pine.panels.files;
 
+import com.pine.injection.PInject;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
-import com.pine.injection.PInject;
 import com.pine.repository.ContentBrowserRepository;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;

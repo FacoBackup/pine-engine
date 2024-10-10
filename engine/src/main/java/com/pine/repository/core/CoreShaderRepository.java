@@ -2,7 +2,6 @@ package com.pine.repository.core;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.service.resource.IResource;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;
