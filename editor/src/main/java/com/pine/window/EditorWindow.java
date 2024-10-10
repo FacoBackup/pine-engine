@@ -3,22 +3,23 @@ package com.pine.window;
 import com.pine.AbstractWindow;
 import com.pine.Engine;
 import com.pine.WindowService;
-import com.pine.dock.AbstractDockHeader;
-import com.pine.dock.DockDTO;
-import com.pine.dock.DockGroup;
-import com.pine.dock.DockService;
+import com.pine.dock.*;
 import com.pine.injection.PInject;
 import com.pine.panels.EditorHeaderPanel;
 import com.pine.panels.ToasterPanel;
 import com.pine.repository.SettingsRepository;
 import com.pine.service.ProjectService;
+import com.pine.service.SerializationService;
 import com.pine.service.ThemeService;
 import com.pine.tools.ToolsModule;
-import com.pine.view.View;
+import imgui.ImGui;
 import imgui.ImVec4;
 
 import java.util.Collections;
 import java.util.List;
+
+import static com.pine.dock.DockPanel.FLAGS;
+import static com.pine.dock.DockPanel.OPEN;
 
 
 public class EditorWindow extends AbstractWindow {
@@ -40,9 +41,15 @@ public class EditorWindow extends AbstractWindow {
     @PInject
     public WindowService windowService;
 
+    @PInject
+    public SerializationService serializationRepository;
+
+    private boolean isInitialized = false;
+
     @Override
     public void onInitializeInternal() {
         engine.start(windowService.getDisplayW(), windowService.getDisplayH(), List.of(new ToolsModule()));
+
         appendChild(new ToasterPanel());
         try {
             DockDTO dockCenter = new DockDTO(EditorDock.Viewport);
@@ -81,12 +88,37 @@ public class EditorWindow extends AbstractWindow {
         return new EditorHeaderPanel();
     }
 
-    public String getWindowName() {
-        return "Pine Engine";
-    }
-
     @Override
     public void tick() {
         themeService.tick();
+    }
+
+    @Override
+    public void renderInternal() {
+        if (serializationRepository.isDeserializationDone()) {
+            if (!isInitialized) {
+                windowService.maximize();
+                isInitialized = true;
+            }
+            super.renderInternal();
+        } else {
+            DockPanel.beginMainWindowSetup();
+            ImGui.begin("##windowLoader", OPEN, FLAGS);
+            DockPanel.endMainWindowSetup();
+            ImGui.text("Pine Engine");
+            ImGui.text("Loading scene...");
+            ImGui.end();
+
+        }
+    }
+
+    @Override
+    public float getWindowScaleX() {
+        return .4f;
+    }
+
+    @Override
+    public float getWindowScaleY() {
+        return .4f;
     }
 }

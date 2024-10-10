@@ -8,7 +8,7 @@ import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 
-public abstract class AbstractWindow extends AbstractView  {
+public abstract class AbstractWindow extends AbstractView {
     protected final DockPanel root = new DockPanel() {
         @Override
         protected ImVec4 getAccentColor() {
@@ -40,4 +40,12 @@ public abstract class AbstractWindow extends AbstractView  {
     protected abstract ImVec4 getNeutralPalette();
 
     protected abstract ImVec4 getAccentColor();
+
+    public float getWindowScaleX() {
+        return 1;
+    }
+
+    public float getWindowScaleY() {
+        return 1;
+    }
 }
