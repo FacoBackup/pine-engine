@@ -1,6 +1,6 @@
 package com.pine.tasks;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 import com.pine.component.*;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -11,7 +11,6 @@ import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.TransformationService;
-import com.pine.service.streaming.StreamingService;
 
 
 /**

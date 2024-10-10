@@ -1,5 +1,6 @@
-package com.pine;
+package com.pine.messaging;
 
+import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 
 import java.util.LinkedList;

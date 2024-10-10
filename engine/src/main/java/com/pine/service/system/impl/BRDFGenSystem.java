@@ -20,7 +20,7 @@ public class BRDFGenSystem extends AbstractSystem {
     @Override
     protected void renderInternal() {
         shaderService.bind(shaderRepository.brdfShader);
-        meshService.bind(primitiveRepository.quadMesh);
+        meshService.bind(meshRepository.quadMesh);
         meshService.draw();
         isFirstRun = false;
     }

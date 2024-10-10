@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 
 public abstract class AbstractResourceService<T extends IResource, C extends ResourceCreationData> implements Loggable {
 

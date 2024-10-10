@@ -24,7 +24,7 @@ public class MeshStreamableResource extends AbstractStreamableResource<MeshStrea
     @Override
     protected void loadInternal(MeshStreamData dto) {
         this.triangleCount = dto.indices().length / 3;
-        this.vertexCount = dto.indices().length;
+        this.vertexCount = dto.vertices().length;
 
         FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(dto.vertices().length);
         vertexBuffer.put(dto.vertices()).flip();

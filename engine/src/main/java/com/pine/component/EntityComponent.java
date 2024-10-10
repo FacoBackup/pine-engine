@@ -1,7 +1,7 @@
 package com.pine.component;
 
 import com.pine.SerializableRepository;
-import com.pine.repository.Mutable;
+import com.pine.Mutable;
 
 import java.util.Set;
 

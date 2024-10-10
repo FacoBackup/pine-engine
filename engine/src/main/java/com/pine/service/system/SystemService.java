@@ -18,6 +18,7 @@ public class SystemService implements SyncTask {
             new ShaderDataSyncSystem(),
             new DepthPrePassSystem(),
             new AtmosphereSystem(),
+            new VoxelVisualizerSystem(),
             new FrameCompositionSystem()
     );
 

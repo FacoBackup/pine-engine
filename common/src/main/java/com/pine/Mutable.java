@@ -1,4 +1,4 @@
-package com.pine.repository;
+package com.pine;
 
 public interface Mutable {
     /**

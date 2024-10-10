@@ -1,8 +1,8 @@
 package com.pine.panels.console;
 
-import com.pine.Message;
-import com.pine.MessageRepository;
-import com.pine.MessageSeverity;
+import com.pine.messaging.Message;
+import com.pine.messaging.MessageRepository;
+import com.pine.messaging.MessageSeverity;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import imgui.ImGui;
@@ -41,7 +41,8 @@ public class ConsolePanel extends AbstractDockPanel {
             ImGui.tableHeadersRow();
 
             List<Message> messagesHistory = messageRepository.getMessagesHistory();
-            for (Message log : messagesHistory) {
+            for (int i = 0, messagesHistorySize = messagesHistory.size(); i < messagesHistorySize; i++) {
+                Message log = messagesHistory.get(i);
                 if (hasSearchValue && !log.message().contains(searchValue.get())) {
                     continue;
                 }

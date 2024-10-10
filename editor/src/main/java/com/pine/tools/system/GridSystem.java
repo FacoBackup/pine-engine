@@ -53,7 +53,7 @@ public class GridSystem extends AbstractSystem {
         GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
         EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.sceneDepthSampler);
 
-        meshService.bind(primitiveRepository.planeMesh);
+        meshService.bind(meshRepository.planeMesh);
         meshService.setRenderingMode(RenderingMode.TRIANGLES);
         meshService.setInstanceCount(0);
         meshService.draw();

@@ -18,6 +18,7 @@ public class CoreMeshRepository implements CoreRepository {
 
     public MeshStreamableResource planeMesh;
     public MeshStreamableResource quadMesh;
+    public MeshStreamableResource cubeMesh;
 
     @Override
     public void initialize() {
@@ -28,6 +29,15 @@ public class CoreMeshRepository implements CoreRepository {
                 null,
                 null
         ));
+
+        cubeMesh = new MeshStreamableResource("", "");
+        cubeMesh.load(new MeshStreamData(
+                new float[]{1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1, 1, 1, -1, 1, 1, -1, 1, -1, 1, -1, -1, 1, -1, -1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, 1, -1, 1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1},
+                new int[]{1, 14, 20, 1, 20, 7, 10, 6, 19, 10, 19, 23, 21, 18, 12, 21, 12, 15, 16, 3, 9, 16, 9, 22, 5, 2, 8, 5, 8, 11, 17, 13, 0, 17, 0, 4},
+                null,
+                null
+        ));
+
         quadMesh = new MeshStreamableResource("", "");
         quadMesh.load(new MeshStreamData(
                 new float[]{-1, -1, (float) -4.371138828673793e-8, 1, -1, (float) -4.371138828673793e-8, -1, 1, 4.371138828673793e-8F, 1, 1, 4.371138828673793e-8F},

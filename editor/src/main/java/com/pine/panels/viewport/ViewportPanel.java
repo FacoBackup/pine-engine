@@ -82,24 +82,6 @@ public class ViewportPanel extends AbstractDockPanel {
 
     private void updateCamera() {
         boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
-        if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode))) {
-            cameraService.handleInput(context.camera, isFirstMovement);
-            isFirstMovement = false;
-        } else {
-            isFirstMovement = true;
-        }
-        repo.fasterPressed = ImGui.isKeyDown(ImGuiKey.LeftShift);
-        repo.forwardPressed = ImGui.isKeyDown(ImGuiKey.W);
-        repo.backwardPressed = ImGui.isKeyDown(ImGuiKey.S);
-        repo.leftPressed = ImGui.isKeyDown(ImGuiKey.A);
-        repo.rightPressed = ImGui.isKeyDown(ImGuiKey.D);
-        repo.upPressed = ImGui.isKeyDown(ImGuiKey.Space);
-        repo.downPressed = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
-        repo.mouseX = ImGui.getMousePosX();
-        repo.mouseY = ImGui.getMousePosY();
-        repo.viewportH = size.y;
-        repo.viewportW = size.x;
-
         if (context.camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
             if (focused) {
@@ -116,5 +98,22 @@ public class ViewportPanel extends AbstractDockPanel {
         } else {
             cameraService = cameraFirstPersonService;
         }
+        if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode))) {
+            cameraService.handleInput(context.camera, isFirstMovement);
+            isFirstMovement = false;
+        } else {
+            isFirstMovement = true;
+        }
+        repo.fasterPressed = ImGui.isKeyDown(ImGuiKey.LeftShift);
+        repo.forwardPressed = ImGui.isKeyDown(ImGuiKey.W);
+        repo.backwardPressed = ImGui.isKeyDown(ImGuiKey.S);
+        repo.leftPressed = ImGui.isKeyDown(ImGuiKey.A);
+        repo.rightPressed = ImGui.isKeyDown(ImGuiKey.D);
+        repo.upPressed = ImGui.isKeyDown(ImGuiKey.Space);
+        repo.downPressed = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
+        repo.mouseX = ImGui.getMousePosX();
+        repo.mouseY = ImGui.getMousePosY();
+        repo.viewportH = sizeVec.y;
+        repo.viewportW = sizeVec.x;
     }
 }

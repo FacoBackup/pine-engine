@@ -1,8 +1,8 @@
 package com.pine.service.rendering;
 
-import com.pine.Loggable;
-import com.pine.Message;
-import com.pine.MessageRepository;
+import com.pine.messaging.Loggable;
+import com.pine.messaging.Message;
+import com.pine.messaging.MessageRepository;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;

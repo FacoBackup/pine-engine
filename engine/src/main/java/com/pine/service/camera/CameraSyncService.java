@@ -95,8 +95,8 @@ public class CameraSyncService implements SyncTask {
         EngineUtils.copyWithOffset(V, repository.projectionMatrix, 52);
         EngineUtils.copyWithOffset(V, repository.invProjectionMatrix, 68);
 
-        V.put(84, runtimeRepository.viewportW);
-        V.put(85, runtimeRepository.viewportH);
+        V.put(84, runtimeRepository.getDisplayW());
+        V.put(85, runtimeRepository.getDisplayH());
         V.put(86, (float) (2.0 / (Math.log(repository.projectionMatrix.get(0, 0) + 1) / LOG_2)));
     }
 }

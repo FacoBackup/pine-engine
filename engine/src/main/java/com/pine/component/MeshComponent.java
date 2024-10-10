@@ -21,24 +21,25 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
 
     @MutableField(label = "Mesh LOD 0")
     public MeshStreamableResource lod0;
+    @MutableField(label = "Use LOD 0 when distance")
     public float lod0DistanceUntil = 100;
 
     @MutableField(label = "Mesh LOD 1")
     public MeshStreamableResource lod1;
 
-    @MutableField(label = "Use LOD 1 if distance from camera is smaller than")
+    @MutableField(label = "Use LOD 1 when distance")
     public float lod1DistanceUntil = 200;
 
     @MutableField(label = "Mesh LOD 2")
     public MeshStreamableResource lod2;
 
-    @MutableField(label = "Use LOD 2 if distance from camera is smaller than")
+    @MutableField(label = "Use LOD 2 when distance")
     public float lod2DistanceUntil = 300;
 
     @MutableField(label = "Mesh LOD 3")
     public MeshStreamableResource lod3;
 
-    @MutableField(label = "Use LOD 3 if distance from camera is smaller than")
+    @MutableField(label = "Use LOD 3 when distance")
     public float lod3DistanceUntil = 300;
 
     @MutableField(label = "Mesh LOD 4")

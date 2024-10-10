@@ -1,6 +1,6 @@
 package com.pine.service.resource;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;

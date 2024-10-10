@@ -1,6 +1,6 @@
 package com.pine.service.system.impl;
 
-import com.pine.Loggable;
+import com.pine.messaging.Loggable;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;

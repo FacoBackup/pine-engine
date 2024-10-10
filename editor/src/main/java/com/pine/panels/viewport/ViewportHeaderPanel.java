@@ -3,16 +3,15 @@ package com.pine.panels.viewport;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.SettingsRepository;
+import com.pine.service.svo.VoxelizerService;
 import com.pine.theme.Icons;
 import com.pine.tools.types.DebugShadingModel;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.*;
-import imgui.type.ImBoolean;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
@@ -33,6 +32,9 @@ public class ViewportHeaderPanel extends AbstractView {
     @PInject
     public CameraRepository cameraRepository;
 
+    @PInject
+    public VoxelizerService voxelizerService;
+
     private final ImVec2 size;
 
     public ViewportHeaderPanel(ImVec2 size) {
@@ -46,6 +48,13 @@ public class ViewportHeaderPanel extends AbstractView {
         ImGui.dummy(1, 0);
         ImGui.sameLine();
         hotKeys();
+        ImGui.sameLine();
+
+        if (ImGui.button(Icons.apps + "Repackage scene voxels##vp")) {
+            voxelizerService.buildFromScratch();
+        }
+
+        largeSpacing();
 
         gizmoMode();
 

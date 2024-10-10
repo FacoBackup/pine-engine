@@ -1,7 +1,7 @@
 package com.pine.service.camera;
 
 
-import com.pine.repository.Mutable;
+import com.pine.Mutable;
 import org.joml.Vector3f;
 
 import java.io.Serializable;

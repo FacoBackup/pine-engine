@@ -39,5 +39,6 @@ public class CoreSSBORepository implements CoreRepository {
                 11,
                 (long) LIGHT_BUFFER_SIZE * GLSLType.FLOAT.getSize()
         ));
+
     }
 }
