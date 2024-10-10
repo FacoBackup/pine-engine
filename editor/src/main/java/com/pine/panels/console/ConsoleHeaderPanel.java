@@ -24,6 +24,6 @@ public class ConsoleHeaderPanel extends AbstractView {
         ImGui.sameLine();
         ImGui.text(Icons.search);
         ImGui.sameLine();
-        ImGui.inputText("##searchMessage", searchValue, ImGuiInputTextFlags.EnterReturnsTrue);
+        ImGui.inputText("##searchMessage", searchValue);
     }
 }
