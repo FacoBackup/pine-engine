@@ -61,7 +61,7 @@ public class MeshLoaderService extends AbstractLoaderService {
             Map<Integer, List<MeshInstance>> byPrimitive = new HashMap<>();
             List<MeshStreamableResource> meshes = new ArrayList<>();
             AIScene scene = loadScene(request);
-            getLogger().info("Loading scene from file {}", request.path());
+            getLogger().warn("Loading scene from file {}", request.path());
 
             if (scene == null) {
                 getLogger().error("Failed to load scene at {}", request.path());
@@ -71,7 +71,7 @@ public class MeshLoaderService extends AbstractLoaderService {
             if (extra == null || !extra.isInstantiateHierarchy()) {
                 PointerBuffer meshList = scene.mMeshes();
                 if (meshList != null) {
-                    getLogger().info("Importing {} meshes", scene.mNumMeshes());
+                    getLogger().warn("Importing {} meshes", scene.mNumMeshes());
                     for (int i = 0; i < scene.mNumMeshes(); i++) {
                         AIMesh mesh = AIMesh.create(meshList.get(i));
                         meshes.add(processPrimitive(mesh, i, extra));
@@ -105,7 +105,7 @@ public class MeshLoaderService extends AbstractLoaderService {
         requestProcessingService.addRequest(new HierarchyRequest(parent, entity));
         entity.name = root.name;
         if (primitive != null) {
-            getLogger().info("Creating entity with mesh component for mesh {}", primitive.name);
+            getLogger().warn("Creating entity with mesh component for mesh {}", primitive.name);
             requestProcessingService.addRequest(new AddComponentRequest(MeshComponent.class, entity));
             var primitiveComponent = (MeshComponent) entity.components.get(MeshComponent.class.getSimpleName());
             primitiveComponent.lod0 = primitive;

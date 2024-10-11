@@ -1,4 +1,4 @@
-package com.pine.service;
+package com.pine.service.serialization;
 
 import com.pine.SerializableRepository;
 import com.pine.SerializationState;
@@ -9,6 +9,7 @@ import com.pine.messaging.Loggable;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -39,7 +40,7 @@ public class SerializationService implements Loggable {
     @PostCreation
     public void onInitialize() {
         for (SerializableRepository repository : serializableRepositories) {
-            repositoryMap.put(DigestUtils.sha1Hex(repository.getClass().getSimpleName()) + FILE_FORMAT, repository);
+            repositoryMap.put(repository.getClass().getSimpleName(), repository);
         }
     }
 
@@ -56,13 +57,13 @@ public class SerializationService implements Loggable {
         getLogger().info("Beginning project serialization to {}", projectDirectory);
         long start = System.currentTimeMillis();
         try {
-            for (var repositoryEntry : repositoryMap.entrySet()) {
-                try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(projectDirectory + File.separator + repositoryEntry.getKey()))) {
-                    out.writeObject(repositoryEntry.getValue());
-                }
+            RepositoryContainer repositoryContainer = new RepositoryContainer();
+            repositoryContainer.serializables.addAll(serializableRepositories);
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getFilePath(projectDirectory)))) {
+                out.writeObject(repositoryContainer);
             }
             long end = System.currentTimeMillis() - start;
-            getLogger().info("Serialization took {}ms", end);
+            getLogger().warn("Serialization took {}ms", end);
         } catch (Exception e) {
             messageRepository.pushMessage("Could not save project", MessageSeverity.ERROR);
             getLogger().error("Could not save project", e);
@@ -71,39 +72,28 @@ public class SerializationService implements Loggable {
         messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
     }
 
+    private static @NotNull String getFilePath(String projectDirectory) {
+        return projectDirectory + File.separator + DigestUtils.sha1Hex(RepositoryContainer.class.getSimpleName());
+    }
+
     public void deserialize(String projectDirectory) {
-        getLogger().info("Loading project from {}", projectDirectory);
+        getLogger().warn("Loading project from {}", projectDirectory);
         long start = System.currentTimeMillis();
         isDeserializationDone = false;
         Thread thread = new Thread(() -> {
             try {
-                for (String repositoryId : repositoryMap.keySet()) {
-                    loadRepository(projectDirectory, repositoryId);
+                try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(getFilePath(projectDirectory)))) {
+                    ((RepositoryContainer) in.readObject()).serializables.forEach(r -> repositoryMap.get(r.getClass().getSimpleName()).merge(r));
                 }
-                getLogger().info("Project load took {}ms", System.currentTimeMillis() - start);
+                SerializationState.loaded.clear();
             } catch (Exception e) {
                 messageRepository.pushMessage("Error while loading project", MessageSeverity.ERROR);
-                getLogger().error(e.getMessage(), e);
+                getLogger().error("An error occurred while loading project", e);
             }
+            getLogger().warn("Deserialization took {}ms", System.currentTimeMillis() - start);
             isDeserializationDone = true;
         });
-
         thread.start();
-    }
-
-    private void loadRepository(String projectDirectory, String repositoryId) {
-        try {
-            File file = new File(projectDirectory + File.separator + repositoryId);
-            if (!file.exists()) {
-                return;
-            }
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file.getAbsolutePath()))) {
-                repositoryMap.get(repositoryId).merge(in.readObject());
-            }
-            SerializationState.loaded.clear();
-        } catch (Exception e) {
-            getLogger().error(e.getMessage(), e);
-        }
     }
 
     public boolean isDeserializationDone() {
