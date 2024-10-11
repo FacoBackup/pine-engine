@@ -1,7 +1,9 @@
 package com.pine.panels.resources;
 
+import com.pine.component.MeshComponent;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.repository.voxelization.VoxelizerRepository;
@@ -29,6 +31,9 @@ public class ResourcesPanel extends AbstractDockPanel {
     @PInject
     public StreamingRepository streamingRepository;
 
+    @PInject
+    public MeshComponent meshComponent;
+
     @Override
     public void renderInternal() {
         if (ImGui.beginTable("##resources" + imguiId, 2, TABLE_FLAGS)) {
@@ -36,38 +41,30 @@ public class ResourcesPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableHeadersRow();
 
-            ImGui.tableNextRow();
-            ImGui.tableNextColumn();
-            ImGui.text("Total triangles");
-            ImGui.tableNextColumn();
-            ImGui.text(String.valueOf(meshService.getTotalTriangleCount()));
+            render("Total triangles", meshService.getTotalTriangleCount());
 
-            ImGui.tableNextRow();
-            ImGui.tableNextColumn();
-            ImGui.text("Triangles being rendered");
-            ImGui.tableNextColumn();
-            ImGui.text(String.valueOf(renderingRepository.getTotalTriangleCount()));
+            render("Triangles being rendered", renderingRepository.getTotalTriangleCount());
 
-            ImGui.tableNextRow();
-            ImGui.tableNextColumn();
-            ImGui.text("Textures");
-            ImGui.tableNextColumn();
-            ImGui.text(String.valueOf(textureService.getTotalTextureCount()));
+            render("Textures", textureService.getTotalTextureCount());
 
-            ImGui.tableNextRow();
-            ImGui.tableNextColumn();
-            ImGui.text("Voxels");
-            ImGui.tableNextColumn();
-            ImGui.text(String.valueOf(voxelRepository.getVoxelCount()));
+            render("Voxels", voxelRepository.getVoxelCount());
 
-            ImGui.tableNextRow();
-            ImGui.tableNextColumn();
-            ImGui.text("Resources to be streamed in");
-            ImGui.tableNextColumn();
-            ImGui.text(String.valueOf(streamingRepository.schedule.size()));
+            render("Resources to be streamed in", streamingRepository.schedule.size());
+
+            render("Resources to be streamed in", streamingRepository.schedule.size());
+
+            render("Renderable entities", meshComponent.bag.size());
 
             ImGui.endTable();
         }
+    }
+
+    private void render(String Resources_to_be_streamed_in, int schedule) {
+        ImGui.tableNextRow();
+        ImGui.tableNextColumn();
+        ImGui.text(Resources_to_be_streamed_in);
+        ImGui.tableNextColumn();
+        ImGui.text(String.valueOf(schedule));
     }
 }
 
