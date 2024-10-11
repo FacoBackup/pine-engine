@@ -4,7 +4,6 @@ import com.pine.theme.Icons;
 import com.pine.util.InMemoryAppender;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
-import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImString;
 
 public class ConsoleHeaderPanel extends AbstractView {

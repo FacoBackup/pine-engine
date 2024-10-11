@@ -9,6 +9,8 @@ import com.pine.panels.files.FilesPanel;
 import com.pine.panels.hierarchy.HierarchyContext;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
+import com.pine.panels.metrics.MetricsPanel;
+import com.pine.panels.resources.ResourcesPanel;
 import com.pine.panels.viewport.ViewportContext;
 import com.pine.panels.viewport.ViewportPanel;
 import com.pine.theme.Icons;
@@ -20,7 +22,9 @@ public enum EditorDock implements DockDescription {
     Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class, HierarchyContext.class),
     Inspector("Inspector", Icons.search, InspectorPanel.class, null),
     Console("Console", Icons.terminal, ConsolePanel.class, null),
-    Files("Files", Icons.folder_open, FilesPanel.class, FilesContext.class);
+    Files("Files", Icons.folder_open, FilesPanel.class, FilesContext.class),
+    Resources("Resources", Icons.data_array, ResourcesPanel.class, null),
+    Metrics("Metrics", Icons.bar_chart, MetricsPanel.class, null);
 
     private final String title;
     private final String codePoint;

@@ -24,4 +24,9 @@ public class BRDFGenSystem extends AbstractSystem {
         meshService.draw();
         isFirstRun = false;
     }
+
+    @Override
+    public String getTitle() {
+        return "BRDF generation";
+    }
 }

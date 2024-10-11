@@ -43,4 +43,9 @@ public class VoxelVisualizerSystem extends AbstractSystem {
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
         computeService.dispatch(COMPUTE_RUNTIME_DATA);
     }
+
+    @Override
+    public String getTitle() {
+        return "Voxel visualization";
+    }
 }

@@ -28,12 +28,14 @@ public abstract class AbstractWindow extends AbstractView {
 
     @Override
     final public void render() {
+        start();
         tick();
         ImGui.pushStyleColor(ImGuiCol.Button, getNeutralPalette());
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, getAccentColor());
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, getAccentColor());
         renderInternal();
         ImGui.popStyleColor(3);
+        end();
     }
 
     protected abstract ImVec4 getNeutralPalette();
@@ -46,5 +48,10 @@ public abstract class AbstractWindow extends AbstractView {
 
     public float getWindowScaleY() {
         return 1;
+    }
+
+    @Override
+    final public String getTitle() {
+        return "Total frame cost";
     }
 }

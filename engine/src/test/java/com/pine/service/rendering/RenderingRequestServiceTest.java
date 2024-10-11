@@ -19,13 +19,13 @@ class RenderingRequestServiceTest {
         comp.distanceFromCamera = 50;
         Assertions.assertNull(service.selectLOD(comp));
 
-        comp.lod4.isLoaded = true;
+        comp.lod4.loaded = true;
         Assertions.assertEquals(comp.lod4, service.selectLOD(comp));
 
         comp.lod0 = new MeshStreamableResource("e", "e");
         Assertions.assertEquals(comp.lod4, service.selectLOD(comp));
 
-        comp.lod0.isLoaded = true;
+        comp.lod0.loaded = true;
         Assertions.assertEquals(comp.lod0, service.selectLOD(comp));
 
         comp.lod4 = null;

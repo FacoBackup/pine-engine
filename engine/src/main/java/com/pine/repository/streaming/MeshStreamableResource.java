@@ -9,10 +9,10 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public class MeshStreamableResource extends AbstractStreamableResource<MeshStreamData> {
-    public int vertexCount;
-    public int triangleCount;
-    public int VAO;
-    public int indexVBO;
+    public transient int vertexCount;
+    public transient int triangleCount;
+    public transient int VAO;
+    public transient int indexVBO;
     public transient VertexBuffer vertexVBO;
     public transient VertexBuffer uvVBO;
     public transient VertexBuffer normalVBO;

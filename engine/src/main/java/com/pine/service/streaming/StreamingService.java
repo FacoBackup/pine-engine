@@ -46,7 +46,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     }
 
     public void stream(AbstractStreamableResource<?> resource) {
-        if (resource.isLoaded) {
+        if (resource.isLoaded()) {
             return;
         }
 
@@ -84,7 +84,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     @Override
     public void dispose() {
         for (var resource : repository.streamableResources) {
-            if (!resource.isLoaded) {
+            if (!resource.isLoaded()) {
                 continue;
             }
             resource.dispose();

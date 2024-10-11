@@ -22,13 +22,14 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
+import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
+
 
 public class HierarchyPanel extends AbstractDockPanel {
     private static final byte BYTE = 1;
     private static final String MESH_COMPONENT = MeshComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
-    private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
 
     @PInject
     public SelectionService selectionService;
@@ -69,7 +70,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     @Override
     public void renderInternal() {
         header.render();
-        if (ImGui.beginTable("##hierarchy" + imguiId, 3, FLAGS)) {
+        if (ImGui.beginTable("##hierarchy" + imguiId, 3, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.NoHide);
             ImGui.tableSetupColumn(Icons.visibility, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);

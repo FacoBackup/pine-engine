@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @PBean
-public class Engine implements Loggable {
+public class Engine extends MetricCollector implements Loggable {
     public static final int MAX_ENTITIES = 100000;
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
@@ -54,7 +54,7 @@ public class Engine implements Loggable {
     private boolean ready = false;
     private String targetDirectory;
 
-    public void start(int displayW, int displayH, List<EngineExternalModule> modules) {
+    public void start(int displayW, int displayH, List<EngineExternalModule> modules, String targetDirectory) {
         runtimeRepository.setDisplayW(displayW);
         runtimeRepository.setDisplayH(displayH);
         runtimeRepository.setInvDisplayW(1f / displayW);
@@ -74,6 +74,17 @@ public class Engine implements Loggable {
 
         this.modules.addModules(modules);
         tasks.forEach(AbstractTask::start);
+
+        this.targetDirectory = targetDirectory;
+        try {
+            Path path = Paths.get(getResourceTargetDirectory());
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+        } catch (Exception ex) {
+            getLogger().error(ex.getMessage(), ex);
+        }
+
         ready = true;
     }
 
@@ -92,6 +103,7 @@ public class Engine implements Loggable {
             return;
         }
 
+        start();
         GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
         for (FrameBufferObject fbo : fboRepository.all) {
             fbo.clear();
@@ -102,6 +114,7 @@ public class Engine implements Loggable {
         for (var syncTask : syncTasks) {
             syncTask.sync();
         }
+        end();
     }
 
     public void setTargetFBO(@NotNull FrameBufferObject fbo) {
@@ -116,15 +129,8 @@ public class Engine implements Loggable {
         return targetDirectory + File.separator + "resources" + File.separator;
     }
 
-    public void setTargetDirectory(String targetDirectory) {
-        this.targetDirectory = targetDirectory;
-        try {
-            Path path = Paths.get(getResourceTargetDirectory());
-            if (!Files.exists(path)) {
-                Files.createDirectories(path);
-            }
-        } catch (Exception ex) {
-            getLogger().error(ex.getMessage(), ex);
-        }
+    @Override
+    public String getTitle() {
+        return "Engine total";
     }
 }

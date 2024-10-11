@@ -85,4 +85,9 @@ public class FrameCompositionSystem extends AbstractQuadPassSystem {
         floatBuffer.put(0, lookupNoise());
         shaderService.bindUniform(filmGrainSeed, floatBuffer);
     }
+
+    @Override
+    public String getTitle() {
+        return "Post processing";
+    }
 }

@@ -37,4 +37,11 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
     public String getIcon() {
         return Icons.apps;
     }
+
+    public int getVoxelCount() {
+        if(sparseVoxelOctree != null) {
+            return sparseVoxelOctree.getNodeQuantity();
+        }
+        return 0;
+    }
 }

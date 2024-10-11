@@ -119,4 +119,9 @@ public class AtmosphereSystem extends AbstractQuadPassSystem {
         shaderService.bindUniform(threshold, thresholdB);
         shaderService.bindUniform(samples, samplesB);
     }
+
+    @Override
+    public String getTitle() {
+        return "Atmosphere rendering";
+    }
 }

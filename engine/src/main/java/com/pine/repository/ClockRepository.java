@@ -14,7 +14,7 @@ public class ClockRepository implements SyncTask {
     public void sync() {
         long newSince = System.currentTimeMillis();
         totalTime = newSince - startupTime;
-        elapsedTime += newSince - since;
+        elapsedTime = newSince - since;
         since = newSince;
     }
 }

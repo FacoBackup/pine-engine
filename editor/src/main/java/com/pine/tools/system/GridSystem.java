@@ -59,4 +59,9 @@ public class GridSystem extends AbstractSystem {
         meshService.draw();
         GL46.glEnable(GL46.GL_CULL_FACE);
     }
+
+    @Override
+    public String getTitle() {
+        return "Grid rendering";
+    }
 }

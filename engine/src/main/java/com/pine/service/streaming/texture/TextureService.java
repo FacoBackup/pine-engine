@@ -1,7 +1,9 @@
 package com.pine.service.streaming.texture;
 
 import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.streaming.StreamingRepository;
 import com.pine.repository.streaming.TextureStreamableResource;
 import com.pine.service.streaming.AbstractStreamableService;
 import org.lwjgl.stb.STBImage;
@@ -12,6 +14,9 @@ import java.nio.IntBuffer;
 
 @PBean
 public class TextureService extends AbstractStreamableService<TextureStreamableResource, TextureStreamData> {
+
+    @PInject
+    public StreamingRepository repository;
 
     @Override
     protected void bindInternal() {
@@ -48,5 +53,16 @@ public class TextureService extends AbstractStreamableService<TextureStreamableR
         }
 
         return new TextureStreamData(width, height, imageBuffer);
+    }
+
+    public int getTotalTextureCount() {
+        int total = 0;
+        for (int i = 0; i < repository.streamableResources.size(); i++) {
+            var resourceRef = repository.streamableResources.get(i);
+            if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.TEXTURE) {
+                total++;
+            }
+        }
+        return total;
     }
 }

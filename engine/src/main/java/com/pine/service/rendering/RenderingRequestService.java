@@ -78,10 +78,10 @@ public class RenderingRequestService {
 
     protected @Nullable MeshStreamableResource selectLOD(MeshComponent scene) {
         MeshStreamableResource finalResource = null;
-        boolean isLOD0Loaded = scene.lod0 != null && scene.lod0.isLoaded;
-        boolean isLOD1Loaded = scene.lod1 != null && scene.lod1.isLoaded;
-        boolean isLOD2Loaded = scene.lod2 != null && scene.lod2.isLoaded;
-        boolean isLOD3Loaded = scene.lod3 != null && scene.lod3.isLoaded;
+        boolean isLOD0Loaded = scene.lod0 != null && scene.lod0.isLoaded();
+        boolean isLOD1Loaded = scene.lod1 != null && scene.lod1.isLoaded();
+        boolean isLOD2Loaded = scene.lod2 != null && scene.lod2.isLoaded();
+        boolean isLOD3Loaded = scene.lod3 != null && scene.lod3.isLoaded();
 
         if (scene.lod0 != null && scene.distanceFromCamera <= scene.lod0DistanceUntil) {
             if (isLOD0Loaded) {
@@ -116,7 +116,7 @@ public class RenderingRequestService {
         }
 
         if (finalResource == null && scene.lod4 != null) {
-            if (scene.lod4.isLoaded) {
+            if (scene.lod4.isLoaded()) {
                 finalResource = scene.lod4;
             } else {
                 streamingService.stream(scene.lod4);

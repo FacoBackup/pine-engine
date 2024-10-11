@@ -2,6 +2,7 @@ package com.pine.service.system;
 
 
 import com.pine.Engine;
+import com.pine.MetricCollector;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.ClockRepository;
@@ -17,7 +18,7 @@ import com.pine.service.resource.UBOService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.streaming.mesh.MeshService;
 
-public abstract class AbstractSystem {
+public abstract class AbstractSystem extends MetricCollector {
     @PInject
     public Engine engine;
     @PInject
@@ -59,7 +60,7 @@ public abstract class AbstractSystem {
         if (!isRenderable()) {
             return;
         }
-
+        start();
         FrameBufferObject fbo = getTargetFBO();
         if (fbo != null) {
             fbo.startMapping(shouldClearFBO());
@@ -68,6 +69,7 @@ public abstract class AbstractSystem {
         } else {
             renderInternal();
         }
+        end();
     }
 
     protected FrameBufferObject getTargetFBO() {
@@ -75,7 +77,6 @@ public abstract class AbstractSystem {
     }
 
     protected void renderInternal() {
-
     }
 
     protected boolean isRenderable() {

@@ -17,4 +17,9 @@ public class CullingVisualizationSystem extends AbstractSystem {
     protected void renderInternal() {
         // TODO - RENDER CULLING BOXES
     }
+
+    @Override
+    public String getTitle() {
+        return "Culling visualization";
+    }
 }

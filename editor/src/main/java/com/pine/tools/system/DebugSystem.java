@@ -190,6 +190,10 @@ public class DebugSystem extends AbstractSystem {
             meshService.draw();
             instancedOffset += request.transformations.size();
         }
+    }
 
+    @Override
+    public String getTitle() {
+        return "GBuffer Shading";
     }
 }
