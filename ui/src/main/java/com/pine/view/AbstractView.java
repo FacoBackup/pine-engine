@@ -1,5 +1,6 @@
 package com.pine.view;
 
+import com.pine.MetricCollector;
 import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
 import com.pine.panel.AbstractPanelContext;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AbstractView implements View {
+public class AbstractView extends MetricCollector implements View {
     protected final String id;
     protected final String imguiId;
     protected final List<View> children = new ArrayList<>();
@@ -92,6 +93,11 @@ public class AbstractView implements View {
             return;
         }
         renderInternal();
+    }
+
+    @Override
+    public String getTitle() {
+        return null;
     }
 }
 

@@ -48,7 +48,7 @@ public class EditorWindow extends AbstractWindow {
 
     @Override
     public void onInitializeInternal() {
-        engine.start(windowService.getDisplayW(), windowService.getDisplayH(), List.of(new ToolsModule()));
+        projectService.loadProject();
 
         appendChild(new ToasterPanel());
         try {
@@ -69,8 +69,6 @@ public class EditorWindow extends AbstractWindow {
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
-        projectService.loadProject();
-        engine.setTargetDirectory(projectService.getProjectDirectory());
     }
 
     @Override
@@ -98,6 +96,7 @@ public class EditorWindow extends AbstractWindow {
         if (serializationRepository.isDeserializationDone()) {
             if (!isInitialized) {
                 windowService.maximize();
+                engine.start(windowService.getDisplayW(), windowService.getDisplayH(), List.of(new ToolsModule()), projectService.getProjectDirectory());
                 isInitialized = true;
             }
             super.renderInternal();

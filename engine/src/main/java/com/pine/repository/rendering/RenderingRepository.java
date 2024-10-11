@@ -25,4 +25,12 @@ public class RenderingRepository {
         requests = newRequests;
         newRequests = aux;
     }
+
+    public int getTotalTriangleCount() {
+        int total = 0;
+        for (RenderingRequest request : requests) {
+            total += request.mesh.triangleCount;
+        }
+        return total;
+    }
 }

@@ -26,4 +26,9 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
         uboService.updateBuffer(uboRepository.lensPostProcessingUBO, uboRepository.lensPostProcessingUBOState, 0);
         uboService.updateBuffer(uboRepository.ssaoUBO, uboRepository.ssaoUBOState, 0);
     }
+
+    @Override
+    public String getTitle() {
+        return "Data synchronization";
+    }
 }

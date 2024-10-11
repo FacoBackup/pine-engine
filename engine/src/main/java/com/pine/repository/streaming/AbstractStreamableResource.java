@@ -6,12 +6,12 @@ import com.pine.service.streaming.StreamLoadData;
 import java.io.Serializable;
 
 public abstract class AbstractStreamableResource<T extends StreamLoadData> implements Disposable, Serializable {
-    public transient boolean isLoaded = false;
+    public transient boolean loaded = false;
+    public transient long lastUse;
     public final String id;
     public String name;
     public final String pathToFile;
     public float size;
-    public transient long lastUse;
 
     public AbstractStreamableResource(String pathToFile, String id) {
         this.pathToFile = pathToFile;
@@ -23,17 +23,21 @@ public abstract class AbstractStreamableResource<T extends StreamLoadData> imple
     @SuppressWarnings("unchecked")
     final public void load(StreamLoadData data) {
         loadInternal((T) data);
-        isLoaded = true;
+        loaded = true;
     }
 
     protected abstract void loadInternal(T data);
 
     @Override
     final public void dispose() {
-        if (isLoaded) {
-            isLoaded = false;
+        if (loaded) {
+            loaded = false;
             disposeInternal();
         }
+    }
+
+    public boolean isLoaded() {
+        return loaded;
     }
 
     protected abstract void disposeInternal();

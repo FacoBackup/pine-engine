@@ -44,4 +44,9 @@ public class DepthPrePassSystem extends AbstractSystem implements Loggable {
             instancedOffset += request.transformations.size();
         }
     }
+
+    @Override
+    public String getTitle() {
+        return "GBuffer generation";
+    }
 }

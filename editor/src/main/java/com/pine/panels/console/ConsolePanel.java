@@ -16,7 +16,7 @@ public class ConsolePanel extends AbstractDockPanel {
     private static final ImVec4 ERROR = new ImVec4(1, 0, 0, 1);
     private static final ImVec4 WARN = new ImVec4(1, 1, 0, 1);
     private static final ImVec4 INFO = new ImVec4(0, .5f, 1, 1);
-    private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
+    public static final int TABLE_FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
 
     private final ImString searchValue = new ImString();
 
@@ -30,7 +30,7 @@ public class ConsolePanel extends AbstractDockPanel {
         super.renderInternal();
         boolean hasSearchValue = !searchValue.isEmpty();
 
-        if (ImGui.beginTable("##console" + imguiId, 3, FLAGS)) {
+        if (ImGui.beginTable("##console" + imguiId, 3, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("Date", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableSetupColumn("Severity", ImGuiTableColumnFlags.WidthFixed, 80f);
             ImGui.tableSetupColumn("Message", ImGuiTableColumnFlags.WidthStretch);

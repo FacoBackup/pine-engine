@@ -1,9 +1,12 @@
 package com.pine.service.streaming.mesh;
 
 import com.pine.injection.PBean;
+import com.pine.injection.PInject;
 import com.pine.repository.rendering.RenderingMode;
+import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.MeshStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
 import org.lwjgl.opengl.GL46;
 
@@ -15,6 +18,9 @@ public class MeshService extends AbstractStreamableService<MeshStreamableResourc
     private RenderingMode renderingMode;
     private int instanceCount;
     private boolean isInWireframeMode = false;
+
+    @PInject
+    public StreamingRepository repository;
 
     public void setRenderingMode(RenderingMode renderingMode) {
         this.renderingMode = renderingMode;
@@ -109,5 +115,16 @@ public class MeshService extends AbstractStreamableService<MeshStreamableResourc
             getLogger().error(e.getMessage(), e);
         }
         return null;
+    }
+
+    public int getTotalTriangleCount() {
+        int total = 0;
+        for (int i = 0; i < repository.streamableResources.size(); i++) {
+            AbstractStreamableResource<?> resourceRef = repository.streamableResources.get(i);
+            if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.MESH) {
+                total += ((MeshStreamableResource) resourceRef).triangleCount;
+            }
+        }
+        return total;
     }
 }
