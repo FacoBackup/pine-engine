@@ -3,7 +3,6 @@ package com.pine.panels.resources;
 import com.pine.component.MeshComponent;
 import com.pine.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.repository.voxelization.VoxelizerRepository;

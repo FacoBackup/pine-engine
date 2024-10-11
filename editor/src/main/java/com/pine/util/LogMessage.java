@@ -18,4 +18,10 @@ public class LogMessage {
         this.level = event.getLevel();
         this.date = FORMATTER.format(new Date(event.getTimeMillis()));
     }
+
+    public LogMessage(String message, long time) {
+        this.level = Level.ERROR;
+        this.message = message;
+        this.date = FORMATTER.format(new Date(time));
+    }
 }

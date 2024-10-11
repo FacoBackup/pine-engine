@@ -41,7 +41,7 @@ public abstract class AbstractLoaderService implements Loggable {
     }
 
     private void log(AbstractStreamableResource<?> resource) {
-        getLogger().info("Persisting resource {} of type {}", resource.getResourceType(), resource.id);
+        getLogger().warn("Persisting resource {} of type {}", resource.getResourceType(), resource.id);
     }
 
     public float persist(AbstractStreamableResource<?> resource, String origin) {

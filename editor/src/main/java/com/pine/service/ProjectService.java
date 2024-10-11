@@ -5,6 +5,7 @@ import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
 import com.pine.injection.PostCreation;
 import com.pine.messaging.Loggable;
+import com.pine.service.serialization.SerializationService;
 
 import java.io.File;
 import java.nio.file.Files;

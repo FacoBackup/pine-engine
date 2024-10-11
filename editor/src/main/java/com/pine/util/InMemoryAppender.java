@@ -1,5 +1,6 @@
 package com.pine.util;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -36,7 +37,11 @@ public class InMemoryAppender extends AbstractAppender {
         if (logMessagesSource.size() >= MAX_MESSAGES_HISTORY) {
             logMessagesSource.removeFirst();
         }
-        logMessagesSource.add(new LogMessage(event));
+        if (event.getLevel() == Level.ERROR) {
+            logMessagesSource.add(new LogMessage(event.getThrown().getMessage(), event.getTimeMillis()));
+        } else {
+            logMessagesSource.add(new LogMessage(event));
+        }
         isSynced = false;
     }
 

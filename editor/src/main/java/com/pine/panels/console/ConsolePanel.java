@@ -14,8 +14,6 @@ import java.util.List;
 
 public class ConsolePanel extends AbstractDockPanel {
     private static final ImVec4 ERROR = new ImVec4(1, 0, 0, 1);
-    private static final ImVec4 WARN = new ImVec4(1, 1, 0, 1);
-    private static final ImVec4 INFO = new ImVec4(0, .5f, 1, 1);
     public static final int TABLE_FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
 
     private final ImString searchValue = new ImString();
@@ -50,10 +48,8 @@ public class ConsolePanel extends AbstractDockPanel {
                 ImGui.tableNextColumn();
                 if (log.level == Level.ERROR) {
                     ImGui.textColored(ERROR, "Error");
-                } else if (log.level == Level.WARN) {
-                    ImGui.textColored(WARN, "Warning");
                 } else {
-                    ImGui.textColored(INFO, "Info");
+                    ImGui.text("Info");
                 }
 
                 ImGui.tableNextColumn();

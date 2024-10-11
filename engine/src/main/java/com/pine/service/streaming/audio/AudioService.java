@@ -1,6 +1,7 @@
 package com.pine.service.streaming.audio;
 
 import com.pine.injection.PBean;
+import com.pine.repository.streaming.AudioStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.AbstractStreamableService;
 

@@ -3,6 +3,8 @@ package com.pine.panels;
 import com.pine.injection.PInject;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
+import com.pine.service.ThemeService;
+import com.pine.theme.Icons;
 import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -14,6 +16,9 @@ import static com.pine.messaging.MessageRepository.MESSAGE_DURATION;
 public class ToasterPanel extends AbstractView {
     @PInject
     public MessageRepository messageRepository;
+
+    @PInject
+    public ThemeService themeService;
 
     @Override
     public void renderInternal() {
@@ -30,12 +35,12 @@ public class ToasterPanel extends AbstractView {
             }
             ImVec2 viewportDimensions = ImGui.getMainViewport().getSize();
             ImGui.setNextWindowPos(5, viewportDimensions.y - 40 * (usedIndices + 1));
-            ImGui.setNextWindowSize(viewportDimensions.x * .35F, 35);
-            ImGui.pushStyleColor(ImGuiCol.Border, message.severity().getColor());
-            ImGui.pushStyleColor(ImGuiCol.WindowBg, message.severity().getColor());
+            ImGui.setNextWindowSize(ImGui.calcTextSizeX(message.message()) + 45, 35);
+            ImGui.pushStyleColor(ImGuiCol.WindowBg, themeService.palette4);
             ImGui.begin("##toaster" + usedIndices, ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings);
             ImGui.popStyleColor();
-            ImGui.popStyleColor();
+            ImGui.textColored(message.severity().getColor(), Icons.warning);
+            ImGui.sameLine();
             ImGui.text(message.message());
             ImGui.end();
             usedIndices++;
