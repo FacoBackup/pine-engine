@@ -46,7 +46,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     }
 
     public void stream(AbstractStreamableResource<?> resource) {
-        if (resource.isLoaded()) {
+        if (resource.isLoaded() || resource.invalidated) {
             return;
         }
 

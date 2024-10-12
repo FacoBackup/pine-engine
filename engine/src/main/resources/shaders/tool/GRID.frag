@@ -5,8 +5,8 @@ uniform vec4 settings;
 
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 
-layout (location = 0) out vec3  gBufferAlbedoSampler;
-layout (location = 3) out ivec4 gBufferMaterialSampler;// R isEmission | G useSSR | B useGI | A useAO
+layout (location = 0) out vec4 gBufferAlbedoSampler;
+layout (location = 3) out vec4 gBufferMaterialSampler;// R isEmission | G useSSR | B useGI | A useAO
 
 float grid(float space, float gridWidth, float scale) {
     vec2 p = worldPosition.xz * scale - vec2(.5);
@@ -48,18 +48,18 @@ void main() {
     float offset = .5 / scale;
     float Z = worldPosition.z - offset;
     float X = worldPosition.x - offset;
-
+    gBufferAlbedoSampler = vec4(1);
     if (Z < lineScale && Z > -lineScale)
-    gBufferAlbedoSampler = vec3(1., 0., 0.);
+    gBufferAlbedoSampler.rgb = vec3(1., 0., 0.);
     else if (X < lineScale && X > -lineScale)
-    gBufferAlbedoSampler = vec3(0., 0., 1.);
+    gBufferAlbedoSampler.rgb = vec3(0., 0., 1.);
     else {
         float s = abs(abs(biggerGrid) - abs(smallerGrid));
         if (s < .1 && s >= .0){
-            gBufferAlbedoSampler = vec3(color/2.);
+            gBufferAlbedoSampler.rgb = vec3(color/2.);
         } else {
-            gBufferAlbedoSampler = vec3(color);
+            gBufferAlbedoSampler.rgb = vec3(color);
         }
     }
-    gBufferMaterialSampler = ivec4(1, 0, 0, 0);
+    gBufferMaterialSampler = vec4(1, 0, 0, 0);
 }

@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MutableField {
     String label() default "-";
+
     String group() default "";
 
     int max() default Integer.MAX_VALUE;
@@ -15,4 +16,6 @@ public @interface MutableField {
     boolean isAngle() default false;
 
     boolean isDirectChange() default false;
+
+    String help() default "";
 }

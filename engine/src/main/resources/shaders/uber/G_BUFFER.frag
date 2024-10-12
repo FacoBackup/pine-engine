@@ -12,8 +12,7 @@
 #define WIREFRAME 17
 #define LIT -1
 
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
-
+flat in vec3 cameraPlacement;
 flat in int renderingIndex;
 flat in float depthFunc;
 smooth in vec2 initialUV;
@@ -33,11 +32,11 @@ uniform int parallaxLayers;
 uniform int debugShadingMode;
 uniform bool useParallax;
 
-layout (location = 0) out vec3  gBufferAlbedoSampler;
-layout (location = 1) out vec3  gBufferNormalSampler;
-layout (location = 2) out vec3  gBufferRMAOSampler;
-layout (location = 3) out ivec4 gBufferMaterialSampler;// R isEmission | G useSSR | B useGI | A useAO
-layout (location = 4) out float gBufferDepthSampler;
+layout (location = 0) out vec4 gBufferAlbedoSampler;
+layout (location = 1) out vec4 gBufferNormalSampler;
+layout (location = 2) out vec4 gBufferRMAOSampler;
+layout (location = 3) out vec4 gBufferMaterialSampler;// R isEmission | G useSSR | B useGI | A useAO
+layout (location = 4) out vec4 gBufferDepthSampler;
 
 float encode() {
     float half_co = depthFunc * 0.5;
@@ -64,7 +63,7 @@ mat3 computeTBN(vec3 worldPosition) {
 vec2 parallaxOcclusionMapping(sampler2D heightMap, float heightScale, int layers, float distanceFromCamera, mat3 TBN) {
     if (distanceFromCamera > PARALLAX_THRESHOLD) return initialUV;
     mat3 transposed = transpose(TBN);
-    vec3 viewDirection = normalize(transposed * (placement.xyz - worldSpacePosition.xyz));
+    vec3 viewDirection = normalize(transposed * (cameraPlacement.xyz - worldSpacePosition.xyz));
     float fLayers = float(max(layers, 1));
     float layerDepth = 1.0 / fLayers;
     float currentLayerDepth = 0.0;
@@ -100,49 +99,49 @@ vec3 randomColor(float seed) {
 
 void main() {
     vec2 UV = initialUV;
-    vec3 V = placement.xyz - worldSpacePosition;
+    vec3 V = cameraPlacement.xyz - worldSpacePosition;
     float distanceFromCamera = length(V);
     mat3 TBN = computeTBN(worldSpacePosition);
     if (useParallax){
         UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
 
-    gBufferAlbedoSampler = texture(albedo, UV).rgb;
-    gBufferNormalSampler = normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0));
-    gBufferRMAOSampler = vec3(texture(roughness, UV).r, texture(metallic, UV).r, texture(ao, UV).r);
-    gBufferMaterialSampler = ivec4(texture(materialMask, UV));
-    gBufferDepthSampler = encode();
+    gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 1);
+    gBufferNormalSampler = vec4(vec3(normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0))), 1);
+    gBufferRMAOSampler = vec4(texture(roughness, UV).r, texture(metallic, UV).r, texture(ao, UV).r, 1);
+    gBufferMaterialSampler = vec4(texture(materialMask, UV));
+    gBufferDepthSampler = vec4(encode(), 0, 0, 1);
 
     if (debugShadingMode != LIT){
         switch (debugShadingMode) {
             case RANDOM:
-            gBufferAlbedoSampler = randomColor(renderingIndex + 1);
+            gBufferAlbedoSampler.rgb = randomColor(renderingIndex + 1);
             break;
             case WIREFRAME:
-            gBufferAlbedoSampler = vec3(1., 0., 1.);
+            gBufferAlbedoSampler.rgb = vec3(1., 0., 1.);
             break;
             case LIGHT_ONLY:
-            gBufferAlbedoSampler = vec3(.5);
+            gBufferAlbedoSampler.rgb = vec3(.5);
             break;
             case NORMAL:
             gBufferAlbedoSampler = gBufferNormalSampler;
             break;
             case DEPTH:
-            gBufferAlbedoSampler = vec3(gl_FragCoord.z);
+            gBufferAlbedoSampler.rgb = vec3(gl_FragCoord.z);
             break;
             case AO:
-            gBufferAlbedoSampler = vec3(gBufferRMAOSampler.b);
+            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.b);
             break;
             case METALLIC:
-            gBufferAlbedoSampler = vec3(gBufferRMAOSampler.g);
+            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.g);
             break;
             case ROUGHNESS:
-            gBufferAlbedoSampler = vec3(gBufferRMAOSampler.r);
+            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.r);
             break;
             case POSITION:
-            gBufferAlbedoSampler = vec3(worldSpacePosition);
+            gBufferAlbedoSampler.rgb = vec3(worldSpacePosition);
             break;
         }
-        gBufferMaterialSampler = ivec4(1, 0, 0, 0);
+        gBufferMaterialSampler = vec4(1, 0, 0, 0);
     }
 }

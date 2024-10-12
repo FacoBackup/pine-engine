@@ -59,26 +59,26 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
 
 
     // MATERIAL
-    @MutableField(group = "Material", label = "albedo")
+    @MutableField(group = "Material", label = "Albedo")
     public TextureStreamableResource albedo;
-    @MutableField(group = "Material", label = "roughness")
+    @MutableField(group = "Material", label = "Roughness")
     public TextureStreamableResource roughness;
-    @MutableField(group = "Material", label = "metallic")
+    @MutableField(group = "Material", label = "Metallic")
     public TextureStreamableResource metallic;
-    @MutableField(group = "Material", label = "ao")
+    @MutableField(group = "Material", label = "Ambient occlusion")
     public TextureStreamableResource ao;
-    @MutableField(group = "Material", label = "normal")
+    @MutableField(group = "Material", label = "Normal")
     public TextureStreamableResource normal;
-    @MutableField(group = "Material", label = "heightMap")
+    @MutableField(group = "Material", label = "Height map")
     public TextureStreamableResource heightMap;
-    @MutableField(group = "Material", label = "materialMask")
+    @MutableField(group = "Material", label = "Material mask", help = "R isEmission | G useSSR | B useGI | A useAO")
     public TextureStreamableResource materialMask;
-    @MutableField(group = "Material", label = "parallaxHeightScale")
-    public float parallaxHeightScale = 1;
-    @MutableField(group = "Material", label = "parallaxLayers")
-    public int parallaxLayers = 2;
-    @MutableField(group = "Material", label = "useParallax")
+    @MutableField(group = "Material", label = "use parallax")
     public boolean useParallax = false;
+    @MutableField(group = "Material", label = "Parallax height scale")
+    public float parallaxHeightScale = 1;
+    @MutableField(group = "Material", label = "Parallax layers")
+    public int parallaxLayers = 16;
 
     public float distanceFromCamera = 0f;
 

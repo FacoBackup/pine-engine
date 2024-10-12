@@ -23,31 +23,28 @@ import java.util.Map;
 
 @PBean
 public class EditorRepository extends Inspectable implements SerializableRepository {
-    @MutableField(label = "Show grid")
+    @MutableField(group = "Grid", label = "Show grid")
     public boolean showGrid = true;
 
-    @MutableField(label = "Grid color", min = 0, max = 1)
+    @MutableField(group = "Grid", label = "Grid color", min = 0, max = 1)
     public float gridColor = 0.3f;
 
-    @MutableField(label = "Grid scale", min = 1, max = 10)
+    @MutableField(group = "Grid", label = "Grid scale", min = 1, max = 10)
     public float gridScale = 1f;
 
-    @MutableField(label = "Grid threshold", max = 500, min = 100)
+    @MutableField(group = "Grid", label = "Grid threshold", max = 500, min = 100)
     public int gridThreshold = 100;
 
-    @MutableField(label = "Grid opacity")
+    @MutableField(group = "Grid", label = "Grid opacity")
     public float gridOpacity = 1f;
 
-    @MutableField(label = "Shading model")
-    public DebugShadingModel debugShadingModel = DebugShadingModel.RANDOM;
-
-    @MutableField(label = "Accent color")
+    @MutableField(group = "Editor", label = "Accent color")
     public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);
 
     public transient final ImVec4 accent = new ImVec4();
     public int accentU32 = 0;
 
-    @MutableField(label = "Dark mode")
+    @MutableField(group = "Editor", label = "Dark mode")
     public boolean isDarkMode = true;
 
     // Icon settings
@@ -75,7 +72,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public boolean gizmoUseSnapRotate;
     public boolean gizmoUseSnapScale;
     public final ImInt gizmoModeOption = new ImInt(0);
-    public final ImInt shadingModelOption = new ImInt(DebugShadingModel.RANDOM.getIndex());
+    public final ImInt shadingModelOption = new ImInt(DebugShadingModel.LIT.getIndex());
     public boolean showOnlyEntitiesHierarchy = false;
 
     public Map<String, Entity> pinnedEntities = new HashMap<>();

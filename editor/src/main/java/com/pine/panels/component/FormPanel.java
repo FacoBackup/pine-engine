@@ -7,7 +7,11 @@ import com.pine.inspection.Inspectable;
 import com.pine.panels.component.impl.*;
 import com.pine.repository.streaming.AbstractStreamableResource;
 import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class FormPanel extends AbstractView {
@@ -28,46 +32,52 @@ public class FormPanel extends AbstractView {
         if (data == null) {
             return;
         }
-
+        Map<String, AccordionPanel> groups = new HashMap<>();
         for (FieldDTO field : data.getFieldsAnnotated()) {
+            if (!groups.containsKey(field.getGroup())) {
+                groups.put(field.getGroup(), appendChild(new AccordionPanel()));
+            }
+
+            AccordionPanel group = groups.get(field.getGroup());
+            group.title = field.getGroup();
             switch (field.getType()) {
                 case CUSTOM:
                     if (AbstractStreamableResource.class.isAssignableFrom(field.getField().getType())) {
-                        appendChild(new ResourceField(field, changeHandler));
+                        group.appendChild(new ResourceField(field, changeHandler));
                     }
-                    if(Transformation.class.isAssignableFrom(field.getField().getType())){
-                        appendChild(new TransformationField(field, changeHandler));
+                    if (Transformation.class.isAssignableFrom(field.getField().getType())) {
+                        group.appendChild(new TransformationField(field, changeHandler));
                     }
                     break;
                 case STRING:
-                    appendChild(new StringField(field, changeHandler));
+                    group.appendChild(new StringField(field, changeHandler));
                     break;
                 case INT:
-                    appendChild(new IntField(field, changeHandler));
+                    group.appendChild(new IntField(field, changeHandler));
                     break;
                 case FLOAT:
-                    appendChild(new FloatField(field, changeHandler));
+                    group.appendChild(new FloatField(field, changeHandler));
                     break;
                 case BOOLEAN:
-                    appendChild(new BooleanField(field, changeHandler));
+                    group.appendChild(new BooleanField(field, changeHandler));
                     break;
                 case VECTOR2:
-                    appendChild(new Vector2Field(field, changeHandler));
+                    group.appendChild(new Vector2Field(field, changeHandler));
                     break;
                 case VECTOR3:
-                    appendChild(new Vector3Field(field, changeHandler));
+                    group.appendChild(new Vector3Field(field, changeHandler));
                     break;
                 case VECTOR4:
-                    appendChild(new Vector4Field(field, changeHandler));
+                    group.appendChild(new Vector4Field(field, changeHandler));
                     break;
                 case QUATERNION:
-                    appendChild(new QuaternionField(field, changeHandler));
+                    group.appendChild(new QuaternionField(field, changeHandler));
                     break;
                 case COLOR:
-                    appendChild(new ColorField(field, changeHandler));
+                    group.appendChild(new ColorField(field, changeHandler));
                     break;
                 case OPTIONS:
-                    appendChild(new OptionsField(field, changeHandler));
+                    group.appendChild(new OptionsField(field, changeHandler));
                     break;
             }
         }

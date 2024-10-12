@@ -8,6 +8,7 @@ layout (location = 2) in vec3 normal;
 
 uniform int transformationIndex;
 
+flat out vec3 cameraPlacement;
 flat out int renderingIndex;
 flat out float depthFunc;
 smooth out vec2 initialUV;
@@ -15,6 +16,7 @@ smooth out vec3 normalVec;
 smooth out vec3 worldSpacePosition;
 
 void main() {
+    cameraPlacement = placement.xyz;
     renderingIndex = (transformationIndex + gl_InstanceID);
     mat4 modelMatrix = modelMatrices[renderingIndex];
     vec4 wPosition = modelMatrix * vec4(position, 1.0);
