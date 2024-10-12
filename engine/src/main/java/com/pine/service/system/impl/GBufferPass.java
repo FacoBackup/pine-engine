@@ -29,10 +29,16 @@ public class GBufferPass extends AbstractPass implements Loggable {
     private UniformDTO ao;
     private UniformDTO normal;
     private UniformDTO heightMap;
-    private UniformDTO materialMask;
     private UniformDTO parallaxHeightScale;
     private UniformDTO parallaxLayers;
     private UniformDTO useParallax;
+    private UniformDTO anisotropicRotation;
+    private UniformDTO anisotropy;
+    private UniformDTO clearCoat;
+    private UniformDTO sheen;
+    private UniformDTO sheenTint;
+    private UniformDTO renderingMode;
+    private UniformDTO ssrEnabled;
 
     @Override
     public void onInitialize() {
@@ -44,10 +50,17 @@ public class GBufferPass extends AbstractPass implements Loggable {
         ao = shaderRepository.gBufferShader.addUniformDeclaration("ao", GLSLType.SAMPLER_2_D);
         normal = shaderRepository.gBufferShader.addUniformDeclaration("normal", GLSLType.SAMPLER_2_D);
         heightMap = shaderRepository.gBufferShader.addUniformDeclaration("heightMap", GLSLType.SAMPLER_2_D);
-        materialMask = shaderRepository.gBufferShader.addUniformDeclaration("materialMask", GLSLType.SAMPLER_2_D);
         parallaxHeightScale = shaderRepository.gBufferShader.addUniformDeclaration("parallaxHeightScale", GLSLType.FLOAT);
         parallaxLayers = shaderRepository.gBufferShader.addUniformDeclaration("parallaxLayers", GLSLType.INT);
         useParallax = shaderRepository.gBufferShader.addUniformDeclaration("useParallax", GLSLType.BOOL);
+
+        anisotropicRotation = shaderRepository.gBufferShader.addUniformDeclaration("anisotropicRotation", GLSLType.FLOAT);
+        anisotropy = shaderRepository.gBufferShader.addUniformDeclaration("anisotropy", GLSLType.FLOAT);
+        clearCoat = shaderRepository.gBufferShader.addUniformDeclaration("clearCoat", GLSLType.FLOAT);
+        sheen = shaderRepository.gBufferShader.addUniformDeclaration("sheen", GLSLType.FLOAT);
+        sheenTint = shaderRepository.gBufferShader.addUniformDeclaration("sheenTint", GLSLType.FLOAT);
+        renderingMode = shaderRepository.gBufferShader.addUniformDeclaration("renderingMode", GLSLType.INT);
+        ssrEnabled = shaderRepository.gBufferShader.addUniformDeclaration("ssrEnabled", GLSLType.BOOL);
     }
 
     @Override
@@ -58,6 +71,7 @@ public class GBufferPass extends AbstractPass implements Loggable {
     @Override
     protected void renderInternal() {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
+        GL46.glDisable(GL11.GL_BLEND);
         if (settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
         } else {
@@ -82,7 +96,27 @@ public class GBufferPass extends AbstractPass implements Loggable {
             shaderService.bindUniform(ao, request.ao);
             shaderService.bindUniform(normal, request.normal);
             shaderService.bindUniform(heightMap, request.heightMap);
-            shaderService.bindUniform(materialMask, request.materialMask);
+
+            floatBuffer.put(0, request.anisotropicRotation);
+            shaderService.bindUniform(anisotropicRotation, floatBuffer);
+
+            floatBuffer.put(0, request.anisotropy);
+            shaderService.bindUniform(anisotropy, floatBuffer);
+
+            floatBuffer.put(0, request.clearCoat);
+            shaderService.bindUniform(clearCoat, floatBuffer);
+
+            floatBuffer.put(0, request.sheen);
+            shaderService.bindUniform(sheen, floatBuffer);
+
+            floatBuffer.put(0, request.sheenTint);
+            shaderService.bindUniform(sheenTint, floatBuffer);
+
+            intBuffer.put(0, request.renderingMode.getId());
+            shaderService.bindUniform(renderingMode, intBuffer);
+
+            intBuffer.put(0, request.ssrEnabled ? 1 : 0);
+            shaderService.bindUniform(ssrEnabled, intBuffer);
 
             floatBuffer.put(0, request.parallaxHeightScale);
             shaderService.bindUniform(parallaxHeightScale, floatBuffer);

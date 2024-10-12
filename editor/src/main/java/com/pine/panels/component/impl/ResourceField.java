@@ -22,6 +22,7 @@ public class ResourceField extends AbstractFormField {
     private final ImInt selected = new ImInt(-1);
     private final List<AbstractStreamableResource<?>> items = new ArrayList<>();
     private String[] itemsArr = new String[0];
+    private int previousSize = -1;
 
     public ResourceField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
@@ -53,21 +54,25 @@ public class ResourceField extends AbstractFormField {
     }
 
     private void refresh() {
-        items.clear();
-        for (var history : repository.streamableResources) {
-            if (type == null || type == history.getResourceType()) {
-                items.add(history);
+        if (previousSize != repository.streamableResources.size()) {
+            previousSize = repository.streamableResources.size();
+            items.clear();
+            for (var history : repository.streamableResources) {
+                if (type == null || type == history.getResourceType()) {
+                    items.add(history);
+                }
             }
-        }
-        itemsArr = new String[items.size()];
-        for (int i = 0; i < items.size(); i++) {
-            var r = items.get(i);
-            itemsArr[i] = r.name;
+            itemsArr = new String[items.size()];
+            for (int i = 0; i < items.size(); i++) {
+                var r = items.get(i);
+                itemsArr[i] = r.name;
+            }
         }
     }
 
     @Override
     public void render() {
+        refresh();
         ImGui.text(dto.getLabel());
         if (ImGui.combo(imguiId, selected, itemsArr)) {
             changerHandler.accept(dto, items.get(selected.get()));
@@ -76,10 +81,6 @@ public class ResourceField extends AbstractFormField {
         ImGui.sameLine();
         if (ImGui.button(Icons.remove + "Remove" + imguiId)) {
             changerHandler.accept(dto, null);
-        }
-
-        if (ImGui.button("Refresh" + imguiId + "1")) {
-            refresh();
         }
     }
 }

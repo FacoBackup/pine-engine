@@ -2,6 +2,7 @@ package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
 import com.pine.component.Transformation;
+import com.pine.component.light.AbstractLightComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
@@ -61,6 +62,9 @@ public class TransformationService {
         st.globalMatrix.set(auxMat4);
         st.registerChange();
         st.freezeVersion();
+        for(var comp : st.entity.components.values()){
+            comp.registerChange();
+        }
     }
 
     public float getDistanceFromCamera(Vector3f translation) {

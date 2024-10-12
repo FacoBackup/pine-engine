@@ -4,10 +4,14 @@ package com.pine.repository.fs;
 import com.pine.repository.streaming.AbstractStreamableResource;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ResourceEntry implements Serializable {
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
     public String name;
     public final ResourceEntryType type;
     public final float size;
@@ -17,8 +21,10 @@ public class ResourceEntry implements Serializable {
     public ResourceEntry parent;
     public final String sizeText;
     public AbstractStreamableResource<?> streamableResource;
+    public String creationDateString;
 
     public ResourceEntry(String name, ResourceEntryType type, float size, String path, ResourceEntry parent, AbstractStreamableResource<?> streamableResource) {
+        creationDateString = FORMATTER.format(new Date(creationDate));
         this.name = name;
         this.streamableResource = streamableResource;
         this.type = type;

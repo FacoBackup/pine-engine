@@ -25,17 +25,28 @@ uniform sampler2D metallic;
 uniform sampler2D ao;
 uniform sampler2D normal;
 uniform sampler2D heightMap;
-uniform sampler2D materialMask;// R isEmission | G useSSR | B useGI | A useAO
 
 uniform float parallaxHeightScale;
 uniform int parallaxLayers;
 uniform int debugShadingMode;
 uniform bool useParallax;
 
+uniform float anisotropicRotation;
+uniform float anisotropy;
+uniform float clearCoat;
+uniform float sheen;
+uniform float sheenTint;
+uniform int renderingMode;
+uniform bool ssrEnabled;
+
 layout (location = 0) out vec4 gBufferAlbedoSampler;
 layout (location = 1) out vec4 gBufferNormalSampler;
 layout (location = 2) out vec4 gBufferRMAOSampler;
-layout (location = 3) out vec4 gBufferMaterialSampler;// R isEmission | G useSSR | B useGI | A useAO
+
+// X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
+// Y channel: 16 bits for clearCoat + 16 bits for sheen
+// Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
+layout (location = 3) out vec4 gBufferMaterialSampler;
 layout (location = 4) out vec4 gBufferDepthSampler;
 
 float encode() {
@@ -97,6 +108,8 @@ vec3 randomColor(float seed) {
     return vec3(r, g, rand(vec2(seed + g)));
 }
 
+#include "../uber/MATERIAL_INFO.glsl"
+
 void main() {
     vec2 UV = initialUV;
     vec3 V = cameraPlacement.xyz - worldSpacePosition;
@@ -106,11 +119,22 @@ void main() {
         UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
 
-    gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 1);
+    gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 0);
     gBufferNormalSampler = vec4(vec3(normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0))), 1);
-    gBufferRMAOSampler = vec4(texture(roughness, UV).r, texture(metallic, UV).r, texture(ao, UV).r, 1);
-    gBufferMaterialSampler = vec4(texture(materialMask, UV));
+    gBufferRMAOSampler = vec4(texture(roughness, UV).r, texture(metallic, UV).r, 1 - texture(ao, UV).r, 1);
     gBufferDepthSampler = vec4(encode(), 0, 0, 1);
+    gBufferMaterialSampler = vec4(
+        packValues(
+            anisotropicRotation,
+            anisotropy,
+            clearCoat,
+            sheen,
+            sheenTint,
+            renderingMode,
+            ssrEnabled
+        ),
+        1
+    );
 
     if (debugShadingMode != LIT){
         switch (debugShadingMode) {
@@ -142,6 +166,6 @@ void main() {
             gBufferAlbedoSampler.rgb = vec3(worldSpacePosition);
             break;
         }
-        gBufferMaterialSampler = vec4(1, 0, 0, 0);
+        gBufferAlbedoSampler.a = debugShadingMode != LIGHT_ONLY ? 1 : 0;
     }
 }

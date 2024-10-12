@@ -125,16 +125,17 @@ public class RenderingRequestService {
                 streamingService.stream(scene.heightMap);
             }
         }
-        if (scene.materialMask != null) {
-            if (scene.materialMask.isLoaded()) {
-                renderRequest.materialMask = scene.materialMask.texture;
-            } else {
-                streamingService.stream(scene.materialMask);
-            }
-        }
         renderRequest.parallaxHeightScale = scene.parallaxHeightScale;
         renderRequest.parallaxLayers = scene.parallaxLayers;
         renderRequest.useParallax = scene.useParallax;
+
+        renderRequest.anisotropicRotation = scene.anisotropicRotation;
+        renderRequest.anisotropy = scene.anisotropy;
+        renderRequest.clearCoat = scene.clearCoat;
+        renderRequest.sheen = scene.sheen;
+        renderRequest.sheenTint = scene.sheenTint;
+        renderRequest.renderingMode = scene.renderingMode;
+        renderRequest.ssrEnabled = scene.ssrEnabled;
     }
 
     protected @Nullable MeshStreamableResource selectLOD(MeshComponent scene) {

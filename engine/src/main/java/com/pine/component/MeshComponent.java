@@ -6,6 +6,7 @@ import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.MeshStreamableResource;
 import com.pine.repository.streaming.TextureStreamableResource;
 import com.pine.theme.Icons;
+import com.pine.type.MaterialRenderingMode;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
@@ -71,14 +72,27 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
     public TextureStreamableResource normal;
     @MutableField(group = "Material", label = "Height map")
     public TextureStreamableResource heightMap;
-    @MutableField(group = "Material", label = "Material mask", help = "R isEmission | G useSSR | B useGI | A useAO")
-    public TextureStreamableResource materialMask;
     @MutableField(group = "Material", label = "use parallax")
     public boolean useParallax = false;
     @MutableField(group = "Material", label = "Parallax height scale")
     public float parallaxHeightScale = 1;
     @MutableField(group = "Material", label = "Parallax layers")
     public int parallaxLayers = 16;
+    @MutableField(group = "Material", label = "Rendering mode")
+    public MaterialRenderingMode renderingMode = MaterialRenderingMode.ISOTROPIC;
+    @MutableField(group = "Material", label = "Screen space reflections")
+    public boolean ssrEnabled;
+
+    @MutableField(group = "Material", label = "Anisotropic rotation")
+    public float anisotropicRotation;
+    @MutableField(group = "Material", label = "Clear coat")
+    public float clearCoat;
+    @MutableField(group = "Material", label = "Anisotropy")
+    public float anisotropy;
+    @MutableField(group = "Material", label = "Sheen")
+    public float sheen;
+    @MutableField(group = "Material", label = "Sheen tint")
+    public float sheenTint;
 
     public float distanceFromCamera = 0f;
 

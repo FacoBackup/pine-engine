@@ -1,8 +1,8 @@
 package com.pine.repository.rendering;
 
-import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
 import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.type.MaterialRenderingMode;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -11,13 +11,20 @@ import java.util.List;
 public class RenderingRequest implements Serializable {
     public MeshStreamableResource mesh;
 
+    public float anisotropicRotation;
+    public float anisotropy;
+    public float clearCoat;
+    public float sheen;
+    public float sheenTint;
+    public MaterialRenderingMode renderingMode;
+    public boolean ssrEnabled;
+
     public int albedo;
     public int roughness;
     public int metallic;
     public int ao;
     public int normal;
     public int heightMap;
-    public int materialMask;
     public float parallaxHeightScale;
     public int parallaxLayers;
     public boolean useParallax;

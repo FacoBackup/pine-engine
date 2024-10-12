@@ -62,10 +62,14 @@ public class CoreFBORepository implements CoreRepository {
         brdfSampler = brdfFBO.getSamplers().getFirst();
 
         gBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
-                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Albedo
+                .addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false) // Albedo + Emissive flag
                 .addSampler(1, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Normal
                 .addSampler(2, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Roughness + Metallic + AO
-                .addSampler(3, GL46.GL_RGBA4, GL46.GL_RGBA, GL46.GL_INT, false, false) // Material attributes: isEmission + useSSR + useGI + useAO
+
+                // X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
+                // Y channel: 16 bits for clearCoat + 16 bits for sheen
+                // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
+                .addSampler(3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
                 .addSampler(4, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth
         );
         gBufferAlbedoSampler = gBuffer.getSamplers().get(0);

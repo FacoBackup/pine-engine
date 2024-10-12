@@ -6,6 +6,7 @@ import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
 import com.pine.panels.component.impl.*;
 import com.pine.repository.streaming.AbstractStreamableResource;
+import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 
@@ -90,8 +91,12 @@ public class FormPanel extends AbstractView {
     @Override
     public void render() {
         if (inspectable != null) {
-            ImGui.text(inspectable.getTitle());
-            super.render();
+            ImGui.text(inspectable.getIcon() + inspectable.getTitle());
+            if(ImGui.beginChild(imguiId)){
+                ImGui.separator();
+                super.render();
+                ImGui.endChild();
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+
 uniform sampler2D sceneDepth;
 
 float getLogDepth(vec2 uv) {

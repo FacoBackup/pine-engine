@@ -4,11 +4,15 @@ import com.pine.injection.PBean;
 import com.pine.repository.streaming.StreamableResourceType;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.nfd.NFDFilterItem;
 import org.lwjgl.util.nfd.NativeFileDialog;
 
-import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY;
-import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OpenDialog;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.lwjgl.util.nfd.NativeFileDialog.*;
 
 @PBean
 public class NativeDialogService {
@@ -34,24 +38,34 @@ public class NativeDialogService {
         return null;
     }
 
-    public String selectFile() {
+    public List<String> selectFile() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            String defaultPath = null;
-            String selectedPath = null;
+            List<String> selectedPath = new ArrayList<>();
 
-            StreamableResourceType[] values = StreamableResourceType.values();
-            NFDFilterItem.Buffer filterList = NFDFilterItem.malloc(values.length, stack);
-            for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
-                var type = values[i];
-                filterList.get(i).name(stack.UTF8(type.name())).spec(stack.UTF8(String.join(",", type.getFileExtensions())));
+            List<String> fileTypes = new ArrayList<>();
+            for (StreamableResourceType type : StreamableResourceType.values()) {
+                fileTypes.addAll(type.getFileExtensions());
             }
 
-            PointerBuffer outPath = stack.mallocPointer(1);
+            NFDFilterItem.Buffer filterList = NFDFilterItem.malloc(1, stack);
+            filterList.get(0).name(stack.UTF8("Assets")).spec(stack.UTF8(String.join(",", fileTypes)));
 
-            int result = NFD_OpenDialog(outPath, filterList, defaultPath);
+            PointerBuffer outPaths = stack.mallocPointer(2);
+            int result = NFD_OpenDialogMultiple(outPaths, filterList, (CharSequence) null);
             if (result == NFD_OKAY) {
-                selectedPath = outPath.getStringUTF8(0);
-                NativeFileDialog.nNFD_FreePath(outPath.get(0));
+                long outPathPointer = outPaths.get(0);
+
+                IntBuffer al = MemoryUtil.memAllocInt(1);
+                NativeFileDialog.NFD_PathSet_GetCount(outPathPointer, al);
+                for (int i = 0; i < al.get(0); i++) {
+                    PointerBuffer outPath = stack.mallocPointer(1);
+                    if (NativeFileDialog.NFD_PathSet_GetPath(outPathPointer, i, outPath) == NFD_OKAY) {
+                        selectedPath.add(outPath.getStringUTF8(0));
+                    }
+                    NativeFileDialog.nNFD_FreePath(outPath.get(0));
+                }
+                MemoryUtil.memFree(al);
+//                MemoryUtil.memFree(outPaths);
             }
             return selectedPath;
         }
