@@ -3,10 +3,10 @@ package com.pine.service.system.impl;
 import com.pine.messaging.Loggable;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.shader.Shader;
-import com.pine.service.system.AbstractSystem;
+import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL46;
 
-public abstract class AbstractQuadPassSystem extends AbstractSystem implements Loggable {
+public abstract class AbstractQuadPassPass extends AbstractPass implements Loggable {
 
     protected abstract Shader getShader();
 

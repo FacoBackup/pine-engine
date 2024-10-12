@@ -9,7 +9,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class FrameCompositionSystem extends AbstractQuadPassSystem {
+public class FrameCompositionPass extends AbstractQuadPassPass {
     private UniformDTO inverseFilterTextureSize;
     private UniformDTO useFXAA;
     private UniformDTO filmGrainEnabled;

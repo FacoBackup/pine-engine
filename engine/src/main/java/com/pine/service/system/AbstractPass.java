@@ -18,7 +18,7 @@ import com.pine.service.resource.UBOService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.streaming.mesh.MeshService;
 
-public abstract class AbstractSystem extends MetricCollector {
+public abstract class AbstractPass extends MetricCollector {
     @PInject
     public Engine engine;
     @PInject

@@ -100,6 +100,9 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     @MutableField(label = "Shadow Map Resolution")
     public int shadowMapResolution = 4096;
 
+    @MutableField(label = "Wireframe view")
+    public boolean wireframe = false;
+
     @Override
     public String getTitle() {
         return "Engine Settings";

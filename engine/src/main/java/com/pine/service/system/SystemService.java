@@ -13,20 +13,21 @@ public class SystemService implements SyncTask {
     @PInject
     public PInjector pInjector;
 
-    private List<AbstractSystem> systems = List.of(
-            new BRDFGenSystem(),
-            new ShaderDataSyncSystem(),
-            new DepthPrePassSystem(),
-            new AtmosphereSystem(),
-            new VoxelVisualizerSystem(),
-            new FrameCompositionSystem()
+    private List<AbstractPass> systems = List.of(
+            new BRDFGenPass(),
+            new ShaderDataSyncPass(),
+            new GBufferPass(),
+            new GBufferShadingPass(),
+            new AtmospherePass(),
+            new VoxelVisualizerPass(),
+            new FrameCompositionPass()
     );
 
-    public List<AbstractSystem> getSystems() {
+    public List<AbstractPass> getSystems() {
         return systems;
     }
 
-    public void setSystems(List<AbstractSystem> systems) {
+    public void setSystems(List<AbstractPass> systems) {
         for (var sys : systems) {
             if (!this.systems.contains(sys)) {
                 pInjector.inject(sys);

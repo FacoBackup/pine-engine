@@ -6,13 +6,13 @@ import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.AbstractSystem;
+import com.pine.service.system.AbstractPass;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 import java.util.List;
 
-public class DepthPrePassSystem extends AbstractSystem implements Loggable {
+public class GBufferPass extends AbstractPass implements Loggable {
 
     private UniformDTO transformationIndex;
     private final IntBuffer transformationIndexBuffer = MemoryUtil.memAllocInt(1);

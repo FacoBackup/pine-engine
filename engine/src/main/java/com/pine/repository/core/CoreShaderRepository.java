@@ -33,12 +33,14 @@ public class CoreShaderRepository implements CoreRepository{
     public Shader terrainShader;
     public Shader brdfShader;
     public Shader debugVoxelShader;
+    public Shader gBufferShading;
 
     @PInject
     public ResourceService resources;
 
     @Override
     public void initialize(){
+        gBufferShading = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "uber/UBER-MATERIAL.vert", LOCAL_SHADER + "tool/UBER-MATERIAL-DEBUG.frag").staticResource());
         debugVoxelShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.vert", ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.frag"));
         brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());

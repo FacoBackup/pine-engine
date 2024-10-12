@@ -7,13 +7,13 @@ import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.AbstractSystem;
+import com.pine.service.system.AbstractPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
 import org.lwjgl.opengl.GL46;
 
 
-public class GridSystem extends AbstractSystem {
+public class GridPass extends AbstractPass {
     @PInject
     public EditorRepository engineConfig;
 

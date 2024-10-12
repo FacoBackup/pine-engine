@@ -1,9 +1,9 @@
 package com.pine.service.system.impl;
 
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.system.AbstractSystem;
+import com.pine.service.system.AbstractPass;
 
-public class BRDFGenSystem extends AbstractSystem {
+public class BRDFGenPass extends AbstractPass {
 
     private boolean isFirstRun = true;
 
