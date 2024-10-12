@@ -1,7 +1,7 @@
 package com.pine.tools.system;
 
 import com.pine.injection.PInject;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -20,7 +20,7 @@ import java.nio.IntBuffer;
 public class DebugSystem extends AbstractSystem {
 
     @PInject
-    public SettingsRepository editorSettings;
+    public EditorRepository editorSettings;
 
     private UniformDTO transformationIndex;
     private UniformDTO lightCount;

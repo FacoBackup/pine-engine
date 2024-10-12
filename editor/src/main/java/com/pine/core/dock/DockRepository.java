@@ -1,4 +1,4 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;

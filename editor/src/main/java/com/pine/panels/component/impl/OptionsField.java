@@ -15,7 +15,7 @@ public class OptionsField extends AbstractFormField {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         ImGui.text(dto.getLabel());
         for(var op : dto.getOptions()){
             if(ImGui.checkbox(op.getLabel(), selected == op)){

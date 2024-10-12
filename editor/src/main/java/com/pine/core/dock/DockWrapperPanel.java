@@ -1,11 +1,11 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
 import com.pine.theme.Icons;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCond;
@@ -17,7 +17,7 @@ import org.joml.Vector2f;
 
 import java.io.Serializable;
 
-import static com.pine.dock.DockPanel.OPEN;
+import static com.pine.core.dock.DockPanel.OPEN;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public final class DockWrapperPanel extends AbstractView implements Loggable, Serializable {
@@ -68,7 +68,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             view = dock.getDescription().getView().getConstructor().newInstance();
             view.setSize(size);
             view.setPosition(position);
-            view.setContext(dock.getContext());
+            setContext(dock.getContext());
             appendChild(view);
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
@@ -77,11 +77,6 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
 
     @Override
     public void render() {
-        tick();
-        if (!visible) {
-            return;
-        }
-
         ImGui.setNextWindowSizeConstraints(MIN_SIZE, MAX_SIZE);
         if (!padding.equals(DEFAULT)) {
             ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, padding);

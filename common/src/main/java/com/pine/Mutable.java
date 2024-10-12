@@ -7,8 +7,8 @@ public interface Mutable {
     default void freezeVersion(){
     }
 
-    default boolean isFrozen(){
-        return false;
+    default boolean isNotFrozen(){
+        return true;
     }
 
     int getChangeId();

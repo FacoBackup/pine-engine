@@ -1,17 +1,16 @@
 package com.pine.service;
 
-import com.pine.Updatable;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.injection.PostCreation;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import imgui.ImGui;
 import imgui.ImGuiStyle;
 import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
 
 @PBean
-public class ThemeService implements Updatable {
+public class ThemeService {
     public ImVec4 neutralPalette;
     public ImVec4 palette0;
     public ImVec4 palette1;
@@ -25,20 +24,19 @@ public class ThemeService implements Updatable {
     private float prevLength;
 
     @PInject
-    public SettingsRepository settingsRepository;
+    public EditorRepository editorRepository;
 
-    @Override
     public void tick() {
-        if (previousTheme == settingsRepository.isDarkMode && settingsRepository.accentColor.length() == prevLength) {
+        if (previousTheme == editorRepository.isDarkMode && editorRepository.accentColor.length() == prevLength) {
             return;
         }
-        prevLength = settingsRepository.accentColor.length();
-        previousTheme = settingsRepository.isDarkMode;
+        prevLength = editorRepository.accentColor.length();
+        previousTheme = editorRepository.isDarkMode;
 
         ImGuiStyle style = ImGui.getStyle();
         ImVec4[] colors = style.getColors();
 
-        if (!settingsRepository.isDarkMode) {
+        if (!editorRepository.isDarkMode) {
             ImGui.styleColorsLight();
             setLightMode();
         } else {
@@ -82,24 +80,24 @@ public class ThemeService implements Updatable {
         colors[ImGuiCol.NavWindowingDimBg] = palette2;
         colors[ImGuiCol.ModalWindowDimBg] = palette2;
 
-        settingsRepository.accent.y = settingsRepository.accentColor.y;
-        settingsRepository.accent.z = settingsRepository.accentColor.z;
-        settingsRepository.accent.x = settingsRepository.accentColor.x;
-        settingsRepository.accent.w = 1;
-        settingsRepository.accentU32 = ImGui.getColorU32(settingsRepository.accent);
+        editorRepository.accent.y = editorRepository.accentColor.y;
+        editorRepository.accent.z = editorRepository.accentColor.z;
+        editorRepository.accent.x = editorRepository.accentColor.x;
+        editorRepository.accent.w = 1;
+        editorRepository.accentU32 = ImGui.getColorU32(editorRepository.accent);
 
-        colors[ImGuiCol.FrameBgHovered] = settingsRepository.accent;
-        colors[ImGuiCol.FrameBgActive] = settingsRepository.accent;
-        colors[ImGuiCol.CheckMark] = settingsRepository.accent;
-        colors[ImGuiCol.SliderGrabActive] = settingsRepository.accent;
-        colors[ImGuiCol.Button] = settingsRepository.accent;
-        colors[ImGuiCol.ButtonHovered] = settingsRepository.accent;
-        colors[ImGuiCol.Header] = settingsRepository.accent;
-        colors[ImGuiCol.HeaderHovered] = settingsRepository.accent;
-        colors[ImGuiCol.HeaderActive] = settingsRepository.accent;
-        colors[ImGuiCol.ResizeGripHovered] = settingsRepository.accent;
-        colors[ImGuiCol.ResizeGripActive] = settingsRepository.accent;
-        colors[ImGuiCol.TextSelectedBg] = settingsRepository.accent;
+        colors[ImGuiCol.FrameBgHovered] = editorRepository.accent;
+        colors[ImGuiCol.FrameBgActive] = editorRepository.accent;
+        colors[ImGuiCol.CheckMark] = editorRepository.accent;
+        colors[ImGuiCol.SliderGrabActive] = editorRepository.accent;
+        colors[ImGuiCol.Button] = editorRepository.accent;
+        colors[ImGuiCol.ButtonHovered] = editorRepository.accent;
+        colors[ImGuiCol.Header] = editorRepository.accent;
+        colors[ImGuiCol.HeaderHovered] = editorRepository.accent;
+        colors[ImGuiCol.HeaderActive] = editorRepository.accent;
+        colors[ImGuiCol.ResizeGripHovered] = editorRepository.accent;
+        colors[ImGuiCol.ResizeGripActive] = editorRepository.accent;
+        colors[ImGuiCol.TextSelectedBg] = editorRepository.accent;
 
         BACKGROUND_COLOR[0] = colors[ImGuiCol.WindowBg].x;
         BACKGROUND_COLOR[1] = colors[ImGuiCol.WindowBg].y;

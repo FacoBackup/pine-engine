@@ -17,7 +17,7 @@ public class QuaternionField extends AbstractFormField {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         values[0] = valQuat.x;
         values[1] = valQuat.y;
         values[2] = valQuat.z;

@@ -14,7 +14,7 @@ public class ResourceEntry implements Serializable {
     public final long creationDate = System.currentTimeMillis();
     public final String path;
     public List<ResourceEntry> children = new ArrayList<>();
-    public ResourceEntry parent = null;
+    public ResourceEntry parent;
     public final String sizeText;
     public AbstractStreamableResource<?> streamableResource;
 

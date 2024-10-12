@@ -1,6 +1,6 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
-import com.pine.view.AbstractView;
+import com.pine.core.view.AbstractView;
 import imgui.ImVec2;
 import org.joml.Vector2f;
 

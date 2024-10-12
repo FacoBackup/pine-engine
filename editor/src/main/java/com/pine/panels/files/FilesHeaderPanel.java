@@ -1,18 +1,19 @@
 package com.pine.panels.files;
 
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
-import com.pine.repository.ContentBrowserRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
 import com.pine.service.FSService;
+import com.pine.service.FilesService;
 import com.pine.service.NativeDialogService;
 import com.pine.service.loader.LoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.theme.Icons;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImString;
@@ -30,9 +31,10 @@ public class FilesHeaderPanel extends AbstractView {
     public MessageRepository messageRepository;
     @PInject
     public NativeDialogService nativeDialogService;
-
     @PInject
-    public ContentBrowserRepository contentBrowserRepository;
+    public FilesService filesService;
+    @PInject
+    public EditorRepository editorRepository;
 
 
     private final ImString searchPath = new ImString();
@@ -49,7 +51,7 @@ public class FilesHeaderPanel extends AbstractView {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         if (ImGui.button(Icons.create_new_folder + "##mkdir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
             context.currentDirectory.children.add(new ResourceEntry("New Directory (" + context.currentDirectory.children.size() + ")", ResourceEntryType.DIRECTORY, 0, context.currentDirectory.path + File.separator + "New folder", context.currentDirectory, null));
         }
@@ -73,7 +75,7 @@ public class FilesHeaderPanel extends AbstractView {
     private void searchFiles() {
         if (fsService.exists(searchPath.get())) {
             var context = ((FilesContext) getContext());
-            ResourceEntry entry = findRecursively(searchPath.get(), contentBrowserRepository.root);
+            ResourceEntry entry = findRecursively(searchPath.get(), editorRepository.rootDirectory);
             if (entry != null && entry.type == ResourceEntryType.DIRECTORY) {
                 context.setDirectory(entry);
             } else {
@@ -91,7 +93,7 @@ public class FilesHeaderPanel extends AbstractView {
                 messageRepository.pushMessage(new Message("Error while importing file " + filePath, MessageSeverity.ERROR));
             } else {
                 response.loadedResources.forEach(r -> {
-                    context.currentDirectory.children.add(new ResourceEntry(r.name, contentBrowserRepository.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
+                    context.currentDirectory.children.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
                 });
             }
         }

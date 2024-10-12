@@ -1,10 +1,10 @@
 package com.pine.panels.viewport;
 
 import com.pine.component.Transformation;
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.SettingsRepository;
-import com.pine.view.AbstractView;
+import com.pine.repository.EditorRepository;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class GizmoPanel extends AbstractView {
     @PInject
-    public SettingsRepository stateRepository;
+    public EditorRepository stateRepository;
 
     @PInject
     public CameraRepository cameraRepository;
@@ -29,7 +29,7 @@ public class GizmoPanel extends AbstractView {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         if (stateRepository.primitiveSelected == null) {
             return;
         }

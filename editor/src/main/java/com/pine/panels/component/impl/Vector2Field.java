@@ -17,7 +17,7 @@ public class Vector2Field extends AbstractFormField {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         values[0] = valVec2.x;
         values[1] = valVec2.y;
 

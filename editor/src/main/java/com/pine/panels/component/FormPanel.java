@@ -1,11 +1,11 @@
 package com.pine.panels.component;
 
 import com.pine.component.Transformation;
+import com.pine.core.view.AbstractView;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
 import com.pine.panels.component.impl.*;
 import com.pine.repository.streaming.AbstractStreamableResource;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 
 import java.util.function.BiConsumer;
@@ -78,10 +78,10 @@ public class FormPanel extends AbstractView {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         if (inspectable != null) {
             ImGui.text(inspectable.getTitle());
-            super.renderInternal();
+            super.render();
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.pine.window;
 
-import com.pine.dock.AbstractDockPanel;
-import com.pine.dock.DockDescription;
-import com.pine.panel.AbstractPanelContext;
+import com.pine.core.dock.AbstractDockPanel;
+import com.pine.core.dock.DockDescription;
+import com.pine.core.panel.AbstractPanelContext;
 import com.pine.panels.console.ConsolePanel;
 import com.pine.panels.files.FilesContext;
 import com.pine.panels.files.FilesPanel;

@@ -1,4 +1,4 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
 import java.io.Serializable;
 import java.util.ArrayList;

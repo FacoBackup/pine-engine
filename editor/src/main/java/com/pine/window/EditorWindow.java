@@ -1,13 +1,13 @@
 package com.pine.window;
 
-import com.pine.AbstractWindow;
 import com.pine.Engine;
-import com.pine.WindowService;
-import com.pine.dock.*;
+import com.pine.core.AbstractWindow;
+import com.pine.core.WindowService;
+import com.pine.core.dock.*;
 import com.pine.injection.PInject;
 import com.pine.panels.EditorHeaderPanel;
 import com.pine.panels.ToasterPanel;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.service.ProjectService;
 import com.pine.service.ThemeService;
 import com.pine.service.serialization.SerializationService;
@@ -18,8 +18,8 @@ import imgui.ImVec4;
 import java.util.Collections;
 import java.util.List;
 
-import static com.pine.dock.DockPanel.FLAGS;
-import static com.pine.dock.DockPanel.OPEN;
+import static com.pine.core.dock.DockPanel.FLAGS;
+import static com.pine.core.dock.DockPanel.OPEN;
 
 
 public class EditorWindow extends AbstractWindow {
@@ -36,7 +36,7 @@ public class EditorWindow extends AbstractWindow {
     public ThemeService themeService;
 
     @PInject
-    public SettingsRepository settingsRepository;
+    public EditorRepository editorRepository;
 
     @PInject
     public WindowService windowService;
@@ -47,7 +47,8 @@ public class EditorWindow extends AbstractWindow {
     private boolean isInitialized = false;
 
     @Override
-    public void onInitializeInternal() {
+    public void onInitialize() {
+        super.onInitialize();
         projectService.loadProject();
 
         appendChild(new ToasterPanel());
@@ -72,34 +73,31 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    protected ImVec4 getNeutralPalette() {
+    public ImVec4 getNeutralPalette() {
         return themeService.neutralPalette;
     }
 
     @Override
-    protected ImVec4 getAccentColor() {
-        return settingsRepository.accent;
+    public ImVec4 getAccentColor() {
+        return editorRepository.accent;
     }
 
     @Override
-    protected AbstractDockHeader getHeader() {
+    public AbstractDockHeader getHeader() {
         return new EditorHeaderPanel();
     }
 
     @Override
-    public void tick() {
+    public void render() {
+        start();
         themeService.tick();
-    }
-
-    @Override
-    public void renderInternal() {
         if (serializationRepository.isDeserializationDone()) {
             if (!isInitialized) {
                 windowService.maximize();
                 engine.start(windowService.getDisplayW(), windowService.getDisplayH(), List.of(new ToolsModule()), projectService.getProjectDirectory());
                 isInitialized = true;
             }
-            super.renderInternal();
+            super.render();
         } else {
             DockPanel.beginMainWindowSetup();
             ImGui.begin("##windowLoader", OPEN, FLAGS);
@@ -107,8 +105,8 @@ public class EditorWindow extends AbstractWindow {
             ImGui.text("Pine Engine");
             ImGui.text("Loading scene...");
             ImGui.end();
-
         }
+        end();
     }
 
     @Override

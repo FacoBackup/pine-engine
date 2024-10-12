@@ -2,15 +2,15 @@ package com.pine.panels.files;
 
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.repository.ContentBrowserRepository;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
 import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.service.FilesService;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.*;
@@ -27,10 +27,10 @@ public class FilesDirectoryPanel extends AbstractView {
     );
 
     @PInject
-    public ContentBrowserRepository contentBrowserRepository;
+    public FilesService filesService;
 
     @PInject
-    public SettingsRepository settingsRepository;
+    public EditorRepository editorRepository;
 
     @PInject
     public RequestProcessingService requestProcessingService;
@@ -43,13 +43,13 @@ public class FilesDirectoryPanel extends AbstractView {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         if (ImGui.isKeyPressed(ImGuiKey.Enter) && context.selected != null) {
             openResource(context.selected);
         }
 
         if (ImGui.isKeyPressed(ImGuiKey.Delete) && context.selected != null) {
-            contentBrowserRepository.delete(context.selected);
+            filesService.delete(context.selected);
         }
         if (ImGui.beginTable(imguiId, 4, FLAGS)) {
             ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 30f);
@@ -67,8 +67,8 @@ public class FilesDirectoryPanel extends AbstractView {
     private void renderChildren(ResourceEntry root) {
         ImGui.tableNextRow();
         if (context.selected == root) {
-            ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, settingsRepository.accentU32);
-            ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, settingsRepository.accentU32);
+            ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, editorRepository.accentU32);
+            ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, editorRepository.accentU32);
         }
         ImGui.tableNextColumn();
         if (root.type == ResourceEntryType.DIRECTORY) {

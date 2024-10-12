@@ -1,7 +1,7 @@
 package com.pine.panels.resources;
 
 import com.pine.component.MeshComponent;
-import com.pine.dock.AbstractDockPanel;
+import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
@@ -34,7 +34,7 @@ public class ResourcesPanel extends AbstractDockPanel {
     public MeshComponent meshComponent;
 
     @Override
-    public void renderInternal() {
+    public void render() {
         if (ImGui.beginTable("##resources" + imguiId, 2, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("Data", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);

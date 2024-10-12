@@ -1,7 +1,7 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
+import com.pine.core.panel.AbstractPanelContext;
 import com.pine.messaging.Loggable;
-import com.pine.panel.AbstractPanelContext;
 import imgui.type.ImInt;
 
 import java.io.Serializable;

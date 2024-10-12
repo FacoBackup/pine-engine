@@ -1,6 +1,6 @@
 package com.pine.panels.viewport;
 
-import com.pine.panel.AbstractPanelContext;
+import com.pine.core.panel.AbstractPanelContext;
 import com.pine.service.camera.Camera;
 
 public class ViewportContext extends AbstractPanelContext {

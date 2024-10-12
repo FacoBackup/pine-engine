@@ -1,7 +1,7 @@
 package com.pine.panels.metrics;
 
 import com.pine.MetricCollector;
-import com.pine.dock.AbstractDockPanel;
+import com.pine.core.dock.AbstractDockPanel;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiTableColumnFlags;
@@ -19,7 +19,7 @@ public class MetricsPanel extends AbstractDockPanel {
     private static final long HIGH_COST = 10;
 
     @Override
-    public void renderInternal() {
+    public void render() {
         Map<String, Long> metrics = MetricCollector.getMetrics();
 
         if (ImGui.beginTable("##metrics" + imguiId, 2, TABLE_FLAGS)) {

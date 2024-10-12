@@ -37,7 +37,7 @@ public class LightService {
         FloatBuffer b = ssboRepository.lightSSBOState;
         for (int i = 0; i < implDirectionalLightComponent.getBag().size(); i++) {
             var light = implDirectionalLightComponent.getBag().get(i);
-            if (!light.isFrozen()) {
+            if (light.isNotFrozen()) {
                 var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
 
@@ -61,7 +61,7 @@ public class LightService {
 
         for (int i = 0; i < implPointLightComponent.getBag().size(); i++) {
             var light = implPointLightComponent.getBag().get(i);
-            if (!light.isFrozen()) {
+            if (light.isNotFrozen()) {
                 int internalOffset = fillCommon(b, offset, light);
                 b.put(internalOffset, light.zFar);
                 b.put(internalOffset + 1, light.shadowMap ? 1 : 0);
@@ -77,7 +77,7 @@ public class LightService {
 
         for (int i = 0; i < implSphereLightComponent.getBag().size(); i++) {
             var light = implSphereLightComponent.getBag().get(i);
-            if (!light.isFrozen()) {
+            if (light.isNotFrozen()) {
                 int internalOffset = fillCommon(b, offset, light);
                 b.put(internalOffset, light.areaRadius);
             }
@@ -89,7 +89,7 @@ public class LightService {
 
         for (int i = 0; i < implSpotLightComponent.getBag().size(); i++) {
             var light = implSpotLightComponent.getBag().get(i);
-            if (!light.isFrozen()) {
+            if (light.isNotFrozen()) {
                 var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
 

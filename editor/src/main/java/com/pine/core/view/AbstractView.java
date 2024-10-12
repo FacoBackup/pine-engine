@@ -1,9 +1,9 @@
-package com.pine.view;
+package com.pine.core.view;
 
 import com.pine.MetricCollector;
+import com.pine.core.panel.AbstractPanelContext;
 import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
-import com.pine.panel.AbstractPanelContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,6 @@ public class AbstractView extends MetricCollector implements View {
     protected final String id;
     protected final String imguiId;
     protected final List<View> children = new ArrayList<>();
-    protected View parent;
-    protected boolean visible = true;
     private AbstractPanelContext internalContext;
 
     @PInject
@@ -41,20 +39,10 @@ public class AbstractView extends MetricCollector implements View {
     }
 
     @Override
-    public View getParent() {
-        return parent;
-    }
-
-    @Override
     public <T extends View> T appendChild(T child) {
         injector.inject(child);
         children.add(child);
-
-        if (child.getContext() == null || this.getContext() != null) {
-            child.setContext(this.getContext());
-        }
-        child.setParent(this);
-
+        child.setContext(this.getContext());
         child.onInitialize();
         return child;
     }
@@ -65,34 +53,10 @@ public class AbstractView extends MetricCollector implements View {
     }
 
     @Override
-    public boolean isVisible() {
-        return this.visible;
-    }
-
-    @Override
-    public void setVisible(boolean visible) {
-        this.visible = visible;
-    }
-
-    @Override
-    public void renderInternal() {
+    public void render() {
         for (View child : children) {
             child.render();
         }
-    }
-
-    @Override
-    public void setParent(View parent) {
-        this.parent = parent;
-    }
-
-    @Override
-    public void render() {
-        tick();
-        if (!visible) {
-            return;
-        }
-        renderInternal();
     }
 
     @Override

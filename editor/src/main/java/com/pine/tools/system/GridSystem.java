@@ -2,7 +2,7 @@ package com.pine.tools.system;
 
 import com.pine.EngineUtils;
 import com.pine.injection.PInject;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL46;
 
 public class GridSystem extends AbstractSystem {
     @PInject
-    public SettingsRepository engineConfig;
+    public EditorRepository engineConfig;
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;

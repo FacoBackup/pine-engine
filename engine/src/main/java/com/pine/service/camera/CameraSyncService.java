@@ -43,7 +43,7 @@ public class CameraSyncService implements SyncTask {
             cameraService = cameraFirstPersonService;
         }
         updateAspectRatio();
-        if (!camera.isFrozen()) {
+        if (camera.isNotFrozen()) {
             updateMatrices();
             updateUBOBuffer();
             camera.freezeVersion();

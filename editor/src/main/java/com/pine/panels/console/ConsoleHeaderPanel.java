@@ -1,8 +1,8 @@
 package com.pine.panels.console;
 
+import com.pine.core.view.AbstractView;
 import com.pine.theme.Icons;
 import com.pine.util.InMemoryAppender;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.type.ImString;
 
@@ -14,7 +14,7 @@ public class ConsoleHeaderPanel extends AbstractView {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         if (ImGui.button(Icons.clear_all + " Clear console##clearConsole")) {
             InMemoryAppender.clearMessagesHistory();
         }

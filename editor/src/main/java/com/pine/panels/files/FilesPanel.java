@@ -1,25 +1,28 @@
 package com.pine.panels.files;
 
-import com.pine.dock.AbstractDockPanel;
+import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.repository.ContentBrowserRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.service.FSService;
+import com.pine.service.FilesService;
 
 public class FilesPanel extends AbstractDockPanel {
     @PInject
     public FSService service;
-
     @PInject
-    public ContentBrowserRepository contentBrowserRepository;
-    private FilesContext context;
+    public FilesService filesService;
+    @PInject
+    public EditorRepository editorRepository;
+
+
     private FilesDirectoryPanel directory;
     private FilesHeaderPanel header;
 
     @Override
     public void onInitialize() {
-        context = (FilesContext) getContext();
+        FilesContext context = (FilesContext) getContext();
         if (context.currentDirectory == null) {
-            context.currentDirectory = contentBrowserRepository.root;
+            context.currentDirectory = editorRepository.rootDirectory;
         }
         
         appendChild(header = new FilesHeaderPanel());
@@ -27,8 +30,7 @@ public class FilesPanel extends AbstractDockPanel {
     }
 
     @Override
-    public void renderInternal() {
-
+    public void render() {
         header.render();
         directory.render();
     }

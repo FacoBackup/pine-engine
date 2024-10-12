@@ -1,6 +1,6 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
-import com.pine.view.AbstractView;
+import com.pine.core.view.AbstractView;
 
 public abstract class AbstractDockHeader extends AbstractView {
 

@@ -17,7 +17,7 @@ public class Vector3Field extends AbstractFormField {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
 
         values[0] = valVec3.x;
         values[1] = valVec3.y;
