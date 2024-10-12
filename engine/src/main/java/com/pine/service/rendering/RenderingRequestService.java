@@ -23,7 +23,7 @@ public class RenderingRequestService {
         MeshStreamableResource mesh = selectLOD(scene);
         if (mesh == null) return null;
 
-        prepareInstancedRequest(scene, t, mesh);
+        prepareTransformations(scene, t, mesh);
         fillInstanceRequest(scene, t);
         scene.renderRequest.mesh = mesh;
         return scene.renderRequest;
@@ -32,16 +32,17 @@ public class RenderingRequestService {
     private void fillInstanceRequest(MeshComponent scene, Transformation t) {
         for (var primitive : scene.primitives) {
             transformationService.updateMatrix(primitive, t);
-            primitive.isCulled = scene.isCullingEnabled && transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.frustumBoxDimensions);
+            primitive.isCulled = scene.isCullingEnabled && transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
             if (t.isCulled) {
                 continue;
             }
             transformationService.extractTransformations(primitive);
             scene.renderRequest.transformations.add(primitive);
         }
+        prepareMaterial(scene, scene.renderRequest);
     }
 
-    private static void prepareInstancedRequest(MeshComponent scene, Transformation t, MeshStreamableResource mesh) {
+    private static void prepareTransformations(MeshComponent scene, Transformation t, MeshStreamableResource mesh) {
         if (scene.primitives.size() > scene.numberOfInstances) {
             scene.primitives = new ArrayList<>(scene.primitives.subList(0, scene.numberOfInstances));
         } else if (scene.primitives.size() < scene.numberOfInstances) {
@@ -61,11 +62,13 @@ public class RenderingRequestService {
         MeshStreamableResource mesh = selectLOD(scene);
         if (mesh == null) return null;
 
-        transform.isCulled = scene.isCullingEnabled && transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.frustumBoxDimensions);
+        transform.isCulled = scene.isCullingEnabled && transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
         if (!transform.isCulled) {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
+            prepareMaterial(scene, transform.renderRequest);
+
             transform.renderRequest.mesh = mesh;
             if (!transform.renderRequest.transformations.isEmpty()) {
                 transform.renderRequest.transformations.clear();
@@ -74,6 +77,61 @@ public class RenderingRequestService {
             return transform.renderRequest;
         }
         return null;
+    }
+
+    private void prepareMaterial(MeshComponent scene, RenderingRequest renderRequest) {
+        if (scene.albedo != null) {
+            if (scene.albedo.isLoaded()) {
+                renderRequest.albedo = scene.albedo.texture;
+            } else {
+                streamingService.stream(scene.albedo);
+            }
+        }
+        if (scene.roughness != null) {
+            if (scene.roughness.isLoaded()) {
+                renderRequest.roughness = scene.roughness.texture;
+            } else {
+                streamingService.stream(scene.roughness);
+            }
+        }
+        if (scene.metallic != null) {
+            if (scene.metallic.isLoaded()) {
+                renderRequest.metallic = scene.metallic.texture;
+            } else {
+                streamingService.stream(scene.metallic);
+            }
+        }
+        if (scene.ao != null) {
+            if (scene.ao.isLoaded()) {
+                renderRequest.ao = scene.ao.texture;
+            } else {
+                streamingService.stream(scene.ao);
+            }
+        }
+        if (scene.normal != null) {
+            if (scene.normal.isLoaded()) {
+                renderRequest.normal = scene.normal.texture;
+            } else {
+                streamingService.stream(scene.normal);
+            }
+        }
+        if (scene.heightMap != null) {
+            if (scene.heightMap.isLoaded()) {
+                renderRequest.heightMap = scene.heightMap.texture;
+            } else {
+                streamingService.stream(scene.heightMap);
+            }
+        }
+        if (scene.materialMask != null) {
+            if (scene.materialMask.isLoaded()) {
+                renderRequest.materialMask = scene.materialMask.texture;
+            } else {
+                streamingService.stream(scene.materialMask);
+            }
+        }
+        renderRequest.parallaxHeightScale = scene.parallaxHeightScale;
+        renderRequest.parallaxLayers = scene.parallaxLayers;
+        renderRequest.useParallax = scene.useParallax;
     }
 
     protected @Nullable MeshStreamableResource selectLOD(MeshComponent scene) {

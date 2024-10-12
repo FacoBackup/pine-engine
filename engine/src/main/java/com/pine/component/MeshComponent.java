@@ -4,6 +4,7 @@ import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.repository.streaming.TextureStreamableResource;
 import com.pine.theme.Icons;
 import org.joml.Vector3f;
 
@@ -15,59 +16,69 @@ import java.util.List;
 public class MeshComponent extends AbstractComponent<MeshComponent> {
     @MutableField(label = "Casts shadow")
     public boolean castsShadows = true;
-
     @MutableField(label = "Contribute to probes")
     public boolean contributeToProbes = true;
 
-    @MutableField(label = "Mesh LOD 0")
+    @MutableField(group = "Mesh", label = "Mesh LOD 0")
     public MeshStreamableResource lod0;
-    @MutableField(label = "Use LOD 0 when distance")
+    @MutableField(group = "Mesh", label = "Use LOD 0 when distance")
     public float lod0DistanceUntil = 100;
-
-    @MutableField(label = "Mesh LOD 1")
+    @MutableField(group = "Mesh", label = "Mesh LOD 1")
     public MeshStreamableResource lod1;
-
-    @MutableField(label = "Use LOD 1 when distance")
+    @MutableField(group = "Mesh", label = "Use LOD 1 when distance")
     public float lod1DistanceUntil = 200;
-
-    @MutableField(label = "Mesh LOD 2")
+    @MutableField(group = "Mesh", label = "Mesh LOD 2")
     public MeshStreamableResource lod2;
-
-    @MutableField(label = "Use LOD 2 when distance")
+    @MutableField(group = "Mesh", label = "Use LOD 2 when distance")
     public float lod2DistanceUntil = 300;
-
-    @MutableField(label = "Mesh LOD 3")
+    @MutableField(group = "Mesh", label = "Mesh LOD 3")
     public MeshStreamableResource lod3;
-
-    @MutableField(label = "Use LOD 3 when distance")
+    @MutableField(group = "Mesh", label = "Use LOD 3 when distance")
     public float lod3DistanceUntil = 300;
-
-    @MutableField(label = "Mesh LOD 4")
+    @MutableField(group = "Mesh", label = "Mesh LOD 4")
     public MeshStreamableResource lod4;
 
 
     // INSTANCING
-    @MutableField(label = "Enable instancing")
+    @MutableField(group = "Instancing", label = "Enable instancing")
     public boolean isInstancedRendering = false;
-
-    @MutableField(label = "Number of instances", min = 1)
+    @MutableField(group = "Instancing", label = "Number of instances", min = 1)
     public int numberOfInstances = 10;
+    @MutableField(group = "Instancing", label = "Scene members")
+    public List<Transformation> primitives = new ArrayList<>();
 
     public transient RenderingRequest renderRequest;
 
-    @MutableField(label = "Scene members")
-    public List<Transformation> primitives = new ArrayList<>();
-
-
     // CULLING
-    @MutableField(label = "Enable culling")
+    @MutableField(group = "Culling", label = "Enable culling")
     public boolean isCullingEnabled = true;
-
-    @MutableField(label = "Max distance from camera", min = 1)
+    @MutableField(group = "Culling", label = "Max distance from camera", min = 1)
     public int maxDistanceFromCamera = 300;
+    @MutableField(group = "Culling", label = "Bounding box size")
+    public final Vector3f boundingBoxSize = new Vector3f(1);
 
-    @MutableField(label = "Frustum box size")
-    public final Vector3f frustumBoxDimensions = new Vector3f(1);
+
+    // MATERIAL
+    @MutableField(group = "Material", label = "albedo")
+    public TextureStreamableResource albedo;
+    @MutableField(group = "Material", label = "roughness")
+    public TextureStreamableResource roughness;
+    @MutableField(group = "Material", label = "metallic")
+    public TextureStreamableResource metallic;
+    @MutableField(group = "Material", label = "ao")
+    public TextureStreamableResource ao;
+    @MutableField(group = "Material", label = "normal")
+    public TextureStreamableResource normal;
+    @MutableField(group = "Material", label = "heightMap")
+    public TextureStreamableResource heightMap;
+    @MutableField(group = "Material", label = "materialMask")
+    public TextureStreamableResource materialMask;
+    @MutableField(group = "Material", label = "parallaxHeightScale")
+    public float parallaxHeightScale = 1;
+    @MutableField(group = "Material", label = "parallaxLayers")
+    public int parallaxLayers = 2;
+    @MutableField(group = "Material", label = "useParallax")
+    public boolean useParallax = false;
 
     public float distanceFromCamera = 0f;
 
@@ -75,7 +86,8 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
         super(entity, bag);
     }
 
-    public MeshComponent() {}
+    public MeshComponent() {
+    }
 
     @Override
     public String getTitle() {

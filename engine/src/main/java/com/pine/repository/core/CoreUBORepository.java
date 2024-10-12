@@ -22,8 +22,6 @@ public class CoreUBORepository implements CoreRepository {
 
 
     public UniformBufferObject cameraViewUBO;
-    public UniformBufferObject lensPostProcessingUBO;
-    public UniformBufferObject ssaoUBO;
 
     public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(87);
     public final FloatBuffer lensPostProcessingUBOState = MemoryUtil.memAllocFloat(1);

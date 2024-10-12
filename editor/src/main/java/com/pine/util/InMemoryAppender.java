@@ -37,7 +37,7 @@ public class InMemoryAppender extends AbstractAppender {
         if (logMessagesSource.size() >= MAX_MESSAGES_HISTORY) {
             logMessagesSource.removeFirst();
         }
-        if (event.getLevel() == Level.ERROR) {
+        if (event.getLevel() == Level.ERROR && event.getThrown() != null) {
             logMessagesSource.add(new LogMessage(event.getThrown().getMessage(), event.getTimeMillis()));
         } else {
             logMessagesSource.add(new LogMessage(event));

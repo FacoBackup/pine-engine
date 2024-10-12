@@ -6,7 +6,7 @@ import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.service.svo.VoxelizerService;
 import com.pine.theme.Icons;
-import com.pine.tools.types.DebugShadingModel;
+import com.pine.repository.DebugShadingModel;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
@@ -102,13 +102,13 @@ public class ViewportHeaderPanel extends AbstractView {
         ImGui.sameLine();
         if (renderOption(Icons.grid_on + "Wireframe##wireframeShading", editorRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
             editorRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
-            editorRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getId());
+            editorRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getIndex());
         }
 
         ImGui.sameLine();
         if (renderOption(Icons.palette + "Random##randomShading", editorRepository.debugShadingModel == DebugShadingModel.RANDOM, false)) {
             editorRepository.debugShadingModel = DebugShadingModel.RANDOM;
-            editorRepository.shadingModelOption.set(DebugShadingModel.RANDOM.getId());
+            editorRepository.shadingModelOption.set(DebugShadingModel.RANDOM.getIndex());
         }
 
         ImGui.sameLine();

@@ -68,18 +68,18 @@ public class TransformationService {
         return Math.abs(distanceAux.sub(translation).length());
     }
 
-    public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f frustumBoxDimensions) {
+    public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f boundingBoxSize) {
         if (getDistanceFromCamera(translation) > maxDistanceFromCamera) {
             return true;
         }
 
-        auxCubeMin.x = translation.x - frustumBoxDimensions.x;
-        auxCubeMin.y = translation.y - frustumBoxDimensions.y;
-        auxCubeMin.z = translation.x - frustumBoxDimensions.z;
+        auxCubeMin.x = translation.x - boundingBoxSize.x;
+        auxCubeMin.y = translation.y - boundingBoxSize.y;
+        auxCubeMin.z = translation.x - boundingBoxSize.z;
 
-        auxCubeMax.x = translation.x + frustumBoxDimensions.x;
-        auxCubeMax.y = translation.y + frustumBoxDimensions.y;
-        auxCubeMax.z = translation.x + frustumBoxDimensions.z;
+        auxCubeMax.x = translation.x + boundingBoxSize.x;
+        auxCubeMax.y = translation.y + boundingBoxSize.y;
+        auxCubeMax.z = translation.x + boundingBoxSize.z;
 
         return !cameraRepository.frustum.isCubeInFrustum(auxCubeMin, auxCubeMax);
     }

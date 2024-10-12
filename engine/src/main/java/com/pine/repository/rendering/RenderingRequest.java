@@ -1,5 +1,6 @@
 package com.pine.repository.rendering;
 
+import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
 import com.pine.repository.streaming.MeshStreamableResource;
 
@@ -9,7 +10,17 @@ import java.util.List;
 
 public class RenderingRequest implements Serializable {
     public MeshStreamableResource mesh;
-    // TODO - MATERIAL
+
+    public int albedo;
+    public int roughness;
+    public int metallic;
+    public int ao;
+    public int normal;
+    public int heightMap;
+    public int materialMask;
+    public float parallaxHeightScale;
+    public int parallaxLayers;
+    public boolean useParallax;
 
     public final Transformation transformation;
     public List<Transformation> transformations;

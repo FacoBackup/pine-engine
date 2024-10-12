@@ -4,7 +4,6 @@
 #define FRAG_DEPTH_THRESHOLD .001
 #define DECAL_DEPTH_THRESHOLD 1.
 
-#define PARALLAX_THRESHOLD 200.
 #define CLAMP_MIN .1
 #define CLAMP_MAX .9
 #define SEARCH_STEPS 5
@@ -17,7 +16,6 @@
 #define SHEEN 3
 #define CLEAR_COAT 4
 #define TRANSPARENCY 5
-#define SKY 6
 
 in vec2 naturalTextureUV;
 in vec3 naturalNormal;
@@ -96,33 +94,5 @@ vec3 worldSpacePosition;
 vec3 normalVec;
 float depthData;
 
-void computeTBN() {
-    if (!hasTBNComputed) {
-        hasTBNComputed = true;
-        if (isDecalPass) {
-            vec3 N = abs(normalVec);
-            if (N.z > N.x && N.z > N.y)
-            T = vec3(1., 0., 0.);
-            else
-            T = vec3(0., 0., 1.);
-            T = normalize(T - N * dot(T, N));
-            B = cross(T, N);
-            TBN = mat3(T, B, N);
-            return;
-        }
-        vec3 dp1 = dFdx(worldPosition);
-        vec3 dp2 = dFdy(worldPosition);
-        vec2 duv1 = dFdx(naturalTextureUV);
-        vec2 duv2 = dFdy(naturalTextureUV);
-
-        vec3 dp2perp = cross(dp2, naturalNormal);
-        vec3 dp1perp = cross(naturalNormal, dp1);
-        vec3 T = dp2perp * duv1.x + dp1perp * duv2.x;
-        vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;
-
-        float invmax = inversesqrt(max(dot(T, T), dot(B, B)));
-        TBN = mat3(T * invmax, B * invmax, naturalNormal);
-    }
-}
 
 out vec4 fragColor;

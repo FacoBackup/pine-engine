@@ -201,8 +201,6 @@ vec4 pbLightComputation(int lightCount) {
     albedoOverPI = albedo / PI;
     vec3 indirectIllumination = vec3(0.0);
     float ao = hasAmbientOcclusion && distanceFromCamera < SSAOFalloff ? naturalAO * texture(SSAO, quadUV).r : naturalAO;
-    if (renderingMode == ANISOTROPIC)
-    computeTBN();
     NdotV = clamp(dot(N, V), 0., 1.);
     brdf = texture(brdfSampler, vec2(NdotV, roughness)).rg;
     F0 = mix(F0, albedo, metallic);

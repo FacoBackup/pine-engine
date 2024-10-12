@@ -23,8 +23,6 @@ public class ShaderDataSyncPass extends AbstractPass implements Loggable {
 
     private void updateUBOs() {
         uboService.updateBuffer(uboRepository.cameraViewUBO, uboRepository.cameraViewUBOState, 0);
-        uboService.updateBuffer(uboRepository.lensPostProcessingUBO, uboRepository.lensPostProcessingUBOState, 0);
-        uboService.updateBuffer(uboRepository.ssaoUBO, uboRepository.ssaoUBOState, 0);
     }
 
     @Override

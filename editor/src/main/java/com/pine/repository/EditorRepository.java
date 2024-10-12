@@ -10,7 +10,6 @@ import com.pine.inspection.MutableField;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
 import com.pine.theme.Icons;
-import com.pine.tools.types.DebugShadingModel;
 import com.pine.tools.types.ExecutionEnvironment;
 import imgui.ImVec4;
 import imgui.extension.imguizmo.flag.Mode;
@@ -76,7 +75,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public boolean gizmoUseSnapRotate;
     public boolean gizmoUseSnapScale;
     public final ImInt gizmoModeOption = new ImInt(0);
-    public final ImInt shadingModelOption = new ImInt(DebugShadingModel.RANDOM.getId());
+    public final ImInt shadingModelOption = new ImInt(DebugShadingModel.RANDOM.getIndex());
     public boolean showOnlyEntitiesHierarchy = false;
 
     public Map<String, Entity> pinnedEntities = new HashMap<>();

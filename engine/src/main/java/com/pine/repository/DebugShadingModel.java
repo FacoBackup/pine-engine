@@ -1,40 +1,39 @@
-package com.pine.tools.types;
+package com.pine.repository;
 
 import com.pine.inspection.SelectableEnum;
 
 import java.io.Serializable;
 
 public enum DebugShadingModel implements SelectableEnum, Serializable {
-    ALBEDO("Albedo", 0),
-    NORMAL("Normal", 1),
-    TANGENT("Tangent", 2),
-    DEPTH("Depth", 3),
-    AO("Ambient occlusion", 4),
-    DETAIL("Detail", 5),
-    LIGHT_ONLY("Light only", 6),
-    METALLIC("Metallic", 7),
-    ROUGHNESS("Roughness", 8),
-    G_AO("Generated ambient occlusion", 9),
-    AMBIENT("Ambient", 10),
-    POSITION("Position", 11),
-    UV("UV", 12),
-    RANDOM("Random", 13),
-    OVERDRAW("Overdraw", 14),
-    LIGHT_COMPLEXITY("Lighting complexity", 15),
-    LIGHT_QUANTITY("Light quantity", 16),
-    WIREFRAME("Wireframe", 17);
+    ALBEDO("Albedo", 0, 0),
+    NORMAL("Normal", 1, 1),
+    DEPTH("Depth", 3, 2),
+    AO("Ambient occlusion", 4, 3),
+    LIGHT_ONLY("Light only", 6, 4),
+    METALLIC("Metallic", 7, 5),
+    ROUGHNESS("Roughness", 8, 6),
+    POSITION("Position", 11, 7),
+    RANDOM("Random", 13, 8),
+    WIREFRAME("Wireframe", 17, 9),
+    LIT("Lit", -1, 10);
 
+    private final int index;
     private final int id;
     private final String label;
     private static final String[] labels = new String[values().length];
 
-    DebugShadingModel(String label, int id) {
+    DebugShadingModel(String label, int id, int index) {
         this.id = id;
         this.label = label;
+        this.index = index;
     }
 
     public int getId() {
         return id;
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     public static String[] getLabels() {
