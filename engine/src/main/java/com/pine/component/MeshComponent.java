@@ -22,19 +22,19 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
     @MutableField(group = "Mesh", label = "Mesh LOD 0")
     public MeshStreamableResource lod0;
     @MutableField(group = "Mesh", label = "Use LOD 0 when distance")
-    public float lod0DistanceUntil = 100;
+    public float lod0DistanceUntil = 50;
     @MutableField(group = "Mesh", label = "Mesh LOD 1")
     public MeshStreamableResource lod1;
     @MutableField(group = "Mesh", label = "Use LOD 1 when distance")
-    public float lod1DistanceUntil = 200;
+    public float lod1DistanceUntil = 100;
     @MutableField(group = "Mesh", label = "Mesh LOD 2")
     public MeshStreamableResource lod2;
     @MutableField(group = "Mesh", label = "Use LOD 2 when distance")
-    public float lod2DistanceUntil = 300;
+    public float lod2DistanceUntil = 150;
     @MutableField(group = "Mesh", label = "Mesh LOD 3")
     public MeshStreamableResource lod3;
     @MutableField(group = "Mesh", label = "Use LOD 3 when distance")
-    public float lod3DistanceUntil = 300;
+    public float lod3DistanceUntil = 200;
     @MutableField(group = "Mesh", label = "Mesh LOD 4")
     public MeshStreamableResource lod4;
 
@@ -53,7 +53,7 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
     @MutableField(group = "Culling", label = "Enable culling")
     public boolean isCullingEnabled = true;
     @MutableField(group = "Culling", label = "Max distance from camera", min = 1)
-    public int maxDistanceFromCamera = 300;
+    public int maxDistanceFromCamera = 200;
     @MutableField(group = "Culling", label = "Bounding box size")
     public final Vector3f boundingBoxSize = new Vector3f(1);
 

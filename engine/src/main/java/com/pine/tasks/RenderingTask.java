@@ -64,6 +64,9 @@ public class RenderingTask extends AbstractTask implements Loggable {
     }
 
     private void traverseTree(Entity entity) {
+        if (!entity.visible) {
+            return;
+        }
         Transformation t = entity.transformation;
         transformationService.updateMatrix(t);
         if (entity.components.containsKey(MESH_COMP)) {
