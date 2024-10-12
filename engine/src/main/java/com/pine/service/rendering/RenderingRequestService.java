@@ -26,6 +26,9 @@ public class RenderingRequestService {
         prepareTransformations(scene, t, mesh);
         fillInstanceRequest(scene, t);
         scene.renderRequest.mesh = mesh;
+        if (scene.renderRequest.transformations.isEmpty()) {
+            return null;
+        }
         return scene.renderRequest;
     }
 
@@ -33,7 +36,7 @@ public class RenderingRequestService {
         for (var primitive : scene.primitives) {
             transformationService.updateMatrix(primitive, t);
             primitive.isCulled = scene.isCullingEnabled && transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
-            if (t.isCulled) {
+            if (primitive.isCulled) {
                 continue;
             }
             transformationService.extractTransformations(primitive);
