@@ -23,8 +23,8 @@ public class TransformationField extends AbstractFormField {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         formPanel.setInspectable(transformation);
-        formPanel.renderInternal();
+        formPanel.render();
     }
 }

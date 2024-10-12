@@ -1,8 +1,8 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.theme.Icons;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;
@@ -38,7 +38,7 @@ public abstract class DockPanel extends AbstractView {
     protected abstract ImVec4 getAccentColor();
 
     @Override
-    public void renderInternal() {
+    public void render() {
         DockGroup group = dockService.getCurrentDockGroup();
         if (group == null) {
             return;
@@ -62,7 +62,7 @@ public abstract class DockPanel extends AbstractView {
         ImGui.dockSpace(windowId, CENTER, ImGuiDockNodeFlags.PassthruCentralNode);
         ImGui.popStyleVar(1);
 
-        super.renderInternal();
+        super.render();
         ImGui.end();
     }
 

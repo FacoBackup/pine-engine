@@ -35,11 +35,11 @@ public class TransformationService {
     public void updateMatrix(Transformation st, Transformation parentTransform) {
         if (parentTransform != null) {
             auxMat4.set(parentTransform.globalMatrix);
-            if (parentTransform.getChangeId() != st.parentChangeId || !st.isFrozen()) {
+            if (parentTransform.getChangeId() != st.parentChangeId || st.isNotFrozen()) {
                 st.parentChangeId = parentTransform.getChangeId();
                 transform(st);
             }
-        } else if (!st.isFrozen()) {
+        } else if (st.isNotFrozen()) {
             auxMat4.identity();
             transform(st);
         }

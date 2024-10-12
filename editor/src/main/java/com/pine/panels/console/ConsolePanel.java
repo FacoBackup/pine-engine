@@ -1,6 +1,6 @@
 package com.pine.panels.console;
 
-import com.pine.dock.AbstractDockPanel;
+import com.pine.core.dock.AbstractDockPanel;
 import com.pine.util.InMemoryAppender;
 import com.pine.util.LogMessage;
 import imgui.ImGui;
@@ -24,8 +24,8 @@ public class ConsolePanel extends AbstractDockPanel {
     }
 
     @Override
-    public void renderInternal() {
-        super.renderInternal();
+    public void render() {
+        super.render();
         boolean hasSearchValue = !searchValue.isEmpty();
 
         if (ImGui.beginTable("##console" + imguiId, 3, TABLE_FLAGS)) {

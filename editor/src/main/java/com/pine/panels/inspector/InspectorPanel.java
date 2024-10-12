@@ -3,11 +3,11 @@ package com.pine.panels.inspector;
 import com.pine.component.AbstractComponent;
 import com.pine.component.Entity;
 import com.pine.component.EntityComponent;
-import com.pine.dock.AbstractDockPanel;
+import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.panels.component.FormPanel;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
@@ -26,7 +26,7 @@ public class InspectorPanel extends AbstractDockPanel {
     public RequestProcessingService requestProcessingService;
 
     @PInject
-    public SettingsRepository settingsRepository;
+    public EditorRepository editorRepository;
 
     @PInject
     public List<EntityComponent> components;
@@ -53,26 +53,8 @@ public class InspectorPanel extends AbstractDockPanel {
     }
 
     @Override
-    public void tick() {
-        if (settingsRepository.mainSelection != selected) {
-            currentInspection = repositories.getFirst();
-            additionalInspectable.clear();
-            selected = settingsRepository.mainSelection;
-            additionalInspectable.add(selected);
-            if (selected != null) {
-                for (var component : selected.components.values()) {
-                    additionalInspectable.add((AbstractComponent<?>) component);
-                }
-            }
-        }
-
-        if (formPanel.getInspectable() != currentInspection) {
-            formPanel.setInspectable(currentInspection);
-        }
-    }
-
-    @Override
-    public void renderInternal() {
+    public void render() {
+        tick();
         ImGui.columns(2, "##inspectorColumns", false);
         ImGui.setColumnWidth(0, 35);
         for (var repo : repositories) {
@@ -101,14 +83,32 @@ public class InspectorPanel extends AbstractDockPanel {
                 ImGui.endCombo();
             }
         }
-        super.renderInternal();
+        super.render();
         ImGui.columns(1);
+    }
+
+    private void tick() {
+        if (editorRepository.mainSelection != selected) {
+            currentInspection = repositories.getFirst();
+            additionalInspectable.clear();
+            selected = editorRepository.mainSelection;
+            additionalInspectable.add(selected);
+            if (selected != null) {
+                for (var component : selected.components.values()) {
+                    additionalInspectable.add((AbstractComponent<?>) component);
+                }
+            }
+        }
+
+        if (formPanel.getInspectable() != currentInspection) {
+            formPanel.setInspectable(currentInspection);
+        }
     }
 
     private void renderOption(Inspectable repo) {
         int popStyle = 0;
         if (Objects.equals(currentInspection, repo)) {
-            ImGui.pushStyleColor(ImGuiCol.Button, settingsRepository.accent);
+            ImGui.pushStyleColor(ImGuiCol.Button, editorRepository.accent);
             popStyle++;
         }
 

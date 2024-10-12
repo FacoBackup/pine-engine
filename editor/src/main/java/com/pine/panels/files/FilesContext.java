@@ -1,6 +1,6 @@
 package com.pine.panels.files;
 
-import com.pine.panel.AbstractPanelContext;
+import com.pine.core.panel.AbstractPanelContext;
 import com.pine.repository.fs.ResourceEntry;
 
 public class FilesContext extends AbstractPanelContext {

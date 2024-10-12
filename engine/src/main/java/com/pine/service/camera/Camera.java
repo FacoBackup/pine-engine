@@ -36,8 +36,8 @@ public class Camera implements Mutable, Serializable {
     }
 
     @Override
-    public boolean isFrozen() {
-        return frozenVersion == getChangeId();
+    public boolean isNotFrozen() {
+        return frozenVersion != getChangeId();
     }
 
     @Override

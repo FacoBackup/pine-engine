@@ -1,11 +1,11 @@
 package com.pine.panels.hierarchy;
 
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
 import com.pine.theme.Icons;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.type.ImString;
 
@@ -22,7 +22,7 @@ public class HierarchyHeaderPanel extends AbstractView {
     public RequestProcessingService requestProcessingService;
 
     @PInject
-    public SettingsRepository settingsRepository;
+    public EditorRepository editorRepository;
 
     private final ImString search;
 
@@ -31,16 +31,16 @@ public class HierarchyHeaderPanel extends AbstractView {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         ImGui.inputText("##hierarchySearch", search);
         ImGui.sameLine();
         if (ImGui.button(ADD_LABEL, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
             requestProcessingService.addRequest(new AddEntityRequest(List.of()));
         }
         ImGui.sameLine();
-        boolean show = settingsRepository.showOnlyEntitiesHierarchy;
+        boolean show = editorRepository.showOnlyEntitiesHierarchy;
         if (ImGui.button(show ? FILTER_OFF_LABEL : FILTER_ON_LABEL, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            settingsRepository.showOnlyEntitiesHierarchy = !show;
+            editorRepository.showOnlyEntitiesHierarchy = !show;
         }
     }
 }

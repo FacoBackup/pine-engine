@@ -1,6 +1,6 @@
 package com.pine.panels.hierarchy;
 
-import com.pine.panel.AbstractPanelContext;
+import com.pine.core.panel.AbstractPanelContext;
 
 import java.util.HashMap;
 import java.util.Map;

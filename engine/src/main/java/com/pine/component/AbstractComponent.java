@@ -62,8 +62,8 @@ public abstract class AbstractComponent<T extends EntityComponent> extends Inspe
     }
 
     @Override
-    public boolean isFrozen() {
-        return frozenVersion == getChangeId();
+    public boolean isNotFrozen() {
+        return frozenVersion != getChangeId();
     }
 
     @Override

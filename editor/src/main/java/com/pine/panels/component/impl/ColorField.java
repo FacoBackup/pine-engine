@@ -20,7 +20,7 @@ public class ColorField extends AbstractFormField {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         ImGui.text(dto.getLabel());
         if (ImGui.colorPicker3(dto.getId(), values, ImGuiColorEditFlags.NoSidePreview | ImGuiColorEditFlags.DisplayRGB | ImGuiColorEditFlags.NoAlpha)) {
             changerHandler.accept(dto, values);

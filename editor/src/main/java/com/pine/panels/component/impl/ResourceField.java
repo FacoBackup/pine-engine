@@ -67,7 +67,7 @@ public class ResourceField extends AbstractFormField {
     }
 
     @Override
-    public void renderInternal() {
+    public void render() {
         ImGui.text(dto.getLabel());
         if (ImGui.combo(imguiId, selected, itemsArr)) {
             changerHandler.accept(dto, items.get(selected.get()));

@@ -13,7 +13,6 @@
     <modules>
         <module>engine</module>
         <module>editor</module>
-        <module>ui</module>
         <module>common</module>
     </modules>
 

@@ -1,11 +1,11 @@
 package com.pine.panels;
 
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
 import com.pine.service.ThemeService;
 import com.pine.theme.Icons;
-import com.pine.view.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
@@ -21,7 +21,7 @@ public class ToasterPanel extends AbstractView {
     public ThemeService themeService;
 
     @Override
-    public void renderInternal() {
+    public void render() {
         Message[] messages = messageRepository.getMessages();
         int usedIndices = 0;
         for (int i = 0; i < MessageRepository.MAX_MESSAGES; i++) {

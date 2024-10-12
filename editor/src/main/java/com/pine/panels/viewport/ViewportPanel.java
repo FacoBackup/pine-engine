@@ -1,7 +1,7 @@
 package com.pine.panels.viewport;
 
 import com.pine.Engine;
-import com.pine.dock.AbstractDockPanel;
+import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
@@ -18,7 +18,7 @@ import imgui.extension.imguizmo.ImGuizmo;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 
-import static com.pine.dock.DockWrapperPanel.FRAME_SIZE;
+import static com.pine.core.dock.DockWrapperPanel.FRAME_SIZE;
 
 public class ViewportPanel extends AbstractDockPanel {
     @PInject
@@ -62,22 +62,22 @@ public class ViewportPanel extends AbstractDockPanel {
     }
 
     @Override
-    public void tick() {
+    public void render() {
+        tick();
+        gizmoPanel.render();
+        ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
+
+        gizmo.render();
+    }
+
+    private void tick() {
         cameraRepository.setCurrentCamera(context.camera);
         updateCamera();
         engine.setTargetFBO(fbo);
         engine.render();
-    }
 
-    @Override
-    public void renderInternal() {
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE - ViewportHeaderPanel.SIZE;
-
-        gizmoPanel.renderInternal();
-        ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
-
-        gizmo.renderInternal();
     }
 
     private void updateCamera() {

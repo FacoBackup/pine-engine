@@ -3,9 +3,9 @@ package com.pine.panels.hierarchy;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
-import com.pine.dock.AbstractDockPanel;
+import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.repository.SettingsRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
 import com.pine.service.rendering.RequestProcessingService;
@@ -38,7 +38,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     public WorldRepository world;
 
     @PInject
-    public SettingsRepository stateRepository;
+    public EditorRepository stateRepository;
 
     @PInject
     public RequestProcessingService requestProcessingService;
@@ -56,7 +56,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     }
 
     @Override
-    public void tick() {
+    public void render() {
         isOnSearch = search.isNotEmpty();
         if (ImGui.isKeyDown(ImGuiKey.Delete) && !stateRepository.selected.isEmpty()) {
             requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected));
@@ -65,10 +65,7 @@ public class HierarchyPanel extends AbstractDockPanel {
             stateRepository.mainSelection = null;
             stateRepository.primitiveSelected = null;
         }
-    }
 
-    @Override
-    public void renderInternal() {
         header.render();
         if (ImGui.beginTable("##hierarchy" + imguiId, 3, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.NoHide);

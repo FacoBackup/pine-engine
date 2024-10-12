@@ -1,4 +1,4 @@
-package com.pine.panel;
+package com.pine.core.panel;
 
 import java.io.Serializable;
 import java.util.ArrayList;

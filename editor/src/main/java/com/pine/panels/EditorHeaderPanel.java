@@ -1,7 +1,7 @@
 package com.pine.panels;
 
-import com.pine.WindowService;
-import com.pine.dock.AbstractDockHeader;
+import com.pine.core.WindowService;
+import com.pine.core.dock.AbstractDockHeader;
 import com.pine.injection.PInject;
 import com.pine.service.ProjectService;
 import com.pine.theme.Icons;

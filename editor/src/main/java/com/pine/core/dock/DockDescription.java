@@ -1,6 +1,6 @@
-package com.pine.dock;
+package com.pine.core.dock;
 
-import com.pine.panel.AbstractPanelContext;
+import com.pine.core.panel.AbstractPanelContext;
 
 import java.io.Serializable;
 

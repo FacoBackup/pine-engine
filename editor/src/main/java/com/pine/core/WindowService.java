@@ -1,9 +1,13 @@
-package com.pine;
+package com.pine.core;
 
+import com.pine.FSUtil;
+import com.pine.GLSLVersion;
 import com.pine.injection.*;
 import com.pine.messaging.Loggable;
 import com.pine.theme.Icons;
+import com.pine.window.EditorWindow;
 import imgui.*;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -25,7 +29,7 @@ public class WindowService implements Disposable, Loggable {
     private long handle = -1;
     private int displayW;
     private int displayH;
-    public static Class<? extends AbstractWindow> windowImpl;
+    public AbstractWindow window = new EditorWindow();
 
     @PInject
     public PInjector injector;
@@ -55,18 +59,17 @@ public class WindowService implements Disposable, Loggable {
 
     public void start() {
         try {
-            AbstractWindow instance = windowImpl.getConstructor().newInstance();
-            injector.inject(instance);
-            instance.initializeWindow();
+            injector.inject(window);
+            window.onInitialize();
 
-            setupWindow(instance.getWindowScaleX(), instance.getWindowScaleY());
+            setupWindow(window.getWindowScaleX(), window.getWindowScaleY());
             GLFW.glfwShowWindow(handle);
 
             while (!GLFW.glfwWindowShouldClose(handle) && !shouldStop) {
                 try {
-                    prepareFrame();
-                    instance.render();
-                    render();
+                    startFrame();
+                    window.render();
+                    endFrame();
                 } catch (Exception e) {
                     getLogger().error(e.getMessage(), e);
                 }
@@ -178,7 +181,19 @@ public class WindowService implements Disposable, Loggable {
         fontConfig.destroy();
     }
 
-    public void render() {
+    public void startFrame() {
+        clearBuffer();
+        imGuiGl3.newFrame();
+        imGuiGlfw.newFrame();
+        ImGui.newFrame();
+
+        ImGui.pushStyleColor(ImGuiCol.Button, window.getNeutralPalette());
+        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, window.getAccentColor());
+        ImGui.pushStyleColor(ImGuiCol.ButtonActive, window.getAccentColor());
+    }
+
+    public void endFrame() {
+        ImGui.popStyleColor(3);
         ImGui.render();
         imGuiGl3.renderDrawData(ImGui.getDrawData());
         if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
@@ -188,13 +203,6 @@ public class WindowService implements Disposable, Loggable {
             GLFW.glfwMakeContextCurrent(backupCurrentContext);
         }
         renderBuffer();
-    }
-
-    public void prepareFrame() {
-        clearBuffer();
-        imGuiGl3.newFrame();
-        imGuiGlfw.newFrame();
-        ImGui.newFrame();
     }
 
     private void clearBuffer() {

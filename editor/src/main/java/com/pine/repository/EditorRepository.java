@@ -7,6 +7,8 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
+import com.pine.repository.fs.ResourceEntry;
+import com.pine.repository.fs.ResourceEntryType;
 import com.pine.theme.Icons;
 import com.pine.tools.types.DebugShadingModel;
 import com.pine.tools.types.ExecutionEnvironment;
@@ -21,7 +23,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 @PBean
-public class SettingsRepository extends Inspectable implements SerializableRepository {
+public class EditorRepository extends Inspectable implements SerializableRepository {
     @MutableField(label = "Show grid")
     public boolean showGrid = true;
 
@@ -42,6 +44,7 @@ public class SettingsRepository extends Inspectable implements SerializableRepos
 
     @MutableField(label = "Accent color")
     public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);
+
     public transient final ImVec4 accent = new ImVec4();
     public int accentU32 = 0;
 
@@ -80,6 +83,7 @@ public class SettingsRepository extends Inspectable implements SerializableRepos
     public Transformation primitiveSelected = null;
     public Entity mainSelection = null;
     public final LinkedList<Entity> selected = new LinkedList<>();
+    public ResourceEntry rootDirectory = new ResourceEntry("Content Browser", ResourceEntryType.DIRECTORY, 0, "", null, null);
 
     @Override
     public String getIcon() {
