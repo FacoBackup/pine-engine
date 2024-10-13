@@ -109,6 +109,11 @@ public class FilesDirectoryPanel extends AbstractView {
     private void onClick(ResourceEntry root) {
         if (ImGui.isItemHovered() && ImGui.isItemClicked()) {
             context.selected = root;
+            if (root.type != ResourceEntryType.DIRECTORY) {
+                editorRepository.inspectFile = root;
+            } else {
+                editorRepository.inspectFile = null;
+            }
         }
         if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
             openResource(root);

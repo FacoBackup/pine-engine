@@ -3,8 +3,9 @@ package com.pine.repository.fs;
 import com.pine.theme.Icons;
 
 public enum ResourceEntryType {
+    MATERIAL(Icons.format_paint, "Material"),
     DIRECTORY(Icons.folder, "Directory"),
-    MESH(Icons.view_in_ar, "Mesh"),
+    MESH(Icons.category, "Mesh"),
     AUDIO(Icons.audio_file, "Audio"),
     TEXTURE(Icons.texture, "Texture"),
     SCENE(Icons.inventory_2, "Scene");

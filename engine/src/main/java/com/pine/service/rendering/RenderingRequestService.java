@@ -5,6 +5,7 @@ import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.rendering.RenderingRequest;
+import com.pine.service.streaming.material.MaterialStreamableResource;
 import com.pine.service.streaming.mesh.MeshStreamableResource;
 import com.pine.service.streaming.StreamingService;
 import org.jetbrains.annotations.Nullable;
@@ -83,59 +84,26 @@ public class RenderingRequestService {
     }
 
     private void prepareMaterial(MeshComponent scene, RenderingRequest renderRequest) {
-        if (scene.albedo != null) {
-            if (scene.albedo.isLoaded()) {
-                renderRequest.albedo = scene.albedo.texture;
-            } else {
-                streamingService.stream(scene.albedo);
-            }
+        MaterialStreamableResource material = scene.material;
+        if (material.albedo != null && !material.albedo.isLoaded()) {
+            streamingService.stream(material.albedo);
         }
-        if (scene.roughness != null) {
-            if (scene.roughness.isLoaded()) {
-                renderRequest.roughness = scene.roughness.texture;
-            } else {
-                streamingService.stream(scene.roughness);
-            }
+        if (material.roughness != null && !material.roughness.isLoaded()) {
+            streamingService.stream(material.roughness);
         }
-        if (scene.metallic != null) {
-            if (scene.metallic.isLoaded()) {
-                renderRequest.metallic = scene.metallic.texture;
-            } else {
-                streamingService.stream(scene.metallic);
-            }
+        if (material.metallic != null && !material.metallic.isLoaded()) {
+            streamingService.stream(material.metallic);
         }
-        if (scene.ao != null) {
-            if (scene.ao.isLoaded()) {
-                renderRequest.ao = scene.ao.texture;
-            } else {
-                streamingService.stream(scene.ao);
-            }
+        if (material.ao != null && !material.ao.isLoaded()) {
+            streamingService.stream(material.ao);
         }
-        if (scene.normal != null) {
-            if (scene.normal.isLoaded()) {
-                renderRequest.normal = scene.normal.texture;
-            } else {
-                streamingService.stream(scene.normal);
-            }
+        if (material.normal != null && !material.normal.isLoaded()) {
+            streamingService.stream(material.normal);
         }
-        if (scene.heightMap != null) {
-            if (scene.heightMap.isLoaded()) {
-                renderRequest.heightMap = scene.heightMap.texture;
-            } else {
-                streamingService.stream(scene.heightMap);
-            }
+        if (material.heightMap != null && !material.heightMap.isLoaded()) {
+            streamingService.stream(material.heightMap);
         }
-        renderRequest.parallaxHeightScale = scene.parallaxHeightScale;
-        renderRequest.parallaxLayers = scene.parallaxLayers;
-        renderRequest.useParallax = scene.useParallax;
-
-        renderRequest.anisotropicRotation = scene.anisotropicRotation;
-        renderRequest.anisotropy = scene.anisotropy;
-        renderRequest.clearCoat = scene.clearCoat;
-        renderRequest.sheen = scene.sheen;
-        renderRequest.sheenTint = scene.sheenTint;
-        renderRequest.renderingMode = scene.renderingMode;
-        renderRequest.ssrEnabled = scene.ssrEnabled;
+        renderRequest.material = material;
     }
 
     protected @Nullable MeshStreamableResource selectLOD(MeshComponent scene) {

@@ -7,7 +7,8 @@ public enum StreamableResourceType {
     SCENE(Collections.emptyList()),
     MESH(List.of("gltf", "glb", "fbx", "obj", "blend")),
     TEXTURE(List.of("png", "jpeg", "jpg")),
-    AUDIO(List.of("wav"));
+    AUDIO(List.of("wav")),
+    MATERIAL(Collections.emptyList());
 
     private final List<String> fileExtensions;
 

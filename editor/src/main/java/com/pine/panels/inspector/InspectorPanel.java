@@ -9,6 +9,7 @@ import com.pine.inspection.Inspectable;
 import com.pine.panels.component.FormPanel;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
+import com.pine.repository.fs.ResourceEntry;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
@@ -26,15 +27,12 @@ import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 public class InspectorPanel extends AbstractDockPanel {
     @PInject
     public RequestProcessingService requestProcessingService;
-
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public WorldRepository worldRepository;
-
     @PInject
     public List<Inspectable> repositories;
+
+    public Inspectable selectedFile;
 
     private final List<Inspectable> additionalInspectable = new ArrayList<>();
 
@@ -42,6 +40,7 @@ public class InspectorPanel extends AbstractDockPanel {
     private Entity selected;
     private final List<String> types = new ArrayList<>();
     private FormPanel formPanel;
+    private ResourceEntry previousSelectedEntry;
 
     @Override
     public void onInitialize() {
@@ -66,6 +65,12 @@ public class InspectorPanel extends AbstractDockPanel {
             if (additional != null) {
                 renderOption(additional);
             }
+        }
+
+        ImGui.spacing();
+        ImGui.spacing();
+        if (selectedFile != null) {
+            renderOption(selectedFile);
         }
 
         ImGui.nextColumn();
@@ -104,6 +109,15 @@ public class InspectorPanel extends AbstractDockPanel {
 
         if (formPanel.getInspectable() != currentInspection) {
             formPanel.setInspectable(currentInspection);
+        }
+
+        if (previousSelectedEntry != editorRepository.inspectFile) {
+            previousSelectedEntry = editorRepository.inspectFile;
+            if (previousSelectedEntry != null) {
+                selectedFile = currentInspection = previousSelectedEntry.streamableResource;
+            } else {
+                selectedFile = null;
+            }
         }
     }
 

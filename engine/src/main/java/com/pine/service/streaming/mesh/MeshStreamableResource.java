@@ -3,6 +3,7 @@ package com.pine.service.streaming.mesh;
 import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.rendering.VertexBuffer;
+import com.pine.theme.Icons;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -82,5 +83,10 @@ public class MeshStreamableResource extends AbstractStreamableResource<MeshStrea
     @Override
     public StreamableResourceType getResourceType() {
         return StreamableResourceType.MESH;
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.category;
     }
 }

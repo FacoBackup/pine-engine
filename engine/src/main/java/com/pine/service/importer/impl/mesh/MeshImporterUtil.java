@@ -1,13 +1,15 @@
 package com.pine.service.importer.impl.mesh;
 
-import org.lwjgl.assimp.AIFace;
-import org.lwjgl.assimp.AIMesh;
-import org.lwjgl.assimp.AINode;
-import org.lwjgl.assimp.AIVector3D;
+import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.texture.TextureStreamableResource;
+import org.lwjgl.assimp.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.nio.IntBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static org.lwjgl.assimp.Assimp.*;
 
 public class MeshImporterUtil {
 
@@ -59,9 +61,9 @@ public class MeshImporterUtil {
         parent.children.add(newInstance);
         if (node.mNumMeshes() > 0) {
             for (int i = 0; i < node.mNumMeshes(); i++) {
-                newInstance.primitive = node.mMeshes().get(i);
-                byPrimitive.putIfAbsent(newInstance.primitive, new ArrayList<>());
-                byPrimitive.get(newInstance.primitive).add(newInstance);
+                newInstance.mesh = node.mMeshes().get(i);
+                byPrimitive.putIfAbsent(newInstance.mesh, new ArrayList<>());
+                byPrimitive.get(newInstance.mesh).add(newInstance);
             }
         }
 
@@ -71,4 +73,23 @@ public class MeshImporterUtil {
         }
     }
 
+    public static List<MaterialTextureData> processMaterial(AIMaterial material, int i, String sceneName) {
+        List<MaterialTextureData> allTexture = new ArrayList<>();
+
+        getMaterial(material, aiTextureType_HEIGHT, i, sceneName, allTexture);
+        getMaterial(material, aiTextureType_NORMALS, i, sceneName, allTexture);
+        getMaterial(material, aiTextureType_BASE_COLOR, i, sceneName, allTexture);
+        getMaterial(material, aiTextureType_METALNESS, i, sceneName, allTexture);
+        getMaterial(material, aiTextureType_DIFFUSE_ROUGHNESS, i, sceneName, allTexture);
+        getMaterial(material, aiTextureType_AMBIENT_OCCLUSION, i, sceneName, allTexture);
+
+        return allTexture;
+    }
+
+    private static void getMaterial(AIMaterial material, int type, int i, String sceneName, List<MaterialTextureData> allTexture) {
+        AIString path = AIString.calloc();
+        if (aiGetMaterialTexture(material, type, 0, path, (IntBuffer) null, null, null, null, null, null) == aiReturn_SUCCESS) {
+            allTexture.add(new MaterialTextureData(path.dataString(), sceneName + type + "-texture" + i, type));
+        }
+    }
 }

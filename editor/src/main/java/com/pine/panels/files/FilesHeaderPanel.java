@@ -89,6 +89,9 @@ public class FilesHeaderPanel extends AbstractView {
 
     private void importFile() {
         List<String> paths = nativeDialogService.selectFile();
+        if(paths.isEmpty()){
+            return;
+        }
         resourceLoader.importFiles(paths, response -> {
             if (response.isEmpty()) {
                 messageRepository.pushMessage("Could not import file " + response, MessageSeverity.ERROR);

@@ -7,6 +7,7 @@ import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.material.MaterialStreamableResource;
 import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
@@ -39,6 +40,7 @@ public class GBufferPass extends AbstractPass implements Loggable {
     private UniformDTO sheenTint;
     private UniformDTO renderingMode;
     private UniformDTO ssrEnabled;
+    private UniformDTO fallbackMaterial;
 
     @Override
     public void onInitialize() {
@@ -61,6 +63,7 @@ public class GBufferPass extends AbstractPass implements Loggable {
         sheenTint = shaderRepository.gBufferShader.addUniformDeclaration("sheenTint", GLSLType.FLOAT);
         renderingMode = shaderRepository.gBufferShader.addUniformDeclaration("renderingMode", GLSLType.INT);
         ssrEnabled = shaderRepository.gBufferShader.addUniformDeclaration("ssrEnabled", GLSLType.BOOL);
+        fallbackMaterial = shaderRepository.gBufferShader.addUniformDeclaration("fallbackMaterial", GLSLType.BOOL);
     }
 
     @Override
@@ -89,49 +92,58 @@ public class GBufferPass extends AbstractPass implements Loggable {
             var request = requests.get(i);
             intBuffer.put(0, (i + instancedOffset));
             shaderService.bindUniform(transformationIndex, intBuffer);
-
-            shaderService.bindUniform(albedo, request.albedo);
-            shaderService.bindUniform(roughness, request.roughness);
-            shaderService.bindUniform(metallic, request.metallic);
-            shaderService.bindUniform(ao, request.ao);
-            shaderService.bindUniform(normal, request.normal);
-            shaderService.bindUniform(heightMap, request.heightMap);
-
-            floatBuffer.put(0, request.anisotropicRotation);
-            shaderService.bindUniform(anisotropicRotation, floatBuffer);
-
-            floatBuffer.put(0, request.anisotropy);
-            shaderService.bindUniform(anisotropy, floatBuffer);
-
-            floatBuffer.put(0, request.clearCoat);
-            shaderService.bindUniform(clearCoat, floatBuffer);
-
-            floatBuffer.put(0, request.sheen);
-            shaderService.bindUniform(sheen, floatBuffer);
-
-            floatBuffer.put(0, request.sheenTint);
-            shaderService.bindUniform(sheenTint, floatBuffer);
-
-            intBuffer.put(0, request.renderingMode.getId());
-            shaderService.bindUniform(renderingMode, intBuffer);
-
-            intBuffer.put(0, request.ssrEnabled ? 1 : 0);
-            shaderService.bindUniform(ssrEnabled, intBuffer);
-
-            floatBuffer.put(0, request.parallaxHeightScale);
-            shaderService.bindUniform(parallaxHeightScale, floatBuffer);
-
-            intBuffer.put(0, request.parallaxLayers);
-            shaderService.bindUniform(parallaxLayers, intBuffer);
-
-            intBuffer.put(0, request.useParallax ? 1 : 0);
-            shaderService.bindUniform(useParallax, intBuffer);
+            if(request.material != null) {
+                intBuffer.put(0, 0);
+                bindMaterial(request.material);
+            }else{
+                intBuffer.put(0, 1);
+            }
+            shaderService.bindUniform(fallbackMaterial, intBuffer);
 
             meshService.bind(request.mesh);
             meshService.setInstanceCount(request.transformations.size());
             meshService.draw();
             instancedOffset += request.transformations.size();
         }
+    }
+
+    private void bindMaterial(MaterialStreamableResource request) {
+        shaderService.bindUniform(albedo, request.albedo);
+        shaderService.bindUniform(roughness, request.roughness);
+        shaderService.bindUniform(metallic, request.metallic);
+        shaderService.bindUniform(ao, request.ao);
+        shaderService.bindUniform(normal, request.normal);
+        shaderService.bindUniform(heightMap, request.heightMap);
+
+        floatBuffer.put(0, request.anisotropicRotation);
+        shaderService.bindUniform(anisotropicRotation, floatBuffer);
+
+        floatBuffer.put(0, request.anisotropy);
+        shaderService.bindUniform(anisotropy, floatBuffer);
+
+        floatBuffer.put(0, request.clearCoat);
+        shaderService.bindUniform(clearCoat, floatBuffer);
+
+        floatBuffer.put(0, request.sheen);
+        shaderService.bindUniform(sheen, floatBuffer);
+
+        floatBuffer.put(0, request.sheenTint);
+        shaderService.bindUniform(sheenTint, floatBuffer);
+
+        intBuffer.put(0, request.renderingMode.getId());
+        shaderService.bindUniform(renderingMode, intBuffer);
+
+        intBuffer.put(0, request.ssrEnabled ? 1 : 0);
+        shaderService.bindUniform(ssrEnabled, intBuffer);
+
+        floatBuffer.put(0, request.parallaxHeightScale);
+        shaderService.bindUniform(parallaxHeightScale, floatBuffer);
+
+        intBuffer.put(0, request.parallaxLayers);
+        shaderService.bindUniform(parallaxLayers, intBuffer);
+
+        intBuffer.put(0, request.useParallax ? 1 : 0);
+        shaderService.bindUniform(useParallax, intBuffer);
     }
 
     @Override

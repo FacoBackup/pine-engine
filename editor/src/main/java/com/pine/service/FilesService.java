@@ -28,6 +28,7 @@ public class FilesService {
 
     public ResourceEntryType getType(StreamableResourceType type) {
         return switch (type) {
+            case MATERIAL -> ResourceEntryType.MATERIAL;
             case SCENE -> ResourceEntryType.SCENE;
             case MESH -> ResourceEntryType.MESH;
             case TEXTURE -> ResourceEntryType.TEXTURE;
@@ -36,6 +37,7 @@ public class FilesService {
     }
 
     public void delete(ResourceEntry selected) {
+        editorRepository.inspectFile = selected == editorRepository.inspectFile ? null : editorRepository.inspectFile;
         if (selected != editorRepository.rootDirectory) {
             streamingRepository.streamableResources.remove(selected.streamableResource);
             selected.parent.children.remove(selected);
