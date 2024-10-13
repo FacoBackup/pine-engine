@@ -116,7 +116,7 @@ void main() {
     naturalAO = valueRMAOSampler.b;
     roughness = valueRMAOSampler.r;
     metallic = valueRMAOSampler.g;
-    depthData = texture(sceneDepth, quadUV).r;
+    depthData = getLogDepth(quadUV);
     viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
     worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
     V = placement.xyz - worldSpacePosition;

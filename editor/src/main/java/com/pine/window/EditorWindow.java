@@ -4,8 +4,9 @@ import com.pine.Engine;
 import com.pine.core.AbstractWindow;
 import com.pine.core.WindowService;
 import com.pine.core.dock.*;
+import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.panels.EditorHeaderPanel;
+import com.pine.panels.header.EditorHeaderPanel;
 import com.pine.panels.ToasterPanel;
 import com.pine.repository.EditorRepository;
 import com.pine.service.ProjectService;
@@ -14,6 +15,7 @@ import com.pine.service.serialization.SerializationService;
 import com.pine.tools.ToolsModule;
 import imgui.ImGui;
 import imgui.ImVec4;
+import imgui.flag.ImGuiKey;
 
 import java.util.Collections;
 import java.util.List;
@@ -83,7 +85,7 @@ public class EditorWindow extends AbstractWindow {
     }
 
     @Override
-    public AbstractDockHeader getHeader() {
+    public AbstractView getHeader() {
         return new EditorHeaderPanel();
     }
 
@@ -99,9 +101,7 @@ public class EditorWindow extends AbstractWindow {
             }
             super.render();
         } else {
-            DockPanel.beginMainWindowSetup();
             ImGui.begin("##windowLoader", OPEN, FLAGS);
-            DockPanel.endMainWindowSetup();
             ImGui.text("Pine Engine");
             ImGui.text("Loading scene...");
             ImGui.end();

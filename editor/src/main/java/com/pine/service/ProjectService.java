@@ -82,7 +82,10 @@ public class ProjectService implements Loggable {
     }
 
     public void newProject() {
-        saveAndRestart(nativeDialogService.selectDirectory());
+        String newPath = nativeDialogService.selectDirectory();
+        if(newPath != null) {
+            saveAndRestart(newPath);
+        }
     }
 
     public String getProjectDirectory() {

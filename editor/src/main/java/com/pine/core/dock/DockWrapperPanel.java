@@ -59,7 +59,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
     @Override
     public void onInitialize() {
         initializeView();
-        isNotCenter = dock.getDirection() != DockPosition.CENTER;
+        isNotCenter = dock.getPosition() != DockPosition.CENTER;
     }
 
     private void initializeView() {
@@ -122,24 +122,24 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             if (isNotCenter) {
                 ImGui.dummy(ImGui.getContentRegionAvailX() - 55, 0);
                 if (ImGui.button((isDownDirection ? Icons.horizontal_split : Icons.vertical_split) + "##splitView" + imguiId, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-                  try{
-                      DockDTO dto = new DockDTO(dock.getDescription().getDefault());
-                      dto.setOrigin(dock);
-                      dto.setSplitDir(isDownDirection ? ImGuiDir.Down : ImGuiDir.Right);
-                      dto.setSizeRatioForNodeAtDir(.5f);
-                      dto.setOutAtOppositeDir(dock);
-                      DockGroup group = dockService.getCurrentDockGroup();
-                      switch (dock.getDirection()) {
-                          case LEFT -> group.left.add(group.left.indexOf(dock) + 1, dto);
-                          case RIGHT -> group.right.add(group.right.indexOf(dock) + 1, dto);
-                          case BOTTOM -> group.bottom.add(group.bottom.indexOf(dock) + 1, dto);
-                      }
-                      group.isInitialized = false;
-                      messageRepository.pushMessage("Dock space created", MessageSeverity.SUCCESS);
-                  }catch (Exception e){
-                      getLogger().error(e.getMessage(), e);
-                      messageRepository.pushMessage("Error while creating dock space", MessageSeverity.ERROR);
-                  }
+                    try {
+                        DockDTO dto = new DockDTO(dock.getDescription().getDefault());
+                        dto.setOrigin(dock);
+                        dto.setSplitDir(isDownDirection ? ImGuiDir.Down : ImGuiDir.Right);
+                        dto.setSizeRatioForNodeAtDir(.5f);
+                        dto.setOutAtOppositeDir(dock);
+                        DockGroup group = dockService.getCurrentDockGroup();
+                        switch (dock.getPosition()) {
+                            case LEFT -> group.left.add(group.left.indexOf(dock) + 1, dto);
+                            case RIGHT -> group.right.add(group.right.indexOf(dock) + 1, dto);
+                            case BOTTOM -> group.bottom.add(group.bottom.indexOf(dock) + 1, dto);
+                        }
+                        group.isInitialized = false;
+                        messageRepository.pushMessage("Dock space created", MessageSeverity.SUCCESS);
+                    } catch (Exception e) {
+                        getLogger().error(e.getMessage(), e);
+                        messageRepository.pushMessage("Error while creating dock space", MessageSeverity.ERROR);
+                    }
                 }
 
                 if (ImGui.button(Icons.close + "##removeView" + imguiId, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {

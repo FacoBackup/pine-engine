@@ -1,4 +1,4 @@
-package com.pine.panels.viewport;
+package com.pine.panels.header;
 
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
@@ -42,21 +42,8 @@ public class ViewportHeaderPanel extends AbstractView {
     @PInject
     public VoxelizerService voxelizerService;
 
-    private final ImVec2 size;
-
-    public ViewportHeaderPanel(ImVec2 size) {
-        this.size = size;
-    }
-
     @Override
     public void render() {
-        ImGui.dummy(size.x, 1);
-
-        ImGui.dummy(1, 0);
-        ImGui.sameLine();
-        hotKeys();
-        ImGui.sameLine();
-
         if (ImGui.button(Icons.apps + "Repackage scene voxels##vp")) {
             voxelizerService.buildFromScratch();
         }
@@ -166,22 +153,13 @@ public class ViewportHeaderPanel extends AbstractView {
         }
     }
 
-    private void hotKeys() {
-        if (ImGui.isKeyPressed(ImGuiKey.T))
-            editorRepository.gizmoOperation = Operation.TRANSLATE;
-        if (ImGui.isKeyPressed(ImGuiKey.R))
-            editorRepository.gizmoOperation = Operation.ROTATE;
-        if (ImGui.isKeyPressed(ImGuiKey.Y))
-            editorRepository.gizmoOperation = Operation.SCALE;
-    }
-
-    private void largeSpacing() {
+    public static void largeSpacing() {
         ImGui.sameLine();
         ImGui.dummy(LARGE_SPACING);
         ImGui.sameLine();
     }
 
-    private static void spacing() {
+    public static void spacing() {
         ImGui.sameLine();
         ImGui.dummy(MEDIUM_SPACING);
         ImGui.sameLine();
