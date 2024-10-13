@@ -134,7 +134,7 @@ void main() {
         gBufferMaterialSampler = vec4(packValues(anisotropicRotation, anisotropy, clearCoat, sheen, sheenTint, renderingMode, ssrEnabled), 1);
     } else {
         gBufferAlbedoSampler = vec4(vec3(.5), 0);
-        gBufferNormalSampler = vec4(vec3(normalize(TBN * ((normalVec * 2.0)- 1.0))), 1.);
+        gBufferNormalSampler = vec4(normalVec, 1.);
         gBufferRMAOSampler = vec4(.5, .5, 1, 1);
         gBufferMaterialSampler = vec4(packValues(0, 0, 0, 0, 0, ISOTROPIC, false), 1);
     }

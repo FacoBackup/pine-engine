@@ -113,9 +113,9 @@ public class LightService {
         var transform = light.entity.transformation;
 
         lightSSBOState.put(offset, light.type.getTypeId());
-        lightSSBOState.put(offset + 1, light.color.x);
-        lightSSBOState.put(offset + 2, light.color.y);
-        lightSSBOState.put(offset + 3, light.color.z);
+        lightSSBOState.put(offset + 1, light.color.x * light.intensity);
+        lightSSBOState.put(offset + 2, light.color.y * light.intensity);
+        lightSSBOState.put(offset + 3, light.color.z * light.intensity);
         lightSSBOState.put(offset + 4, transform.translation.x);
         lightSSBOState.put(offset + 5, transform.translation.y);
         lightSSBOState.put(offset + 6, transform.translation.z);

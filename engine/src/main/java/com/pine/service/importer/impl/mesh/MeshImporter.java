@@ -24,7 +24,7 @@ import static org.lwjgl.assimp.Assimp.*;
 
 @PBean
 public class MeshImporter extends AbstractImporter {
-    private static final int FLAGS = Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs | Assimp.aiProcess_GlobalScale | Assimp.aiProcess_FindInstances | Assimp.aiProcess_PreTransformVertices | Assimp.aiProcess_GenNormals;
+    private static final int FLAGS = Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs | Assimp.aiProcess_GlobalScale | Assimp.aiProcess_FindInstances | Assimp.aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals | aiProcess_DropNormals;
 
     @PInject
     public StreamingService streamingService;
@@ -124,7 +124,7 @@ public class MeshImporter extends AbstractImporter {
                         textures.put(cmd.path(), texture = streamingService.addNew(TextureStreamableResource.class, cmd.name()));
                         if (texture != null) {
                             texture.size = persist(texture, cmd.path());
-                            if(texture.size < 0){
+                            if (texture.size < 0) {
                                 streamingService.repository.streamableResources.remove(texture);
                                 textures.remove(cmd.path());
                                 continue;

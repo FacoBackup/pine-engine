@@ -3,6 +3,7 @@ package com.pine.service.camera;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.ClockRepository;
 import org.joml.Vector3f;
 
 @PBean
@@ -10,6 +11,7 @@ public class CameraThirdPersonService extends AbstractCameraService {
 
     @PInject
     public CameraRepository cameraRepository;
+
     public boolean isChangingCenter = false;
 
     @Override
@@ -53,7 +55,8 @@ public class CameraThirdPersonService extends AbstractCameraService {
     }
 
     public void zoom(Camera camera, float amount) {
-        camera.orbitRadius -= amount * cameraRepository.zoomSensitivity;
+        camera.orbitRadius -=  amount * cameraRepository.zoomSensitivity * .1f
+        ;
         if (camera.orbitRadius < 1.0f) camera.orbitRadius = 1.0f;
         if (camera.orbitRadius > 100.0f) camera.orbitRadius = 100.0f;
         camera.registerChange();
