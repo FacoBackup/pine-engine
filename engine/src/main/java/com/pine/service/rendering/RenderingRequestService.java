@@ -85,6 +85,10 @@ public class RenderingRequestService {
 
     private void prepareMaterial(MeshComponent scene, RenderingRequest renderRequest) {
         MaterialStreamableResource material = scene.material;
+        if (scene.material == null) {
+            renderRequest.material = null;
+            return;
+        }
         if (material.albedo != null && !material.albedo.isLoaded()) {
             streamingService.stream(material.albedo);
         }

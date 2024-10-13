@@ -108,12 +108,29 @@ public class GBufferPass extends AbstractPass implements Loggable {
     }
 
     private void bindMaterial(MaterialStreamableResource request) {
-        shaderService.bindUniform(albedo, request.albedo);
-        shaderService.bindUniform(roughness, request.roughness);
-        shaderService.bindUniform(metallic, request.metallic);
-        shaderService.bindUniform(ao, request.ao);
-        shaderService.bindUniform(normal, request.normal);
-        shaderService.bindUniform(heightMap, request.heightMap);
+        if(request.albedo != null) {
+            shaderService.bindUniform(albedo, request.albedo.texture);
+        }
+
+        if(request.roughness != null) {
+            shaderService.bindUniform(roughness, request.roughness.texture);
+        }
+
+        if(request.metallic != null) {
+            shaderService.bindUniform(metallic, request.metallic.texture);
+        }
+
+        if(request.ao != null) {
+            shaderService.bindUniform(ao, request.ao.texture);
+        }
+
+        if(request.normal != null) {
+            shaderService.bindUniform(normal, request.normal.texture);
+        }
+
+        if(request.heightMap != null) {
+            shaderService.bindUniform(heightMap, request.heightMap.texture);
+        }
 
         floatBuffer.put(0, request.anisotropicRotation);
         shaderService.bindUniform(anisotropicRotation, floatBuffer);

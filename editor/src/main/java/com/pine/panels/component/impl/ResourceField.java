@@ -37,7 +37,7 @@ public class ResourceField extends AbstractFormField {
         } else if (dto.getField().getType() == AudioStreamableResource.class) {
             type = StreamableResourceType.AUDIO;
         } else {
-            type = null;
+            type = StreamableResourceType.MATERIAL;
         }
     }
 
@@ -82,7 +82,8 @@ public class ResourceField extends AbstractFormField {
         }
 
         ImGui.sameLine();
-        if (ImGui.button(Icons.remove + "Remove" + imguiId)) {
+        if (ImGui.button(Icons.close + "Remove" + imguiId)) {
+            selected.set(-1);
             changerHandler.accept(dto, null);
         }
     }
