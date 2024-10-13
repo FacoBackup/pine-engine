@@ -1,5 +1,6 @@
 package com.pine.service.importer.impl.mesh;
 
+import com.pine.FSUtil;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
@@ -46,7 +47,7 @@ public class MeshImporter extends AbstractImporter {
                 getLogger().error("Failed to load scene at {}", path);
                 return Collections.emptyList();
             }
-            SceneStreamData sceneStreamData = new SceneStreamData(scene.mName().dataString());
+            SceneStreamData sceneStreamData = new SceneStreamData(FSUtil.getNameFromPath(path));
             var root = new AssimpMeshRepresentation(null);
             root.name = scene.mName().dataString();
             MeshImporterUtil.traverseAssimpTree(scene.mRootNode(), root, byPrimitive);
@@ -54,12 +55,13 @@ public class MeshImporter extends AbstractImporter {
 
             traverseTree(root, sceneStreamData, processed, scene, 0);
 
-            SceneStreamableResource streamable = streamingService.addNew(SceneStreamableResource.class, sceneStreamData.name);
-            persist(streamable, sceneStreamData);
+            SceneStreamableResource sceneStreamable = streamingService.addNew(SceneStreamableResource.class, sceneStreamData.name);
+            persist(sceneStreamable, sceneStreamData);
 
             Assimp.aiReleaseImport(scene);
-
-            return new ArrayList<>(processed.values());
+            List<AbstractStreamableResource<?>> values = new ArrayList<>(processed.values());
+            values.add(sceneStreamable);
+            return values;
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
             return Collections.emptyList();

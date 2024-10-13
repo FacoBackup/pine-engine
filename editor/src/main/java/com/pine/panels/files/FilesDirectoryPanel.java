@@ -1,5 +1,6 @@
 package com.pine.panels.files;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.core.view.AbstractView;
@@ -117,7 +118,14 @@ public class FilesDirectoryPanel extends AbstractView {
     private void openResource(ResourceEntry root) {
         switch (root.type) {
             case DIRECTORY -> context.setDirectory(root);
-            case SCENE -> requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, sceneService.stream(root.path)));
+            case SCENE ->
+                    requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, sceneService.stream(root.path)));
+            case MESH -> {
+                var request = new AddEntityRequest(List.of(ComponentType.MESH));
+                requestProcessingService.addRequest(request);
+                MeshComponent meshComponent = (MeshComponent) request.getResponse().components.get(MeshComponent.class.getSimpleName());
+                meshComponent.lod0 = (MeshStreamableResource) root.streamableResource;
+            }
         }
     }
 }

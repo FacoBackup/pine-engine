@@ -7,6 +7,7 @@ import com.pine.messaging.MessageSeverity;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
+import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.service.FSService;
 import com.pine.service.FilesService;
 import com.pine.service.NativeDialogService;
@@ -18,6 +19,7 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImString;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
@@ -38,9 +40,7 @@ public class FilesHeaderPanel extends AbstractView {
     @PInject
     public ProjectService projectService;
 
-
     private final ImString searchPath = new ImString();
-
     private FilesContext context;
 
     @Override
@@ -93,9 +93,11 @@ public class FilesHeaderPanel extends AbstractView {
             if (response.isEmpty()) {
                 messageRepository.pushMessage("Could not import file " + response, MessageSeverity.ERROR);
             }
-            response.forEach(r -> {
-                context.currentDirectory.children.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
-            });
+            List<ResourceEntry> newChildren = new ArrayList<>(context.currentDirectory.children);
+            for (var r : response) {
+                newChildren.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
+            }
+            context.currentDirectory.children = newChildren;
             projectService.saveSilently();
         });
     }

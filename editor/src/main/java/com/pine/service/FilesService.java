@@ -7,6 +7,7 @@ import com.pine.repository.EditorRepository;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.streaming.StreamingRepository;
 
 import java.io.File;
 
@@ -17,7 +18,13 @@ public class FilesService {
     public Engine engine;
 
     @PInject
+    public ProjectService projectService;
+
+    @PInject
     public EditorRepository editorRepository;
+
+    @PInject
+    public StreamingRepository streamingRepository;
 
     public ResourceEntryType getType(StreamableResourceType type) {
         return switch (type) {
@@ -30,10 +37,12 @@ public class FilesService {
 
     public void delete(ResourceEntry selected) {
         if (selected != editorRepository.rootDirectory) {
+            streamingRepository.streamableResources.remove(selected.streamableResource);
             selected.parent.children.remove(selected);
             if (selected.type != ResourceEntryType.DIRECTORY) {
                 new File(engine.getResourceTargetDirectory() + selected.streamableResource.pathToFile).delete();
             }
+            projectService.saveSilently();
         }
     }
 }

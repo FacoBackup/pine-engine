@@ -33,9 +33,9 @@ public class AddComponentRequest extends AbstractRequest {
         entity.components.put(clazz.getSimpleName(), instance);
     }
 
-    public static void add(List<Class<? extends AbstractComponent>> components, Entity entity, WorldRepository repository) throws Exception {
-        for (Class<? extends AbstractComponent> component : components) {
-            AddComponentRequest.addComponent(component, entity, repository);
+    public static void add(List<ComponentType> components, Entity entity, WorldRepository repository) throws Exception {
+        for (var type : components) {
+            AddComponentRequest.addComponent(type.getClazz(), entity, repository);
         }
     }
 
@@ -45,7 +45,7 @@ public class AddComponentRequest extends AbstractRequest {
             return new Message("Entity already has component of type " + type.getTitle(), MessageSeverity.WARN);
         }
         try {
-            AddComponentRequest.add(List.of(type.getClazz()), entity, repository);
+            AddComponentRequest.add(List.of(type), entity, repository);
         } catch (Exception e) {
             return new Message("Could not create", MessageSeverity.ERROR);
         }
