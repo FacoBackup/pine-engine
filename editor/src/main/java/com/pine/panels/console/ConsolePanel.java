@@ -35,9 +35,8 @@ public class ConsolePanel extends AbstractDockPanel {
             ImGui.tableHeadersRow();
 
             List<LogMessage> logMessages = InMemoryAppender.getLogMessages();
-            for (int i = 0, messagesHistorySize = logMessages.size(); i < messagesHistorySize; i++) {
-                LogMessage log = logMessages.get(i);
-                if (hasSearchValue && !log.message.contains(searchValue.get())) {
+            for (LogMessage log : logMessages) {
+                if (log == null || (hasSearchValue && !log.message.contains(searchValue.get()))) {
                     continue;
                 }
                 ImGui.tableNextRow();

@@ -6,30 +6,23 @@ import com.pine.inspection.FieldDTO;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.WorldRepository;
+import com.pine.repository.streaming.StreamingRepository;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class UpdateFieldRequest extends AbstractRequest {
-    private FieldDTO fieldDTO;
-    private Object newValue;
+    private final FieldDTO fieldDTO;
+    private final Object newValue;
 
     public UpdateFieldRequest(FieldDTO fieldDTO, Object newValue) {
         this.newValue = newValue;
         this.fieldDTO = fieldDTO;
     }
 
-    public void setFieldDTO(FieldDTO fieldDTO) {
-        this.fieldDTO = fieldDTO;
-    }
-
-    public void setNewValue(Object newValue) {
-        this.newValue = newValue;
-    }
-
     @Override
-    public Message run(WorldRepository repository) {
+    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
         try {
             switch (fieldDTO.getType()) {
                 case VECTOR2 -> {

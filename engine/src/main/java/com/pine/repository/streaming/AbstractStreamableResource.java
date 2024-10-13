@@ -1,11 +1,12 @@
 package com.pine.repository.streaming;
 
 import com.pine.injection.Disposable;
+import com.pine.inspection.Inspectable;
 import com.pine.service.streaming.StreamLoadData;
 
 import java.io.Serializable;
 
-public abstract class AbstractStreamableResource<T extends StreamLoadData> implements Disposable, Serializable {
+public abstract class AbstractStreamableResource<T extends StreamLoadData> extends Inspectable implements Disposable, Serializable {
     public transient boolean loaded = false;
     public transient long lastUse;
     public final String id;
@@ -42,4 +43,9 @@ public abstract class AbstractStreamableResource<T extends StreamLoadData> imple
     }
 
     protected abstract void disposeInternal();
+
+    @Override
+    final public String getTitle() {
+        return name;
+    }
 }

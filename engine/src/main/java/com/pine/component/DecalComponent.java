@@ -5,10 +5,10 @@ import com.pine.theme.Icons;
 
 import java.util.LinkedList;
 
-@PBean
-public class DecalComponent extends AbstractComponent<DecalComponent> {
-    public DecalComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+
+public class DecalComponent extends AbstractComponent {
+    public DecalComponent(Entity entity) {
+        super(entity);
     }
 
     // TODO - MIGRATE TO MATERIAL DEFINITION
@@ -25,15 +25,9 @@ public class DecalComponent extends AbstractComponent<DecalComponent> {
 //    public float sheen = 0.0f;
 //    public float sheenTint = 0.0f;
 
-    public DecalComponent() {}
 
     @Override
-    public String getTitle() {
-        return "Decal";
-    }
-
-    @Override
-    public String getIcon() {
-        return Icons.format_paint;
+    public ComponentType getType() {
+        return ComponentType.DECAL;
     }
 }

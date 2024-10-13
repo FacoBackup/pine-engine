@@ -2,33 +2,62 @@ package com.pine.repository;
 
 import com.pine.Mutable;
 import com.pine.SerializableRepository;
+import com.pine.component.AbstractComponent;
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
-import com.pine.component.EntityComponent;
 import com.pine.injection.PBean;
-import com.pine.injection.PInject;
-import com.pine.injection.PInjector;
+import com.pine.injection.PostCreation;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
 
-import java.util.List;
+import java.util.*;
 
 @PBean
 public class WorldRepository implements Mutable, SerializableRepository {
     public static final String ROOT_ID = Entity.class.getCanonicalName();
     public final Entity rootEntity = new Entity(ROOT_ID, "World");
-    transient private int worldChangeId = 0;
+    public final Map<ComponentType, List<AbstractComponent>> components = new HashMap<>();
+    private int changes = 0;
+    private int frozenVersion = -1;
 
-    @PInject
-    transient public PInjector injector;
+    @PostCreation
+    public void onInitialize() {
+        for (var type : ComponentType.values()) {
+            components.put(type, new ArrayList<>());
+        }
+    }
 
-    @PInject
-    public List<EntityComponent> allComponents;
+    public void registerComponent(AbstractComponent component) {
+        components.get(component.getType()).add(component);
+    }
+
+    public <T extends AbstractComponent> List<T> getComponentBag(ComponentType type) {
+        return (List<T>) components.get(type);
+    }
+
+    public void unregisterComponents(Entity entity) {
+        for (AbstractComponent c : entity.components.values()) {
+            components.get(c.getType()).remove(c);
+        }
+    }
 
     @Override
     public int getChangeId() {
-        return worldChangeId;
+        return changes;
     }
 
     @Override
     public void registerChange() {
-        worldChangeId++;
+        changes = (int) (Math.random() * 10000);
+    }
+
+    @Override
+    public boolean isNotFrozen() {
+        return frozenVersion != getChangeId();
+    }
+
+    @Override
+    public void freezeVersion() {
+        frozenVersion = getChangeId();
     }
 }

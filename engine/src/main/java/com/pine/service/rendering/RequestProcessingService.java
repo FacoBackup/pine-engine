@@ -6,6 +6,7 @@ import com.pine.messaging.Loggable;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
 import com.pine.repository.WorldRepository;
+import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.request.AbstractRequest;
 
 import java.util.LinkedList;
@@ -21,6 +22,9 @@ public class RequestProcessingService implements Loggable {
     @PInject
     public MessageRepository messageRepository;
 
+    @PInject
+    public StreamingRepository streamingRepository;
+
     private final List<AbstractRequest> requests = new LinkedList<>();
 
     public void addRequest(AbstractRequest request) {
@@ -30,7 +34,7 @@ public class RequestProcessingService implements Loggable {
         requests.add(request);
 
         try{
-            Message message = request.run(worldRepository);
+            Message message = request.run(worldRepository, streamingRepository);
             if (message != null) {
                 messageRepository.pushMessage(message);
             }

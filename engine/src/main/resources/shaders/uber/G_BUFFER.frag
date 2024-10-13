@@ -12,6 +12,12 @@
 #define WIREFRAME 17
 #define LIT -1
 
+#define ISOTROPIC 1
+#define ANISOTROPIC 2
+#define SHEEN 3
+#define CLEAR_COAT 4
+#define TRANSPARENCY 5
+
 flat in vec3 cameraPlacement;
 flat in int renderingIndex;
 flat in float depthFunc;
@@ -31,6 +37,7 @@ uniform int parallaxLayers;
 uniform int debugShadingMode;
 uniform bool useParallax;
 
+uniform bool fallbackMaterial;
 uniform float anisotropicRotation;
 uniform float anisotropy;
 uniform float clearCoat;
@@ -119,23 +126,18 @@ void main() {
         UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
 
-    gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 0);
-    gBufferNormalSampler = vec4(vec3(normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0))), 1);
-    gBufferRMAOSampler = vec4(texture(roughness, UV).r, texture(metallic, UV).r, 1 - texture(ao, UV).r, 1);
     gBufferDepthSampler = vec4(encode(), 0, 0, 1);
-    gBufferMaterialSampler = vec4(
-        packValues(
-            anisotropicRotation,
-            anisotropy,
-            clearCoat,
-            sheen,
-            sheenTint,
-            renderingMode,
-            ssrEnabled
-        ),
-        1
-    );
-
+    if (!fallbackMaterial){
+        gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 0);
+        gBufferNormalSampler = vec4(vec3(normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0))), 1);
+        gBufferRMAOSampler = vec4(texture(roughness, UV).r, texture(metallic, UV).r, 1 - texture(ao, UV).r, 1);
+        gBufferMaterialSampler = vec4(packValues(anisotropicRotation, anisotropy, clearCoat, sheen, sheenTint, renderingMode, ssrEnabled), 1);
+    } else {
+        gBufferAlbedoSampler = vec4(vec3(.5), 0);
+        gBufferNormalSampler = vec4(normalVec, 1.);
+        gBufferRMAOSampler = vec4(.5, .5, 1, 1);
+        gBufferMaterialSampler = vec4(packValues(0, 0, 0, 0, 0, ISOTROPIC, false), 1);
+    }
     if (debugShadingMode != LIT){
         switch (debugShadingMode) {
             case RANDOM:

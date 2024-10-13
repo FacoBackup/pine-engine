@@ -18,7 +18,7 @@ public class OptionsField extends AbstractFormField {
     public void render() {
         ImGui.text(dto.getLabel());
         for(var op : dto.getOptions()){
-            if(ImGui.checkbox(op.getLabel(), selected == op)){
+            if(ImGui.checkbox(op.getTitle(), selected == op)){
                 selected = op;
                 changerHandler.accept(dto, op);
             }

@@ -4,7 +4,6 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.repository.streaming.TextureStreamableResource;
 import com.pine.service.streaming.AbstractStreamableService;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
@@ -19,22 +18,12 @@ public class TextureService extends AbstractStreamableService<TextureStreamableR
     public StreamingRepository repository;
 
     @Override
-    protected void bindInternal() {
-
-    }
-
-    @Override
-    public void unbind() {
-
-    }
-
-    @Override
     public StreamableResourceType getResourceType() {
         return StreamableResourceType.TEXTURE;
     }
 
     @Override
-    public TextureStreamData stream(TextureStreamableResource instance) {
+    public TextureStreamData stream(String pathToFile) {
         ByteBuffer imageBuffer;
         int width, height;
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -43,7 +32,7 @@ public class TextureService extends AbstractStreamableService<TextureStreamableR
             IntBuffer channelsBuffer = stack.mallocInt(1);
 
             STBImage.stbi_set_flip_vertically_on_load(true);
-            imageBuffer = STBImage.stbi_load(engine.getResourceTargetDirectory() + instance.pathToFile, widthBuffer, heightBuffer, channelsBuffer, 4);
+            imageBuffer = STBImage.stbi_load(engine.getResourceTargetDirectory() + pathToFile, widthBuffer, heightBuffer, channelsBuffer, 4);
             if (imageBuffer == null) {
                 throw new RuntimeException("Failed to load image: " + STBImage.stbi_failure_reason());
             }

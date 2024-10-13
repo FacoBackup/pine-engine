@@ -6,27 +6,20 @@ import com.pine.theme.Icons;
 import java.util.LinkedList;
 import java.util.Set;
 
-@PBean
-public class PhysicsColliderComponent extends AbstractComponent<PhysicsColliderComponent> {
 
-    public PhysicsColliderComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+public class PhysicsColliderComponent extends AbstractComponent {
+
+    public PhysicsColliderComponent(Entity entity) {
+        super(entity);
     }
 
-    public PhysicsColliderComponent() {}
-
     @Override
-    public Set<Class<? extends EntityComponent>> getDependencies() {
+    public Set<Class<? extends AbstractComponent>> getDependencies() {
         return Set.of(RigidBodyComponent.class, MeshComponent.class);
     }
 
     @Override
-    public String getTitle() {
-        return "Collider";
-    }
-
-    @Override
-    public String getIcon() {
-        return Icons.sports_tennis;
+    public ComponentType getType() {
+        return ComponentType.PHYSICS_COLLIDER;
     }
 }

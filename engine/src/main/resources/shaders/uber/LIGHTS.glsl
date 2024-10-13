@@ -55,7 +55,8 @@ vec3 computeLightContribution(vec4 baseContribution, LightSharedInfo info, vec3 
     if (distanceFromFrag > info.cutoff) {
         intensity = clamp(mix(1., 0., (distanceFromFrag - info.cutoff) / (info.outerCutoff - info.cutoff)), 0., 1.);
     }
-    float attFactor = 1.;// intensity / (1. + (info.lightAttenuation.x * distanceFromFrag) + (info.lightAttenuation.y * pow(distanceFromFrag, 2.)));
+    vec2 att = 1./info.lightAttenuation;
+    float attFactor = intensity / (1. + (att.x * distanceFromFrag) + (att.y * pow(distanceFromFrag, 2.)));
     if (attFactor == 0.){
         return vec3(0.);
     }

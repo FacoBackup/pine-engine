@@ -2,24 +2,24 @@ package com.pine.panels.files;
 
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
+import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.service.FSService;
 import com.pine.service.FilesService;
 import com.pine.service.NativeDialogService;
 import com.pine.service.ProjectService;
-import com.pine.service.loader.LoaderService;
-import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
+import com.pine.service.importer.ImporterService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImString;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
@@ -28,7 +28,7 @@ public class FilesHeaderPanel extends AbstractView {
     @PInject
     public FSService fsService;
     @PInject
-    public LoaderService resourceLoader;
+    public ImporterService resourceLoader;
     @PInject
     public MessageRepository messageRepository;
     @PInject
@@ -40,9 +40,7 @@ public class FilesHeaderPanel extends AbstractView {
     @PInject
     public ProjectService projectService;
 
-
     private final ImString searchPath = new ImString();
-
     private FilesContext context;
 
     @Override
@@ -91,19 +89,20 @@ public class FilesHeaderPanel extends AbstractView {
 
     private void importFile() {
         List<String> paths = nativeDialogService.selectFile();
-        for (String filePath : paths) {
-            if (filePath != null) {
-                var response = resourceLoader.load(filePath, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
-                if (response == null || !response.isLoaded) {
-                    messageRepository.pushMessage(new Message("Error while importing file " + filePath, MessageSeverity.ERROR));
-                } else {
-                    response.loadedResources.forEach(r -> {
-                        context.currentDirectory.children.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
-                    });
-                }
-            }
+        if(paths.isEmpty()){
+            return;
         }
-        projectService.saveSilently();
+        resourceLoader.importFiles(paths, response -> {
+            if (response.isEmpty()) {
+                messageRepository.pushMessage("Could not import file " + response, MessageSeverity.ERROR);
+            }
+            List<ResourceEntry> newChildren = new ArrayList<>(context.currentDirectory.children);
+            for (var r : response) {
+                newChildren.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
+            }
+            context.currentDirectory.children = newChildren;
+            projectService.saveSilently();
+        });
     }
 
     private ResourceEntry findRecursively(String search, ResourceEntry entry) {

@@ -4,7 +4,7 @@ import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.repository.streaming.TextureStreamableResource;
+import com.pine.service.streaming.texture.TextureStreamableResource;
 import com.pine.theme.Icons;
 
 @PBean

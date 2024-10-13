@@ -1,6 +1,8 @@
-package com.pine.repository.streaming;
+package com.pine.service.streaming.audio;
 
-import com.pine.service.streaming.audio.AudioStreamData;
+import com.pine.repository.streaming.AbstractStreamableResource;
+import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.theme.Icons;
 
 public class AudioStreamableResource extends AbstractStreamableResource<AudioStreamData> {
 
@@ -21,5 +23,10 @@ public class AudioStreamableResource extends AbstractStreamableResource<AudioStr
     @Override
     protected void disposeInternal() {
 
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.audiotrack;
     }
 }

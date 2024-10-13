@@ -1,5 +1,6 @@
 package com.pine.component.light;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
@@ -7,21 +8,23 @@ import com.pine.type.LightType;
 
 import java.util.LinkedList;
 
-@PBean
-public class SphereLightComponent extends AbstractLightComponent<SphereLightComponent> {
+
+public class SphereLightComponent extends AbstractLightComponent {
     @MutableField(label = "Area light Radius")
     public float areaRadius = 1;
 
-    public SphereLightComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+    public SphereLightComponent(Entity entity) {
+        super(entity);
     }
 
-    public SphereLightComponent() {}
-
     @Override
-    LightType getType() {
+    LightType getLightType() {
         return LightType.SPHERE;
     }
 
+    @Override
+    public ComponentType getType() {
+        return ComponentType.SPHERE_LIGHT;
+    }
 }
 

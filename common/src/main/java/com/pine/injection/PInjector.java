@@ -14,7 +14,7 @@ public class PInjector implements Loggable {
     private final List<Object> injectables = new ArrayList<>();
     private final String rootPackageName;
 
-    private static record ToInitialize(int order, Method method, Object in) {
+    private record ToInitialize(int order, Method method, Object in) {
     }
 
     /**
@@ -30,13 +30,9 @@ public class PInjector implements Loggable {
         }
         List<ToInitialize> toInitializeList = new ArrayList<>();
         for (var in : injectables) {
-            var method = Arrays.stream(in.getClass().getDeclaredMethods())
+            Arrays.stream(in.getClass().getDeclaredMethods())
                     .filter(m -> m.isAnnotationPresent(PostCreation.class))
-                    .findFirst()
-                    .orElse(null);
-            if (method != null) {
-                toInitializeList.add(new ToInitialize(method.getAnnotation(PostCreation.class).order(), method, in));
-            }
+                    .findFirst().ifPresent(method -> toInitializeList.add(new ToInitialize(method.getAnnotation(PostCreation.class).order(), method, in)));
         }
         toInitializeList.sort(Comparator.comparingInt(ToInitialize::order));
         for(ToInitialize toInitialize : toInitializeList) {

@@ -18,7 +18,7 @@ public enum MaterialRenderingMode implements SelectableEnum {
     }
 
     @Override
-    public String getLabel() {
+    public String getTitle() {
         return label;
     }
 

@@ -1,7 +1,8 @@
 package com.pine.service.rendering;
 
+import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
-import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
 import com.pine.service.streaming.StreamingService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,7 @@ class RenderingRequestServiceTest {
     void shouldSelectLod() {
         service.streamingService = Mockito.mock(StreamingService.class);
 
-        var comp = new MeshComponent();
+        var comp = new MeshComponent(new Entity());
         comp.lod4 = new MeshStreamableResource("e", "e");
         comp.distanceFromCamera = 50;
         Assertions.assertNull(service.selectLOD(comp));

@@ -1,5 +1,6 @@
 package com.pine.component.light;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
@@ -7,20 +8,23 @@ import com.pine.type.LightType;
 
 import java.util.LinkedList;
 
-@PBean
-public class SpotLightComponent extends AbstractLightComponent<SpotLightComponent> {
+
+public class SpotLightComponent extends AbstractLightComponent {
     @MutableField(label = "Impact radius")
     public float radius = 45;
 
-    public SpotLightComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+    public SpotLightComponent(Entity entity) {
+        super(entity);
     }
 
-    public SpotLightComponent() {}
+    @Override
+    LightType getLightType() {
+        return LightType.SPOT;
+    }
 
     @Override
-    LightType getType() {
-        return LightType.SPOT;
+    public ComponentType getType() {
+        return ComponentType.SPOT_LIGHT;
     }
 }
 

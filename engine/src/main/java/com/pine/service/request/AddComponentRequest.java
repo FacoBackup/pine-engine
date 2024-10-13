@@ -1,51 +1,51 @@
 package com.pine.service.request;
 
 import com.pine.component.AbstractComponent;
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
-import com.pine.component.EntityComponent;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.WorldRepository;
+import com.pine.repository.streaming.StreamingRepository;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 public class AddComponentRequest extends AbstractRequest {
-    private final Class<? extends EntityComponent> componentClass;
+    private final ComponentType type;
     private final Entity entity;
 
-    public AddComponentRequest(Class<? extends EntityComponent> componentClass, Entity entity) {
-        this.componentClass = componentClass;
+    public AddComponentRequest(ComponentType type, Entity entity) {
+        this.type = type;
         this.entity = entity;
     }
 
-    private static void addComponent(Class<? extends EntityComponent> clazz, Entity entity, WorldRepository repository) throws Exception {
+    private static void addComponent(Class<? extends AbstractComponent> clazz, Entity entity, WorldRepository repository) throws Exception {
         if (entity.components.containsKey(clazz.getSimpleName())) {
             return;
         }
-        var bean = (AbstractComponent<?>) repository.injector.getBean(clazz);
-        var instance = clazz.getConstructor(Entity.class, LinkedList.class).newInstance(entity, bean.getBag());
-        Set<Class<? extends EntityComponent>> dependencies = instance.getDependencies();
+        var instance = clazz.getConstructor(Entity.class).newInstance(entity);
+        repository.registerComponent(instance);
+        Set<Class<? extends AbstractComponent>> dependencies = instance.getDependencies();
         for (var dependency : dependencies) {
             addComponent(dependency, entity, repository);
         }
         entity.components.put(clazz.getSimpleName(), instance);
     }
 
-    public static void add(List<Class<? extends EntityComponent>> components, Entity entity, WorldRepository repository) throws Exception {
-        for (Class<? extends EntityComponent> component : components) {
-            AddComponentRequest.addComponent(component, entity, repository);
+    public static void add(List<ComponentType> components, Entity entity, WorldRepository repository) throws Exception {
+        for (var type : components) {
+            AddComponentRequest.addComponent(type.getClazz(), entity, repository);
         }
     }
 
     @Override
-    public Message run(WorldRepository repository) {
-        if (entity.components.containsKey(componentClass.getSimpleName())) {
-            return new Message("Entity already has component of type " + componentClass.getSimpleName(), MessageSeverity.WARN);
+    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
+        if (entity.components.containsKey(type.getClazz().getSimpleName())) {
+            return new Message("Entity already has component of type " + type.getTitle(), MessageSeverity.WARN);
         }
         try {
-            AddComponentRequest.add(List.of(componentClass), entity, repository);
+            AddComponentRequest.add(List.of(type), entity, repository);
         } catch (Exception e) {
             return new Message("Could not create", MessageSeverity.ERROR);
         }

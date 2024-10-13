@@ -3,8 +3,9 @@ package com.pine.component;
 import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.repository.rendering.RenderingRequest;
-import com.pine.repository.streaming.MeshStreamableResource;
-import com.pine.repository.streaming.TextureStreamableResource;
+import com.pine.service.streaming.material.MaterialStreamableResource;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
+import com.pine.service.streaming.texture.TextureStreamableResource;
 import com.pine.theme.Icons;
 import com.pine.type.MaterialRenderingMode;
 import org.joml.Vector3f;
@@ -13,12 +14,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@PBean
-public class MeshComponent extends AbstractComponent<MeshComponent> {
+
+public class MeshComponent extends AbstractComponent {
     @MutableField(label = "Casts shadow")
     public boolean castsShadows = true;
     @MutableField(label = "Contribute to probes")
     public boolean contributeToProbes = true;
+
+    @MutableField(label = "Material")
+    public MaterialStreamableResource material;
 
     @MutableField(group = "Mesh", label = "Mesh LOD 0")
     public MeshStreamableResource lod0;
@@ -59,57 +63,16 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
     public final Vector3f boundingBoxSize = new Vector3f(1);
 
 
-    // MATERIAL
-    @MutableField(group = "Material", label = "Albedo")
-    public TextureStreamableResource albedo;
-    @MutableField(group = "Material", label = "Roughness")
-    public TextureStreamableResource roughness;
-    @MutableField(group = "Material", label = "Metallic")
-    public TextureStreamableResource metallic;
-    @MutableField(group = "Material", label = "Ambient occlusion")
-    public TextureStreamableResource ao;
-    @MutableField(group = "Material", label = "Normal")
-    public TextureStreamableResource normal;
-    @MutableField(group = "Material", label = "Height map")
-    public TextureStreamableResource heightMap;
-    @MutableField(group = "Material", label = "use parallax")
-    public boolean useParallax = false;
-    @MutableField(group = "Material", label = "Parallax height scale")
-    public float parallaxHeightScale = 1;
-    @MutableField(group = "Material", label = "Parallax layers")
-    public int parallaxLayers = 16;
-    @MutableField(group = "Material", label = "Rendering mode")
-    public MaterialRenderingMode renderingMode = MaterialRenderingMode.ISOTROPIC;
-    @MutableField(group = "Material", label = "Screen space reflections")
-    public boolean ssrEnabled;
-
-    @MutableField(group = "Material", label = "Anisotropic rotation")
-    public float anisotropicRotation;
-    @MutableField(group = "Material", label = "Clear coat")
-    public float clearCoat;
-    @MutableField(group = "Material", label = "Anisotropy")
-    public float anisotropy;
-    @MutableField(group = "Material", label = "Sheen")
-    public float sheen;
-    @MutableField(group = "Material", label = "Sheen tint")
-    public float sheenTint;
 
     public float distanceFromCamera = 0f;
 
-    public MeshComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+    public MeshComponent(Entity entity) {
+        super(entity);
     }
 
-    public MeshComponent() {
-    }
 
     @Override
-    public String getTitle() {
-        return "Mesh Component";
-    }
-
-    @Override
-    public String getIcon() {
-        return Icons.view_in_ar;
+    public ComponentType getType() {
+        return ComponentType.MESH;
     }
 }

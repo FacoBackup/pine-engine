@@ -3,6 +3,7 @@ package com.pine.service.camera;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.ClockRepository;
 import com.pine.repository.RuntimeRepository;
 import org.joml.Vector3f;
 
@@ -15,6 +16,9 @@ public class CameraFirstPersonService extends AbstractCameraService {
 
     @PInject
     public RuntimeRepository runtimeRepository;
+
+    @PInject
+    public ClockRepository clockRepository;
 
     @PInject
     public CameraRepository cameraRepository;
@@ -34,7 +38,7 @@ public class CameraFirstPersonService extends AbstractCameraService {
         forward.normalize();
         right.normalize();
 
-        float multiplier = runtimeRepository.fasterPressed ? 2 * cameraRepository.movementSpeed : cameraRepository.movementSpeed;
+        float multiplier = (runtimeRepository.fasterPressed ? 20 : 10) * cameraRepository.movementSpeed * clockRepository.deltaTime;
         if (runtimeRepository.leftPressed) {
             camera.position.add(right.mul(multiplier));
             camera.registerChange();

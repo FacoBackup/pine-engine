@@ -1,16 +1,20 @@
 package com.pine.panels.files;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.fs.ResourceEntry;
 import com.pine.repository.fs.ResourceEntryType;
-import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.service.request.LoadSceneRequest;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
 import com.pine.service.FilesService;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
+import com.pine.service.streaming.scene.SceneService;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.*;
@@ -30,10 +34,16 @@ public class FilesDirectoryPanel extends AbstractView {
     public FilesService filesService;
 
     @PInject
+    public WorldRepository worldRepository;
+
+    @PInject
     public EditorRepository editorRepository;
 
     @PInject
     public RequestProcessingService requestProcessingService;
+
+    @PInject
+    public SceneService sceneService;
 
     private FilesContext context;
 
@@ -99,6 +109,11 @@ public class FilesDirectoryPanel extends AbstractView {
     private void onClick(ResourceEntry root) {
         if (ImGui.isItemHovered() && ImGui.isItemClicked()) {
             context.selected = root;
+            if (root.type != ResourceEntryType.DIRECTORY) {
+                editorRepository.inspectFile = root;
+            } else {
+                editorRepository.inspectFile = null;
+            }
         }
         if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
             openResource(root);
@@ -108,11 +123,12 @@ public class FilesDirectoryPanel extends AbstractView {
     private void openResource(ResourceEntry root) {
         switch (root.type) {
             case DIRECTORY -> context.setDirectory(root);
+            case SCENE ->
+                    requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, sceneService.stream(root.path)));
             case MESH -> {
-                var request = new AddEntityRequest(List.of(MeshComponent.class));
+                var request = new AddEntityRequest(List.of(ComponentType.MESH));
                 requestProcessingService.addRequest(request);
-                Entity ett = (Entity) request.getResponse();
-                MeshComponent meshComponent = (MeshComponent) ett.components.get(MeshComponent.class.getSimpleName());
+                MeshComponent meshComponent = (MeshComponent) request.getResponse().components.get(MeshComponent.class.getSimpleName());
                 meshComponent.lod0 = (MeshStreamableResource) root.streamableResource;
             }
         }

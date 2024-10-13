@@ -1,5 +1,5 @@
 package com.pine.inspection;
 
 public interface SelectableEnum {
-    String getLabel();
+    String getTitle();
 }

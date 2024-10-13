@@ -6,8 +6,8 @@ import com.pine.theme.Icons;
 
 import java.util.LinkedList;
 
-@PBean
-public class LightProbeComponent extends AbstractComponent<LightProbeComponent> {
+
+public class LightProbeComponent extends AbstractComponent {
     @MutableField(label = "Mipmaps")
     public int mipmaps = 6;
     /**
@@ -16,20 +16,12 @@ public class LightProbeComponent extends AbstractComponent<LightProbeComponent> 
     @MutableField(label = "Radius")
     public int collectionRadius = 50;
 
-    public LightProbeComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+    public LightProbeComponent(Entity entity) {
+        super(entity);
     }
 
-    public LightProbeComponent() {}
-
     @Override
-    public String getTitle() {
-        return "Probe";
-    }
-
-
-    @Override
-    public String getIcon() {
-        return Icons.panorama;
+    public ComponentType getType() {
+        return ComponentType.LIGHT_PROBE;
     }
 }

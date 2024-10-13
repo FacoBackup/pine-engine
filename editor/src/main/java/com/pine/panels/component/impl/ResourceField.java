@@ -4,6 +4,9 @@ import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
 import com.pine.panels.component.AbstractFormField;
 import com.pine.repository.streaming.*;
+import com.pine.service.streaming.audio.AudioStreamableResource;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
+import com.pine.service.streaming.texture.TextureStreamableResource;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.type.ImInt;
@@ -34,7 +37,7 @@ public class ResourceField extends AbstractFormField {
         } else if (dto.getField().getType() == AudioStreamableResource.class) {
             type = StreamableResourceType.AUDIO;
         } else {
-            type = null;
+            type = StreamableResourceType.MATERIAL;
         }
     }
 
@@ -79,7 +82,8 @@ public class ResourceField extends AbstractFormField {
         }
 
         ImGui.sameLine();
-        if (ImGui.button(Icons.remove + "Remove" + imguiId)) {
+        if (ImGui.button(Icons.close + "Remove" + imguiId)) {
+            selected.set(-1);
             changerHandler.accept(dto, null);
         }
     }

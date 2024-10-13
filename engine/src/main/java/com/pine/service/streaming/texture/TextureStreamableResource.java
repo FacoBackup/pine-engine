@@ -1,6 +1,8 @@
-package com.pine.repository.streaming;
+package com.pine.service.streaming.texture;
 
-import com.pine.service.streaming.texture.TextureStreamData;
+import com.pine.repository.streaming.AbstractStreamableResource;
+import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.theme.Icons;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
 
@@ -35,5 +37,10 @@ public class TextureStreamableResource extends AbstractStreamableResource<Textur
     @Override
     protected void disposeInternal() {
         GL46.glDeleteTextures(texture);
+    }
+
+    @Override
+    public String getIcon() {
+        return Icons.texture;
     }
 }
