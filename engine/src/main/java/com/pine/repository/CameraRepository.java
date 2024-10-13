@@ -11,82 +11,82 @@ import org.joml.Matrix4f;
 
 @PBean
 public class CameraRepository extends Inspectable implements SerializableRepository {
-    @MutableField(label = "Camera rotation sensitivity")
+    @MutableField(group = "Controls", label = "Camera rotation sensitivity")
     public float sensitivity = 1;
 
-    @MutableField(label = "Camera Movement speed")
+    @MutableField(group = "Controls", label = "Camera Movement speed")
     public float movementSpeed = 1.0f;
 
-    @MutableField(label = "Orbit camera zoom sensitivity")
+    @MutableField(group = "Controls", label = "Orbit camera zoom sensitivity")
     public float zoomSensitivity = 5.0f;
 
-    @MutableField(label = "Motion Blur Enabled")
+    @MutableField(group = "Motion blur", label = "Motion Blur Enabled")
     public boolean motionBlurEnabled = false;
 
-    @MutableField(label = "Motion Blur Velocity Scale")
+    @MutableField(group = "Motion blur", label = "Motion Blur Velocity Scale")
     public float motionBlurVelocityScale = 1f;
 
-    @MutableField(label = "Motion Blur Max Samples")
+    @MutableField(group = "Motion blur", label = "Motion Blur Max Samples")
     public int motionBlurMaxSamples = 50;
 
-    @MutableField(label = "Camera Motion Blur")
+    @MutableField(group = "Motion blur", label = "Camera Motion Blur")
     public boolean cameraMotionBlur = false;
 
-    @MutableField(label = "Bloom")
+    @MutableField(group = "Post processing", label = "Bloom")
     public boolean bloom = false;
 
-    @MutableField(label = "Film Grain")
+    @MutableField(group = "Post processing", label = "Film Grain")
     public boolean filmGrain = false;
 
-    @MutableField(label = "Vignette Enabled")
+    @MutableField(group = "Post processing", label = "Vignette Enabled")
     public boolean vignetteEnabled = false;
 
-    @MutableField(label = "Chromatic Aberration")
+    @MutableField(group = "Post processing", label = "Chromatic Aberration")
     public boolean chromaticAberration = false;
 
-    @MutableField(label = "Distortion")
+    @MutableField(group = "Post processing", label = "Distortion")
     public boolean distortion = false;
 
-    @MutableField(label = "Depth of Field (DOF)")
+    @MutableField(group = "Depth of Field", label = "Enable DOF")
     public boolean DOF = false;
 
-    @MutableField(label = "Focus Distance (DOF)")
+    @MutableField(group = "Depth of Field", label = "Focus Distance (DOF)")
     public int focusDistanceDOF = 10;
 
-    @MutableField(label = "Aperture (DOF)")
+    @MutableField(group = "Depth of Field", label = "Aperture (DOF)")
     public float apertureDOF = 1.2f;
 
-    @MutableField(label = "Focal Length (DOF)")
+    @MutableField(group = "Depth of Field", label = "Focal Length (DOF)")
     public int focalLengthDOF = 5;
 
-    @MutableField(label = "DOF Samples")
+    @MutableField(group = "Depth of Field", label = "DOF Samples")
     public int samplesDOF = 100;
 
-    @MutableField(label = "Film Grain Strength")
+    @MutableField(group = "Post processing", label = "Film Grain Strength")
     public float filmGrainStrength = 1.f;
 
-    @MutableField(label = "Vignette Strength")
+    @MutableField(group = "Post processing", label = "Vignette Strength")
     public float vignetteStrength = .25f;
 
-    @MutableField(label = "Bloom Threshold")
+    @MutableField(group = "Post processing", label = "Bloom Threshold")
     public float bloomThreshold = .75f;
 
-    @MutableField(label = "Bloom Quality")
+    @MutableField(group = "Post processing", label = "Bloom Quality")
     public int bloomQuality = 8;
 
-    @MutableField(label = "Bloom Offset")
+    @MutableField(group = "Post processing", label = "Bloom Offset")
     public int bloomOffset = 0;
 
-    @MutableField(label = "Gamma")
+    @MutableField(group = "Post processing", label = "Gamma")
     public float gamma = 2.2f;
 
-    @MutableField(label = "Exposure")
+    @MutableField(group = "Post processing", label = "Exposure")
     public float exposure = 1.f;
 
-    @MutableField(label = "Chromatic Aberration Strength")
+    @MutableField(group = "Post processing", label = "Chromatic Aberration Strength")
     public int chromaticAberrationStrength = 1;
 
-    @MutableField(label = "Distortion Strength")
+    @MutableField(group = "Post processing", label = "Distortion Strength")
     public int distortionStrength = 1;
 
     public final Matrix4f viewMatrix = new Matrix4f();
@@ -106,6 +106,7 @@ public class CameraRepository extends Inspectable implements SerializableReposit
 
     /**
      * Will force camera update if the instance is different from the current one
+     *
      * @param camera
      */
     public void setCurrentCamera(Camera camera) {

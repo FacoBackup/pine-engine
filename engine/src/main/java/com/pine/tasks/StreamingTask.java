@@ -36,6 +36,8 @@ public class StreamingTask extends AbstractTask implements Loggable {
                         streamingRepository.loadedResources.put(scheduled.id, streamData);
                     } else {
                         streamingRepository.schedule.remove(scheduled.id);
+                        streamingRepository.loadedResources.remove(scheduled.id);
+                        scheduled.invalidated = true;
                     }
                 }
             }

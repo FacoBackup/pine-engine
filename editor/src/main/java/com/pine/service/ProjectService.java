@@ -5,6 +5,8 @@ import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
 import com.pine.injection.PostCreation;
 import com.pine.messaging.Loggable;
+import com.pine.messaging.MessageRepository;
+import com.pine.messaging.MessageSeverity;
 import com.pine.service.serialization.SerializationService;
 
 import java.io.File;
@@ -28,6 +30,9 @@ public class ProjectService implements Loggable {
 
     @PInject
     public SerializationService serializationService;
+
+    @PInject
+    public MessageRepository messageRepository;
 
     private String projectDirectory = null;
 
@@ -57,6 +62,7 @@ public class ProjectService implements Loggable {
     public void save() {
         serializationService.writeProjectMetadata(projectDirectory);
         serializationService.serialize(projectDirectory);
+        messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
     }
 
     public void openProject() {
@@ -76,10 +82,18 @@ public class ProjectService implements Loggable {
     }
 
     public void newProject() {
-        saveAndRestart(nativeDialogService.selectDirectory());
+        String newPath = nativeDialogService.selectDirectory();
+        if(newPath != null) {
+            saveAndRestart(newPath);
+        }
     }
 
     public String getProjectDirectory() {
         return projectDirectory;
+    }
+
+    public void saveSilently() {
+        serializationService.writeProjectMetadata(projectDirectory);
+        serializationService.serialize(projectDirectory);
     }
 }

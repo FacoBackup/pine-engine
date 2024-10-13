@@ -1,6 +1,6 @@
 package com.pine.injection;
 
-import com.pine.service.system.AbstractSystem;
+import com.pine.service.system.AbstractPass;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +12,7 @@ public interface EngineExternalModule {
      * @param systems: currently instantiated systems
      * @return instantiated systems + additional systems
      */
-    default List<AbstractSystem> getExternalSystems(List<AbstractSystem> systems) {
+    default List<AbstractPass> getExternalSystems(List<AbstractPass> systems) {
         return systems;
     }
 

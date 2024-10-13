@@ -11,6 +11,7 @@ import com.pine.repository.fs.ResourceEntryType;
 import com.pine.service.FSService;
 import com.pine.service.FilesService;
 import com.pine.service.NativeDialogService;
+import com.pine.service.ProjectService;
 import com.pine.service.loader.LoaderService;
 import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
 import com.pine.theme.Icons;
@@ -19,6 +20,7 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImString;
 
 import java.io.File;
+import java.util.List;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
@@ -35,6 +37,8 @@ public class FilesHeaderPanel extends AbstractView {
     public FilesService filesService;
     @PInject
     public EditorRepository editorRepository;
+    @PInject
+    public ProjectService projectService;
 
 
     private final ImString searchPath = new ImString();
@@ -86,17 +90,20 @@ public class FilesHeaderPanel extends AbstractView {
     }
 
     private void importFile() {
-        String filePath = nativeDialogService.selectFile();
-        if (filePath != null) {
-            var response = resourceLoader.load(filePath, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
-            if (response == null || !response.isLoaded) {
-                messageRepository.pushMessage(new Message("Error while importing file " + filePath, MessageSeverity.ERROR));
-            } else {
-                response.loadedResources.forEach(r -> {
-                    context.currentDirectory.children.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
-                });
+        List<String> paths = nativeDialogService.selectFile();
+        for (String filePath : paths) {
+            if (filePath != null) {
+                var response = resourceLoader.load(filePath, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
+                if (response == null || !response.isLoaded) {
+                    messageRepository.pushMessage(new Message("Error while importing file " + filePath, MessageSeverity.ERROR));
+                } else {
+                    response.loadedResources.forEach(r -> {
+                        context.currentDirectory.children.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
+                    });
+                }
             }
         }
+        projectService.saveSilently();
     }
 
     private ResourceEntry findRecursively(String search, ResourceEntry entry) {

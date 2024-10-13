@@ -68,4 +68,8 @@ public class FieldDTO {
             return null;
         }
     }
+
+    public String getGroup() {
+        return delegate.group();
+    }
 }

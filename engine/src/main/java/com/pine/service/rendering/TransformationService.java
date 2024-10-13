@@ -2,6 +2,7 @@ package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
 import com.pine.component.Transformation;
+import com.pine.component.light.AbstractLightComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
@@ -61,6 +62,9 @@ public class TransformationService {
         st.globalMatrix.set(auxMat4);
         st.registerChange();
         st.freezeVersion();
+        for(var comp : st.entity.components.values()){
+            comp.registerChange();
+        }
     }
 
     public float getDistanceFromCamera(Vector3f translation) {
@@ -68,18 +72,18 @@ public class TransformationService {
         return Math.abs(distanceAux.sub(translation).length());
     }
 
-    public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f frustumBoxDimensions) {
+    public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f boundingBoxSize) {
         if (getDistanceFromCamera(translation) > maxDistanceFromCamera) {
             return true;
         }
 
-        auxCubeMin.x = translation.x - frustumBoxDimensions.x;
-        auxCubeMin.y = translation.y - frustumBoxDimensions.y;
-        auxCubeMin.z = translation.x - frustumBoxDimensions.z;
+        auxCubeMin.x = translation.x - boundingBoxSize.x;
+        auxCubeMin.y = translation.y - boundingBoxSize.y;
+        auxCubeMin.z = translation.x - boundingBoxSize.z;
 
-        auxCubeMax.x = translation.x + frustumBoxDimensions.x;
-        auxCubeMax.y = translation.y + frustumBoxDimensions.y;
-        auxCubeMax.z = translation.x + frustumBoxDimensions.z;
+        auxCubeMax.x = translation.x + boundingBoxSize.x;
+        auxCubeMax.y = translation.y + boundingBoxSize.y;
+        auxCubeMax.z = translation.x + boundingBoxSize.z;
 
         return !cameraRepository.frustum.isCubeInFrustum(auxCubeMin, auxCubeMax);
     }

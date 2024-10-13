@@ -12,6 +12,7 @@ public abstract class AbstractStreamableResource<T extends StreamLoadData> imple
     public String name;
     public final String pathToFile;
     public float size;
+    public boolean invalidated = false;
 
     public AbstractStreamableResource(String pathToFile, String id) {
         this.pathToFile = pathToFile;

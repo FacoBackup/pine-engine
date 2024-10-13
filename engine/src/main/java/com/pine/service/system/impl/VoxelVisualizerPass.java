@@ -3,13 +3,13 @@ package com.pine.service.system.impl;
 import com.pine.service.resource.compute.ComputeRuntimeData;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.AbstractSystem;
+import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 
-public class VoxelVisualizerSystem extends AbstractSystem {
+public class VoxelVisualizerPass extends AbstractPass {
     private static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
     private final FloatBuffer centerScaleBuffer = MemoryUtil.memAllocFloat(4);
     private UniformDTO centerScale;

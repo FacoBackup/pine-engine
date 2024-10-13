@@ -51,9 +51,10 @@ public class FilesDirectoryPanel extends AbstractView {
         if (ImGui.isKeyPressed(ImGuiKey.Delete) && context.selected != null) {
             filesService.delete(context.selected);
         }
-        if (ImGui.beginTable(imguiId, 4, FLAGS)) {
+        if (ImGui.beginTable(imguiId, 5, FLAGS)) {
             ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 30f);
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.tableSetupColumn("Import date", ImGuiTableColumnFlags.WidthFixed, 100f);
             ImGui.tableSetupColumn("Type", ImGuiTableColumnFlags.WidthFixed, 100f);
             ImGui.tableSetupColumn("Size", ImGuiTableColumnFlags.WidthFixed, 100f);
             ImGui.tableHeadersRow();
@@ -77,12 +78,19 @@ public class FilesDirectoryPanel extends AbstractView {
             ImGui.text(root.type.getIcon());
         }
         onClick(root);
+
         ImGui.tableNextColumn();
         ImGui.text(root.name);
         onClick(root);
+
+        ImGui.tableNextColumn();
+        ImGui.text(root.creationDateString);
+        onClick(root);
+
         ImGui.tableNextColumn();
         ImGui.text(root.type.getLabel());
         onClick(root);
+
         ImGui.tableNextColumn();
         ImGui.text(root.type == ResourceEntryType.DIRECTORY ? "--" : root.sizeText);
         onClick(root);

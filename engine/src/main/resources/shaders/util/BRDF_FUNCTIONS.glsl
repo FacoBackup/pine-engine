@@ -107,23 +107,25 @@ float GGXAnisotropic(float cos_theta_m, float alpha_x, float alpha_y, float cos_
     return clamp(1.0 / (PI * alpha_x * alpha_y * d * d), 0., 1.);
 }
 void anisotropicCompute(inout vec3 H, inout vec3 dEnergy, inout vec3 specularTotal, inout vec3 L, float NdotL, inout vec3 lightColor, float HdotV, float NdotH) {
-    vec3 b = normalize(B);
-    float rotation = max(anisotropicRotation * PI * 2., .00000001);
-    vec2 direction = vec2(cos(rotation), sin(rotation));
-    vec3 t = normalize((vec3(direction, 0.) * TBN));
-
-    float aspect = sqrt(1. - anisotropy * .9);
-    float ax = roughness / aspect;
-    float ay = roughness * aspect;
-    float TdotH = dot(t, H);
-    float BdotH = dot(b, H);
-
-    float D = GGXAnisotropic(NdotH, ax, ay, TdotH, BdotH);
-    float V = GGXAnisotropicCosine2(NdotV, ax, ay, TdotH, BdotH) * GGXAnisotropicCosine2(NdotV, ax, ay, TdotH, BdotH);
-    vec3 F = fresnel(F0, clamp(dot(F0, vec3(50. * .3333)), 0., 1.), dot(L, H));
-
-    specularTotal += D * V * F;
-    dEnergy *= getDiffuse(F, metallic);
+//    vec3 b = normalize(B);
+//    float rotation = max(anisotropicRotation * PI * 2., .00000001);
+//    vec2 direction = vec2(cos(rotation), sin(rotation));
+//    mat3 TBN = mat3(1);
+//    // TODO - FIND A WAY TO INCLUDE THE TBN MATRIX HERE
+//    vec3 t = normalize((vec3(direction, 0.) * TBN));
+//
+//    float aspect = sqrt(1. - anisotropy * .9);
+//    float ax = roughness / aspect;
+//    float ay = roughness * aspect;
+//    float TdotH = dot(t, H);
+//    float BdotH = dot(b, H);
+//
+//    float D = GGXAnisotropic(NdotH, ax, ay, TdotH, BdotH);
+//    float V = GGXAnisotropicCosine2(NdotV, ax, ay, TdotH, BdotH) * GGXAnisotropicCosine2(NdotV, ax, ay, TdotH, BdotH);
+//    vec3 F = fresnel(F0, clamp(dot(F0, vec3(50. * .3333)), 0., 1.), dot(L, H));
+//
+//    specularTotal += D * V * F;
+//    dEnergy *= getDiffuse(F, metallic);
 }
 
 void clearCoatCompute(inout vec3 dEnergy, inout vec3 specularTotal, inout vec3 L, float NdotL, inout vec3 lightColor, float HdotV, float NdotH) {
@@ -151,8 +153,7 @@ void isotropicCompute(inout vec3 dEnergy, inout vec3 specularTotal, inout vec3 L
 }
 
 
-
-vec3 computeBRDF(inout vec3 L, float NdotL, inout vec3 lightColor) {
+vec3 computeBRDF(vec3 L, float NdotL, vec3 lightColor) {
     vec3 H = normalize(V + L);
     float HdotV = clamp(dot(H, V), 0., 1.);
     float NdotH = clamp(dot(N, H), 0., 1.);
@@ -160,10 +161,8 @@ vec3 computeBRDF(inout vec3 L, float NdotL, inout vec3 lightColor) {
     vec3 specularTotal = vec3(0.);
     vec3 diffuseEnergy = vec3(1.);
 
-
     switch (renderingMode) {
         case ISOTROPIC:
-        case TRANSPARENCY:
             isotropicCompute(diffuseEnergy, specularTotal, L, NdotL, lightColor, HdotV, NdotH);
             break;
         case ANISOTROPIC:

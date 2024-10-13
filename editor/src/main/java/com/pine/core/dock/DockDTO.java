@@ -31,7 +31,7 @@ public final class DockDTO implements Loggable, Serializable {
         this.direction = direction;
     }
 
-    public DockPosition getDirection() {
+    public DockPosition getPosition() {
         return direction;
     }
 

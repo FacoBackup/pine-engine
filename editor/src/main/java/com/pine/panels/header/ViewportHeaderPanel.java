@@ -1,12 +1,13 @@
-package com.pine.panels.viewport;
+package com.pine.panels.header;
 
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.EngineSettingsRepository;
 import com.pine.service.svo.VoxelizerService;
 import com.pine.theme.Icons;
-import com.pine.tools.types.DebugShadingModel;
+import com.pine.repository.DebugShadingModel;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.flag.Mode;
@@ -33,26 +34,16 @@ public class ViewportHeaderPanel extends AbstractView {
     public EditorRepository editorRepository;
 
     @PInject
+    public EngineSettingsRepository engineSettingsRepository;
+
+    @PInject
     public CameraRepository cameraRepository;
 
     @PInject
     public VoxelizerService voxelizerService;
 
-    private final ImVec2 size;
-
-    public ViewportHeaderPanel(ImVec2 size) {
-        this.size = size;
-    }
-
     @Override
     public void render() {
-        ImGui.dummy(size.x, 1);
-
-        ImGui.dummy(1, 0);
-        ImGui.sameLine();
-        hotKeys();
-        ImGui.sameLine();
-
         if (ImGui.button(Icons.apps + "Repackage scene voxels##vp")) {
             voxelizerService.buildFromScratch();
         }
@@ -100,21 +91,21 @@ public class ViewportHeaderPanel extends AbstractView {
         ImGui.text("Shading");
 
         ImGui.sameLine();
-        if (renderOption(Icons.grid_on + "Wireframe##wireframeShading", editorRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
-            editorRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
-            editorRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getId());
+        if (renderOption(Icons.grid_on + "Wireframe##wireframeShading", engineSettingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
+            engineSettingsRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
+            editorRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getIndex());
         }
 
         ImGui.sameLine();
-        if (renderOption(Icons.palette + "Random##randomShading", editorRepository.debugShadingModel == DebugShadingModel.RANDOM, false)) {
-            editorRepository.debugShadingModel = DebugShadingModel.RANDOM;
-            editorRepository.shadingModelOption.set(DebugShadingModel.RANDOM.getId());
+        if (renderOption(Icons.palette + "Random##randomShading", engineSettingsRepository.debugShadingModel == DebugShadingModel.RANDOM, false)) {
+            engineSettingsRepository.debugShadingModel = DebugShadingModel.RANDOM;
+            editorRepository.shadingModelOption.set(DebugShadingModel.RANDOM.getIndex());
         }
 
         ImGui.sameLine();
         ImGui.setNextItemWidth(150);
         if (ImGui.combo("##shadingMode", editorRepository.shadingModelOption, SHADING_MODE_OPTIONS)) {
-            editorRepository.debugShadingModel = DebugShadingModel.values()[editorRepository.shadingModelOption.get()];
+            engineSettingsRepository.debugShadingModel = DebugShadingModel.values()[editorRepository.shadingModelOption.get()];
         }
     }
 
@@ -162,22 +153,13 @@ public class ViewportHeaderPanel extends AbstractView {
         }
     }
 
-    private void hotKeys() {
-        if (ImGui.isKeyPressed(ImGuiKey.T))
-            editorRepository.gizmoOperation = Operation.TRANSLATE;
-        if (ImGui.isKeyPressed(ImGuiKey.R))
-            editorRepository.gizmoOperation = Operation.ROTATE;
-        if (ImGui.isKeyPressed(ImGuiKey.Y))
-            editorRepository.gizmoOperation = Operation.SCALE;
-    }
-
-    private void largeSpacing() {
+    public static void largeSpacing() {
         ImGui.sameLine();
         ImGui.dummy(LARGE_SPACING);
         ImGui.sameLine();
     }
 
-    private static void spacing() {
+    public static void spacing() {
         ImGui.sameLine();
         ImGui.dummy(MEDIUM_SPACING);
         ImGui.sameLine();

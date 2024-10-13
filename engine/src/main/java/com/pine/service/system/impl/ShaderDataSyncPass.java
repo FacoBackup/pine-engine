@@ -1,9 +1,9 @@
 package com.pine.service.system.impl;
 
 import com.pine.messaging.Loggable;
-import com.pine.service.system.AbstractSystem;
+import com.pine.service.system.AbstractPass;
 
-public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
+public class ShaderDataSyncPass extends AbstractPass implements Loggable {
     @Override
     protected void renderInternal() {
         updateUBOs();
@@ -23,8 +23,6 @@ public class ShaderDataSyncSystem extends AbstractSystem implements Loggable {
 
     private void updateUBOs() {
         uboService.updateBuffer(uboRepository.cameraViewUBO, uboRepository.cameraViewUBOState, 0);
-        uboService.updateBuffer(uboRepository.lensPostProcessingUBO, uboRepository.lensPostProcessingUBOState, 0);
-        uboService.updateBuffer(uboRepository.ssaoUBO, uboRepository.ssaoUBOState, 0);
     }
 
     @Override

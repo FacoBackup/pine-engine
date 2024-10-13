@@ -107,7 +107,7 @@ public class WindowService implements Disposable, Loggable {
 
         GLFW.glfwMakeContextCurrent(handle);
         GL.createCapabilities();
-        GLFW.glfwSwapInterval(GLFW.GLFW_TRUE);
+        GLFW.glfwSwapInterval(GLFW.GLFW_FALSE);
 
         clearBuffer();
         renderBuffer();

@@ -29,7 +29,11 @@ public class RenderingRepository {
     public int getTotalTriangleCount() {
         int total = 0;
         for (RenderingRequest request : requests) {
-            total += request.mesh.triangleCount;
+            if (request.transformations.isEmpty()) {
+                total += request.mesh.triangleCount;
+            } else {
+                total += request.mesh.triangleCount * request.transformations.size();
+            }
         }
         return total;
     }

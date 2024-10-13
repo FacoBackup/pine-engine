@@ -148,7 +148,7 @@ public class DockService {
 
     public void updateForRemoval(DockPanel panel) {
         if (dockRepository.dockPanelToRemove != null) {
-            switch (dockRepository.dockToRemove.getDirection()) {
+            switch (dockRepository.dockToRemove.getPosition()) {
                 case LEFT: {
                     getCurrentDockGroup().left.remove(dockRepository.dockToRemove);
                 }

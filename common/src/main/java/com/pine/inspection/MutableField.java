@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 public @interface MutableField {
     String label() default "-";
 
+    String group() default "";
+
     int max() default Integer.MAX_VALUE;
 
     int min() default Integer.MIN_VALUE;
@@ -14,4 +16,6 @@ public @interface MutableField {
     boolean isAngle() default false;
 
     boolean isDirectChange() default false;
+
+    String help() default "";
 }

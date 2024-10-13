@@ -11,9 +11,9 @@ import java.util.LinkedList;
 @PBean
 public class DirectionalLightComponent extends AbstractLightComponent<DirectionalLightComponent> {
 
-    @MutableField(label="Use Shadow map")
+    @MutableField(label = "Use Shadow map")
     public boolean shadowMap = true;
-    @MutableField(label="Shadow Bias")
+    @MutableField(label = "Shadow Bias")
     public float shadowBias = 0.0001f;
     @MutableField(label = "Shadow ZNear")
     public float zNear = 1;
@@ -23,13 +23,14 @@ public class DirectionalLightComponent extends AbstractLightComponent<Directiona
     public float shadowAttenuationMinDistance = 50;
     @MutableField(label = "Light Size")
     public float size = 35;
-    public transient Vector2f atlasFace = new Vector2f();
+    public Vector2f atlasFace = new Vector2f();
 
     public DirectionalLightComponent(Entity entity, LinkedList<?> bag) {
         super(entity, bag);
     }
 
-    public DirectionalLightComponent() {}
+    public DirectionalLightComponent() {
+    }
 
     @Override
     LightType getType() {

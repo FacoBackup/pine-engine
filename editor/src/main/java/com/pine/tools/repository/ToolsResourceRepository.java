@@ -14,11 +14,9 @@ public class ToolsResourceRepository implements Initializable {
     public ResourceService resources;
 
     public Shader gridShader;
-    public Shader debugShader;
 
     @Override
     public void onInitialize() {
         gridShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "tool/GRID.vert", LOCAL_SHADER + "tool/GRID.frag"));
-        debugShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "uber/UBER-MATERIAL.vert", LOCAL_SHADER + "tool/UBER-MATERIAL-DEBUG.frag").staticResource());
     }
 }

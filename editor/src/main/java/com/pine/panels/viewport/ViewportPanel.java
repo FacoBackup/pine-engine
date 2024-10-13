@@ -3,7 +3,9 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
+import com.pine.panels.header.ViewportHeaderPanel;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.camera.AbstractCameraService;
 import com.pine.service.camera.CameraFirstPersonService;
@@ -15,6 +17,7 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
+import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 
@@ -23,6 +26,9 @@ import static com.pine.core.dock.DockWrapperPanel.FRAME_SIZE;
 public class ViewportPanel extends AbstractDockPanel {
     @PInject
     public Engine engine;
+
+    @PInject
+    public EditorRepository editorRepository;
 
     @PInject
     public RuntimeRepository repo;
@@ -39,14 +45,11 @@ public class ViewportPanel extends AbstractDockPanel {
     @PInject
     public CameraFirstPersonService cameraFirstPersonService;
 
-    private AbstractCameraService cameraService;
-
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     private final ImVec2 INV_X = new ImVec2(1, 0);
     private final ImVec2 INV_Y = new ImVec2(0, 1);
     private GizmoPanel gizmo;
-    private ViewportHeaderPanel gizmoPanel;
     private ViewportContext context;
     private ImGuiIO io;
     private boolean isFirstMovement;
@@ -55,7 +58,6 @@ public class ViewportPanel extends AbstractDockPanel {
     public void onInitialize() {
 
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
-        appendChild(gizmoPanel = new ViewportHeaderPanel(sizeVec));
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
         context = (ViewportContext) getContext();
         io = ImGui.getIO();
@@ -64,7 +66,6 @@ public class ViewportPanel extends AbstractDockPanel {
     @Override
     public void render() {
         tick();
-        gizmoPanel.render();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
 
         gizmo.render();
@@ -72,16 +73,19 @@ public class ViewportPanel extends AbstractDockPanel {
 
     private void tick() {
         cameraRepository.setCurrentCamera(context.camera);
-        updateCamera();
+
+        boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+        hotKeys(focused);
+        updateCamera(focused);
         engine.setTargetFBO(fbo);
         engine.render();
 
         sizeVec.x = size.x;
-        sizeVec.y = size.y - FRAME_SIZE - ViewportHeaderPanel.SIZE;
+        sizeVec.y = size.y - FRAME_SIZE;
     }
 
-    private void updateCamera() {
-        boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+    private void updateCamera(boolean focused) {
+        AbstractCameraService cameraService;
         if (context.camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
             if (focused) {
@@ -115,5 +119,17 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = sizeVec.y;
         repo.viewportW = sizeVec.x;
+    }
+
+    private void hotKeys(boolean focused) {
+        if(!focused){
+            return;
+        }
+        if (ImGui.isKeyPressed(ImGuiKey.T))
+            editorRepository.gizmoOperation = Operation.TRANSLATE;
+        if (ImGui.isKeyPressed(ImGuiKey.R))
+            editorRepository.gizmoOperation = Operation.ROTATE;
+        if (ImGui.isKeyPressed(ImGuiKey.Y))
+            editorRepository.gizmoOperation = Operation.SCALE;
     }
 }

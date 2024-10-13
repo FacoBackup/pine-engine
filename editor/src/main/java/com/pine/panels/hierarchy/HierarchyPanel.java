@@ -219,7 +219,7 @@ public class HierarchyPanel extends AbstractDockPanel {
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
         if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "##vpinned" : "##v") + node.id + imguiId, 20, 15)) {
-            node.visible = !node.visible;
+            changeVisibilityRecursively(node, !node.visible);
         }
         ImGui.tableNextColumn();
         boolean isNodePinned = stateRepository.pinnedEntities.containsKey(node.id);
@@ -232,6 +232,13 @@ public class HierarchyPanel extends AbstractDockPanel {
         }
         ImGui.popStyleColor();
         ImGui.popStyleVar(2);
+    }
+
+    private void changeVisibilityRecursively(Entity node, boolean newValue) {
+        node.visible = newValue;
+        for(var child : node.transformation.children) {
+            changeVisibilityRecursively(child.entity, newValue);
+        }
     }
 
     private void handleClick(Entity node) {

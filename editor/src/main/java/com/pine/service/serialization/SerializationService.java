@@ -56,20 +56,19 @@ public class SerializationService implements Loggable {
     public void serialize(String projectDirectory) {
         getLogger().info("Beginning project serialization to {}", projectDirectory);
         long start = System.currentTimeMillis();
-        try {
-            RepositoryContainer repositoryContainer = new RepositoryContainer();
-            repositoryContainer.serializables.addAll(serializableRepositories);
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getFilePath(projectDirectory)))) {
-                out.writeObject(repositoryContainer);
+        new Thread(() -> {
+            try {
+                RepositoryContainer repositoryContainer = new RepositoryContainer();
+                repositoryContainer.serializables.addAll(serializableRepositories);
+                try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(getFilePath(projectDirectory)))) {
+                    out.writeObject(repositoryContainer);
+                }
+                long end = System.currentTimeMillis() - start;
+                getLogger().warn("Serialization took {}ms", end);
+            } catch (Exception e) {
+                getLogger().error("Could not save project", e);
             }
-            long end = System.currentTimeMillis() - start;
-            getLogger().warn("Serialization took {}ms", end);
-        } catch (Exception e) {
-            messageRepository.pushMessage("Could not save project", MessageSeverity.ERROR);
-            getLogger().error("Could not save project", e);
-            return;
-        }
-        messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
+        }).start();
     }
 
     private static @NotNull String getFilePath(String projectDirectory) {

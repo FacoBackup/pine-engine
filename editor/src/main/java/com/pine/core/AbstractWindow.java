@@ -1,17 +1,11 @@
 package com.pine.core;
 
-import com.pine.core.dock.AbstractDockHeader;
 import com.pine.core.dock.DockPanel;
 import com.pine.core.view.AbstractView;
 import imgui.ImVec4;
 
 public abstract class AbstractWindow extends AbstractView {
-    protected final DockPanel root = new DockPanel() {
-        @Override
-        protected ImVec4 getAccentColor() {
-            return AbstractWindow.this.getAccentColor();
-        }
-    };
+    protected final DockPanel root = new DockPanel();
 
     public void onInitialize() {
         appendChild(root);
@@ -19,7 +13,7 @@ public abstract class AbstractWindow extends AbstractView {
         root.onInitialize();
     }
 
-    public abstract AbstractDockHeader getHeader();
+    public abstract AbstractView getHeader();
 
     public abstract ImVec4 getNeutralPalette();
 

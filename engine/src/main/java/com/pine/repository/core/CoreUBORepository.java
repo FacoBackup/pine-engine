@@ -22,8 +22,6 @@ public class CoreUBORepository implements CoreRepository {
 
 
     public UniformBufferObject cameraViewUBO;
-    public UniformBufferObject lensPostProcessingUBO;
-    public UniformBufferObject ssaoUBO;
 
     public final FloatBuffer cameraViewUBOState = MemoryUtil.memAllocFloat(87);
     public final FloatBuffer lensPostProcessingUBOState = MemoryUtil.memAllocFloat(1);
@@ -41,34 +39,24 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("invProjectionMatrix", GLSLType.MAT_4),
                 new UBOData("bufferResolution", GLSLType.VEC_2),
                 new UBOData("logDepthFC", GLSLType.FLOAT)
-        ).staticResource());
 
-        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
-        lensPostProcessingUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                UBODeclaration.LENS_PP.getBlockName(),
-                new UBOData("textureSizeXDOF", GLSLType.FLOAT),
-                new UBOData("textureSizeYDOF", GLSLType.FLOAT),
-                new UBOData("distortionIntensity", GLSLType.FLOAT),
-                new UBOData("chromaticAberrationIntensity", GLSLType.FLOAT),
-                new UBOData("distortionEnabled", GLSLType.BOOL),
-                new UBOData("chromaticAberrationEnabled", GLSLType.BOOL),
-                new UBOData("bloomEnabled", GLSLType.BOOL),
-                new UBOData("focusDistanceDOF", GLSLType.FLOAT),
-                new UBOData("apertureDOF", GLSLType.FLOAT),
-                new UBOData("focalLengthDOF", GLSLType.FLOAT),
-                new UBOData("samplesDOF", GLSLType.FLOAT),
-                new UBOData("vignetteEnabled", GLSLType.BOOL),
-                new UBOData("vignetteStrength", GLSLType.FLOAT),
-                new UBOData("gamma", GLSLType.FLOAT),
-                new UBOData("exposure", GLSLType.FLOAT)
-        ).staticResource());
+//                new UBOData("textureSizeXDOF", GLSLType.FLOAT),
+//                new UBOData("textureSizeYDOF", GLSLType.FLOAT),
+//                new UBOData("distortionIntensity", GLSLType.FLOAT),
+//                new UBOData("chromaticAberrationIntensity", GLSLType.FLOAT),
+//                new UBOData("distortionEnabled", GLSLType.BOOL),
+//                new UBOData("chromaticAberrationEnabled", GLSLType.BOOL),
+//                new UBOData("bloomEnabled", GLSLType.BOOL),
+//                new UBOData("focusDistanceDOF", GLSLType.FLOAT),
+//                new UBOData("apertureDOF", GLSLType.FLOAT),
+//                new UBOData("focalLengthDOF", GLSLType.FLOAT),
+//                new UBOData("samplesDOF", GLSLType.FLOAT),
+//                new UBOData("vignetteEnabled", GLSLType.BOOL),
+//                new UBOData("vignetteStrength", GLSLType.FLOAT),
+//                new UBOData("gamma", GLSLType.FLOAT),
+//                new UBOData("exposure", GLSLType.FLOAT)
 
-        // TODO - SIMPLE UNIFORMS, NO NEED FOR UBO SINCE THIS WILL ONLY EXECUTE ONCE PER FRAME
-        ssaoUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
-                UBODeclaration.SSAO.getBlockName(),
-                new UBOData("settings", GLSLType.VEC_4),
-                new UBOData("samples", GLSLType.VEC_4, 64), // TODO - SAMPLES AS STATIC ARRAY ON SHADER
-                new UBOData("noiseScale", GLSLType.VEC_2)
+
         ).staticResource());
 
     }

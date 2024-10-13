@@ -4,7 +4,6 @@ import com.pine.injection.Disposable;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
-import com.pine.service.loader.LoaderService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,16 +16,10 @@ public class ResourceService implements Loggable, Disposable {
     @PInject
     public List<AbstractResourceService> implementations;
 
-    @PInject
-    public LoaderService loader;
-
     private final Map<String, IResource> resources = new HashMap<>();
 
     public IResource addResource(ResourceCreationData data) {
-        return addResource(data, UUID.randomUUID().toString());
-    }
-
-    public IResource addResource(ResourceCreationData data, String fixedId) {
+        String fixedId = UUID.randomUUID().toString();
         IResource instance = null;
         for (var i : implementations) {
             if (i.getResourceType() == data.getResourceType()) {

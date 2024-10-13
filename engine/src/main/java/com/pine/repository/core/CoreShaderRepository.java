@@ -9,9 +9,9 @@ import com.pine.service.resource.shader.ShaderCreationData;
 import static com.pine.service.resource.shader.ShaderCreationData.LOCAL_SHADER;
 
 @PBean
-public class CoreShaderRepository implements CoreRepository{
+public class CoreShaderRepository implements CoreRepository {
     public Shader spriteShader;
-    public Shader depthPrePassShader;
+    public Shader gBufferShader;
     public Shader toScreenShader;
     public Shader downscaleShader;
     public Shader bilateralBlurShader;
@@ -33,17 +33,19 @@ public class CoreShaderRepository implements CoreRepository{
     public Shader terrainShader;
     public Shader brdfShader;
     public Shader debugVoxelShader;
+    public Shader gBufferShading;
 
     @PInject
     public ResourceService resources;
 
     @Override
-    public void initialize(){
+    public void initialize() {
+        gBufferShading = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "uber/G_BUFFER_SHADING.frag").staticResource());
         debugVoxelShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.vert", ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.frag"));
         brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SPRITE.vert", LOCAL_SHADER + "SPRITE.frag").staticResource());
-        depthPrePassShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "DEPTH_PRE_PASS.vert", LOCAL_SHADER + "DEPTH_PRE_PASS.frag").staticResource());
+        gBufferShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "uber/G_BUFFER.vert", LOCAL_SHADER + "uber/G_BUFFER.frag").staticResource());
         toScreenShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "TO_SCREEN.frag").staticResource());
         downscaleShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "BILINEAR_DOWNSCALE.glsl").staticResource());
         bilateralBlurShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "BILATERAL_BLUR.glsl").staticResource());

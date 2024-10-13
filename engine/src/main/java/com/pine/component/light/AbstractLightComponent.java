@@ -18,7 +18,7 @@ public abstract class AbstractLightComponent<T extends EntityComponent> extends 
     @MutableField(label = "Light inner cutoff distance")
     public float outerCutoff = 0.5f;
     @MutableField(label = "Color")
-    public final Color color = new Color();
+    public final Color color = new Color(1, 1, 1);
     @MutableField(label = "Attenuation")
     public final Vector2f attenuation = new Vector2f(1);
     public final LightType type = getType();

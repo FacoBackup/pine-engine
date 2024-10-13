@@ -70,7 +70,7 @@ public class InspectorPanel extends AbstractDockPanel {
         }
 
         ImGui.nextColumn();
-        if (selected != null) {
+        if (selected != null && additionalInspectable.contains(currentInspection)) {
             if (ImGui.beginCombo(imguiId, types.getFirst())) {
                 for (int i = 1; i < types.size(); i++) {
                     String type = types.get(i);
@@ -89,7 +89,6 @@ public class InspectorPanel extends AbstractDockPanel {
 
     private void tick() {
         if (editorRepository.mainSelection != selected) {
-            currentInspection = repositories.getFirst();
             additionalInspectable.clear();
             selected = editorRepository.mainSelection;
             additionalInspectable.add(selected);
@@ -97,6 +96,9 @@ public class InspectorPanel extends AbstractDockPanel {
                 for (var component : selected.components.values()) {
                     additionalInspectable.add((AbstractComponent<?>) component);
                 }
+                currentInspection = additionalInspectable.getFirst();
+            }else{
+                currentInspection = repositories.getFirst();
             }
         }
 

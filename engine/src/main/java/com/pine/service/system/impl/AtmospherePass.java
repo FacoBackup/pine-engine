@@ -11,7 +11,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class AtmosphereSystem extends AbstractQuadPassSystem {
+public class AtmospherePass extends AbstractQuadPassPass {
 
     @PInject
     public AtmosphereSettingsRepository atmosphere;
