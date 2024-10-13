@@ -35,7 +35,7 @@ public class HierarchyHeaderPanel extends AbstractView {
         ImGui.inputText("##hierarchySearch", search);
         ImGui.sameLine();
         if (ImGui.button(ADD_LABEL, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            requestProcessingService.addRequest(new AddEntityRequest(List.of()));
+            requestProcessingService.addRequest(new AddEntityRequest());
         }
         ImGui.sameLine();
         boolean show = editorRepository.showOnlyEntitiesHierarchy;

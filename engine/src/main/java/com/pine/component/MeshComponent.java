@@ -3,8 +3,8 @@ package com.pine.component;
 import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.repository.rendering.RenderingRequest;
-import com.pine.repository.streaming.MeshStreamableResource;
-import com.pine.repository.streaming.TextureStreamableResource;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
+import com.pine.service.streaming.texture.TextureStreamableResource;
 import com.pine.theme.Icons;
 import com.pine.type.MaterialRenderingMode;
 import org.joml.Vector3f;
@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@PBean
-public class MeshComponent extends AbstractComponent<MeshComponent> {
+
+public class MeshComponent extends AbstractComponent {
     @MutableField(label = "Casts shadow")
     public boolean castsShadows = true;
     @MutableField(label = "Contribute to probes")
@@ -96,20 +96,13 @@ public class MeshComponent extends AbstractComponent<MeshComponent> {
 
     public float distanceFromCamera = 0f;
 
-    public MeshComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+    public MeshComponent(Entity entity) {
+        super(entity);
     }
 
-    public MeshComponent() {
-    }
 
     @Override
-    public String getTitle() {
-        return "Mesh Component";
-    }
-
-    @Override
-    public String getIcon() {
-        return Icons.view_in_ar;
+    public ComponentType getType() {
+        return ComponentType.MESH;
     }
 }

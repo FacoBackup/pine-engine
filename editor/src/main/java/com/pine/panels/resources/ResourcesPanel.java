@@ -3,6 +3,7 @@ package com.pine.panels.resources;
 import com.pine.component.MeshComponent;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.repository.voxelization.VoxelizerRepository;
@@ -15,6 +16,7 @@ import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
 
 
 public class ResourcesPanel extends AbstractDockPanel {
+    private static final String MESH = MeshComponent.class.getSimpleName();
     @PInject
     public RenderingRepository renderingRepository;
 
@@ -31,7 +33,7 @@ public class ResourcesPanel extends AbstractDockPanel {
     public StreamingRepository streamingRepository;
 
     @PInject
-    public MeshComponent meshComponent;
+    public WorldRepository worldRepository;
 
     @Override
     public void render() {
@@ -52,7 +54,7 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Resources to be streamed in", streamingRepository.schedule.size());
 
-            render("Renderable entities", meshComponent.bag.size());
+            render("Renderable entities", worldRepository.components.get(MESH).size());
 
             ImGui.endTable();
         }

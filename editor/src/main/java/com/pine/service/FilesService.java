@@ -21,6 +21,7 @@ public class FilesService {
 
     public ResourceEntryType getType(StreamableResourceType type) {
         return switch (type) {
+            case SCENE -> ResourceEntryType.SCENE;
             case MESH -> ResourceEntryType.MESH;
             case TEXTURE -> ResourceEntryType.TEXTURE;
             case AUDIO -> ResourceEntryType.AUDIO;

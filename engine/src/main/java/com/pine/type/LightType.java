@@ -8,19 +8,19 @@ public enum LightType implements SelectableEnum {
     POINT("Point light", 3, 15),
     SPHERE("Spherical area light", 4, 13);
 
-    private final String label;
+    private final String title;
     private final int typeId;
     private int dataDisplacement;
 
     LightType(String type, int typeId, int dataDisplacement) {
-        this.label = type;
+        this.title = type;
         this.typeId = typeId;
         this.dataDisplacement = dataDisplacement;
     }
 
     @Override
-    public String getLabel() {
-        return label;
+    public String getTitle() {
+        return title;
     }
 
     public int getTypeId() {

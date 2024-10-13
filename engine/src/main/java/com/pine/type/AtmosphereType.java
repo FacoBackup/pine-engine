@@ -22,7 +22,7 @@ public enum AtmosphereType implements SelectableEnum, Serializable {
     }
 
     @Override
-    public String getLabel() {
+    public String getTitle() {
         return label;
     }
 }

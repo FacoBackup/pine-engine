@@ -4,7 +4,6 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.AbstractStreamableResource;
-import com.pine.repository.streaming.MeshStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
@@ -106,15 +105,8 @@ public class MeshService extends AbstractStreamableService<MeshStreamableResourc
     }
 
     @Override
-    public MeshStreamData stream(MeshStreamableResource instance) {
-        try {
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(engine.getResourceTargetDirectory() + instance.pathToFile))) {
-                return (MeshStreamData) in.readObject();
-            }
-        } catch (Exception e) {
-            getLogger().error(e.getMessage(), e);
-        }
-        return null;
+    public MeshStreamData stream(String pathToFile) {
+        return (MeshStreamData) loadFile(pathToFile);
     }
 
     public int getTotalTriangleCount() {

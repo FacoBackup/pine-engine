@@ -1,13 +1,14 @@
 package com.pine.component.light;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
 import com.pine.type.LightType;
 
 import java.util.LinkedList;
-@PBean
-public class PointLightComponent extends AbstractLightComponent<PointLightComponent> {
+
+public class PointLightComponent extends AbstractLightComponent {
     @MutableField(label="Shadow map")
     public boolean shadowMap = true;
     @MutableField(label="Shadow map Bias")
@@ -19,15 +20,18 @@ public class PointLightComponent extends AbstractLightComponent<PointLightCompon
     @MutableField(label = "Shadow ZFar")
     public float zFar = 10000;
 
-    public PointLightComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
+    public PointLightComponent(Entity entity) {
+        super(entity);
     }
 
-    public PointLightComponent() {}
+    @Override
+    LightType getLightType() {
+        return LightType.POINT;
+    }
 
     @Override
-    LightType getType() {
-        return LightType.POINT;
+    public ComponentType getType() {
+        return ComponentType.POINT_LIGHT;
     }
 }
 

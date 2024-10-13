@@ -1,17 +1,13 @@
-package com.pine.service.loader;
+package com.pine.service.importer;
 
 import com.pine.Engine;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.loader.impl.info.AbstractLoaderExtraInfo;
-import com.pine.service.loader.impl.info.LoadRequest;
-import com.pine.service.loader.impl.response.AbstractLoaderResponse;
 import com.pine.service.streaming.StreamLoadData;
 import com.pine.service.streaming.StreamingService;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -19,15 +15,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
-public abstract class AbstractLoaderService implements Loggable {
+public abstract class AbstractImporter implements Loggable {
     @PInject
     public Engine engine;
 
     @PInject
     public StreamingService streamingService;
 
-    public abstract AbstractLoaderResponse<?> load(LoadRequest resource, @Nullable AbstractLoaderExtraInfo extraInfo);
+    public abstract List<AbstractStreamableResource<?>> load(String path);
 
     public float persist(AbstractStreamableResource<?> resource, StreamLoadData streamData) {
         log(resource);

@@ -1,7 +1,7 @@
 package com.pine.repository.rendering;
 
 import com.pine.component.Transformation;
-import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
 import com.pine.type.MaterialRenderingMode;
 
 import java.io.Serializable;

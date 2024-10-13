@@ -20,7 +20,7 @@ public class Entity extends Inspectable implements Serializable {
      * Key: Class.simpleName
      * Value: Component instance
      */
-    public final Map<String, EntityComponent> components = new HashMap<>();
+    public final Map<String, AbstractComponent> components = new HashMap<>();
     public final String id;
     public final long creationDate = System.currentTimeMillis();
     public boolean visible = true;

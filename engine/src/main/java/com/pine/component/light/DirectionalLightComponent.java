@@ -1,5 +1,6 @@
 package com.pine.component.light;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
@@ -8,8 +9,8 @@ import org.joml.Vector2f;
 
 import java.util.LinkedList;
 
-@PBean
-public class DirectionalLightComponent extends AbstractLightComponent<DirectionalLightComponent> {
+
+public class DirectionalLightComponent extends AbstractLightComponent {
 
     @MutableField(label = "Use Shadow map")
     public boolean shadowMap = true;
@@ -25,17 +26,18 @@ public class DirectionalLightComponent extends AbstractLightComponent<Directiona
     public float size = 35;
     public Vector2f atlasFace = new Vector2f();
 
-    public DirectionalLightComponent(Entity entity, LinkedList<?> bag) {
-        super(entity, bag);
-    }
-
-    public DirectionalLightComponent() {
+    public DirectionalLightComponent(Entity entity) {
+        super(entity);
     }
 
     @Override
-    LightType getType() {
+    LightType getLightType() {
         return LightType.DIRECTIONAL;
     }
 
+    @Override
+    public ComponentType getType() {
+        return ComponentType.DIRECTIONAL_LIGHT;
+    }
 }
 

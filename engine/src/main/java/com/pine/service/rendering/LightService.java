@@ -1,16 +1,19 @@
 package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
+import com.pine.component.ComponentType;
 import com.pine.component.light.*;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 @PBean
 public class LightService {
@@ -21,13 +24,8 @@ public class LightService {
     @PInject
     public CoreSSBORepository ssboRepository;
     @PInject
-    public DirectionalLightComponent implDirectionalLightComponent;
-    @PInject
-    public PointLightComponent implPointLightComponent;
-    @PInject
-    public SphereLightComponent implSphereLightComponent;
-    @PInject
-    public SpotLightComponent implSpotLightComponent;
+    public WorldRepository worldRepository;
+
 
     public void packageLights() {
         int offset = 0;
@@ -35,8 +33,9 @@ public class LightService {
         final Matrix4f cacheMat4 = new Matrix4f();
         final Matrix4f cacheMat42 = new Matrix4f();
         FloatBuffer b = ssboRepository.lightSSBOState;
-        for (int i = 0; i < implDirectionalLightComponent.getBag().size(); i++) {
-            var light = implDirectionalLightComponent.getBag().get(i);
+
+        List<DirectionalLightComponent> directionalLights = worldRepository.getComponentBag(ComponentType.DIRECTIONAL_LIGHT);
+        for (DirectionalLightComponent light : directionalLights) {
             if (light.isNotFrozen()) {
                 var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
@@ -59,8 +58,8 @@ public class LightService {
             count++;
         }
 
-        for (int i = 0; i < implPointLightComponent.getBag().size(); i++) {
-            var light = implPointLightComponent.getBag().get(i);
+        List<PointLightComponent> pointLights = worldRepository.getComponentBag(ComponentType.POINT_LIGHT);
+        for (PointLightComponent light : pointLights) {
             if (light.isNotFrozen()) {
                 int internalOffset = fillCommon(b, offset, light);
                 b.put(internalOffset, light.zFar);
@@ -75,8 +74,8 @@ public class LightService {
         }
 
 
-        for (int i = 0; i < implSphereLightComponent.getBag().size(); i++) {
-            var light = implSphereLightComponent.getBag().get(i);
+        List<SphereLightComponent> sphereLights = worldRepository.getComponentBag(ComponentType.SPHERE_LIGHT);
+        for (SphereLightComponent light : sphereLights) {
             if (light.isNotFrozen()) {
                 int internalOffset = fillCommon(b, offset, light);
                 b.put(internalOffset, light.areaRadius);
@@ -86,9 +85,8 @@ public class LightService {
             count++;
         }
 
-
-        for (int i = 0; i < implSpotLightComponent.getBag().size(); i++) {
-            var light = implSpotLightComponent.getBag().get(i);
+        List<SpotLightComponent> spotLights = worldRepository.getComponentBag(ComponentType.SPOT_LIGHT);
+        for (SpotLightComponent light : spotLights) {
             if (light.isNotFrozen()) {
                 var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
@@ -111,7 +109,7 @@ public class LightService {
         renderingRepository.lightCount = count;
     }
 
-    private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent<?> light) {
+    private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent light) {
         var transform = light.entity.transformation;
 
         lightSSBOState.put(offset, light.type.getTypeId());

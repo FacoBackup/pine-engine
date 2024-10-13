@@ -2,7 +2,6 @@ package com.pine.panels.files;
 
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.EditorRepository;
@@ -12,8 +11,7 @@ import com.pine.service.FSService;
 import com.pine.service.FilesService;
 import com.pine.service.NativeDialogService;
 import com.pine.service.ProjectService;
-import com.pine.service.loader.LoaderService;
-import com.pine.service.loader.impl.info.MeshLoaderExtraInfo;
+import com.pine.service.importer.ImporterService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiInputTextFlags;
@@ -28,7 +26,7 @@ public class FilesHeaderPanel extends AbstractView {
     @PInject
     public FSService fsService;
     @PInject
-    public LoaderService resourceLoader;
+    public ImporterService resourceLoader;
     @PInject
     public MessageRepository messageRepository;
     @PInject
@@ -91,19 +89,15 @@ public class FilesHeaderPanel extends AbstractView {
 
     private void importFile() {
         List<String> paths = nativeDialogService.selectFile();
-        for (String filePath : paths) {
-            if (filePath != null) {
-                var response = resourceLoader.load(filePath, new MeshLoaderExtraInfo().setInstantiateHierarchy(true));
-                if (response == null || !response.isLoaded) {
-                    messageRepository.pushMessage(new Message("Error while importing file " + filePath, MessageSeverity.ERROR));
-                } else {
-                    response.loadedResources.forEach(r -> {
-                        context.currentDirectory.children.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
-                    });
-                }
+        resourceLoader.importFiles(paths, response -> {
+            if (response.isEmpty()) {
+                messageRepository.pushMessage("Could not import file " + response, MessageSeverity.ERROR);
             }
-        }
-        projectService.saveSilently();
+            response.forEach(r -> {
+                context.currentDirectory.children.add(new ResourceEntry(r.name, filesService.getType(r.getResourceType()), r.size, r.pathToFile, context.currentDirectory, r));
+            });
+            projectService.saveSilently();
+        });
     }
 
     private ResourceEntry findRecursively(String search, ResourceEntry entry) {

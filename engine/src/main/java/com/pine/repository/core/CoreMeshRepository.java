@@ -3,7 +3,7 @@ package com.pine.repository.core;
 import com.pine.Engine;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.streaming.mesh.MeshStreamData;
 

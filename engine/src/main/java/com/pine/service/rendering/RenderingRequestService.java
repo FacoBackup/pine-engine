@@ -5,7 +5,7 @@ import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.rendering.RenderingRequest;
-import com.pine.repository.streaming.MeshStreamableResource;
+import com.pine.service.streaming.mesh.MeshStreamableResource;
 import com.pine.service.streaming.StreamingService;
 import org.jetbrains.annotations.Nullable;
 

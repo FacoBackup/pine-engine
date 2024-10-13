@@ -1,6 +1,7 @@
-package com.pine.repository.streaming;
+package com.pine.service.streaming.audio;
 
-import com.pine.service.streaming.audio.AudioStreamData;
+import com.pine.repository.streaming.AbstractStreamableResource;
+import com.pine.repository.streaming.StreamableResourceType;
 
 public class AudioStreamableResource extends AbstractStreamableResource<AudioStreamData> {
 

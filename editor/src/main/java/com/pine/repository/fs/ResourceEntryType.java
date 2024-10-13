@@ -6,7 +6,8 @@ public enum ResourceEntryType {
     DIRECTORY(Icons.folder, "Directory"),
     MESH(Icons.view_in_ar, "Mesh"),
     AUDIO(Icons.audio_file, "Audio"),
-    TEXTURE(Icons.texture, "Texture");
+    TEXTURE(Icons.texture, "Texture"),
+    SCENE(Icons.inventory_2, "Scene");
 
     private final String icon;
     private final String label;
