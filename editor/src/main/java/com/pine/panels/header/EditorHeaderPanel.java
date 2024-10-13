@@ -36,33 +36,9 @@ public class EditorHeaderPanel extends AbstractView {
     @Override
     public void render() {
         hotKeys();
-        renderOption(EditorTab.FILE);
-        ImGui.sameLine();
-        renderOption(EditorTab.VIEWPORT);
-        ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 90, 0);
-        ImGui.sameLine();
-        framerate();
+        renderFileTab();
         ImGui.separator();
-
-        if (editorRepository.editorTab == EditorTab.FILE) {
-            renderFileTab();
-        }
-        if (editorRepository.editorTab == EditorTab.VIEWPORT) {
-            super.render();
-        }
-    }
-
-    private void renderOption(EditorTab tab) {
-        int count = 0;
-        if (tab == editorRepository.editorTab) {
-            ImGui.pushStyleColor(ImGuiCol.Button, editorRepository.accent);
-            count++;
-        }
-        if (ImGui.button(tab.icon() + tab.label() + "##tab" + tab.label())) {
-            editorRepository.editorTab = tab;
-        }
-        ImGui.popStyleColor(count);
+        super.render();
     }
 
     private void renderFileTab() {
@@ -94,10 +70,12 @@ public class EditorHeaderPanel extends AbstractView {
         ImGui.sameLine();
         ImGui.dummy(10, 0);
         ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 208, 0);
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 300, 0);
         ImGui.sameLine();
         ImGui.setNextItemWidth(200);
         ImGui.inputText(imguiId + "input", pathToProject, ImGuiInputTextFlags.ReadOnly);
+        ImGui.sameLine();
+        framerate();
     }
 
     private void framerate() {

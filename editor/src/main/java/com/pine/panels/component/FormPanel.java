@@ -92,11 +92,8 @@ public class FormPanel extends AbstractView {
     public void render() {
         if (inspectable != null) {
             ImGui.text(inspectable.getIcon() + inspectable.getTitle());
-            if(ImGui.beginChild(imguiId)){
-                ImGui.separator();
-                super.render();
-                ImGui.endChild();
-            }
+            ImGui.separator();
+            super.render();
         }
     }
 }

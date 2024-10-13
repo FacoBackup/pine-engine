@@ -69,20 +69,23 @@ public class InspectorPanel extends AbstractDockPanel {
         }
 
         ImGui.nextColumn();
-        if (selected != null && additionalInspectable.contains(currentInspection)) {
-            if (ImGui.beginCombo(imguiId, types.getFirst())) {
-                for (int i = 1; i < types.size(); i++) {
-                    String type = types.get(i);
-                    if (ImGui.selectable(type)) {
-                        ComponentType entityComponent = ComponentType.values()[i - 1];
-                        requestProcessingService.addRequest(new AddComponentRequest(entityComponent, selected));
-                        selected = null;
+        if (ImGui.beginChild(imguiId + "form")) {
+            if (selected != null && additionalInspectable.contains(currentInspection)) {
+                if (ImGui.beginCombo(imguiId, types.getFirst())) {
+                    for (int i = 1; i < types.size(); i++) {
+                        String type = types.get(i);
+                        if (ImGui.selectable(type)) {
+                            ComponentType entityComponent = ComponentType.values()[i - 1];
+                            requestProcessingService.addRequest(new AddComponentRequest(entityComponent, selected));
+                            selected = null;
+                        }
                     }
+                    ImGui.endCombo();
                 }
-                ImGui.endCombo();
             }
+            super.render();
+            ImGui.endChild();
         }
-        super.render();
         ImGui.columns(1);
     }
 
@@ -92,9 +95,7 @@ public class InspectorPanel extends AbstractDockPanel {
             selected = editorRepository.mainSelection;
             additionalInspectable.add(selected);
             if (selected != null) {
-                for (var component : selected.components.values()) {
-                    additionalInspectable.add((AbstractComponent) component);
-                }
+                additionalInspectable.addAll(selected.components.values());
                 currentInspection = additionalInspectable.getFirst();
             } else {
                 currentInspection = repositories.getFirst();
