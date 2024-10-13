@@ -5,6 +5,7 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
 import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
+import com.pine.service.svo.OctreeNode;
 import com.pine.service.svo.SparseVoxelOctree;
 import com.pine.theme.Icons;
 import org.joml.Vector3f;
@@ -12,9 +13,8 @@ import org.joml.Vector3f;
 import java.nio.IntBuffer;
 
 @PBean
-public class VoxelizerRepository extends Inspectable implements SerializableRepository {
-    public transient IntBuffer octreeMemBuffer = null;
-    public transient ShaderStorageBufferObject octreeSSBO;
+public class VoxelRepository extends Inspectable implements SerializableRepository {
+    public transient int[] voxels = null;
 
     @MutableField(label = "Grid size", min = 0)
     public int gridResolution = 20;
@@ -24,9 +24,6 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
 
     @MutableField(label = "Max depth", min = 1, max = 10)
     public int maxDepth = 4;
-
-    public SparseVoxelOctree sparseVoxelOctree;
-
 
     @Override
     public String getTitle() {
@@ -39,8 +36,8 @@ public class VoxelizerRepository extends Inspectable implements SerializableRepo
     }
 
     public int getVoxelCount() {
-        if(sparseVoxelOctree != null) {
-            return sparseVoxelOctree.getNodeQuantity();
+        if (voxels != null) {
+            return voxels.length / OctreeNode.INFO_PER_VOXEL;
         }
         return 0;
     }

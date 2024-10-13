@@ -11,18 +11,17 @@ layout(std430, binding = 12) buffer OctreeBuffer {
     OctreeNode voxels[];
 };
 
-
 uniform vec4 centerScale;
 
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 
-const vec3 NNN = vec3(0, 0, 0);
-const vec3 PNN = vec3(1, 0, 0);
-const vec3 NPN = vec3(0, 1, 0);
-const vec3 PPN = vec3(1, 1, 0);
-const vec3 NNP = vec3(0, 0, 1);
-const vec3 PNP = vec3(1, 0, 1);
-const vec3 NPP = vec3(0, 1, 1);
+const vec3 NNN = vec3(-1, -1, -1);
+const vec3 PNN = vec3(1, -1, -1);
+const vec3 NPN = vec3(-1, 1, -1);
+const vec3 PPN = vec3(1, 1, -1);
+const vec3 NNP = vec3(-1, -1, 1);
+const vec3 PNP = vec3(1, -1, 1);
+const vec3 NPP = vec3(-1, 1, 1);
 const vec3 PPP = vec3(1, 1, 1);
 const vec3 POS[8] = vec3[8](NNN, PNN, NPN, PPN, NNP, PNP, NPP, PPP);
 
@@ -65,9 +64,9 @@ bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
 }
 
 vec3 unpackColor(int color) {
-    int rInt = (color >> 20) & 0x3FF; // 10 bits for r (mask: 0x3FF is 1023 in binary)
-    int gInt = (color >> 10) & 0x3FF; // 10 bits for g
-    int bInt = color & 0x3FF;         // 10 bits for b
+    int rInt = (color >> 20) & 0x3FF;// 10 bits for r (mask: 0x3FF is 1023 in binary)
+    int gInt = (color >> 10) & 0x3FF;// 10 bits for g
+    int bInt = color & 0x3FF;// 10 bits for b
 
     // Convert the quantized integers back to floats in the range [0, 1]
     float r = rInt / 1023.0f;
@@ -88,7 +87,7 @@ vec4 trace(Ray ray) {
     float scale = centerScale.w;
     vec3 minBox = center - scale;
     vec3 maxBox = center + scale;
-    vec4 finalColor = vec4(1.0f);
+    vec4 finalColor = vec4(0);
 
     Stack stack[10];
     int stackPos = 1;
@@ -96,8 +95,11 @@ vec4 trace(Ray ray) {
     uint index = 0u;
     scale *= 0.5f;
     stack[0] = Stack(0u, center, scale);
+    finalColor.a = 1.;
+    int rayTestCount = 0;
+    int searchCount = 0;
     while (stackPos-- > 0) {
-        finalColor = vec4(.1f);
+        searchCount ++;
         center = stack[stackPos].center;
         index = stack[stackPos].index;
         scale = stack[stackPos].scale;
@@ -118,6 +120,9 @@ vec4 trace(Ray ray) {
             vec3 minBox = new_center - scale;
             vec3 maxBox = new_center + scale;
 
+            rayTestCount++;
+            finalColor.r = searchCount/20.;
+            finalColor.g = rayTestCount/20.;
             if (!intersect(minBox, maxBox, ray)){
                 if (!is_leaf){
                     accumulated_offset += 1u;
@@ -125,7 +130,7 @@ vec4 trace(Ray ray) {
                 continue;
             }
             if (is_leaf){ //not empty, but a leaf
-                return vec4(randomColor(float(index)), 1.);
+                return vec4(randomColor(float(index)), 1);
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
                 accumulated_offset += 1u;
@@ -139,5 +144,8 @@ vec4 trace(Ray ray) {
 void main() {
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
-    imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), trace(Ray(rayOrigin, rayDirection, 1./rayDirection)));
+    vec4 outColor = trace(Ray(rayOrigin, rayDirection, 1./rayDirection));
+    if (length(outColor) > 0){
+        imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), outColor);
+    }
 }

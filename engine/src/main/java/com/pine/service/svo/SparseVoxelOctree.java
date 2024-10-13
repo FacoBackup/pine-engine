@@ -57,4 +57,12 @@ public class SparseVoxelOctree implements Serializable {
     public OctreeNode getRoot() {
         return root;
     }
+
+    public float getDepth() {
+        return maxDepth;
+    }
+
+    public int getResolution() {
+        return resolution;
+    }
 }

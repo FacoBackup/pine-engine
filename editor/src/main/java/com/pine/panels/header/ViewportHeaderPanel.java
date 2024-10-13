@@ -5,7 +5,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.EngineSettingsRepository;
-import com.pine.service.svo.VoxelizerService;
+import com.pine.service.svo.VoxelService;
 import com.pine.theme.Icons;
 import com.pine.repository.DebugShadingModel;
 import imgui.ImGui;
@@ -14,13 +14,11 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiComboFlags;
-import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiStyleVar;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class ViewportHeaderPanel extends AbstractView {
-    public static final int SIZE = 34;
     private static final ImVec2 SPACING = new ImVec2(0, 0);
     private static final String[] SNAP_ROTATE_OPTIONS = new String[]{"5", "10", "15", "30", "45"};
     private static final String[] SNAP_TRANSLATE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
@@ -40,12 +38,12 @@ public class ViewportHeaderPanel extends AbstractView {
     public CameraRepository cameraRepository;
 
     @PInject
-    public VoxelizerService voxelizerService;
+    public VoxelService voxelService;
 
     @Override
     public void render() {
         if (ImGui.button(Icons.apps + "Repackage scene voxels##vp")) {
-            voxelizerService.buildFromScratch();
+            voxelService.buildFromScratch();
         }
 
         largeSpacing();

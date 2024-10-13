@@ -10,7 +10,7 @@ import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.*;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.repository.voxelization.VoxelizerRepository;
+import com.pine.repository.voxelization.VoxelRepository;
 import com.pine.service.resource.ComputeService;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ShaderService;
@@ -54,7 +54,7 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public CoreMeshRepository meshRepository;
     @PInject
-    public VoxelizerRepository voxelizerRepository;
+    public VoxelRepository voxelRepository;
 
     final public void render() {
         if (!isRenderable()) {

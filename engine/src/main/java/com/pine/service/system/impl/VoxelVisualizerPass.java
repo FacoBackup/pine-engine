@@ -21,20 +21,20 @@ public class VoxelVisualizerPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return voxelizerRepository.octreeSSBO != null;
+        return ssboRepository.octreeSSBO != null;
     }
 
     @Override
     protected void renderInternal() {
-        ssboService.bind(voxelizerRepository.octreeSSBO);
-         computeService.bind(computeRepository.voxelRaymarchingCompute);
+        ssboService.bind(ssboRepository.octreeSSBO);
+        computeService.bind(computeRepository.voxelRaymarchingCompute);
 
         fboRepository.auxBuffer.bindForCompute();
 
-        centerScaleBuffer.put(0, voxelizerRepository.center.x);
-        centerScaleBuffer.put(1, voxelizerRepository.center.y);
-        centerScaleBuffer.put(2, voxelizerRepository.center.z);
-        centerScaleBuffer.put(3, voxelizerRepository.gridResolution);
+        centerScaleBuffer.put(0, voxelRepository.center.x);
+        centerScaleBuffer.put(1, voxelRepository.center.y);
+        centerScaleBuffer.put(2, voxelRepository.center.z);
+        centerScaleBuffer.put(3, voxelRepository.gridResolution);
         computeService.bindUniform(centerScale, centerScaleBuffer);
 
         COMPUTE_RUNTIME_DATA.groupX = fboRepository.auxBuffer.width;
