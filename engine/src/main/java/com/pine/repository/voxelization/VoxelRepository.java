@@ -49,7 +49,7 @@ public class VoxelRepository extends Inspectable implements SerializableReposito
 
     public int getVoxelCount() {
         if (voxels != null) {
-            return voxels.length / OctreeNode.INFO_PER_VOXEL;
+            return voxels.length;
         }
         return 0;
     }

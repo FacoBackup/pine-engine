@@ -69,7 +69,7 @@ public class VoxelService implements SyncTask, Loggable {
         }
 
         long startMemory = System.currentTimeMillis();
-        voxelRepository.voxels = new int[octree.getNodeQuantity() * OctreeNode.INFO_PER_VOXEL];
+        voxelRepository.voxels = new int[octree.getNodeQuantity()];
         OctreeNode rootNode = octree.getRoot();
         putData(rootNode);
         fillStorage(rootNode);
@@ -81,8 +81,11 @@ public class VoxelService implements SyncTask, Loggable {
 
 
     private void fillStorage(OctreeNode node) {
-        // Generates uint for the voxel metadata based on its children's location on the buffer
-        voxelRepository.voxels[node.getDataIndex()] = node.packVoxelData(node.isLeaf() ? 0 : currentOctreeMemIndex / OctreeNode.INFO_PER_VOXEL);
+        if (node.isLeaf()) {
+            voxelRepository.voxels[node.getDataIndex()] = node.getData().compress(); // LEAF WILL ONLY STORE COLOR INFORMATION
+        } else {
+            voxelRepository.voxels[node.getDataIndex()] = node.packVoxelData(currentOctreeMemIndex);
+        }
         if (!node.isLeaf()) {
             for (var child : node.getChildren()) {
                 if (child != null) {
@@ -97,18 +100,19 @@ public class VoxelService implements SyncTask, Loggable {
         }
     }
 
+    /**
+     * Non-leaf nodes store 16 bit pointer to child group + 8 bit child mask + 8 bit leaf mask
+     * @param node
+     */
     private void putData(OctreeNode node) {
         node.setDataIndex(currentOctreeMemIndex);
-        voxelRepository.voxels[currentOctreeMemIndex] = 0; // Placeholder for the actual voxel metadata
-        currentOctreeMemIndex++;
-        voxelRepository.voxels[currentOctreeMemIndex] = node.getData().compress();
         currentOctreeMemIndex++;
     }
 
     private void packageData() {
         int sizeInBits = voxelRepository.voxels.length * 32;
-        getLogger().warn("Node quantity {}", voxelRepository.voxels.length / OctreeNode.INFO_PER_VOXEL);
-        getLogger().warn("Buffer size {}bits {}bytes {}mb", sizeInBits, (sizeInBits / 8), (sizeInBits / 8) * 1e+6);
+        getLogger().warn("Node quantity {}", voxelRepository.voxels.length);
+        getLogger().warn("Buffer size {}bits {}bytes {}mb", sizeInBits, (sizeInBits / 8), sizeInBits / 8_000_000);
 
         var octreeMemBuffer = MemoryUtil.memAllocInt(voxelRepository.voxels.length);
         int[] voxels = voxelRepository.voxels;

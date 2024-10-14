@@ -3,7 +3,6 @@ package com.pine.service.svo;
 import java.io.Serializable;
 
 public class OctreeNode implements Serializable {
-    public static final int INFO_PER_VOXEL = 2;
     private final OctreeNode[] children = new OctreeNode[8];
     private VoxelData data;
     private boolean isLeaf = false;

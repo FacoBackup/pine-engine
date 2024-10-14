@@ -2,13 +2,10 @@ layout (local_size_x = 1, local_size_y = 1) in;
 
 layout (binding = 0) uniform writeonly image2D outputImage;
 
-struct OctreeNode {
-    int metadata;// First 16 bits are the index pointing to the position of this voxel's children | 8 bits are the child mask | 8 bits indicate if the node is a leaf
-    int color;// Compressed RGB value 10 bits for red 10 bits for green and 10 bits for blue
-};
-
 layout(std430, binding = 12) buffer OctreeBuffer {
-    OctreeNode voxels[];
+// NON LEAF NODES - First 16 bits are the index pointing to the position of this voxel's children | 8 bits are the child mask | 8 bits indicate if the node is a leaf
+// LEAF NODES - Compressed RGB value 10 bits for red 10 bits for green and 10 bits for blue
+    int voxels[];
 };
 
 uniform vec4 centerScale;
@@ -112,11 +109,10 @@ bool showRayTestCount
         center = stack[stackPos].center;
         index = stack[stackPos].index;
         scale = stack[stackPos].scale;
-        OctreeNode voxel_node = voxels[index];
-        uint metadata = uint(voxel_node.metadata);
-        uint voxel_group_offset = metadata >> 16;
-        uint voxel_child_mask = (metadata & 0x0000FF00u) >> 8u;
-        uint voxel_leaf_mask = metadata & 0x000000FFu;
+        uint voxel_node = uint(voxels[index]);
+        uint voxel_group_offset = voxel_node >> 16;
+        uint voxel_child_mask = (voxel_node & 0x0000FF00u) >> 8u;
+        uint voxel_leaf_mask = voxel_node & 0x000000FFu;
         uint accumulated_offset = 0u;
         for (uint i = 0u; i < 8u; ++i) {
             bool empty = (voxel_child_mask & (1u << i)) == 0u;
@@ -143,7 +139,7 @@ bool showRayTestCount
                 if (randomColors){
                     return vec4(randomColor(float(index)), 1);
                 } else {
-                    return vec4(unpackColor(voxel_node.color), 1);
+                    return vec4(unpackColor(int(voxel_node)), 1);
                 }
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
@@ -159,10 +155,10 @@ void main() {
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
     vec4 outColor = trace(
-        Ray(rayOrigin, rayDirection, 1./rayDirection),
-        settings.x == 1,
-        settings.y == 1,
-        settings.z == 1
+    Ray(rayOrigin, rayDirection, 1./rayDirection),
+    settings.x == 1,
+    settings.y == 1,
+    settings.z == 1
     );
 
 
