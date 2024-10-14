@@ -46,6 +46,7 @@ public class FilesDirectoryPanel extends AbstractView {
     public SceneService sceneService;
 
     private FilesContext context;
+    protected boolean isWindowFocused;
 
     @Override
     public void onInitialize() {
@@ -54,11 +55,11 @@ public class FilesDirectoryPanel extends AbstractView {
 
     @Override
     public void render() {
-        if (ImGui.isKeyPressed(ImGuiKey.Enter) && context.selected != null) {
+        if (isWindowFocused && ImGui.isKeyPressed(ImGuiKey.Enter) && context.selected != null) {
             openResource(context.selected);
         }
 
-        if (ImGui.isKeyPressed(ImGuiKey.Delete) && context.selected != null) {
+        if (isWindowFocused && ImGui.isKeyPressed(ImGuiKey.Delete) && context.selected != null) {
             filesService.delete(context.selected);
         }
         if (ImGui.beginTable(imguiId, 5, FLAGS)) {

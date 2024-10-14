@@ -9,11 +9,16 @@ public class SparseVoxelOctree implements Serializable {
     private final int resolution;
     private final int maxDepth;
     private final OctreeNode root = new OctreeNode();
+    private final float voxelizationStepSize;
+    private final float voxelSize;
     private int nodeQuantity = 1;
 
-    public SparseVoxelOctree(int resolution, int maxDepth) {
+    public SparseVoxelOctree(int resolution, int maxDepth, float voxelizationStepSize) {
         this.resolution = resolution;
         this.maxDepth = maxDepth;
+        this.voxelizationStepSize = Math.min(voxelizationStepSize, .01f);
+        this.voxelSize =  (float) (resolution / Math.pow(2, maxDepth));
+
     }
 
     public int getNodeQuantity() {
@@ -64,5 +69,13 @@ public class SparseVoxelOctree implements Serializable {
 
     public int getResolution() {
         return resolution;
+    }
+
+    public float getVoxelizationStepSize() {
+        return voxelizationStepSize;
+    }
+
+    public float getVoxelSize() {
+        return voxelSize;
     }
 }

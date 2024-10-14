@@ -12,6 +12,7 @@ layout(std430, binding = 12) buffer OctreeBuffer {
 };
 
 uniform vec4 centerScale;
+uniform ivec3 settings;
 
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 
@@ -82,7 +83,12 @@ vec3 unpackColor(int color) {
 }
 
 // Based on https://www.shadertoy.com/view/MlBfRV
-vec4 trace(Ray ray) {
+vec4 trace(
+Ray ray,
+bool randomColors,
+bool showRaySearchCount,
+bool showRayTestCount
+) {
     vec3 center = centerScale.xyz;
     float scale = centerScale.w;
     vec3 minBox = center - scale;
@@ -99,7 +105,10 @@ vec4 trace(Ray ray) {
     int rayTestCount = 0;
     int searchCount = 0;
     while (stackPos-- > 0) {
-        searchCount ++;
+        if (showRaySearchCount){
+            searchCount ++;
+            finalColor.r = searchCount/20.;
+        }
         center = stack[stackPos].center;
         index = stack[stackPos].index;
         scale = stack[stackPos].scale;
@@ -120,9 +129,10 @@ vec4 trace(Ray ray) {
             vec3 minBox = new_center - scale;
             vec3 maxBox = new_center + scale;
 
-            rayTestCount++;
-            finalColor.r = searchCount/20.;
-            finalColor.g = rayTestCount/20.;
+            if (showRayTestCount){
+                rayTestCount++;
+                finalColor.g = rayTestCount/20.;
+            }
             if (!intersect(minBox, maxBox, ray)){
                 if (!is_leaf){
                     accumulated_offset += 1u;
@@ -130,7 +140,11 @@ vec4 trace(Ray ray) {
                 continue;
             }
             if (is_leaf){ //not empty, but a leaf
-                return vec4(randomColor(float(index)), 1);
+                if (randomColors){
+                    return vec4(randomColor(float(index)), 1);
+                } else {
+                    return vec4(unpackColor(voxel_node.color), 1);
+                }
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
                 accumulated_offset += 1u;
@@ -144,8 +158,15 @@ vec4 trace(Ray ray) {
 void main() {
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
-    vec4 outColor = trace(Ray(rayOrigin, rayDirection, 1./rayDirection));
-    if (length(outColor) > 0){
+    vec4 outColor = trace(
+        Ray(rayOrigin, rayDirection, 1./rayDirection),
+        settings.x == 1,
+        settings.y == 1,
+        settings.z == 1
+    );
+
+
+    if (outColor.a > 0){
         imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), outColor);
     }
 }

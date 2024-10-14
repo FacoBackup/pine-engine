@@ -52,25 +52,31 @@ public class VoxelService implements SyncTask, Loggable {
     public void buildFromScratch() {
         dataByIndex.clear();
         currentOctreeMemIndex = 0;
-        long start = System.currentTimeMillis();
+        long startTotal = System.currentTimeMillis();
         SparseVoxelOctree octree = new SparseVoxelOctree(
                 voxelRepository.gridResolution,
-                voxelRepository.maxDepth
+                voxelRepository.maxDepth,
+                voxelRepository.voxelizationStepSize
         );
-        for(var request : renderingRepository.requests){
+        for (var request : renderingRepository.requests) {
+            long startLocal = System.currentTimeMillis();
             VoxelizerUtil.traverseMesh(
                     meshService.stream(request.mesh.pathToFile),
                     request.transformation.localMatrix,
                     octree
             );
+            getLogger().warn("Voxelization of {} took {}", request.mesh.name, System.currentTimeMillis() - startLocal);
         }
 
+        long startMemory = System.currentTimeMillis();
         voxelRepository.voxels = new int[octree.getNodeQuantity() * OctreeNode.INFO_PER_VOXEL];
         OctreeNode rootNode = octree.getRoot();
         putData(rootNode);
         fillStorage(rootNode);
+        getLogger().warn("Voxel buffer creation took {}ms", System.currentTimeMillis() - startMemory);
+
         needsPackaging = true;
-        getLogger().warn("Took {}ms", System.currentTimeMillis() - start);
+        getLogger().warn("Total voxelization time {}ms", System.currentTimeMillis() - startTotal);
     }
 
 

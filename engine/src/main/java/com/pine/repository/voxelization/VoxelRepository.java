@@ -25,6 +25,18 @@ public class VoxelRepository extends Inspectable implements SerializableReposito
     @MutableField(label = "Max depth", min = 1, max = 10)
     public int maxDepth = 4;
 
+    @MutableField(label = "Voxelization step size", min = 0, max = 1)
+    public float voxelizationStepSize = .1f;
+
+    @MutableField(label = "Random colors")
+    public boolean randomColors;
+
+    @MutableField(label = "Show ray search count")
+    public boolean showRaySearchCount;
+
+    @MutableField(label = "Show ray test count")
+    public boolean showRayTestCount;
+
     @Override
     public String getTitle() {
         return "Voxelized scene";

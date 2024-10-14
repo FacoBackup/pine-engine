@@ -7,6 +7,7 @@ import org.joml.Vector2f;
 import java.io.Serializable;
 
 public abstract class AbstractDockPanel extends AbstractView implements Serializable {
+    protected boolean isWindowFocused;
     protected ImVec2 position;
     protected Vector2f size;
 
