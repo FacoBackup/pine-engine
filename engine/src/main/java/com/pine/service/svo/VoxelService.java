@@ -69,44 +69,11 @@ public class VoxelService implements SyncTask, Loggable {
         }
 
         long startMemory = System.currentTimeMillis();
-        voxelRepository.voxels = new int[octree.getNodeQuantity()];
-        OctreeNode rootNode = octree.getRoot();
-        putData(rootNode);
-        fillStorage(rootNode);
+        voxelRepository.voxels = octree.buildBuffer();
         getLogger().warn("Voxel buffer creation took {}ms", System.currentTimeMillis() - startMemory);
 
         needsPackaging = true;
         getLogger().warn("Total voxelization time {}ms", System.currentTimeMillis() - startTotal);
-    }
-
-
-    private void fillStorage(OctreeNode node) {
-        if (node.isLeaf()) {
-            voxelRepository.voxels[node.getDataIndex()] = node.getData().compress(); // LEAF WILL ONLY STORE COLOR INFORMATION
-        } else {
-            voxelRepository.voxels[node.getDataIndex()] = node.packVoxelData(currentOctreeMemIndex);
-        }
-        if (!node.isLeaf()) {
-            for (var child : node.getChildren()) {
-                if (child != null) {
-                    putData(child);
-                }
-            }
-            for (var child : node.getChildren()) {
-                if (child != null) {
-                    fillStorage(child);
-                }
-            }
-        }
-    }
-
-    /**
-     * Non-leaf nodes store 16 bit pointer to child group + 8 bit child mask + 8 bit leaf mask
-     * @param node
-     */
-    private void putData(OctreeNode node) {
-        node.setDataIndex(currentOctreeMemIndex);
-        currentOctreeMemIndex++;
     }
 
     private void packageData() {

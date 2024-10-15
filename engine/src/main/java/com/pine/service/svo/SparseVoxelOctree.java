@@ -12,13 +12,14 @@ public class SparseVoxelOctree implements Serializable {
     private final float voxelizationStepSize;
     private final float voxelSize;
     private int nodeQuantity = 1;
+    private int bufferIndex = 0;
+    private int[] voxels;
 
     public SparseVoxelOctree(int resolution, int maxDepth, float voxelizationStepSize) {
         this.resolution = resolution;
         this.maxDepth = maxDepth;
         this.voxelizationStepSize = Math.min(voxelizationStepSize, .01f);
-        this.voxelSize =  (float) (resolution / Math.pow(2, maxDepth));
-
+        this.voxelSize = (float) (resolution / Math.pow(2, maxDepth));
     }
 
     public int getNodeQuantity() {
@@ -53,9 +54,13 @@ public class SparseVoxelOctree implements Serializable {
             insertInternal(node.getChildren()[childIndex], point, data, position, depth + 1);
         } else {
             var child = new OctreeNode();
-            nodeQuantity++;
             node.addChild(child, childIndex);
             insertInternal(child, point, data, position, depth + 1);
+
+            // Leaf nodes don't need to be included on the tree
+            if (!child.isLeaf()) {
+                nodeQuantity++;
+            }
         }
     }
 
@@ -77,5 +82,40 @@ public class SparseVoxelOctree implements Serializable {
 
     public float getVoxelSize() {
         return voxelSize;
+    }
+
+    public int[] buildBuffer() {
+        bufferIndex = 0;
+        voxels = new int[nodeQuantity];
+        putData(root);
+        fillStorage(root);
+        return voxels;
+    }
+
+    private void fillStorage(OctreeNode node) {
+        if (node.isLeaf()) {
+            return;
+//            voxelRepository.voxels[node.getDataIndex()] = node.getData().compress(); // LEAF WILL ONLY STORE COLOR INFORMATION
+        }
+        voxels[node.getDataIndex()] = node.packVoxelData(bufferIndex);
+        for (var child : node.getChildren()) {
+            if (child != null && !child.isLeaf()) {
+                putData(child);
+            }
+        }
+        for (var child : node.getChildren()) {
+            if (child != null) {
+                fillStorage(child);
+            }
+        }
+    }
+
+    /**
+     * Non-leaf nodes store 16 bit pointer to child group + 8 bit child mask + 8 bit leaf mask
+     * @param node
+     */
+    private void putData(OctreeNode node) {
+        node.setDataIndex(bufferIndex);
+        bufferIndex++;
     }
 }

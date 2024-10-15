@@ -98,7 +98,6 @@ bool showRayTestCount
     uint index = 0u;
     scale *= 0.5f;
     stack[0] = Stack(0u, center, scale);
-    finalColor.a = 1.;
     int rayTestCount = 0;
     int searchCount = 0;
     while (stackPos-- > 0) {
@@ -109,44 +108,47 @@ bool showRayTestCount
         center = stack[stackPos].center;
         index = stack[stackPos].index;
         scale = stack[stackPos].scale;
+
         uint voxel_node = uint(voxels[index]);
-        uint voxel_group_offset = voxel_node >> 16;
-        uint voxel_child_mask = (voxel_node & 0x0000FF00u) >> 8u;
-        uint voxel_leaf_mask = voxel_node & 0x000000FFu;
+        uint childGroupIndex = (voxel_node >> 9) & 0x7FFFFFu;
+        uint childMask =  (voxel_node & 0xFFu);
+        bool isLeafGroup = ((voxel_node >> 8) & 0x1u) == 1u;
         uint accumulated_offset = 0u;
         for (uint i = 0u; i < 8u; ++i) {
-            bool empty = (voxel_child_mask & (1u << i)) == 0u;
-            if (empty){ //empty
+            bool empty = (childMask & (1u << i)) == 0u;
+            if (empty){
                 continue;
             }
 
-            bool is_leaf = (voxel_leaf_mask & (1u << i)) != 0u;
-            vec3 new_center = center + scale * POS[i];
-            vec3 minBox = new_center - scale;
-            vec3 maxBox = new_center + scale;
+            vec3 newCenter = center + scale * POS[i];
+            vec3 minBox = newCenter - scale;
+            vec3 maxBox = newCenter + scale;
 
             if (showRayTestCount){
                 rayTestCount++;
                 finalColor.g = rayTestCount/20.;
             }
             if (!intersect(minBox, maxBox, ray)){
-                if (!is_leaf){
+                if (!isLeafGroup){
                     accumulated_offset += 1u;
                 }
                 continue;
             }
-            if (is_leaf){ //not empty, but a leaf
-                if (randomColors){
+            if (isLeafGroup){ //not empty, but a leaf
+//                if (randomColors){
                     return vec4(randomColor(float(index)), 1);
-                } else {
-                    return vec4(unpackColor(int(voxel_node)), 1);
-                }
+//                } else {
+//                    return vec4(unpackColor(int(voxel_node)), 1);
+//                }
             } else { //not empty and not a leaf
-                stack[stackPos++] = Stack(voxel_group_offset+accumulated_offset, new_center, scale*0.5f);
+                stack[stackPos++] = Stack(childGroupIndex+accumulated_offset, newCenter, scale*0.5f);
                 accumulated_offset += 1u;
             }
         }
     }
+
+    finalColor.a = showRayTestCount || showRaySearchCount ? 1 : 0;
+
     return finalColor;
 }
 
