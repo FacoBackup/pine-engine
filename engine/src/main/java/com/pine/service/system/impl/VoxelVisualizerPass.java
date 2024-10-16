@@ -13,6 +13,8 @@ import java.nio.IntBuffer;
 
 public class VoxelVisualizerPass extends AbstractPass {
     private static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
+    private static final int LOCAL_SIZE_X = 8;
+    private static final int LOCAL_SIZE_Y = 8;
     private final FloatBuffer centerScaleBuffer = MemoryUtil.memAllocFloat(4);
     private final IntBuffer settingsBuffer = MemoryUtil.memAllocInt(3);
     private UniformDTO centerScale;
@@ -47,8 +49,8 @@ public class VoxelVisualizerPass extends AbstractPass {
         settingsBuffer.put(2, voxelRepository.showRayTestCount ? 1 : 0);
         computeService.bindUniform(settings, settingsBuffer);
 
-        COMPUTE_RUNTIME_DATA.groupX = fboRepository.auxBuffer.width;
-        COMPUTE_RUNTIME_DATA.groupY = fboRepository.auxBuffer.height;
+        COMPUTE_RUNTIME_DATA.groupX = (fboRepository.auxBuffer.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
+        COMPUTE_RUNTIME_DATA.groupY = (fboRepository.auxBuffer.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
         computeService.dispatch(COMPUTE_RUNTIME_DATA);

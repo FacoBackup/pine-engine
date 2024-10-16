@@ -1,4 +1,4 @@
-layout (local_size_x = 1, local_size_y = 1) in;
+layout (local_size_x = 8, local_size_y = 8) in;
 
 layout (binding = 0) uniform writeonly image2D outputImage;
 
@@ -11,6 +11,7 @@ layout(std430, binding = 12) buffer OctreeBuffer {
 uniform vec4 centerScale;
 uniform ivec3 settings;
 
+#define COUNT 64.
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 const vec3 NNN = vec3(-1, -1, -1);
@@ -42,7 +43,7 @@ vec3 createRay() {
     return normalize(dirWorld);
 }
 
-struct Ray { vec3 o, d, invDir; };
+struct Ray { vec3 o, d, invDir, oXd; };
 struct Stack {
     uint index;
     vec3 center;
@@ -50,15 +51,16 @@ struct Stack {
 };
 
 bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
-    vec3 tbot = r.invDir * (boxMin - r.o);
-    vec3 ttop = r.invDir * (boxMax - r.o);
-    vec3 tmin = min(ttop, tbot);
-    vec3 tmax = max(ttop, tbot);
-    vec2 t = max(tmin.xx, tmin.yz);
-    float t0 = max(t.x, t.y);
-    t = min(tmax.xx, tmax.yz);
-    float t1 = min(t.x, t.y);
-    return t1 > max(t0, 0.0);
+    vec3 tMin = boxMin * r.invDir - r.oXd;
+    vec3 tMax = boxMax * r.invDir - r.oXd;
+
+    vec3 t1 = min(tMin, tMax);
+    vec3 t2 = max(tMin, tMax);
+
+    float tEnter = max(max(t1.x, t1.y), t1.z);
+    float tExit = min(min(t2.x, t2.y), t2.z);
+
+    return tEnter <= tExit && tExit > 0.0;
 }
 
 vec3 unpackColor(int color) {
@@ -103,7 +105,7 @@ bool showRayTestCount
     while (stackPos-- > 0) {
         if (showRaySearchCount){
             searchCount ++;
-            finalColor.r = searchCount/20.;
+            finalColor.r = searchCount/COUNT;
         }
         center = stack[stackPos].center;
         index = stack[stackPos].index;
@@ -126,7 +128,7 @@ bool showRayTestCount
 
             if (showRayTestCount){
                 rayTestCount++;
-                finalColor.g = rayTestCount/20.;
+                finalColor.g = rayTestCount/COUNT;
             }
             if (!intersect(minBox, maxBox, ray)){
                 if (!isLeafGroup){
@@ -135,11 +137,11 @@ bool showRayTestCount
                 continue;
             }
             if (isLeafGroup){ //not empty, but a leaf
-//                if (randomColors){
-                    return vec4(randomColor(float(index)), 1);
-//                } else {
-//                    return vec4(unpackColor(int(voxel_node)), 1);
-//                }
+                //                if (randomColors){
+                return vec4(randomColor(float(index)), 1);
+                //                } else {
+                //                    return vec4(unpackColor(int(voxel_node)), 1);
+                //                }
             } else { //not empty and not a leaf
                 stack[stackPos++] = Stack(childGroupIndex+accumulated_offset, newCenter, scale*0.5f);
                 accumulated_offset += 1u;
@@ -152,12 +154,13 @@ bool showRayTestCount
     return finalColor;
 }
 
-
 void main() {
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
+    Ray ray = Ray(rayOrigin, rayDirection, 1./rayDirection, rayOrigin);
+    ray.oXd *= ray.invDir;
     vec4 outColor = trace(
-    Ray(rayOrigin, rayDirection, 1./rayDirection),
+    ray,
     settings.x == 1,
     settings.y == 1,
     settings.z == 1
