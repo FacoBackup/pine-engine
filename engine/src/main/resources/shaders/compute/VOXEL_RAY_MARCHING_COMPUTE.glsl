@@ -63,6 +63,20 @@ bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
     return tEnter <= tExit && tExit > 0.0;
 }
 
+bool intersectWithDistance(const vec3 boxMin, const vec3 boxMax, const Ray r, out float entryDist) {
+    vec3 t1 = (boxMin - r.o) * r.invDir;
+    vec3 t2 = (boxMax - r.o) * r.invDir;
+
+    vec3 tMin = min(t1, t2);
+    vec3 tMax = max(t1, t2);
+
+    entryDist = max(max(tMin.x, tMin.y), tMin.z);// Closest entry point along the ray
+    float exitDist = min(min(tMax.x, tMax.y), tMax.z);// Furthest exit point along the ray
+
+    return entryDist <= exitDist && exitDist > 0.0;// Ensure valid intersection and that exit is in front of the ray origin
+}
+
+
 vec3 unpackColor(int color) {
     int rInt = (color >> 20) & 0x3FF;// 10 bits for r (mask: 0x3FF is 1023 in binary)
     int gInt = (color >> 10) & 0x3FF;// 10 bits for g
@@ -88,24 +102,29 @@ uint countSetBitsBefore(uint mask, uint childIndex) {
 
 // Based on https://www.shadertoy.com/view/MlBfRV
 vec4 trace(
-    Ray ray,
-    bool randomColors,
-    bool showRaySearchCount,
-    bool showRayTestCount
+Ray ray,
+bool randomColors,
+bool showRaySearchCount,
+bool showRayTestCount
 ) {
     vec3 center = centerScale.xyz;
     float scale = centerScale.w;
     vec3 minBox = center - scale;
     vec3 maxBox = center + scale;
-    vec4 finalColor = vec4(0);
+    float minDistance = 1e10;// Large initial value
+    if (!intersect(minBox, maxBox, ray)) return vec4(0);
+
+
     Stack stack[10];
-    int stackPos = 1;
-    if (!intersect(minBox, maxBox, ray)) return finalColor;
-    uint index = 0u;
     scale *= 0.5f;
     stack[0] = Stack(0u, center, scale);
+
+    uint index = 0u;
     int rayTestCount = 0;
     int searchCount = 0;
+    vec4 finalColor = vec4(0);
+    int stackPos = 1;
+
     while (stackPos-- > 0) {
         if (showRaySearchCount){
             searchCount ++;
@@ -132,25 +151,25 @@ vec4 trace(
                 rayTestCount++;
                 finalColor.g = rayTestCount/COUNT;
             }
-            if (!intersect(minBox, maxBox, ray)){
+
+            float entryDist;
+            if (!intersectWithDistance(minBox, maxBox, ray, entryDist)) {
                 continue;
             }
-            if (isLeafGroup){ //not empty, but a leaf
-                //                if (randomColors){
-                if(newCenter.x >= 0){
-                    return vec4(1., 0, 0, 1);
-                }else{
-                    return vec4(0, 1., 0, 1);
+            if (entryDist < minDistance) {
+                if (isLeafGroup) {
+                    if (randomColors){
+                        finalColor.rgb = randomColor(float(index));
+                    }
+                    finalColor.a = 1;
+                    minDistance = entryDist;
+                } else {
+                    stack[stackPos++] = Stack(childGroupIndex + countSetBitsBefore(childMask, i), newCenter, scale * 0.5f);
                 }
-                //                } else {
-                //                    return vec4(unpackColor(int(voxel_node)), 1);
-                //                }
-            } else { //not empty and not a leaf
-                stack[stackPos++] = Stack(childGroupIndex+countSetBitsBefore(childMask, i), newCenter, scale*0.5f);
             }
         }
     }
-    finalColor.a = showRayTestCount || showRaySearchCount ? 1 : 0;
+    finalColor.a = showRayTestCount || showRaySearchCount ? 1 : finalColor.a;
     return finalColor;
 }
 
@@ -158,14 +177,14 @@ void main() {
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
     vec4 outColor = trace(
-        Ray(rayOrigin, rayDirection, 1./rayDirection),
-        settings.x == 1,
-        settings.y == 1,
-        settings.z == 1
+    Ray(rayOrigin, rayDirection, 1./rayDirection),
+    settings.x == 1,
+    settings.y == 1,
+    settings.z == 1
     );
 
 
-    if (outColor.a > 0){
+    if (length(outColor) > 0){
         imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), outColor);
     }
 }
