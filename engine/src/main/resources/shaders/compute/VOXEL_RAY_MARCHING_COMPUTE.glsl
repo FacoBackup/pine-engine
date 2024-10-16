@@ -80,6 +80,29 @@ vec3 unpackColor(int color) {
 
     return vec3(r, g, b);
 }
+const uint sortedOrder[8][8] = {
+{3, 2, 1, 0, 7, 6, 5, 4}, // rayDirSign = (1, 1, 0)
+{5, 4, 7, 6, 1, 0, 3, 2}, // rayDirSign = (1, 0, 1)
+{1, 0, 3, 2, 5, 4, 7, 6}, // rayDirSign = (1, 0, 0)
+{7, 6, 5, 4, 3, 2, 1, 0},  // rayDirSign = (1, 1, 1)
+
+{2, 3, 0, 1, 6, 7, 4, 5}, // rayDirSign = (0, 1, 0)
+{4, 5, 6, 7, 0, 1, 2, 3}, // rayDirSign = (0, 0, 1)
+{0, 1, 2, 3, 4, 5, 6, 7}, // rayDirSign = (0, 0, 0)
+{6, 7, 4, 5, 2, 3, 0, 1}, // rayDirSign = (0, 1, 1)
+};
+
+
+uint countSetBitsBefore(uint mask, uint childIndex) {
+    // Count how many bits are set in the childMask before the childIndex.
+    uint count = 0;
+    for (uint i = 0; i < childIndex; ++i) {
+        if ((mask & (1u << i)) != 0) {
+            count++;
+        }
+    }
+    return count;
+}
 
 // Based on https://www.shadertoy.com/view/MlBfRV
 vec4 trace(
@@ -93,6 +116,11 @@ bool showRayTestCount
     vec3 minBox = center - scale;
     vec3 maxBox = center + scale;
     vec4 finalColor = vec4(0);
+    ivec3 rayDirSign = ivec3(
+    ray.d.x > 0.0 ? 1 : 0,
+    ray.d.y > 0.0 ? 1 : 0,
+    ray.d.z > 0.0 ? 1 : 0
+    );
 
     Stack stack[10];
     int stackPos = 1;
@@ -115,14 +143,16 @@ bool showRayTestCount
         uint childGroupIndex = (voxel_node >> 9) & 0x7FFFFFu;
         uint childMask =  (voxel_node & 0xFFu);
         bool isLeafGroup = ((voxel_node >> 8) & 0x1u) == 1u;
-        uint accumulated_offset = 0u;
+
+        const uint[8] sortedIndices = sortedOrder[rayDirSign.x + rayDirSign.y * 2 + rayDirSign.z * 4];
         for (uint i = 0u; i < 8u; ++i) {
-            bool empty = (childMask & (1u << i)) == 0u;
+            uint sortedChild = sortedIndices[i];
+            bool empty = (childMask & (1u << sortedChild)) == 0u;
             if (empty){
                 continue;
             }
 
-            vec3 newCenter = center + scale * POS[i];
+            vec3 newCenter = center + scale * POS[sortedChild];
             vec3 minBox = newCenter - scale;
             vec3 maxBox = newCenter + scale;
 
@@ -131,9 +161,6 @@ bool showRayTestCount
                 finalColor.g = rayTestCount/COUNT;
             }
             if (!intersect(minBox, maxBox, ray)){
-                if (!isLeafGroup){
-                    accumulated_offset += 1u;
-                }
                 continue;
             }
             if (isLeafGroup){ //not empty, but a leaf
@@ -143,8 +170,7 @@ bool showRayTestCount
                 //                    return vec4(unpackColor(int(voxel_node)), 1);
                 //                }
             } else { //not empty and not a leaf
-                stack[stackPos++] = Stack(childGroupIndex+accumulated_offset, newCenter, scale*0.5f);
-                accumulated_offset += 1u;
+                stack[stackPos++] = Stack(childGroupIndex+countSetBitsBefore(childMask, sortedChild), newCenter, scale*0.5f);
             }
         }
     }
