@@ -23,25 +23,28 @@ public class GridPass extends AbstractPass {
 
     private final float[] buffer = new float[4];
 
+    private UniformDTO depthUniform;
     private UniformDTO settingsUniform;
 
     @Override
     public void onInitialize() {
         settingsUniform = toolsResourceRepository.gridShader.addUniformDeclaration("settings", GLSLType.VEC_4);
+        depthUniform = toolsResourceRepository.gridShader.addUniformDeclaration("sceneDepth", GLSLType.SAMPLER_2_D);
     }
 
     @Override
     protected boolean isRenderable() {
-        return engineConfig.showGrid && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT && settingsRepository.debugShadingModel != DebugShadingModel.WIREFRAME;
+        return engineConfig.showGrid && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.gBuffer;
+        return engine.getTargetFBO();
     }
 
     @Override
     protected void renderInternal() {
+        GL46.glEnable(GL46.GL_BLEND);
         GL46.glDisable(GL46.GL_CULL_FACE);
         shaderService.bind(toolsResourceRepository.gridShader);
         buffer[0] = engineConfig.gridColor;
@@ -50,6 +53,7 @@ public class GridPass extends AbstractPass {
         buffer[3] = engineConfig.gridOpacity;
 
         GL46.glUniform4fv(settingsUniform.getLocation(), buffer);
+        EngineUtils.bindTexture2d(depthUniform.getLocation(), 0, fboRepository.gBufferDepthSampler);
 
         meshService.bind(meshRepository.planeMesh);
         meshService.setRenderingMode(RenderingMode.TRIANGLES);

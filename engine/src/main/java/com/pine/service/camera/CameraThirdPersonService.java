@@ -55,8 +55,7 @@ public class CameraThirdPersonService extends AbstractCameraService {
     }
 
     public void zoom(Camera camera, float amount) {
-        camera.orbitRadius -=  amount * cameraRepository.zoomSensitivity * .1f
-        ;
+        camera.orbitRadius -= (amount * .1f) * (cameraRepository.zoomSensitivity + 5);
         if (camera.orbitRadius < 1.0f) camera.orbitRadius = 1.0f;
         if (camera.orbitRadius > 100.0f) camera.orbitRadius = 100.0f;
         camera.registerChange();

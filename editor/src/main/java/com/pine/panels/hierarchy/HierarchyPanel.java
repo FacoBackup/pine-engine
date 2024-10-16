@@ -58,7 +58,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     @Override
     public void render() {
         isOnSearch = search.isNotEmpty();
-        if (ImGui.isKeyDown(ImGuiKey.Delete) && !stateRepository.selected.isEmpty()) {
+        if (isWindowFocused && ImGui.isKeyPressed(ImGuiKey.Delete) && !stateRepository.selected.isEmpty()) {
             requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected));
             stateRepository.selected.forEach(s -> stateRepository.pinnedEntities.remove(s.id));
             stateRepository.selected.clear();
@@ -243,7 +243,7 @@ public class HierarchyPanel extends AbstractDockPanel {
 
     private void handleClick(Entity node) {
         if (ImGui.isItemClicked()) {
-            boolean isMultiSelect = ImGui.isKeyPressed(ImGuiKey.LeftCtrl);
+            boolean isMultiSelect = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
             if (!isMultiSelect) {
                 selectionService.clearSelection();
             }

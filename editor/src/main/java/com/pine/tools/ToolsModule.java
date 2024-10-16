@@ -14,9 +14,7 @@ public class ToolsModule implements EngineExternalModule {
     @Override
     public List<AbstractPass> getExternalSystems(List<AbstractPass> systems) {
         ArrayList<AbstractPass> withTools = new ArrayList<>(systems);
-        AbstractPass fc = systems.stream().filter(a -> a instanceof GBufferPass).findFirst().orElse(null);
-        int indexFc = systems.indexOf(fc);
-        withTools.add(indexFc, new GridPass());
+        withTools.add(new GridPass());
 //        withTools.add(new CullingVisualizationSystem());
         return withTools;
     }

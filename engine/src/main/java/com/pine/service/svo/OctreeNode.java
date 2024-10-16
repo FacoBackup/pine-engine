@@ -3,7 +3,6 @@ package com.pine.service.svo;
 import java.io.Serializable;
 
 public class OctreeNode implements Serializable {
-    public static final int INFO_PER_VOXEL = 2;
     private final OctreeNode[] children = new OctreeNode[8];
     private VoxelData data;
     private boolean isLeaf = false;
@@ -46,7 +45,7 @@ public class OctreeNode implements Serializable {
             if (child != null) {
                 childMask |= (1 << i);
                 if (child.isLeaf) {
-                    leafMask |= (1 << i);
+                    leafMask = 1;
                 }
             }
         }
@@ -56,9 +55,16 @@ public class OctreeNode implements Serializable {
         isLeaf = leaf;
     }
 
-    public int packVoxelData(int childrenGroupIndex) {
+    /**
+     * 23 bits for group index
+     * 1 bit for is leaf group mask
+     * 8 bits for child mask, which indicates if a child is preset at that octant
+     * @param childGroupIndex
+     * @return
+     */
+    public int packVoxelData(int childGroupIndex) {
         prepareData();
-        return (childrenGroupIndex << 16) | (childMask << 8) | leafMask;
+        return (childGroupIndex << 9) | (leafMask << 8) | (childMask);
     }
 
     public void setDataIndex(int dataIndex) {

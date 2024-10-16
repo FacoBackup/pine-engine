@@ -9,6 +9,7 @@ import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static com.pine.Engine.MAX_ENTITIES;
 import static com.pine.Engine.MAX_LIGHTS;
@@ -25,6 +26,7 @@ public class CoreSSBORepository implements CoreRepository {
     public final FloatBuffer lightSSBOState = MemoryUtil.memAllocFloat(LIGHT_BUFFER_SIZE);
     public final FloatBuffer transformationSSBOState = MemoryUtil.memAllocFloat(ENTITY_BUFFER_SIZE);
 
+    public ShaderStorageBufferObject octreeSSBO;
     public ShaderStorageBufferObject lightMetadataSSBO;
     public ShaderStorageBufferObject transformationSSBO;
 
@@ -39,6 +41,15 @@ public class CoreSSBORepository implements CoreRepository {
                 11,
                 (long) LIGHT_BUFFER_SIZE * GLSLType.FLOAT.getSize()
         ));
+    }
 
+    public void createOctreeBuffer(IntBuffer buffer) {
+        if (octreeSSBO != null) {
+            resources.remove(octreeSSBO.getId());
+        }
+        octreeSSBO = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(
+                12,
+                buffer
+        ));
     }
 }

@@ -24,7 +24,7 @@ public class FilesPanel extends AbstractDockPanel {
         if (context.currentDirectory == null) {
             context.currentDirectory = editorRepository.rootDirectory;
         }
-        
+
         appendChild(header = new FilesHeaderPanel());
         appendChild(directory = new FilesDirectoryPanel());
     }
@@ -32,6 +32,7 @@ public class FilesPanel extends AbstractDockPanel {
     @Override
     public void render() {
         header.render();
+        directory.isWindowFocused = isWindowFocused;
         directory.render();
     }
 }

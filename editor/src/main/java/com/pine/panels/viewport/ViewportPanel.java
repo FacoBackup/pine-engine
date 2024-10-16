@@ -16,14 +16,23 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
+import imgui.ImVec4;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
+import imgui.flag.ImGuiWindowFlags;
+import org.joml.Vector3f;
 
+import static com.pine.core.dock.DockPanel.OPEN;
 import static com.pine.core.dock.DockWrapperPanel.FRAME_SIZE;
 
 public class ViewportPanel extends AbstractDockPanel {
+    private static final int CAMERA_FLAGS = ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
+    private static final ImVec4 RED = new ImVec4(1, 0, 0, 1);
+    private static final ImVec4 GREEN = new ImVec4(0, 1, 0, 1);
+    private static final ImVec4 BLUE = new ImVec4(0, .5f, 1, 1);
+
     @PInject
     public Engine engine;
 
@@ -69,6 +78,18 @@ public class ViewportPanel extends AbstractDockPanel {
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
 
         gizmo.render();
+
+        ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 16);
+        ImGui.setNextWindowSize(size.x, 16);
+        if (ImGui.begin(imguiId + "cameraPos", OPEN, CAMERA_FLAGS)) {
+            Vector3f positionCamera = cameraRepository.currentCamera.position;
+            ImGui.textColored(RED, "X: " + positionCamera.x);
+            ImGui.sameLine();
+            ImGui.textColored(GREEN, "Y: " + positionCamera.y);
+            ImGui.sameLine();
+            ImGui.textColored(BLUE, "Z: " + positionCamera.z);
+            ImGui.end();
+        }
     }
 
     private void tick() {
@@ -122,7 +143,7 @@ public class ViewportPanel extends AbstractDockPanel {
     }
 
     private void hotKeys(boolean focused) {
-        if(!focused){
+        if (!focused) {
             return;
         }
         if (ImGui.isKeyPressed(ImGuiKey.T))

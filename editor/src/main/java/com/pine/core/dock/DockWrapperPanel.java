@@ -8,10 +8,7 @@ import com.pine.messaging.MessageSeverity;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiDir;
-import imgui.flag.ImGuiStyleVar;
-import imgui.flag.ImGuiWindowFlags;
+import imgui.flag.*;
 import imgui.type.ImInt;
 import org.joml.Vector2f;
 
@@ -88,6 +85,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
         }
         beforeWindow();
         if (ImGui.begin(dock.getInternalId(), OPEN, FLAGS)) {
+            view.isWindowFocused = ImGui.isWindowFocused(ImGuiFocusedFlags.RootAndChildWindows);
             ImGui.getWindowSize(sizeInternal);
             size.x = sizeInternal.x;
             size.y = sizeInternal.y;
