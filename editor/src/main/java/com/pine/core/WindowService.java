@@ -73,7 +73,6 @@ public class WindowService implements Disposable, Loggable {
                 } catch (Exception e) {
                     getLogger().error(e.getMessage(), e);
                 }
-
             }
         } catch (Exception ex) {
             getLogger().error(ex.getMessage(), ex);

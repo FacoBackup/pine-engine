@@ -23,14 +23,13 @@ public class VoxelizerUtil {
     }
 
     private static void iterateTriangle(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree) {
-        final int octreeOffset = octree.getResolution() / 2;
         Vector3f size = computeTriangleSize(v0, v1, v2);
         float triangleArea = computeSurfaceArea(size.x, size.y, size.z);
         // For triangles smaller than a voxel
         if (triangleArea <= octree.getVoxelSize()) {
-            octree.insert(new Vector3f(v0.x + octreeOffset, v0.y + octreeOffset, v0.z + octreeOffset), new VoxelData(1, 0, 1));
-            octree.insert(new Vector3f(v1.x + octreeOffset, v1.y + octreeOffset, v1.z + octreeOffset), new VoxelData(1, 0, 1));
-            octree.insert(new Vector3f(v2.x + octreeOffset, v2.y + octreeOffset, v2.z + octreeOffset), new VoxelData(1, 0, 1));
+            octree.insert(new Vector3f(v0.x + octree.getOffset(), v0.y + octree.getOffset(), v0.z + octree.getOffset()), new VoxelData(1, 0, 1));
+            octree.insert(new Vector3f(v1.x + octree.getOffset(), v1.y + octree.getOffset(), v1.z + octree.getOffset()), new VoxelData(1, 0, 1));
+            octree.insert(new Vector3f(v2.x + octree.getOffset(), v2.y + octree.getOffset(), v2.z + octree.getOffset()), new VoxelData(1, 0, 1));
             return;
         }
 
@@ -40,9 +39,9 @@ public class VoxelizerUtil {
                 float lambda0 = 1 - lambda1 - lambda2;
                 octree.insert(
                         new Vector3f(
-                                lambda0 * v0.x + lambda1 * v1.x + lambda2 * v2.x + octreeOffset,
-                                lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y + octreeOffset,
-                                lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z + octreeOffset
+                                lambda0 * v0.x + lambda1 * v1.x + lambda2 * v2.x + octree.getOffset(),
+                                lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y + octree.getOffset(),
+                                lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z + octree.getOffset()
                         ),
                         new VoxelData(1, 0, 1));
             }

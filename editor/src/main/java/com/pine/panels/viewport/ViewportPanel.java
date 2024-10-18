@@ -79,7 +79,7 @@ public class ViewportPanel extends AbstractDockPanel {
 
         gizmo.render();
 
-        ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 16);
+        ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 24);
         ImGui.setNextWindowSize(size.x, 16);
         if (ImGui.begin(imguiId + "cameraPos", OPEN, CAMERA_FLAGS)) {
             Vector3f positionCamera = cameraRepository.currentCamera.position;

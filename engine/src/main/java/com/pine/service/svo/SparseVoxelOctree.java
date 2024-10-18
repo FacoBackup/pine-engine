@@ -6,20 +6,22 @@ import org.joml.Vector3i;
 import java.io.Serializable;
 
 public class SparseVoxelOctree implements Serializable {
-    private final int resolution;
+    private final int scale;
     private final int maxDepth;
     private final OctreeNode root = new OctreeNode();
     private final float voxelizationStepSize;
     private final float voxelSize;
+    private final int offset;
     private int nodeQuantity = 1;
     private int bufferIndex = 0;
     private int[] voxels;
 
-    public SparseVoxelOctree(int resolution, int maxDepth, float voxelizationStepSize) {
-        this.resolution = resolution;
+    public SparseVoxelOctree(int scale, int maxDepth, float voxelizationStepSize) {
+        this.scale = scale;
         this.maxDepth = maxDepth;
         this.voxelizationStepSize = Math.min(voxelizationStepSize, .01f);
-        this.voxelSize = (float) (resolution / Math.pow(2, maxDepth));
+        this.voxelSize = (float) (scale / Math.pow(2, maxDepth));
+        offset = scale / 2;
     }
 
     public int getNodeQuantity() {
@@ -37,7 +39,7 @@ public class SparseVoxelOctree implements Serializable {
             return;
         }
 
-        float size = (float) (resolution / Math.pow(2, depth));
+        float size = (float) (scale / Math.pow(2, depth));
         Vector3i childPos = new Vector3i(
                 point.x >= ((size * position.x) + (size / 2)) ? 1 : 0,
                 point.y >= ((size * position.y) + (size / 2)) ? 1 : 0,
@@ -72,8 +74,8 @@ public class SparseVoxelOctree implements Serializable {
         return maxDepth;
     }
 
-    public int getResolution() {
-        return resolution;
+    public int getScale() {
+        return scale;
     }
 
     public float getVoxelizationStepSize() {
@@ -117,5 +119,9 @@ public class SparseVoxelOctree implements Serializable {
     private void putData(OctreeNode node) {
         node.setDataIndex(bufferIndex);
         bufferIndex++;
+    }
+
+    public float getOffset() {
+        return offset;
     }
 }

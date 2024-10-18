@@ -8,6 +8,7 @@ import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.voxelization.VoxelRepository;
 import com.pine.service.resource.ResourceService;
+import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ssbo.SSBOCreationData;
 import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import com.pine.service.streaming.StreamingService;
@@ -29,6 +30,9 @@ public class VoxelService implements SyncTask, Loggable {
 
     @PInject
     public CoreSSBORepository coreSSBORepository;
+
+    @PInject
+    public SSBOService ssboService;
 
     @PInject
     public RenderingRepository renderingRepository;
@@ -54,19 +58,20 @@ public class VoxelService implements SyncTask, Loggable {
         currentOctreeMemIndex = 0;
         long startTotal = System.currentTimeMillis();
         SparseVoxelOctree octree = new SparseVoxelOctree(
-                voxelRepository.gridResolution,
+                voxelRepository.gridScale,
                 voxelRepository.maxDepth,
                 voxelRepository.voxelizationStepSize
         );
-        for (var request : renderingRepository.requests) {
-            long startLocal = System.currentTimeMillis();
-            VoxelizerUtil.traverseMesh(
-                    meshService.stream(request.mesh.pathToFile),
-                    request.transformation.localMatrix,
-                    octree
-            );
-            getLogger().warn("Voxelization of {} took {}", request.mesh.name, System.currentTimeMillis() - startLocal);
-        }
+        LorenzAttractorDemo.fill(octree);
+//        for (var request : renderingRepository.requests) {
+//            long startLocal = System.currentTimeMillis();
+//            VoxelizerUtil.traverseMesh(
+//                    meshService.stream(request.mesh.pathToFile),
+//                    request.transformation.localMatrix,
+//                    octree
+//            );
+//            getLogger().warn("Voxelization of {} took {}", request.mesh.name, System.currentTimeMillis() - startLocal);
+//        }
 
         long startMemory = System.currentTimeMillis();
         voxelRepository.voxels = octree.buildBuffer();
@@ -87,7 +92,7 @@ public class VoxelService implements SyncTask, Loggable {
             int voxelData = voxels[i];
             octreeMemBuffer.put(i, voxelData);
         }
-        coreSSBORepository.createOctreeBuffer(octreeMemBuffer);
+        ssboService.updateBuffer(coreSSBORepository.octreeSSBO, octreeMemBuffer, 0);
         MemoryUtil.memFree(octreeMemBuffer);
     }
 }
