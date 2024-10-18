@@ -16,7 +16,10 @@ import java.nio.IntBuffer;
 public class VoxelRepository extends Inspectable implements SerializableRepository {
     public transient int[] voxels = null;
 
-    @MutableField(label = "Grid size", min = 0)
+    @MutableField(label = "Object scale")
+    public int gridScale;
+
+    @MutableField(label = "Scene scale", min = 0)
     public int gridResolution = 20;
 
     @MutableField(label = "Center")

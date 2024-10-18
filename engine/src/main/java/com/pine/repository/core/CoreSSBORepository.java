@@ -19,6 +19,7 @@ public class CoreSSBORepository implements CoreRepository {
     public static final int MAX_INFO_PER_LIGHT = 32;
     private static final int ENTITY_BUFFER_SIZE = 16 * MAX_ENTITIES;
     private static final int LIGHT_BUFFER_SIZE = MAX_LIGHTS * MAX_INFO_PER_LIGHT;
+    private static final long MAX_VOXEL_QUANTITY = 4_000_000;
 
     @PInject
     public ResourceService resources;
@@ -36,20 +37,13 @@ public class CoreSSBORepository implements CoreRepository {
                 10,
                 (long) ENTITY_BUFFER_SIZE * GLSLType.FLOAT.getSize()
         ));
-
         lightMetadataSSBO = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(
                 11,
                 (long) LIGHT_BUFFER_SIZE * GLSLType.FLOAT.getSize()
         ));
-    }
-
-    public void createOctreeBuffer(IntBuffer buffer) {
-        if (octreeSSBO != null) {
-            resources.remove(octreeSSBO.getId());
-        }
         octreeSSBO = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(
                 12,
-                buffer
+                MAX_VOXEL_QUANTITY * GLSLType.INT.getSize()
         ));
     }
 }

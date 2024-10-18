@@ -50,7 +50,7 @@ struct Stack {
     float scale;
 };
 
-bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
+bool intersect(inout vec3 boxMin, inout vec3 boxMax, inout Ray r) {
     vec3 t1 = (boxMin - r.o) * r.invDir;
     vec3 t2 = (boxMax - r.o) * r.invDir;
 
@@ -63,7 +63,7 @@ bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
     return tEnter <= tExit && tExit > 0.0;
 }
 
-bool intersectWithDistance(const vec3 boxMin, const vec3 boxMax, const Ray r, out float entryDist) {
+bool intersectWithDistance(inout vec3 boxMin, inout vec3 boxMax, inout Ray r, out float entryDist) {
     vec3 t1 = (boxMin - r.o) * r.invDir;
     vec3 t2 = (boxMax - r.o) * r.invDir;
 
@@ -95,7 +95,7 @@ vec3 unpackColor(int color) {
     return vec3(r, g, b);
 }
 
-uint countSetBitsBefore(uint mask, uint childIndex) {
+uint countSetBitsBefore(inout uint mask, inout uint childIndex) {
     uint maskBefore = mask & ((1u << childIndex) - 1u);
     return bitCount(maskBefore);
 }
@@ -113,7 +113,6 @@ bool showRayTestCount
     vec3 maxBox = center + scale;
     float minDistance = 1e10;// Large initial value
     if (!intersect(minBox, maxBox, ray)) return vec4(0);
-
 
     Stack stack[10];
     scale *= 0.5f;
@@ -159,9 +158,9 @@ bool showRayTestCount
             if (entryDist < minDistance) {
                 if (isLeafGroup) {
                     if (randomColors){
-                        finalColor.rgb = randomColor(float(index));
+                        finalColor.rgb = vec3(1, 0, 1);
+                        finalColor.a = 1;
                     }
-                    finalColor.a = 1;
                     minDistance = entryDist;
                 } else {
                     stack[stackPos++] = Stack(childGroupIndex + countSetBitsBefore(childMask, i), newCenter, scale * 0.5f);
