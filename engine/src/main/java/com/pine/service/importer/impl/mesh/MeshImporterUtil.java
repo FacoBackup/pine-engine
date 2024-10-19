@@ -4,7 +4,9 @@ import com.pine.service.importer.data.MeshImportData;
 import org.lwjgl.assimp.*;
 
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.assimp.Assimp.*;
 
@@ -48,6 +50,7 @@ public class MeshImporterUtil {
                 uvs[i * 2 + 1] = nUV.get(i).y();
             }
         }
+
         return new MeshImportData(mesh.mName().dataString(), vertices, indices, normals, uvs);
     }
 

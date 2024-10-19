@@ -1,16 +1,14 @@
 package com.pine.repository.fs;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class DirectoryEntry implements IEntry, Serializable {
     public final String id = UUID.randomUUID().toString();
     public String name;
     public final DirectoryEntry parent;
-    public final List<DirectoryEntry> directories = new ArrayList<>();
-    public final List<String> files = new ArrayList<>();
+    public List<DirectoryEntry> directories = new ArrayList<>();
+    public Set<String> files = new HashSet<>();
 
     public DirectoryEntry(String name, DirectoryEntry parent) {
         this.name = name;

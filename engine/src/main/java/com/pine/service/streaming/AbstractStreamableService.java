@@ -6,10 +6,6 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.util.Map;
-
 public abstract class AbstractStreamableService<T extends AbstractResourceRef<?>> implements Loggable {
 
     @PInject
@@ -36,18 +32,7 @@ public abstract class AbstractStreamableService<T extends AbstractResourceRef<?>
 
     public abstract StreamableResourceType getResourceType();
 
-    public abstract StreamData stream(String pathToFile, Map<String, StreamableResourceType> toBeStreamedIn);
-
-    protected Object loadFile(String path) {
-        try {
-            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(engine.getResourceDirectory() + path))) {
-                return in.readObject();
-            }
-        } catch (Exception e) {
-            getLogger().error(e.getMessage(), e);
-        }
-        return null;
-    }
+    public abstract StreamData stream(String pathToFile);
 
     public abstract AbstractResourceRef<?> newInstance(String key);
 }

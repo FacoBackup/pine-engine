@@ -9,12 +9,8 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
-import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import org.lwjgl.opengl.GL46;
-
-import java.util.List;
-import java.util.Map;
 
 @PBean
 public class MeshService extends AbstractStreamableService<MeshResourceRef> {
@@ -109,7 +105,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     }
 
     @Override
-    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> toBeStreamedIn){
+    public StreamData stream(String pathToFile){
         return (StreamData) FSUtil.read(pathToFile);
     }
 

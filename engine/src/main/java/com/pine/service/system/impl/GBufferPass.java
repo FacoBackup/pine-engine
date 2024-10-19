@@ -75,8 +75,10 @@ public class GBufferPass extends AbstractPass implements Loggable {
     protected void renderInternal() {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
         GL46.glDisable(GL11.GL_BLEND);
+        GL46.glEnable(GL11.GL_CULL_FACE);
         if (settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
+            GL46.glDisable(GL11.GL_CULL_FACE);
         } else {
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
@@ -108,28 +110,31 @@ public class GBufferPass extends AbstractPass implements Loggable {
     }
 
     private void bindMaterial(MaterialResourceRef request) {
+        request.lastUse = System.currentTimeMillis();
+
         if(request.albedo != null) {
             shaderService.bindUniform(albedo, request.albedo.texture);
+            request.albedo.lastUse = request.lastUse;
         }
-
         if(request.roughness != null) {
             shaderService.bindUniform(roughness, request.roughness.texture);
+            request.roughness.lastUse = request.lastUse;
         }
-
         if(request.metallic != null) {
             shaderService.bindUniform(metallic, request.metallic.texture);
+            request.metallic.lastUse = request.lastUse;
         }
-
         if(request.ao != null) {
             shaderService.bindUniform(ao, request.ao.texture);
+            request.ao.lastUse = request.lastUse;
         }
-
         if(request.normal != null) {
             shaderService.bindUniform(normal, request.normal.texture);
+            request.normal.lastUse = request.lastUse;
         }
-
         if(request.heightMap != null) {
             shaderService.bindUniform(heightMap, request.heightMap.texture);
+            request.heightMap.lastUse = request.lastUse;
         }
 
         floatBuffer.put(0, request.anisotropicRotation);

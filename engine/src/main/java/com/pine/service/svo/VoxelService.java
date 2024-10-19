@@ -1,8 +1,5 @@
 package com.pine.service.svo;
 
-import com.pine.component.AbstractComponent;
-import com.pine.component.ComponentType;
-import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -13,10 +10,7 @@ import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.voxelization.VoxelRepository;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.streaming.mesh.MeshService;
-import com.pine.service.streaming.mesh.MeshStreamData;
-import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.tasks.SyncTask;
-import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.HashMap;
@@ -61,7 +55,7 @@ public class VoxelService implements SyncTask, Loggable {
 
     private void voxelize() {
         long startTotal = System.currentTimeMillis();
-        Map<String, MeshStreamData> byId = new HashMap<>();
+//        Map<String, MeshStreamData> byId = new HashMap<>();
 
         Map<Integer, List<MeshComponent>> meshGrid = new HashMap<>();
         SparseVoxelOctree octree = new SparseVoxelOctree(

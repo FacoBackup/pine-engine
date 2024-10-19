@@ -1,6 +1,5 @@
 package com.pine.panels.files;
 
-import com.pine.Engine;
 import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
 import com.pine.core.view.AbstractView;
@@ -19,11 +18,13 @@ import com.pine.service.streaming.scene.SceneService;
 import com.pine.service.streaming.scene.SceneStreamData;
 import imgui.ImGui;
 import imgui.ImVec4;
-import imgui.flag.*;
+import imgui.flag.ImGuiKey;
+import imgui.flag.ImGuiMouseButton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class AbstractDirectoryPanel extends AbstractView {
     protected final ImVec4 DIRECTORY_COLOR = new ImVec4(
@@ -45,12 +46,8 @@ public class AbstractDirectoryPanel extends AbstractView {
     public RequestProcessingService requestProcessingService;
     @PInject
     public SceneService sceneService;
-    @PInject
-    public Engine engine;
 
     protected FilesContext context;
-    protected boolean isLoading;
-    protected boolean ready;
     protected boolean isWindowFocused;
     protected List<FileEntry> filesLocal = new ArrayList<>();
 
@@ -60,18 +57,51 @@ public class AbstractDirectoryPanel extends AbstractView {
     }
 
     protected void hotkeys() {
-        if (isWindowFocused && ImGui.isKeyPressed(ImGuiKey.Enter) && !context.selected.isEmpty()) {
-            openResource(context.selected
-                    .values()
-                    .stream()
-                    .filter(a -> (a instanceof FileEntry))
-                    .findFirst()
-                    .orElse(null));
+        if (!isWindowFocused) {
+            return;
+        }
+        if (ImGui.isKeyPressed(ImGuiKey.Enter) && !context.selected.isEmpty()) {
+            for (String id : context.selected.keySet()) {
+                var file = fileMetadataRepository.getFile(id);
+                if (file != null) {
+                    openResource(file);
+                }
+            }
         }
 
-        if (isWindowFocused && ImGui.isKeyPressed(ImGuiKey.Delete) && !context.selected.isEmpty()) {
-            filesService.delete(context.selected);
+        if (ImGui.isKeyPressed(ImGuiKey.Delete) && !context.selected.isEmpty()) {
+            deleteSelected();
         }
+
+        if (ImGui.isKeyDown(ImGuiKey.LeftCtrl) && ImGui.isKeyPressed(ImGuiKey.A)) {
+            for (var file : context.currentDirectory.files) {
+                context.selected.put(file, true);
+            }
+
+            for (var directory : context.currentDirectory.directories) {
+                context.selected.put(directory.id, true);
+            }
+        }
+    }
+
+    private void deleteSelected() {
+        for (String id : context.selected.keySet()) {
+            FileEntry file = fileMetadataRepository.getFile(id);
+            if (file != null) {
+                filesService.delete(file);
+                context.currentDirectory.files.remove(id);
+            } else {
+                context.currentDirectory.directories = context
+                        .currentDirectory
+                        .directories
+                        .stream()
+                        .filter(a -> !Objects.equals(a.id, id))
+                        .toList();
+            }
+        }
+        fileMetadataRepository.refresh();
+        filesLocal.clear();
+
     }
 
     protected void onClick(IEntry root) {
@@ -79,7 +109,7 @@ public class AbstractDirectoryPanel extends AbstractView {
             if (!ImGui.isKeyDown(ImGuiKey.LeftCtrl)) {
                 context.selected.clear();
             }
-            context.selected.put(root.getId(), root);
+            context.selected.put(root.getId(), true);
             if (root instanceof DirectoryEntry) {
                 context.setInspection(null);
             } else {
@@ -101,7 +131,7 @@ public class AbstractDirectoryPanel extends AbstractView {
         } else {
             switch (((FileEntry) root).metadata.getResourceType()) {
                 case SCENE ->
-                        requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, (SceneStreamData) sceneService.stream(((FileEntry) root).path, Collections.emptyMap())));
+                        requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, (SceneStreamData) sceneService.stream(((FileEntry) root).path)));
                 case MESH -> {
                     var request = new AddEntityRequest(List.of(ComponentType.MESH));
                     requestProcessingService.addRequest(request);
@@ -113,11 +143,17 @@ public class AbstractDirectoryPanel extends AbstractView {
     }
 
     protected void updateFiles() {
-        if (filesLocal.size() != context.currentDirectory.files.size() && !isLoading) {
+        if (!fileMetadataRepository.isLoading() && filesLocal.size() != context.currentDirectory.files.size()) {
             filesLocal.clear();
-            isLoading = true;
             for (var file : context.currentDirectory.files) {
-                filesLocal.add(fileMetadataRepository.getFile(file));
+                FileEntry fileEntry = fileMetadataRepository.getFile(file);
+                if (fileEntry != null) {
+                    filesLocal.add(fileEntry);
+                }
+            }
+
+            if(context.currentDirectory.files.size() != filesLocal.size()){
+                context.currentDirectory.files = filesLocal.stream().map(FileEntry::getId).collect(Collectors.toSet());;
             }
         }
     }

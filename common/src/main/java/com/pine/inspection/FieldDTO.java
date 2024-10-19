@@ -72,8 +72,4 @@ public class FieldDTO {
     public String getGroup() {
         return delegate.group();
     }
-
-    public boolean isResource() {
-        return delegate.isResource();
-    }
 }

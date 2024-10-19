@@ -1,6 +1,6 @@
 package com.pine.service.svo;
 
-import com.pine.service.streaming.mesh.MeshStreamData;
+import com.pine.service.importer.data.MeshImportData;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -8,10 +8,10 @@ import org.joml.Vector4f;
 
 public class VoxelizerUtil {
 
-    public static void traverseMesh(MeshStreamData rawMeshData, Matrix4f globalMatrix, SparseVoxelOctree octree) {
+    public static void traverseMesh(MeshImportData rawMeshData, Matrix4f globalMatrix, SparseVoxelOctree octree) {
 
-        int[] indices = rawMeshData.indices();
-        float[] vertices = rawMeshData.vertices();
+        int[] indices = rawMeshData.indices;
+        float[] vertices = rawMeshData.vertices;
 
         for (int i = 0; i < indices.length; i += 3) {
             Vector4f v0 = new Vector4f(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2], 1).mul(globalMatrix);

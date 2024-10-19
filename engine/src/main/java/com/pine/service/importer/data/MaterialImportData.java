@@ -1,22 +1,35 @@
 package com.pine.service.importer.data;
 
 import com.pine.inspection.MutableField;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.type.MaterialRenderingMode;
 
 public class MaterialImportData extends AbstractImportData {
-    @MutableField(group = "Textures", label = "Height", isResource = true)
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @MutableField(group = "Textures", label = "Height")
     public String heightMap;
-    @MutableField(group = "Textures", label = "Normal", isResource = true)
+
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @MutableField(group = "Textures", label = "Normal")
     public String normal;
-    @MutableField(group = "Textures", label = "Albedo", isResource = true)
+
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @MutableField(group = "Textures", label = "Albedo")
     public String albedo;
-    @MutableField(group = "Textures", label = "Metallic", isResource = true)
+    
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @MutableField(group = "Textures", label = "Metallic")
     public String metallic;
-    @MutableField(group = "Textures", label = "Roughness", isResource = true)
+
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @MutableField(group = "Textures", label = "Roughness")
     public String roughness;
-    @MutableField(group = "Textures", label = "Occlusion", isResource = true)
+
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @MutableField(group = "Textures", label = "Occlusion")
     public String ao;
+    
     @MutableField(group = "Material", label = "use parallax")
     public boolean useParallax = false;
     @MutableField(group = "Material", label = "Parallax height scale")

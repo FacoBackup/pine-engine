@@ -36,7 +36,7 @@ public class FilesPanel extends AbstractDockPanel {
     @PInject
     public FileMetadataRepository fileMetadataRepository;
 
-    private AbstractDirectoryPanel directory;
+    private AbstractDirectoryPanel directoryPanel;
     private FilesContext context;
     private String searchPath = "";
     private boolean isListView;
@@ -63,13 +63,13 @@ public class FilesPanel extends AbstractDockPanel {
     }
 
     private void switchViewMode() {
-        if (directory == null || directory instanceof CardViewDirectoryPanel) {
-            appendChild(directory = new ListViewDirectoryPanel());
-            removeChild(directory);
+        if (directoryPanel == null || directoryPanel instanceof CardViewDirectoryPanel) {
+            appendChild(directoryPanel = new ListViewDirectoryPanel());
+            removeChild(directoryPanel);
             isListView = true;
         } else {
-            appendChild(directory = new CardViewDirectoryPanel());
-            removeChild(directory);
+            appendChild(directoryPanel = new CardViewDirectoryPanel());
+            removeChild(directoryPanel);
             isListView = false;
         }
     }
@@ -77,7 +77,7 @@ public class FilesPanel extends AbstractDockPanel {
     @Override
     public void render() {
         renderHeader();
-        directory.isWindowFocused = isWindowFocused;
+        directoryPanel.isWindowFocused = isWindowFocused;
 
         if (ImGui.beginTable("##files" + imguiId, 2, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
@@ -86,7 +86,7 @@ public class FilesPanel extends AbstractDockPanel {
 
             ImGui.tableNextRow();
             ImGui.tableNextColumn();
-            directory.render();
+            directoryPanel.render();
             ImGui.tableNextColumn();
             fileInspector.render();
 
@@ -113,7 +113,7 @@ public class FilesPanel extends AbstractDockPanel {
         ImGui.text(searchPath);
 
         ImGui.sameLine();
-        if (renderWithHighlight(Icons.grid_4x4 + "##cardView", !isListView)) {
+        if (renderWithHighlight(Icons.dashboard + "##cardView", !isListView)) {
             switchViewMode();
         }
 
@@ -152,8 +152,8 @@ public class FilesPanel extends AbstractDockPanel {
             if (response.isEmpty()) {
                 messageRepository.pushMessage("Could not import files: " + paths, MessageSeverity.ERROR);
             }
-            context.currentDirectory.files.addAll(response);
             projectService.saveSilently();
+            context.currentDirectory.files.addAll(response);
             fileMetadataRepository.refresh();
         });
     }

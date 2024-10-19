@@ -4,13 +4,8 @@ import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
-import com.pine.service.svo.OctreeNode;
-import com.pine.service.svo.SparseVoxelOctree;
 import com.pine.theme.Icons;
 import org.joml.Vector3f;
-
-import java.nio.IntBuffer;
 
 @PBean
 public class VoxelRepository extends Inspectable implements SerializableRepository {

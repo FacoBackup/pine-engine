@@ -1,39 +1,36 @@
 package com.pine.service;
 
-import com.pine.Engine;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.EditorRepository;
+import com.pine.messaging.Loggable;
 import com.pine.repository.fs.FileEntry;
-import com.pine.repository.fs.IEntry;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.importer.ImporterService;
 
-import java.util.Map;
+import java.io.File;
 
 @PBean
-public class FilesService {
+public class FilesService implements Loggable {
 
     @PInject
-    public Engine engine;
-
-    @PInject
-    public ProjectService projectService;
-
-    @PInject
-    public EditorRepository editorRepository;
+    public ImporterService importerService;
 
     @PInject
     public StreamingRepository streamingRepository;
 
-    public void delete(Map<String, IEntry> toDelete) {
-//        editorRepository.inspectFile = selected == editorRepository.inspectFile ? null : editorRepository.inspectFile;
-//        if (selected != editorRepository.rootDirectory) {
-//            selected.streamableResource.invalidated = true;
-//            selected.parent.children.remove(selected);
-//            if (selected.type != FileType.DIRECTORY) {
-////                new File(engine.getResourceTargetDirectory() + selected.streamableResource.pathToFile).delete();
-//            }
-//            projectService.saveSilently();
-//        }
+    public void delete(FileEntry file) {
+        try {
+            if (new File(file.path).delete()) {
+                if(new File(importerService.getPathToFile(file.getId(), file.metadata.getResourceType())).delete()){
+                    getLogger().warn("Deleted file {}", file.metadata.name);
+                }
+                streamingRepository.failedStreams.put(file.getId(), file.metadata.getResourceType());
+                streamingRepository.streamableResources.remove(file.getId());
+                streamingRepository.loadedResources.remove(file.getId());
+                streamingRepository.schedule.remove(file.getId());
+            }
+        } catch (Exception e) {
+            getLogger().error("Error while deleting file {}", file.getId());
+        }
     }
 }

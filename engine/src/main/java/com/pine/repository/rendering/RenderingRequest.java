@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class RenderingRequest implements Serializable {
-    public MeshResourceRef mesh;
-    public MaterialResourceRef material;
+    public transient MeshResourceRef mesh;
+    public transient MaterialResourceRef material;
 
     public final Transformation transformation;
     public List<Transformation> transformations;

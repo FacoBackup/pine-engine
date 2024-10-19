@@ -4,8 +4,8 @@ import com.pine.component.Transformation;
 import com.pine.core.view.AbstractView;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.panels.component.impl.*;
-import com.pine.repository.streaming.AbstractResourceRef;
 import imgui.ImGui;
 
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class FormPanel extends AbstractView {
                     }
                     break;
                 case STRING:
-                    if (field.isResource()) {
+                    if (field.getField().isAnnotationPresent(ResourceTypeField.class)) {
                         group.appendChild(new ResourceField(field, changeHandler));
                     }else {
                         group.appendChild(new StringField(field, changeHandler));

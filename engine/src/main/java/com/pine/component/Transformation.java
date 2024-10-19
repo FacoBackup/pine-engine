@@ -31,7 +31,7 @@ public class Transformation extends Inspectable implements Mutable, Serializable
 
     public int changes = 0;
     public int frozenVersion = -1;
-    public RenderingRequest renderRequest;
+    public transient RenderingRequest renderRequest;
     public int renderIndex;
     public int parentChangeId = -1;
     public boolean isCulled = false;

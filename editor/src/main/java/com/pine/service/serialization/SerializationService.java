@@ -12,7 +12,7 @@ import com.pine.messaging.MessageSeverity;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -54,7 +54,7 @@ public class SerializationService implements Loggable {
         }
     }
 
-    public void serialize(String projectDirectory) {
+    public void serialize(String projectDirectory, boolean silent) {
         getLogger().info("Beginning project serialization to {}", projectDirectory);
         long start = System.currentTimeMillis();
         new Thread(() -> {
@@ -62,6 +62,8 @@ public class SerializationService implements Loggable {
             repositoryContainer.serializables.addAll(serializableRepositories);
             if (!FSUtil.write(repositoryContainer, getFilePath(projectDirectory))) {
                 getLogger().error("Could not save project");
+            }else if(!silent){
+                messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
             }
             long end = System.currentTimeMillis() - start;
             getLogger().warn("Serialization took {}ms", end);
@@ -77,11 +79,9 @@ public class SerializationService implements Loggable {
         long start = System.currentTimeMillis();
         isDeserializationDone = false;
         Thread thread = new Thread(() -> {
-            var data = (RepositoryContainer) FSUtil.read(getFilePath(projectDirectory));
+            var data = (RepositoryContainer) FSUtil.readSilent(getFilePath(projectDirectory));
             if (data != null) {
                 data.serializables.forEach(r -> repositoryMap.get(r.getClass().getSimpleName()).merge(r));
-            } else {
-                messageRepository.pushMessage("Error while loading project", MessageSeverity.ERROR);
             }
             SerializationState.loaded.clear();
             getLogger().warn("Deserialization took {}ms", System.currentTimeMillis() - start);

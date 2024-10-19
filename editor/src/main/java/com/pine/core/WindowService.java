@@ -33,6 +33,7 @@ public class WindowService implements Disposable, Loggable {
 
     @PInject
     public PInjector injector;
+    private boolean isMinimized;
 
     @PostCreation(order = Integer.MAX_VALUE)
     public void onInitialize() {
@@ -66,10 +67,17 @@ public class WindowService implements Disposable, Loggable {
             GLFW.glfwShowWindow(handle);
 
             while (!GLFW.glfwWindowShouldClose(handle) && !shouldStop) {
+
                 try {
-                    startFrame();
-                    window.render();
-                    endFrame();
+                    if(!isMinimized){
+                        startFrame();
+                        window.render();
+                        ImGui.popStyleColor(3);
+                        ImGui.render();
+                        imGuiGl3.renderDrawData(ImGui.getDrawData());
+                    }
+
+                    renderBuffer();
                 } catch (Exception e) {
                     getLogger().error(e.getMessage(), e);
                 }
@@ -131,6 +139,12 @@ public class WindowService implements Disposable, Loggable {
                 GLFW.glfwSetWindowShouldClose(handle, true);
             }
         });
+        GLFW.glfwSetWindowIconifyCallback(handle, new GLFWWindowIconifyCallback() {
+            @Override
+            public void invoke(long l, boolean iconified) {
+                isMinimized = iconified;
+            }
+        });
     }
 
     private void applySpacing() {
@@ -189,19 +203,6 @@ public class WindowService implements Disposable, Loggable {
         ImGui.pushStyleColor(ImGuiCol.Button, window.getNeutralPalette());
         ImGui.pushStyleColor(ImGuiCol.ButtonHovered, window.getAccentColor());
         ImGui.pushStyleColor(ImGuiCol.ButtonActive, window.getAccentColor());
-    }
-
-    public void endFrame() {
-        ImGui.popStyleColor(3);
-        ImGui.render();
-        imGuiGl3.renderDrawData(ImGui.getDrawData());
-        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-            final long backupCurrentContext = GLFW.glfwGetCurrentContext();
-            ImGui.updatePlatformWindows();
-            ImGui.renderPlatformWindowsDefault();
-            GLFW.glfwMakeContextCurrent(backupCurrentContext);
-        }
-        renderBuffer();
     }
 
     private void clearBuffer() {

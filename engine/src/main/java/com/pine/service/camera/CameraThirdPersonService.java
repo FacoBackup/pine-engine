@@ -3,7 +3,6 @@ package com.pine.service.camera;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.ClockRepository;
 import org.joml.Vector3f;
 
 @PBean

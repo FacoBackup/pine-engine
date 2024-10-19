@@ -2,18 +2,16 @@ package com.pine.panels.component.impl;
 
 import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.panels.component.AbstractFormField;
 import com.pine.repository.FileMetadataRepository;
 import com.pine.repository.fs.FileEntry;
-import com.pine.repository.streaming.*;
-import com.pine.service.streaming.ref.AudioResourceRef;
-import com.pine.service.streaming.ref.MeshResourceRef;
-import com.pine.service.streaming.ref.TextureResourceRef;
+import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.streaming.StreamingRepository;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.type.ImInt;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -35,16 +33,7 @@ public class ResourceField extends AbstractFormField {
 
     public ResourceField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
-
-        if (dto.getField().getType() == MeshResourceRef.class) {
-            type = StreamableResourceType.MESH;
-        } else if (dto.getField().getType() == TextureResourceRef.class) {
-            type = StreamableResourceType.TEXTURE;
-        } else if (dto.getField().getType() == AudioResourceRef.class) {
-            type = StreamableResourceType.AUDIO;
-        } else {
-            type = StreamableResourceType.MATERIAL;
-        }
+        type = dto.getField().getAnnotation(ResourceTypeField.class).type();
     }
 
     @Override
@@ -62,10 +51,10 @@ public class ResourceField extends AbstractFormField {
                 itemsArr[i] = file.metadata.name;
             }
 
-            AbstractResourceRef<?> value = (AbstractResourceRef<?>) dto.getValue();
+            String value = (String) dto.getValue();
             if (value != null) {
                 for (int i = 0; i < allByType.size(); i++) {
-                    if (Objects.equals(allByType.get(i).getId(), value.id)) {
+                    if (Objects.equals(allByType.get(i).getId(), value)) {
                         selected.set(i);
                     }
                 }
@@ -78,7 +67,7 @@ public class ResourceField extends AbstractFormField {
         refresh();
         ImGui.text(dto.getLabel());
         if (ImGui.combo(imguiId, selected, itemsArr)) {
-            changerHandler.accept(dto, allByType.get(selected.get()));
+            changerHandler.accept(dto, allByType.get(selected.get()).getId());
         }
 
         ImGui.sameLine();

@@ -6,9 +6,9 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.MeshResourceRef;
-import com.pine.service.streaming.StreamingService;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;

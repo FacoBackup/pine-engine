@@ -2,10 +2,11 @@ package com.pine.repository.streaming;
 
 import com.pine.theme.Icons;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public enum StreamableResourceType {
+public enum StreamableResourceType implements Serializable {
     SCENE(Collections.emptyList(), false, true, Icons.inventory_2, "Scene"),
     MESH(List.of("gltf", "glb", "fbx", "obj", "blend"), false, true, Icons.category, "Mesh"),
     TEXTURE(List.of("png", "jpeg", "jpg"), false, false, Icons.texture, "Audio"),

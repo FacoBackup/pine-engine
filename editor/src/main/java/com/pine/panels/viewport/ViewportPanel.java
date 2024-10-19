@@ -3,7 +3,6 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.panels.header.ViewportHeaderPanel;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;

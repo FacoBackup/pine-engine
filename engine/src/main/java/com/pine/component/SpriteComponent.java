@@ -1,11 +1,14 @@
 package com.pine.component;
 
 import com.pine.inspection.MutableField;
+import com.pine.inspection.ResourceTypeField;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.ref.TextureResourceRef;
 
 
 public class SpriteComponent extends AbstractComponent {
-    @MutableField(label = "Texture", isResource = true)
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @MutableField(label = "Texture")
     public String texture;
 
     public transient TextureResourceRef textureRef;

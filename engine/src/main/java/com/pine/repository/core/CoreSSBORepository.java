@@ -9,7 +9,6 @@ import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import static com.pine.Engine.MAX_ENTITIES;
 import static com.pine.Engine.MAX_LIGHTS;

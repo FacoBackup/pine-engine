@@ -2,9 +2,9 @@ package com.pine.service.importer.impl;
 
 import com.pine.injection.PBean;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.importer.AbstractImporter;
 import com.pine.service.importer.data.AbstractImportData;
 import com.pine.service.importer.data.TextureImportData;
-import com.pine.service.importer.AbstractImporter;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
 import com.pine.service.importer.metadata.TextureResourceMetadata;
 

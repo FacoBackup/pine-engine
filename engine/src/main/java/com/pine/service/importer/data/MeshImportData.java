@@ -1,8 +1,14 @@
 package com.pine.service.importer.data;
 
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.streaming.StreamData;
 
-public class MeshImportData extends AbstractImportData {
+import java.io.Serial;
+
+public class MeshImportData extends AbstractImportData implements StreamData {
+    @Serial
+    private static final long serialVersionUID = -5390350102505027262L;
+
     public final float[] vertices;
     public final int[] indices;
     public final float[] normals;

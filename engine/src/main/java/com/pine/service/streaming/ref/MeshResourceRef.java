@@ -2,16 +2,15 @@ package com.pine.service.streaming.ref;
 
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.importer.data.MeshImportData;
 import com.pine.service.rendering.VertexBuffer;
-import com.pine.service.streaming.mesh.MeshStreamData;
-import com.pine.theme.Icons;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class MeshResourceRef extends AbstractResourceRef<MeshStreamData> {
+public class MeshResourceRef extends AbstractResourceRef<MeshImportData> {
     public transient int vertexCount;
     public transient int triangleCount;
     public transient int VAO;
@@ -25,15 +24,15 @@ public class MeshResourceRef extends AbstractResourceRef<MeshStreamData> {
     }
 
     @Override
-    protected void loadInternal(MeshStreamData dto) {
-        this.triangleCount = dto.indices().length / 3;
-        this.vertexCount = dto.vertices().length;
+    protected void loadInternal(MeshImportData dto) {
+        this.triangleCount = dto.indices.length / 3;
+        this.vertexCount = dto.vertices.length;
 
-        FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(dto.vertices().length);
-        vertexBuffer.put(dto.vertices()).flip();
+        FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(dto.vertices.length);
+        vertexBuffer.put(dto.vertices).flip();
 
-        IntBuffer indexBuffer = MemoryUtil.memAllocInt(dto.indices().length);
-        indexBuffer.put(dto.indices()).flip();
+        IntBuffer indexBuffer = MemoryUtil.memAllocInt(dto.indices.length);
+        indexBuffer.put(dto.indices).flip();
 
 
         this.VAO = GL46.glCreateVertexArrays();
@@ -45,18 +44,18 @@ public class MeshResourceRef extends AbstractResourceRef<MeshStreamData> {
 
         this.vertexVBO = new VertexBuffer(0, vertexBuffer, GL46.GL_ARRAY_BUFFER, 3, GL46.GL_FLOAT, false, GL46.GL_STATIC_DRAW, 0);
 
-        if (dto.uvs() != null && dto.uvs().length > 0) {
-            FloatBuffer uvBuffer = MemoryUtil.memAllocFloat(dto.uvs().length);
-            uvBuffer.put(dto.uvs()).flip();
+        if (dto.uvs != null && dto.uvs.length > 0) {
+            FloatBuffer uvBuffer = MemoryUtil.memAllocFloat(dto.uvs.length);
+            uvBuffer.put(dto.uvs).flip();
             this.uvVBO = new VertexBuffer(1, uvBuffer, GL46.GL_ARRAY_BUFFER, 2, GL46.GL_FLOAT, false, GL46.GL_STATIC_DRAW, 0);
             MemoryUtil.memFree(uvBuffer);
         } else {
             this.uvVBO = null;
         }
 
-        if (dto.normals() != null && dto.normals().length > 0) {
-            FloatBuffer normalBuffer = MemoryUtil.memAllocFloat(dto.normals().length);
-            normalBuffer.put(dto.normals()).flip();
+        if (dto.normals != null && dto.normals.length > 0) {
+            FloatBuffer normalBuffer = MemoryUtil.memAllocFloat(dto.normals.length);
+            normalBuffer.put(dto.normals).flip();
             this.normalVBO = new VertexBuffer(2, normalBuffer, GL46.GL_ARRAY_BUFFER, 3, GL46.GL_FLOAT, false, GL46.GL_STATIC_DRAW, 0);
             MemoryUtil.memFree(normalBuffer);
         } else {

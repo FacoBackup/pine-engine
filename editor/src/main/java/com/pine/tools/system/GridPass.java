@@ -2,7 +2,6 @@ package com.pine.tools.system;
 
 import com.pine.EngineUtils;
 import com.pine.injection.PInject;
-import com.pine.repository.DebugShadingModel;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.fbo.FrameBufferObject;

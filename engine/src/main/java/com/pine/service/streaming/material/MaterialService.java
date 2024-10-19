@@ -11,12 +11,7 @@ import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.service.streaming.scene.SceneStreamData;
 import com.pine.service.streaming.texture.TextureService;
-import com.pine.type.MaterialRenderingMode;
-
-import java.util.List;
-import java.util.Map;
 
 @PBean
 public class MaterialService extends AbstractStreamableService<MaterialResourceRef> {
@@ -34,29 +29,41 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
 
     @Override
     public StreamableResourceType getResourceType() {
-        return StreamableResourceType.SCENE;
+        return StreamableResourceType.MATERIAL;
     }
 
     @Override
-    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> toBeStreamedIn) {
+    public StreamData stream(String pathToFile) {
         var importData = (MaterialImportData) FSUtil.read(pathToFile);
         if (importData == null) {
             return null;
         }
-        addTexture(importData.heightMap, toBeStreamedIn);
-        addTexture(importData.normal, toBeStreamedIn);
-        addTexture(importData.albedo, toBeStreamedIn);
-        addTexture(importData.metallic, toBeStreamedIn);
-        addTexture(importData.roughness, toBeStreamedIn);
-        addTexture(importData.ao, toBeStreamedIn);
+        addTexture(importData.heightMap);
+        addTexture(importData.normal);
+        addTexture(importData.albedo);
+        addTexture(importData.metallic);
+        addTexture(importData.roughness);
+        addTexture(importData.ao);
 
         var streamData = new MaterialStreamData();
-        streamData.heightMap = (TextureResourceRef) repository.streamableResources.get(importData.heightMap);
-        streamData.normal = (TextureResourceRef) repository.streamableResources.get(importData.normal);
-        streamData.albedo = (TextureResourceRef) repository.streamableResources.get(importData.albedo);
-        streamData.metallic = (TextureResourceRef) repository.streamableResources.get(importData.metallic);
-        streamData.roughness = (TextureResourceRef) repository.streamableResources.get(importData.roughness);
-        streamData.ao = (TextureResourceRef) repository.streamableResources.get(importData.ao);
+        if (importData.heightMap != null) {
+            streamData.heightMap = (TextureResourceRef) repository.streamableResources.get(importData.heightMap);
+        }
+        if (importData.normal != null) {
+            streamData.normal = (TextureResourceRef) repository.streamableResources.get(importData.normal);
+        }
+        if (importData.albedo != null) {
+            streamData.albedo = (TextureResourceRef) repository.streamableResources.get(importData.albedo);
+        }
+        if (importData.metallic != null) {
+            streamData.metallic = (TextureResourceRef) repository.streamableResources.get(importData.metallic);
+        }
+        if (importData.roughness != null) {
+            streamData.roughness = (TextureResourceRef) repository.streamableResources.get(importData.roughness);
+        }
+        if (importData.ao != null) {
+            streamData.ao = (TextureResourceRef) repository.streamableResources.get(importData.ao);
+        }
         streamData.useParallax = importData.useParallax;
         streamData.parallaxHeightScale = importData.parallaxHeightScale;
         streamData.parallaxLayers = importData.parallaxLayers;
@@ -71,10 +78,10 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
         return streamData;
     }
 
-    private void addTexture(String importData, Map<String, StreamableResourceType> toBeStreamedIn) {
+    private void addTexture(String importData) {
         if (importData != null) {
-            toBeStreamedIn.put(importData, StreamableResourceType.TEXTURE);
             repository.streamableResources.putIfAbsent(importData, textureService.newInstance(importData));
+            repository.schedule.putIfAbsent(importData, StreamableResourceType.TEXTURE);
         }
     }
 }

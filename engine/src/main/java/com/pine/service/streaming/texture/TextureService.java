@@ -13,7 +13,6 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Map;
 
 @PBean
 public class TextureService extends AbstractStreamableService<TextureResourceRef> {
@@ -27,7 +26,7 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
     }
 
     @Override
-    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> toBeStreamedIn) {
+    public StreamData stream(String pathToFile) {
         ByteBuffer imageBuffer;
         int width, height;
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -36,9 +35,9 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
             IntBuffer channelsBuffer = stack.mallocInt(1);
 
             STBImage.stbi_set_flip_vertically_on_load(true);
-            imageBuffer = STBImage.stbi_load(engine.getResourceDirectory() + pathToFile, widthBuffer, heightBuffer, channelsBuffer, 4);
+            imageBuffer = STBImage.stbi_load(pathToFile, widthBuffer, heightBuffer, channelsBuffer, 4);
             if (imageBuffer == null) {
-                throw new RuntimeException("Failed to load image: " + STBImage.stbi_failure_reason());
+                throw new RuntimeException(pathToFile + ": Failed to load image: " + STBImage.stbi_failure_reason());
             }
 
             width = widthBuffer.get();

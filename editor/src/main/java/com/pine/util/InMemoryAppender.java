@@ -53,7 +53,7 @@ public class InMemoryAppender extends AbstractAppender {
         if (!isSynced) {
             try{
                 copy.clear();
-                copy.addAll(logMessagesSource);
+                copy.addAll(logMessagesSource.reversed());
             }catch (Exception ignored){}
         }
         isSynced = true;

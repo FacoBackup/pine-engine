@@ -5,7 +5,9 @@ import com.pine.repository.fs.FileEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.theme.Icons;
 import imgui.ImGui;
-import imgui.flag.*;
+import imgui.flag.ImGuiTableBgTarget;
+import imgui.flag.ImGuiTableColumnFlags;
+import imgui.flag.ImGuiTableFlags;
 
 public class ListViewDirectoryPanel extends AbstractDirectoryPanel {
     private static final int FLAGS = ImGuiTableFlags.ScrollY | ImGuiTableFlags.RowBg;

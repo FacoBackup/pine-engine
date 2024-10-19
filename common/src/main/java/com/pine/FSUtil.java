@@ -52,4 +52,12 @@ public class FSUtil {
             return null;
         }
     }
+
+    public static Object readSilent(String path) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
+            return in.readObject();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

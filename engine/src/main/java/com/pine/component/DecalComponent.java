@@ -1,11 +1,5 @@
 package com.pine.component;
 
-import com.pine.injection.PBean;
-import com.pine.theme.Icons;
-
-import java.util.LinkedList;
-
-
 public class DecalComponent extends AbstractComponent {
     public DecalComponent(Entity entity) {
         super(entity);

@@ -11,9 +11,6 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.tasks.SyncTask;
 
-import javax.annotation.Nullable;
-import java.util.UUID;
-
 /**
  * Responsible for instantiating resources, creating requests for loading resources and disposing of loaded resources
  */
@@ -51,21 +48,22 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
 
     @Override
     public void sync() {
-        for (String resource : repository.schedule.keySet()) {
-            if (repository.loadedResources.containsKey(resource)) {
-                getLogger().warn("Loading streamed resource {}", resource);
-                repository.streamableResources.get(resource).load(repository.loadedResources.get(resource));
-                repository.loadedResources.remove(resource);
-                repository.schedule.remove(resource);
+        for (String resource : repository.loadedResources.keySet()) {
+            getLogger().warn("Loading streamed resource {}", resource);
+            AbstractResourceRef<?> ref = repository.streamableResources.get(resource);
+            if (ref != null) {
+                ref.load(repository.loadedResources.get(resource));
             }
+            repository.loadedResources.remove(resource);
+            repository.schedule.remove(resource);
         }
-
         disposeOfUnusedResources();
     }
 
     private void disposeOfUnusedResources() {
         if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
             sinceLastCleanup = clock.totalTime;
+            getLogger().warn("Disposing of unused resources");
             for (AbstractResourceRef<?> resource : repository.streamableResources.values()) {
                 if ((clock.totalTime - resource.lastUse) >= MAX_TIMEOUT) {
                     resource.dispose();
