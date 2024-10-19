@@ -1,19 +1,16 @@
 package com.pine.service.importer.impl.mesh;
 
-import com.pine.service.streaming.StreamingService;
-import com.pine.service.streaming.texture.TextureStreamableResource;
+import com.pine.service.importer.data.MeshImportData;
 import org.lwjgl.assimp.*;
 
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static org.lwjgl.assimp.Assimp.*;
 
 public class MeshImporterUtil {
 
-    public static CoreMeshData processPrimitive(AIMesh mesh) {
+    public static MeshImportData processPrimitive(AIMesh mesh) {
         float[] vertices = new float[mesh.mNumVertices() * 3];
         for (int i = 0; i < mesh.mNumVertices(); i++) {
             AIVector3D vert = mesh.mVertices().get(i);
@@ -51,7 +48,7 @@ public class MeshImporterUtil {
                 uvs[i * 2 + 1] = nUV.get(i).y();
             }
         }
-        return new CoreMeshData(vertices, indices, normals, uvs);
+        return new MeshImportData(mesh.mName().dataString(), vertices, indices, normals, uvs);
     }
 
     public static void traverseAssimpTree(AINode node, AssimpMeshRepresentation parent, Map<Integer, List<AssimpMeshRepresentation>> byPrimitive) {

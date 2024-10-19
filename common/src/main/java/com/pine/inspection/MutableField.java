@@ -15,6 +15,8 @@ public @interface MutableField {
 
     boolean isAngle() default false;
 
+    boolean isResource() default false;
+
     boolean isDirectChange() default false;
 
     String help() default "";

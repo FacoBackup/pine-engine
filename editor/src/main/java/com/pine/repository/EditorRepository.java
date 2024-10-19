@@ -7,9 +7,7 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.repository.fs.ResourceEntry;
-import com.pine.repository.fs.ResourceEntryType;
-import com.pine.repository.streaming.AbstractStreamableResource;
+import com.pine.repository.fs.DirectoryEntry;
 import com.pine.theme.Icons;
 import com.pine.tools.types.ExecutionEnvironment;
 import imgui.ImVec4;
@@ -80,8 +78,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public Transformation primitiveSelected = null;
     public Entity mainSelection = null;
     public final LinkedList<Entity> selected = new LinkedList<>();
-    public ResourceEntry rootDirectory = new ResourceEntry("Content Browser", ResourceEntryType.DIRECTORY, 0, "", null, null);
-    public ResourceEntry inspectFile;
+    public final DirectoryEntry root = new DirectoryEntry("Files", null);
 
     @Override
     public String getIcon() {

@@ -1,16 +1,15 @@
 package com.pine.service.streaming.scene;
 
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.StreamLoadData;
+import com.pine.service.streaming.StreamData;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class SceneStreamData implements StreamLoadData {
-    public final List<SceneStreamData> children = new ArrayList<>();
+public class SceneStreamData implements StreamData {
     public final String id = UUID.randomUUID().toString();
+    public final List<SceneStreamData> children = new ArrayList<>();
     public final String name;
     public String meshResourceId;
     public String materialResourceId;

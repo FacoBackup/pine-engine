@@ -14,8 +14,8 @@ public class RigidBodyComponent extends AbstractComponent {
     }
 
     @Override
-    public Set<Class<? extends AbstractComponent>> getDependencies() {
-        return Set.of(PhysicsColliderComponent.class);
+    public Set<ComponentType> getDependencies() {
+        return Set.of(ComponentType.PHYSICS_COLLIDER);
     }
 
     @Override

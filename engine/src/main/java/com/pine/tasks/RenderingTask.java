@@ -1,5 +1,6 @@
 package com.pine.tasks;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
@@ -20,7 +21,6 @@ import com.pine.service.rendering.TransformationService;
  */
 @PBean
 public class RenderingTask extends AbstractTask implements Loggable {
-    public static String MESH_COMP = MeshComponent.class.getSimpleName();
 
     @PInject
     public CameraRepository camera;
@@ -69,8 +69,8 @@ public class RenderingTask extends AbstractTask implements Loggable {
         }
         Transformation t = entity.transformation;
         transformationService.updateMatrix(t);
-        if (entity.components.containsKey(MESH_COMP)) {
-            var meshComponent = (MeshComponent) entity.components.get(MESH_COMP);
+        if (entity.components.containsKey(ComponentType.MESH)) {
+            var meshComponent = (MeshComponent) entity.components.get(ComponentType.MESH);
             meshComponent.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
             if (meshComponent.isInstancedRendering) {
                 RenderingRequest request = renderingRequestService.prepareInstanced(meshComponent, t);

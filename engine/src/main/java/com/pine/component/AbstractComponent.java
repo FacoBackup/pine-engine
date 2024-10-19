@@ -19,7 +19,7 @@ public abstract class AbstractComponent extends Inspectable implements Mutable, 
         return entity;
     }
 
-    public Set<Class<? extends AbstractComponent>> getDependencies() {
+    public Set<ComponentType> getDependencies() {
         return Set.of();
     }
 

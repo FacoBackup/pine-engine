@@ -7,7 +7,7 @@ import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.streaming.material.MaterialStreamableResource;
+import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
@@ -107,7 +107,7 @@ public class GBufferPass extends AbstractPass implements Loggable {
         }
     }
 
-    private void bindMaterial(MaterialStreamableResource request) {
+    private void bindMaterial(MaterialResourceRef request) {
         if(request.albedo != null) {
             shaderService.bindUniform(albedo, request.albedo.texture);
         }

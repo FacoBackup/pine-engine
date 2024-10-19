@@ -1,30 +1,30 @@
 package com.pine.service.streaming.scene;
 
+import com.pine.FSUtil;
 import com.pine.injection.PBean;
-import com.pine.injection.PInject;
-import com.pine.repository.WorldRepository;
+import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.rendering.RequestProcessingService;
-import com.pine.service.request.LoadSceneRequest;
 import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.texture.TextureStreamData;
-import com.pine.service.streaming.texture.TextureStreamableResource;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
+import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.ref.SceneResourceRef;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import java.util.List;
+import java.util.Map;
 
 @PBean
-public class SceneService extends AbstractStreamableService<SceneStreamableResource, SceneStreamData> {
+public class SceneService extends AbstractStreamableService<SceneResourceRef> {
     @Override
     public StreamableResourceType getResourceType() {
         return StreamableResourceType.SCENE;
     }
 
     @Override
-    public SceneStreamData stream(String pathToFile) {
-        return (SceneStreamData) loadFile(pathToFile);
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> toBeStreamedIn) {
+        return (SceneStreamData) FSUtil.read(pathToFile);
+    }
+
+    @Override
+    public AbstractResourceRef<?> newInstance(String key) {
+        return new SceneResourceRef(key);
     }
 }

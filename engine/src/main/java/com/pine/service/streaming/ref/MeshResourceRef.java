@@ -1,8 +1,9 @@
-package com.pine.service.streaming.mesh;
+package com.pine.service.streaming.ref;
 
-import com.pine.repository.streaming.AbstractStreamableResource;
+import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.rendering.VertexBuffer;
+import com.pine.service.streaming.mesh.MeshStreamData;
 import com.pine.theme.Icons;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -10,7 +11,7 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class MeshStreamableResource extends AbstractStreamableResource<MeshStreamData> {
+public class MeshResourceRef extends AbstractResourceRef<MeshStreamData> {
     public transient int vertexCount;
     public transient int triangleCount;
     public transient int VAO;
@@ -19,8 +20,8 @@ public class MeshStreamableResource extends AbstractStreamableResource<MeshStrea
     public transient VertexBuffer uvVBO;
     public transient VertexBuffer normalVBO;
 
-    public MeshStreamableResource(String pathToFile, String id) {
-        super(pathToFile, id);
+    public MeshResourceRef(String id) {
+        super(id);
     }
 
     @Override
@@ -83,10 +84,5 @@ public class MeshStreamableResource extends AbstractStreamableResource<MeshStrea
     @Override
     public StreamableResourceType getResourceType() {
         return StreamableResourceType.MESH;
-    }
-
-    @Override
-    public String getIcon() {
-        return Icons.category;
     }
 }

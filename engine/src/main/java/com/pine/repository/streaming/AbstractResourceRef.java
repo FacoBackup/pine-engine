@@ -2,28 +2,24 @@ package com.pine.repository.streaming;
 
 import com.pine.injection.Disposable;
 import com.pine.inspection.Inspectable;
-import com.pine.service.streaming.StreamLoadData;
+import com.pine.service.streaming.StreamData;
 
 import java.io.Serializable;
 
-public abstract class AbstractStreamableResource<T extends StreamLoadData> extends Inspectable implements Disposable, Serializable {
+public abstract class AbstractResourceRef<T extends StreamData> implements Disposable {
     public transient boolean loaded = false;
     public transient long lastUse;
     public final String id;
     public String name;
-    public final String pathToFile;
-    public float size;
-    public boolean invalidated = false;
 
-    public AbstractStreamableResource(String pathToFile, String id) {
-        this.pathToFile = pathToFile;
+    public AbstractResourceRef(String id) {
         this.id = id;
     }
 
     public abstract StreamableResourceType getResourceType();
 
     @SuppressWarnings("unchecked")
-    final public void load(StreamLoadData data) {
+    final public void load(StreamData data) {
         loadInternal((T) data);
         loaded = true;
     }
@@ -43,9 +39,4 @@ public abstract class AbstractStreamableResource<T extends StreamLoadData> exten
     }
 
     protected abstract void disposeInternal();
-
-    @Override
-    final public String getTitle() {
-        return name;
-    }
 }

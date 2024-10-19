@@ -1,28 +1,22 @@
-package com.pine.service.streaming.material;
+package com.pine.service.importer.data;
 
 import com.pine.inspection.MutableField;
-import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.texture.TextureStreamableResource;
-import com.pine.theme.Icons;
 import com.pine.type.MaterialRenderingMode;
 
-import javax.swing.*;
-
-
-public class MaterialStreamableResource extends AbstractStreamableResource<MaterialStreamData> {
-    @MutableField(group = "Textures", label = "Height")
-    public TextureStreamableResource heightMap;
-    @MutableField(group = "Textures", label = "Normal")
-    public TextureStreamableResource normal;
-    @MutableField(group = "Textures", label = "Albedo")
-    public TextureStreamableResource albedo;
-    @MutableField(group = "Textures", label = "Metallic")
-    public TextureStreamableResource metallic;
-    @MutableField(group = "Textures", label = "Roughness")
-    public TextureStreamableResource roughness;
-    @MutableField(group = "Textures", label = "Occlusion")
-    public TextureStreamableResource ao;
+public class MaterialImportData extends AbstractImportData {
+    @MutableField(group = "Textures", label = "Height", isResource = true)
+    public String heightMap;
+    @MutableField(group = "Textures", label = "Normal", isResource = true)
+    public String normal;
+    @MutableField(group = "Textures", label = "Albedo", isResource = true)
+    public String albedo;
+    @MutableField(group = "Textures", label = "Metallic", isResource = true)
+    public String metallic;
+    @MutableField(group = "Textures", label = "Roughness", isResource = true)
+    public String roughness;
+    @MutableField(group = "Textures", label = "Occlusion", isResource = true)
+    public String ao;
     @MutableField(group = "Material", label = "use parallax")
     public boolean useParallax = false;
     @MutableField(group = "Material", label = "Parallax height scale")
@@ -44,25 +38,12 @@ public class MaterialStreamableResource extends AbstractStreamableResource<Mater
     @MutableField(group = "Material", label = "Sheen tint")
     public float sheenTint;
 
-    public MaterialStreamableResource(String pathToFile, String id) {
-        super(pathToFile, id);
+    public MaterialImportData(String name) {
+        super(name);
     }
 
     @Override
     public StreamableResourceType getResourceType() {
         return StreamableResourceType.MATERIAL;
-    }
-
-    @Override
-    protected void loadInternal(MaterialStreamData data) {
-    }
-
-    @Override
-    protected void disposeInternal() {
-    }
-
-    @Override
-    public String getIcon() {
-        return Icons.format_paint;
     }
 }

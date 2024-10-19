@@ -77,7 +77,12 @@ public class Engine extends MetricCollector implements Loggable {
 
         this.targetDirectory = targetDirectory;
         try {
-            Path path = Paths.get(getResourceTargetDirectory());
+            Path path = Paths.get(getResourceDirectory());
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+
+            path = Paths.get(getMetadataDirectory());
             if (!Files.exists(path)) {
                 Files.createDirectories(path);
             }
@@ -125,7 +130,11 @@ public class Engine extends MetricCollector implements Loggable {
         return targetFBO;
     }
 
-    public String getResourceTargetDirectory() {
+    public String getMetadataDirectory() {
+        return getResourceDirectory() + "metadata" + File.separator;
+    }
+
+    public String getResourceDirectory() {
         return targetDirectory + File.separator + "resources" + File.separator;
     }
 

@@ -1,19 +1,23 @@
 package com.pine.service.streaming.mesh;
 
+import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.rendering.RenderingMode;
-import com.pine.repository.streaming.AbstractStreamableResource;
+import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
+import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.ref.MaterialResourceRef;
+import com.pine.service.streaming.ref.MeshResourceRef;
 import org.lwjgl.opengl.GL46;
 
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
+import java.util.List;
+import java.util.Map;
 
 @PBean
-public class MeshService extends AbstractStreamableService<MeshStreamableResource, MeshStreamData> {
+public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     private RenderingMode renderingMode;
     private int instanceCount;
     private boolean isInWireframeMode = false;
@@ -105,18 +109,22 @@ public class MeshService extends AbstractStreamableService<MeshStreamableResourc
     }
 
     @Override
-    public MeshStreamData stream(String pathToFile) {
-        return (MeshStreamData) loadFile(pathToFile);
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> toBeStreamedIn){
+        return (StreamData) FSUtil.read(pathToFile);
     }
 
     public int getTotalTriangleCount() {
         int total = 0;
-        for (int i = 0; i < repository.streamableResources.size(); i++) {
-            AbstractStreamableResource<?> resourceRef = repository.streamableResources.get(i);
+        for (var resourceRef : repository.streamableResources.values()) {
             if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.MESH) {
-                total += ((MeshStreamableResource) resourceRef).triangleCount;
+                total += ((MeshResourceRef) resourceRef).triangleCount;
             }
         }
         return total;
+    }
+
+    @Override
+    public AbstractResourceRef<?> newInstance(String key) {
+        return new MeshResourceRef(key);
     }
 }

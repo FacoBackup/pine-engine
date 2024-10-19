@@ -1,25 +1,26 @@
 package com.pine.service.svo;
 
+import com.pine.component.AbstractComponent;
+import com.pine.component.ComponentType;
+import com.pine.component.Entity;
+import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.voxelization.VoxelRepository;
-import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.SSBOService;
-import com.pine.service.resource.ssbo.SSBOCreationData;
-import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
-import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.mesh.MeshService;
+import com.pine.service.streaming.mesh.MeshStreamData;
+import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.tasks.SyncTask;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
-import java.nio.IntBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @PBean
@@ -38,11 +39,12 @@ public class VoxelService implements SyncTask, Loggable {
     public RenderingRepository renderingRepository;
 
     @PInject
+    public WorldRepository worldRepository;
+
+    @PInject
     public MeshService meshService;
 
     private boolean needsPackaging = true;
-    private final Map<VoxelData, Integer> dataByIndex = new HashMap<>();
-    private int currentOctreeMemIndex = 0;
 
     @Override
     public void sync() {
@@ -54,24 +56,36 @@ public class VoxelService implements SyncTask, Loggable {
     }
 
     public void buildFromScratch() {
-        dataByIndex.clear();
-        currentOctreeMemIndex = 0;
+        new Thread(this::voxelize).start();
+    }
+
+    private void voxelize() {
         long startTotal = System.currentTimeMillis();
+        Map<String, MeshStreamData> byId = new HashMap<>();
+
+        Map<Integer, List<MeshComponent>> meshGrid = new HashMap<>();
         SparseVoxelOctree octree = new SparseVoxelOctree(
                 voxelRepository.gridScale,
                 voxelRepository.maxDepth,
                 voxelRepository.voxelizationStepSize
         );
-        LorenzAttractorDemo.fill(octree);
-//        for (var request : renderingRepository.requests) {
+//        for (AbstractComponent component : worldRepository.components.get(ComponentType.MESH)) {
 //            long startLocal = System.currentTimeMillis();
-//            VoxelizerUtil.traverseMesh(
-//                    meshService.stream(request.mesh.pathToFile),
-//                    request.transformation.localMatrix,
-//                    octree
-//            );
-//            getLogger().warn("Voxelization of {} took {}", request.mesh.name, System.currentTimeMillis() - startLocal);
+//            var mesh = (MeshComponent) component;
+//            MeshResourceRef meshLOD = mesh.lod0;
+//            if (meshLOD != null) {
+//                Entity entity = mesh.getEntity();
+//                Vector3f absoluteTranslation = new Vector3f();
+//                entity.transformation.globalMatrix.getTranslation(absoluteTranslation);
+//                if (!byId.containsKey(meshLOD.id)) {
+//                    byId.put(meshLOD.id, meshService.stream(meshLOD.id));
+//                }
+//
+//                VoxelizerUtil.traverseMesh(byId.get(meshLOD.id), entity.transformation.globalMatrix, octree);
+//                getLogger().warn("Voxelization of {} took {}", mesh.lod0.name, System.currentTimeMillis() - startLocal);
+//            }
 //        }
+
 
         long startMemory = System.currentTimeMillis();
         voxelRepository.voxels = octree.buildBuffer();

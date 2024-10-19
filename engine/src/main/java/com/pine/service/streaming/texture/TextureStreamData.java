@@ -1,11 +1,11 @@
 package com.pine.service.streaming.texture;
 
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.StreamLoadData;
+import com.pine.service.streaming.StreamData;
 
 import java.nio.ByteBuffer;
 
-public class TextureStreamData implements StreamLoadData {
+public class TextureStreamData implements StreamData {
     public final int width;
     public final int height;
     public final ByteBuffer imageBuffer;

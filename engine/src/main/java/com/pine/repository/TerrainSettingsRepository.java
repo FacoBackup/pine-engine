@@ -4,7 +4,7 @@ import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.MutableField;
-import com.pine.service.streaming.texture.TextureStreamableResource;
+import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.theme.Icons;
 
 @PBean
@@ -13,7 +13,7 @@ public class TerrainSettingsRepository extends Inspectable implements Serializab
     public boolean castsShadows = true;
 
     @MutableField(label = "Height map")
-    public TextureStreamableResource heightMapTexture;
+    public TextureResourceRef heightMapTexture;
 
     @MutableField(label = "Height Scale")
     public float heightScale = 1;

@@ -17,7 +17,6 @@ import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
 
 
 public class ResourcesPanel extends AbstractDockPanel {
-    private static final String MESH = MeshComponent.class.getSimpleName();
     @PInject
     public RenderingRepository renderingRepository;
 
