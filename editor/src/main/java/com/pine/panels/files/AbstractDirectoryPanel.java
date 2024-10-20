@@ -53,6 +53,7 @@ public class AbstractDirectoryPanel extends AbstractView {
 
     protected FilesContext context;
     protected boolean isWindowFocused;
+    protected DirectoryEntry currentDirLocal;
     protected List<FileEntry> filesLocal = new ArrayList<>();
 
     @Override
@@ -173,6 +174,10 @@ public class AbstractDirectoryPanel extends AbstractView {
     }
 
     protected void updateFiles() {
+        if (currentDirLocal != context.currentDirectory) {
+            filesLocal.clear();
+            currentDirLocal = context.currentDirectory;
+        }
         if (!fileMetadataRepository.isLoading() && filesLocal.size() != context.currentDirectory.files.size()) {
             filesLocal.clear();
             for (var file : context.currentDirectory.files) {
@@ -184,7 +189,6 @@ public class AbstractDirectoryPanel extends AbstractView {
 
             if (context.currentDirectory.files.size() != filesLocal.size()) {
                 context.currentDirectory.files = filesLocal.stream().map(FileEntry::getId).collect(Collectors.toSet());
-                ;
             }
         }
     }
