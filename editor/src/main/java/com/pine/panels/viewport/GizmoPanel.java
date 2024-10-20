@@ -22,6 +22,7 @@ public class GizmoPanel extends AbstractView {
     private final float[] projectionMatrixCache = new float[16];
     private final ImVec2 size;
     private final ImVec2 position;
+    private Transformation localSelected;
 
     public GizmoPanel(ImVec2 position, ImVec2 size) {
         this.size = size;
@@ -31,7 +32,13 @@ public class GizmoPanel extends AbstractView {
     @Override
     public void render() {
         if (stateRepository.primitiveSelected == null) {
+            localSelected = null;
             return;
+        }
+        if (stateRepository.primitiveSelected != localSelected || stateRepository.gizmoExternalChange && !localSelected.isNotFrozen()) {
+            stateRepository.primitiveSelected.localMatrix.get(cacheMatrix);
+            localSelected = stateRepository.primitiveSelected;
+            stateRepository.gizmoExternalChange = false;
         }
         recomposeMatrix();
         float[] snap = getSnapValues();
@@ -87,7 +94,6 @@ public class GizmoPanel extends AbstractView {
     }
 
     private void recomposeMatrix() {
-        stateRepository.primitiveSelected.localMatrix.get(cacheMatrix);
         cameraRepository.viewMatrix.get(viewMatrixCache);
         cameraRepository.projectionMatrix.get(projectionMatrixCache);
     }

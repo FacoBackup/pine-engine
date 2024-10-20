@@ -47,7 +47,7 @@ public class InspectorPanel extends AbstractDockPanel {
     @Override
     public void render() {
         tick();
-        ImGui.columns(2, "##inspectorColumns", false);
+        ImGui.columns(2, "##inspectorColumns" + imguiId, false);
         ImGui.setColumnWidth(0, 35);
         for (var repo : repositories) {
             renderOption(repo);

@@ -15,6 +15,8 @@ public class FilesContext extends AbstractPanelContext {
 
     public void setDirectory(DirectoryEntry parentDir) {
         currentDirectory = parentDir;
+        inspection = null;
+        selected.clear();
         onChange();
     }
 

@@ -88,20 +88,11 @@ public class FilesPanel extends AbstractDockPanel {
         directoryPanel.isWindowFocused = isWindowFocused;
 
         if (context.inspection != null) {
-
-            if (ImGui.beginTable("##files" + imguiId, 2, TABLE_FLAGS)) {
-                ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
-                ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 250f);
-                ImGui.tableHeadersRow();
-
-                ImGui.tableNextRow();
-                ImGui.tableNextColumn();
-                directoryPanel.render();
-                ImGui.tableNextColumn();
-                fileInspector.render();
-
-                ImGui.endTable();
-            }
+            ImGui.columns(2, "##filesColumns" + imguiId);
+            directoryPanel.render();
+            ImGui.nextColumn();
+            fileInspector.render();
+            ImGui.columns(1);
         } else {
             directoryPanel.render();
         }

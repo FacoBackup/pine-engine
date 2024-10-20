@@ -110,7 +110,7 @@ public class GBufferPass extends AbstractPass implements Loggable {
     }
 
     private void bindMaterial(MaterialResourceRef request) {
-        request.lastUse = System.currentTimeMillis();
+        request.lastUse = clockRepository.totalTime;
 
         if(request.albedo != null) {
             shaderService.bindUniform(albedo, request.albedo.texture);

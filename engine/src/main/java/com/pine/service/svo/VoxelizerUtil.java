@@ -30,16 +30,15 @@ public class VoxelizerUtil {
             return;
         }
 
-        float offset = octree.getSize() / 2f;
         // Iterate over barycentric coordinates for triangles bigger than a voxel
         for (float lambda1 = 0; lambda1 <= 1; lambda1 += stepSize) {
             for (float lambda2 = 0; lambda2 <= 1 - lambda1; lambda2 += stepSize) {
                 float lambda0 = 1 - lambda1 - lambda2;
                 octree.insert(
                         new Vector3f(
-                                lambda0 * v0.x + lambda1 * v1.x + lambda2 * v2.x + offset,
-                                lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y + offset,
-                                lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z + offset
+                                lambda0 * v0.x + lambda1 * v1.x + lambda2 * v2.x,
+                                lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y,
+                                lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z
                         ),
                         new VoxelData(1, 0, 1));
             }
@@ -47,10 +46,9 @@ public class VoxelizerUtil {
     }
 
     private static void doFastIntersection(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree) {
-        float offset = octree.getSize() / 2f;
-        octree.insert(new Vector3f(v0.x + offset, v0.y + offset, v0.z + offset), new VoxelData(1, 0, 1));
-        octree.insert(new Vector3f(v1.x + offset, v1.y + offset, v1.z + offset), new VoxelData(1, 0, 1));
-        octree.insert(new Vector3f(v2.x + offset, v2.y + offset, v2.z + offset), new VoxelData(1, 0, 1));
+        octree.insert(new Vector3f(v0.x, v0.y, v0.z), new VoxelData(1, 0, 1));
+        octree.insert(new Vector3f(v1.x, v1.y, v1.z), new VoxelData(1, 0, 1));
+        octree.insert(new Vector3f(v2.x, v2.y, v2.z), new VoxelData(1, 0, 1));
     }
 
     private static Vector3f computeTriangleSize(Vector4f v0, Vector4f v1, Vector4f v2) {

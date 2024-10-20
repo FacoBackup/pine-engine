@@ -70,8 +70,11 @@ public class RenderingTask extends AbstractTask implements Loggable {
                     if (culled || filled >= 3) {
                         continue;
                     }
-                    filled++;
                     var chunkStream = (VoxelChunkResourceRef) streamingService.stream(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
+                    if (chunkStream != null && chunkStream.getQuantity() == 1) {
+                        continue;
+                    }
+                    filled++;
                     renderingRepository.newVoxelChunks[filled] = chunkStream;
                     if (chunkStream != null) {
                         filledWithContent++;

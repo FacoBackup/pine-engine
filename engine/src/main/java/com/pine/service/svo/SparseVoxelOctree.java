@@ -33,7 +33,10 @@ public class SparseVoxelOctree implements Serializable {
     }
 
     public void insert(Vector3f point, VoxelData data) {
-        insertInternal(root, point, data, new Vector3i(0), 0);
+        if(boundingBox.intersects(point)) {
+            worldToChunkLocal(point);
+            insertInternal(root, point, data, new Vector3i(0), 0);
+        }
     }
 
     private void insertInternal(OctreeNode node, Vector3f point, VoxelData data, Vector3i position, int depth) {
@@ -137,4 +140,15 @@ public class SparseVoxelOctree implements Serializable {
     public String getId() {
         return id;
     }
+
+    private void worldToChunkLocal(Vector3f worldCoordinate) {
+        float minX = center.x - size / 2f;
+        float minY = center.y - size / 2f;
+        float minZ = center.z - size / 2f;
+
+        worldCoordinate.x = worldCoordinate.x - minX;
+        worldCoordinate.y = worldCoordinate.y - minY;
+        worldCoordinate.z = worldCoordinate.z - minZ;
+    }
+
 }

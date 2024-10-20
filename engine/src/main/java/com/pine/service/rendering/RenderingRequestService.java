@@ -41,7 +41,11 @@ public class RenderingRequestService {
     private void fillInstanceRequest(MeshComponent scene, Transformation t) {
         for (var primitive : scene.primitives) {
             transformationService.updateMatrix(primitive, t);
-            primitive.isCulled = (scene.isCullingEnabled || engineSettings.disableCullingGlobally) && transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+            if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
+                primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+            } else {
+                primitive.isCulled = false;
+            }
             if (primitive.isCulled) {
                 continue;
             }
@@ -71,7 +75,11 @@ public class RenderingRequestService {
         MeshResourceRef mesh = selectLOD(scene);
         if (mesh == null) return null;
 
-        transform.isCulled = (scene.isCullingEnabled || engineSettings.disableCullingGlobally) && transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+        if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
+            transform.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+        } else {
+            transform.isCulled = false;
+        }
         if (!transform.isCulled) {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
@@ -114,6 +122,22 @@ public class RenderingRequestService {
         if (finalResource == null && scene.lod4 != null) {
             finalResource = (MeshResourceRef) streamingService.stream(scene.lod4, StreamableResourceType.MESH);
         }
+
+        if (finalResource == null) {
+            if (scene.lod3 != null) {
+                finalResource = (MeshResourceRef) streamingService.stream(scene.lod3, StreamableResourceType.MESH);
+            }
+            if (scene.lod2 != null && finalResource == null) {
+                finalResource = (MeshResourceRef) streamingService.stream(scene.lod2, StreamableResourceType.MESH);
+            }
+            if (scene.lod1 != null && finalResource == null) {
+                finalResource = (MeshResourceRef) streamingService.stream(scene.lod1, StreamableResourceType.MESH);
+            }
+            if (scene.lod0 != null && finalResource == null) {
+                finalResource = (MeshResourceRef) streamingService.stream(scene.lod0, StreamableResourceType.MESH);
+            }
+        }
+
 
         return finalResource;
     }

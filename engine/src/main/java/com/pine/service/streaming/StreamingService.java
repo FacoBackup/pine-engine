@@ -41,7 +41,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
         }
         if (!repository.failedStreams.containsKey(id)) {
             repository.schedule.put(id, type);
-            getLogger().warn("Streaming {}", id);
+            getLogger().warn("Requesting stream of {} of type {}", id, type);
         }
         return null;
     }
@@ -49,9 +49,9 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     @Override
     public void sync() {
         for (String resource : repository.loadedResources.keySet()) {
-            getLogger().warn("Loading streamed resource {}", resource);
             AbstractResourceRef<?> ref = repository.streamableResources.get(resource);
             if (ref != null) {
+                getLogger().warn("Loading streamed resource {} of type {}", resource, ref.getResourceType());
                 ref.load(repository.loadedResources.get(resource));
             }
             repository.loadedResources.remove(resource);

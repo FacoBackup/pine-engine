@@ -35,33 +35,39 @@ public class VoxelVisualizerPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
+        for (var chunk : renderingRepository.voxelChunks) {
+            if (chunk != null && chunk.getQuantity() > 1) {
+                bindGlobal();
 
+                chunk.lastUse = clockRepository.totalTime;
+
+                chunk.getBuffer().setBindingPoint(BUFFER_BINDING_POINT);
+                ssboService.bind(chunk.getBuffer());
+
+                centerScaleBuffer.put(0, chunk.center.x);
+                centerScaleBuffer.put(1, chunk.center.y);
+                centerScaleBuffer.put(2, chunk.center.z);
+                centerScaleBuffer.put(3, chunk.size);
+                computeService.bindUniform(centerScale, centerScaleBuffer);
+
+                computeService.dispatch(COMPUTE_RUNTIME_DATA);
+            }
+        }
+    }
+
+    private void bindGlobal() {
         computeService.bind(computeRepository.voxelRaymarchingCompute);
         fboRepository.auxBuffer.bindForCompute();
 
         COMPUTE_RUNTIME_DATA.groupX = (fboRepository.auxBuffer.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (fboRepository.auxBuffer.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
-        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_NONE;
 
         settingsBuffer.put(0, voxelRepository.randomColors ? 1 : 0);
         settingsBuffer.put(1, voxelRepository.showRaySearchCount ? 1 : 0);
         settingsBuffer.put(2, voxelRepository.showRayTestCount ? 1 : 0);
         computeService.bindUniform(settings, settingsBuffer);
-
-        for (var chunk : renderingRepository.voxelChunks) {
-            if (chunk != null) {
-                chunk.getBuffer().setBindingPoint(BUFFER_BINDING_POINT);
-                ssboService.bind(chunk.getBuffer());
-                centerScaleBuffer.put(0, chunk.center.x);
-                centerScaleBuffer.put(1, chunk.center.y);
-                centerScaleBuffer.put(2, chunk.center.z);
-                centerScaleBuffer.put(3, voxelRepository.gridResolution);
-                computeService.bindUniform(centerScale, centerScaleBuffer);
-                computeService.dispatch(COMPUTE_RUNTIME_DATA);
-
-            }
-        }
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL46;
 
 @PBean
 public class ComputeService extends AbstractResourceService<Compute, ComputeCreationData> {
-    private final static ComputeRuntimeData DEFAULT_COMPUTE = ComputeRuntimeData.ofNormalWorkGroup(GL46.GL_SHADER_STORAGE_BARRIER_BIT);
+    private final static ComputeRuntimeData DEFAULT_COMPUTE = ComputeRuntimeData.ofNormalWorkGroup(GL46.GL_NONE);
 
     @PInject
     public ShaderService shaderService;

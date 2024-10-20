@@ -1,5 +1,6 @@
 package com.pine.service.streaming.impl;
 
+import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -22,19 +23,16 @@ public class VoxelChunkService extends AbstractStreamableService<VoxelChunkResou
 
     @Override
     public StreamData stream(String pathToFile) {
-        try {
-            try (DataInputStream dis = new DataInputStream(new FileInputStream(pathToFile))) {
-                int length = dis.readInt();  // Read the length of the array
-                IntBuffer data = MemoryUtil.memAllocInt(length);
-                for (int i = 0; i < length; i++) {
-                    data.put(i, dis.readInt());
-                }
-                return new VoxelChunkStreamData(data);
-            }
-        } catch (Exception e) {
-            getLogger().error("Error while reading voxel chunk {}", pathToFile, e);
+        var dataRaw = (int[]) FSUtil.read(pathToFile);
+        if (dataRaw == null) {
+            getLogger().error("Error while reading voxel chunk {}", pathToFile);
+            return null;
         }
-        return null;
+        IntBuffer data = MemoryUtil.memAllocInt(dataRaw.length);
+        for (int i = 0; i < dataRaw.length; i++) {
+            data.put(i, dataRaw[i]);
+        }
+        return new VoxelChunkStreamData(data);
     }
 
     @Override

@@ -12,13 +12,10 @@ public class SVOGrid implements Serializable {
     public SVOGrid(int chunkSize, int gridSize, int maxDepth) {
         int halfSize = gridSize / 2;
         for (int x = -halfSize; x < halfSize; x++) {
-            for (int y = -halfSize; y < halfSize; y++) {
-                for (int z = -halfSize; z < halfSize; z++) {
-                    int centerX = x * chunkSize + chunkSize / 2;
-                    int centerY = y * chunkSize + chunkSize / 2;
-                    int centerZ = z * chunkSize + chunkSize / 2;
-                    chunks.add(new SparseVoxelOctree(new Vector3f(centerX, centerY, centerZ), chunkSize, maxDepth));
-                }
+            for (int z = -halfSize; z < halfSize; z++) {
+                int centerX = x * chunkSize + chunkSize / 2;
+                int centerZ = z * chunkSize + chunkSize / 2;
+                chunks.add(new SparseVoxelOctree(new Vector3f(centerX, 0, centerZ), chunkSize, maxDepth));
             }
         }
     }

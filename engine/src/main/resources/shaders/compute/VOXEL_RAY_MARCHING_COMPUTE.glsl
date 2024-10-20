@@ -108,7 +108,7 @@ bool showRaySearchCount,
 bool showRayTestCount
 ) {
     vec3 center = centerScale.xyz;
-    float scale = centerScale.w;
+    float scale = centerScale.w/2;
     vec3 minBox = center - scale;
     vec3 maxBox = center + scale;
     float minDistance = 1e10;// Large initial value
@@ -158,7 +158,7 @@ bool showRayTestCount
             if (entryDist < minDistance) {
                 if (isLeafGroup) {
                     if (randomColors){
-                        finalColor.rgb = vec3(1, 0, 1);
+                        finalColor.rgb = randomColor(float(index) + countSetBitsBefore(childMask, i));
                         finalColor.a = 1;
                     }
                     minDistance = entryDist;

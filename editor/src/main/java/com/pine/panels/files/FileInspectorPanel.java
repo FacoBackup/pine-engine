@@ -61,9 +61,10 @@ public class FileInspectorPanel extends AbstractView {
             if (form.getInspectable() != null) {
                 super.render();
             } else {
-                ImGui.text("Select a file");
+                // TODO - RENDER METADATA
+//                ImGui.text("Select a file");
             }
-            ImGui.endChild();
         }
+        ImGui.endChild();
     }
 }
