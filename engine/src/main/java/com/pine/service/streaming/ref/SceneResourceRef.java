@@ -2,9 +2,9 @@ package com.pine.service.streaming.ref;
 
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.scene.SceneStreamData;
+import com.pine.service.importer.data.SceneImportData;
 
-public class SceneResourceRef extends AbstractResourceRef<SceneStreamData> {
+public class SceneResourceRef extends AbstractResourceRef<SceneImportData> {
     public SceneResourceRef(String id) {
         super(id);
     }
@@ -15,7 +15,7 @@ public class SceneResourceRef extends AbstractResourceRef<SceneStreamData> {
     }
 
     @Override
-    protected void loadInternal(SceneStreamData data) {
+    protected void loadInternal(SceneImportData data) {
     }
 
     @Override

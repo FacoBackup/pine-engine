@@ -10,12 +10,14 @@ import com.pine.repository.WorldRepository;
 import com.pine.repository.fs.DirectoryEntry;
 import com.pine.repository.fs.FileEntry;
 import com.pine.repository.fs.IEntry;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.FilesService;
+import com.pine.service.importer.ImporterService;
+import com.pine.service.importer.data.SceneImportData;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
 import com.pine.service.request.LoadSceneRequest;
 import com.pine.service.streaming.scene.SceneService;
-import com.pine.service.streaming.scene.SceneStreamData;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiKey;
@@ -46,6 +48,8 @@ public class AbstractDirectoryPanel extends AbstractView {
     public RequestProcessingService requestProcessingService;
     @PInject
     public SceneService sceneService;
+    @PInject
+    public ImporterService importerService;
 
     protected FilesContext context;
     protected boolean isWindowFocused;
@@ -61,12 +65,7 @@ public class AbstractDirectoryPanel extends AbstractView {
             return;
         }
         if (ImGui.isKeyPressed(ImGuiKey.Enter) && !context.selected.isEmpty()) {
-            for (String id : context.selected.keySet()) {
-                var file = fileMetadataRepository.getFile(id);
-                if (file != null) {
-                    openResource(file);
-                }
-            }
+            openSelected();
         }
 
         if (ImGui.isKeyPressed(ImGuiKey.Delete) && !context.selected.isEmpty()) {
@@ -74,34 +73,63 @@ public class AbstractDirectoryPanel extends AbstractView {
         }
 
         if (ImGui.isKeyDown(ImGuiKey.LeftCtrl) && ImGui.isKeyPressed(ImGuiKey.A)) {
-            for (var file : context.currentDirectory.files) {
-                context.selected.put(file, true);
-            }
+            selectAll();
+        }
 
-            for (var directory : context.currentDirectory.directories) {
-                context.selected.put(directory.id, true);
+        if (ImGui.isKeyDown(ImGuiKey.LeftCtrl) && ImGui.isKeyPressed(ImGuiKey.X)) {
+            cutSelected();
+        }
+
+        if (ImGui.isKeyDown(ImGuiKey.LeftCtrl) && ImGui.isKeyPressed(ImGuiKey.V)) {
+            pasteSelected();
+        }
+    }
+
+    private void pasteSelected() {
+        for (var entry : context.toCut.entrySet()) {
+            String key = entry.getKey();
+            DirectoryEntry value = entry.getValue();
+            if (value.directories.containsKey(key)) {
+                var entryData = value.directories.get(key);
+                value.directories.remove(key);
+                context.currentDirectory.directories.put(entryData.id, entryData);
+            } else {
+                value.files.remove(key);
+                context.currentDirectory.files.add(key);
+            }
+        }
+        context.toCut.clear();
+    }
+
+    private void openSelected() {
+        for (String id : context.selected.keySet()) {
+            var file = fileMetadataRepository.getFile(id);
+            if (file != null) {
+                openResource(file);
             }
         }
     }
 
-    private void deleteSelected() {
-        for (String id : context.selected.keySet()) {
-            FileEntry file = fileMetadataRepository.getFile(id);
-            if (file != null) {
-                filesService.delete(file);
-                context.currentDirectory.files.remove(id);
-            } else {
-                context.currentDirectory.directories = context
-                        .currentDirectory
-                        .directories
-                        .stream()
-                        .filter(a -> !Objects.equals(a.id, id))
-                        .toList();
-            }
+    private void cutSelected() {
+        context.toCut.clear();
+        for (var file : context.selected.keySet()) {
+            context.toCut.put(file, context.currentDirectory);
         }
-        fileMetadataRepository.refresh();
-        filesLocal.clear();
+    }
 
+    private void selectAll() {
+        for (var file : context.currentDirectory.files) {
+            context.selected.put(file, true);
+        }
+
+        for (var directory : context.currentDirectory.directories.keySet()) {
+            context.selected.put(directory, true);
+        }
+    }
+
+    private void deleteSelected() {
+        filesService.deleteSelected(context);
+        filesLocal.clear();
     }
 
     protected void onClick(IEntry root) {
@@ -130,8 +158,10 @@ public class AbstractDirectoryPanel extends AbstractView {
             context.selected.clear();
         } else {
             switch (((FileEntry) root).metadata.getResourceType()) {
-                case SCENE ->
-                        requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, (SceneStreamData) sceneService.stream(((FileEntry) root).path)));
+                case SCENE -> {
+                    var scene = (SceneImportData) sceneService.stream(importerService.getPathToFile(root.getId(), StreamableResourceType.SCENE));
+                    requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, scene));
+                }
                 case MESH -> {
                     var request = new AddEntityRequest(List.of(ComponentType.MESH));
                     requestProcessingService.addRequest(request);
@@ -152,8 +182,9 @@ public class AbstractDirectoryPanel extends AbstractView {
                 }
             }
 
-            if(context.currentDirectory.files.size() != filesLocal.size()){
-                context.currentDirectory.files = filesLocal.stream().map(FileEntry::getId).collect(Collectors.toSet());;
+            if (context.currentDirectory.files.size() != filesLocal.size()) {
+                context.currentDirectory.files = filesLocal.stream().map(FileEntry::getId).collect(Collectors.toSet());
+                ;
             }
         }
     }

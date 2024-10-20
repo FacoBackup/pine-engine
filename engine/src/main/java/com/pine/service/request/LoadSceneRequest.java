@@ -7,13 +7,13 @@ import com.pine.messaging.Message;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.streaming.scene.SceneStreamData;
+import com.pine.service.importer.data.SceneImportData;
 
 public class LoadSceneRequest extends AbstractRequest {
-    private final SceneStreamData scene;
+    private final SceneImportData scene;
     private final Entity root;
 
-    public LoadSceneRequest(Entity root, SceneStreamData scene) {
+    public LoadSceneRequest(Entity root, SceneImportData scene) {
         this.scene = scene;
         this.root = root;
     }
@@ -24,7 +24,7 @@ public class LoadSceneRequest extends AbstractRequest {
         return new Message("Scene loaded successfully", MessageSeverity.SUCCESS);
     }
 
-    private void traverse(Entity parent, SceneStreamData localScene, WorldRepository repository) {
+    private void traverse(Entity parent, SceneImportData localScene, WorldRepository repository) {
         Entity newEntity = new Entity();
         newEntity.name = localScene.name;
         if (localScene.meshResourceId != null) {

@@ -7,16 +7,22 @@ import com.pine.messaging.MessageSeverity;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.FileMetadataRepository;
 import com.pine.repository.fs.DirectoryEntry;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.NativeDialogService;
 import com.pine.service.ProjectService;
 import com.pine.service.importer.ImporterService;
+import com.pine.service.importer.metadata.AbstractResourceMetadata;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiTableColumnFlags;
 import imgui.flag.ImGuiTableFlags;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
@@ -45,21 +51,23 @@ public class FilesPanel extends AbstractDockPanel {
     @Override
     public void onInitialize() {
         context = (FilesContext) getContext();
-        context.subscribe(() -> {
-            StringBuilder path = new StringBuilder();
-            DirectoryEntry parent = context.currentDirectory;
-            while (parent != null) {
-                path.insert(0, parent.name + "/");
-                parent = parent.parent;
-            }
-            searchPath = path.toString();
-        });
+        context.subscribe(this::updateDirectoryPath);
         if (context.currentDirectory == null) {
             context.setDirectory(editorRepository.root);
         }
-
+        updateDirectoryPath();
         appendChild(fileInspector = new FileInspectorPanel());
         switchViewMode();
+    }
+
+    private void updateDirectoryPath() {
+        StringBuilder path = new StringBuilder();
+        DirectoryEntry parent = context.currentDirectory;
+        while (parent != null) {
+            path.insert(0, parent.name + "/");
+            parent = parent.parent;
+        }
+        searchPath = path.toString();
     }
 
     private void switchViewMode() {
@@ -79,20 +87,24 @@ public class FilesPanel extends AbstractDockPanel {
         renderHeader();
         directoryPanel.isWindowFocused = isWindowFocused;
 
-        if (ImGui.beginTable("##files" + imguiId, 2, TABLE_FLAGS)) {
-            ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.tableSetupColumn("Inspect file", ImGuiTableColumnFlags.WidthFixed, 250f);
-            ImGui.tableHeadersRow();
+        if (context.inspection != null) {
 
-            ImGui.tableNextRow();
-            ImGui.tableNextColumn();
+            if (ImGui.beginTable("##files" + imguiId, 2, TABLE_FLAGS)) {
+                ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthStretch);
+                ImGui.tableSetupColumn("", ImGuiTableColumnFlags.WidthFixed, 250f);
+                ImGui.tableHeadersRow();
+
+                ImGui.tableNextRow();
+                ImGui.tableNextColumn();
+                directoryPanel.render();
+                ImGui.tableNextColumn();
+                fileInspector.render();
+
+                ImGui.endTable();
+            }
+        } else {
             directoryPanel.render();
-            ImGui.tableNextColumn();
-            fileInspector.render();
-
-            ImGui.endTable();
         }
-
     }
 
     private void renderHeader() {
@@ -101,7 +113,8 @@ public class FilesPanel extends AbstractDockPanel {
             if (!context.currentDirectory.directories.isEmpty()) {
                 part = " (" + context.currentDirectory.directories.size() + ")";
             }
-            context.currentDirectory.directories.add(new DirectoryEntry("New Directory" + part, context.currentDirectory));
+            var d = new DirectoryEntry("New Directory" + part, context.currentDirectory);
+            context.currentDirectory.directories.put(d.id, d);
         }
         if (context.currentDirectory.parent != null) {
             ImGui.sameLine();
@@ -111,6 +124,9 @@ public class FilesPanel extends AbstractDockPanel {
         }
         ImGui.sameLine();
         ImGui.text(searchPath);
+
+        ImGui.sameLine();
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 150, 0);
 
         ImGui.sameLine();
         if (renderWithHighlight(Icons.dashboard + "##cardView", !isListView)) {
@@ -152,9 +168,26 @@ public class FilesPanel extends AbstractDockPanel {
             if (response.isEmpty()) {
                 messageRepository.pushMessage("Could not import files: " + paths, MessageSeverity.ERROR);
             }
-            projectService.saveSilently();
-            context.currentDirectory.files.addAll(response);
+            Map<StreamableResourceType, List<AbstractResourceMetadata>> byType = new HashMap<>();
+            for (var data : response) {
+                byType.putIfAbsent(data.getResourceType(), new ArrayList<>());
+                byType.get(data.getResourceType()).add(data);
+            }
+            if (byType.size() > 1) {
+                for (var entry : byType.entrySet()) {
+                    var k = entry.getKey();
+                    var d = new DirectoryEntry("Imported - " + k.getTitle(), context.currentDirectory);
+                    context.currentDirectory.directories.put(d.id, d);
+                    for (var f : entry.getValue()) {
+                        d.files.add(f.id);
+                    }
+                }
+            } else {
+                context.currentDirectory.files.addAll(response.stream().map(a -> a.id).collect(Collectors.toSet()));
+            }
             fileMetadataRepository.refresh();
+            messageRepository.pushMessage(paths.size() + " files imported", MessageSeverity.SUCCESS);
+            projectService.saveSilently();
         });
     }
 }

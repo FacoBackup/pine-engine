@@ -1,5 +1,8 @@
 package com.pine.service.svo;
 
+import com.pine.component.AbstractComponent;
+import com.pine.component.ComponentType;
+import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -8,9 +11,12 @@ import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.voxelization.VoxelRepository;
+import com.pine.service.importer.data.MeshImportData;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.streaming.mesh.MeshService;
+import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.tasks.SyncTask;
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.util.HashMap;
@@ -55,7 +61,7 @@ public class VoxelService implements SyncTask, Loggable {
 
     private void voxelize() {
         long startTotal = System.currentTimeMillis();
-//        Map<String, MeshStreamData> byId = new HashMap<>();
+        Map<String, MeshImportData> byId = new HashMap<>();
 
         Map<Integer, List<MeshComponent>> meshGrid = new HashMap<>();
         SparseVoxelOctree octree = new SparseVoxelOctree(
@@ -63,22 +69,22 @@ public class VoxelService implements SyncTask, Loggable {
                 voxelRepository.maxDepth,
                 voxelRepository.voxelizationStepSize
         );
-//        for (AbstractComponent component : worldRepository.components.get(ComponentType.MESH)) {
-//            long startLocal = System.currentTimeMillis();
-//            var mesh = (MeshComponent) component;
-//            MeshResourceRef meshLOD = mesh.lod0;
-//            if (meshLOD != null) {
-//                Entity entity = mesh.getEntity();
-//                Vector3f absoluteTranslation = new Vector3f();
-//                entity.transformation.globalMatrix.getTranslation(absoluteTranslation);
-//                if (!byId.containsKey(meshLOD.id)) {
-//                    byId.put(meshLOD.id, meshService.stream(meshLOD.id));
-//                }
-//
-//                VoxelizerUtil.traverseMesh(byId.get(meshLOD.id), entity.transformation.globalMatrix, octree);
-//                getLogger().warn("Voxelization of {} took {}", mesh.lod0.name, System.currentTimeMillis() - startLocal);
-//            }
-//        }
+        for (AbstractComponent component : worldRepository.components.get(ComponentType.MESH)) {
+            long startLocal = System.currentTimeMillis();
+            var mesh = (MeshComponent) component;
+            String meshLOD = mesh.lod0;
+            if (meshLOD != null) {
+                Entity entity = mesh.getEntity();
+                Vector3f absoluteTranslation = new Vector3f();
+                entity.transformation.globalMatrix.getTranslation(absoluteTranslation);
+                if (!byId.containsKey(meshLOD)) {
+                    byId.put(meshLOD, (MeshImportData) meshService.stream(meshLOD));
+                }
+
+                VoxelizerUtil.traverseMesh(byId.get(meshLOD), entity.transformation.globalMatrix, octree);
+                getLogger().warn("Voxelization of {} took {}", mesh.lod0, System.currentTimeMillis() - startLocal);
+            }
+        }
 
 
         long startMemory = System.currentTimeMillis();

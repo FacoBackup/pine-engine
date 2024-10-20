@@ -18,9 +18,9 @@ public class SceneImporter extends AbstractImporter {
     private int total = 1;
     @Override
     public AbstractResourceMetadata persist(AbstractImportData data) {
-        var cast = (SceneImportData) data;
+        persistInternal(data);
         total = 1;
-        traverse(cast);
+        traverse((SceneImportData) data);
         return new SceneResourceMetadata(data.name, data.id, total);
     }
 

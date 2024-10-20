@@ -2,6 +2,7 @@ package com.pine.panels.files;
 
 import com.pine.repository.fs.DirectoryEntry;
 import com.pine.repository.fs.FileEntry;
+import com.pine.repository.fs.IEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -24,7 +25,7 @@ public class ListViewDirectoryPanel extends AbstractDirectoryPanel {
             ImGui.tableSetupColumn("Type", ImGuiTableColumnFlags.WidthFixed, 100f);
             ImGui.tableSetupColumn("Size", ImGuiTableColumnFlags.WidthFixed, 100f);
             ImGui.tableHeadersRow();
-            for (var child : context.currentDirectory.directories) {
+            for (var child : context.currentDirectory.directories.values()) {
                 renderDirectory(child);
             }
             for (var child : filesLocal) {
@@ -40,25 +41,21 @@ public class ListViewDirectoryPanel extends AbstractDirectoryPanel {
             ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, editorRepository.accentU32);
             ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, editorRepository.accentU32);
         }
+
         ImGui.tableNextColumn();
         ImGui.textColored(DIRECTORY_COLOR, Icons.folder);
         onClick(root);
-
-        ImGui.tableNextColumn();
-        ImGui.text(root.name);
-        onClick(root);
-
-        ImGui.tableNextColumn();
-        ImGui.text("--");
-        onClick(root);
-
-        ImGui.tableNextColumn();
-        ImGui.text("Directory");
-        onClick(root);
-
-        ImGui.tableNextColumn();
-        ImGui.text("--");
-        onClick(root);
+        if (context.toCut.containsKey(root.id)) {
+            textDisabledColumn(root.name, root);
+            textDisabledColumn("--", root);
+            textDisabledColumn("Directory", root);
+            textDisabledColumn("--", root);
+        } else {
+            textColumn(root.name, root);
+            textColumn("--", root);
+            textColumn("Directory", root);
+            textColumn("--", root);
+        }
     }
 
     private void renderFile(FileEntry root) {
@@ -68,24 +65,30 @@ public class ListViewDirectoryPanel extends AbstractDirectoryPanel {
             ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, editorRepository.accentU32);
             ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, editorRepository.accentU32);
         }
-        ImGui.tableNextColumn();
-        ImGui.text(resourceType.getIcon());
-        onClick(root);
+        if (context.toCut.containsKey(root.getId())) {
+            textDisabledColumn(resourceType.getIcon(), root);
+            textDisabledColumn(root.metadata.name, root);
+            textDisabledColumn(root.creationDateString, root);
+            textDisabledColumn(resourceType.getTitle(), root);
+            textDisabledColumn(root.sizeText, root);
+        } else {
+            textColumn(resourceType.getIcon(), root);
+            textColumn(root.metadata.name, root);
+            textColumn(root.creationDateString, root);
+            textColumn(resourceType.getTitle(), root);
+            textColumn(root.sizeText, root);
+        }
+    }
 
+    private void textColumn(String Directory, IEntry root) {
         ImGui.tableNextColumn();
-        ImGui.text(root.metadata.name);
+        ImGui.text(Directory);
         onClick(root);
+    }
 
+    private void textDisabledColumn(String label, IEntry entry) {
         ImGui.tableNextColumn();
-        ImGui.text(root.creationDateString);
-        onClick(root);
-
-        ImGui.tableNextColumn();
-        ImGui.text(resourceType.getTitle());
-        onClick(root);
-
-        ImGui.tableNextColumn();
-        ImGui.text(root.sizeText);
-        onClick(root);
+        ImGui.textDisabled(label);
+        onClick(entry);
     }
 }

@@ -24,7 +24,7 @@ public class CardViewDirectoryPanel extends AbstractDirectoryPanel {
             ImGui.tableSetupColumn("Type", ImGuiTableColumnFlags.WidthFixed, 100f);
             ImGui.tableSetupColumn("Size", ImGuiTableColumnFlags.WidthFixed, 100f);
             ImGui.tableHeadersRow();
-            for (var child : context.currentDirectory.directories) {
+            for (var child : context.currentDirectory.directories.values()) {
                 renderDirectory(child);
             }
             for (var child : filesLocal) {

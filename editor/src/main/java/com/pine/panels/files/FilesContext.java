@@ -10,6 +10,7 @@ import java.util.Map;
 public class FilesContext extends AbstractPanelContext {
     public DirectoryEntry currentDirectory;
     public final Map<String, Boolean> selected = new HashMap<>();
+    public final Map<String, DirectoryEntry> toCut = new HashMap<>();
     public transient FileEntry inspection;
 
     public void setDirectory(DirectoryEntry parentDir) {

@@ -4,6 +4,7 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.importer.data.SceneImportData;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.ref.SceneResourceRef;
@@ -17,7 +18,7 @@ public class SceneService extends AbstractStreamableService<SceneResourceRef> {
 
     @Override
     public StreamData stream(String pathToFile) {
-        return (SceneStreamData) FSUtil.read(pathToFile);
+        return (SceneImportData) FSUtil.read(pathToFile);
     }
 
     @Override

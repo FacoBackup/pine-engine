@@ -37,7 +37,7 @@ public class ImporterService implements Loggable {
         }
     }
 
-    public void importFiles(List<String> paths, Consumer<List<String>> callback) {
+    public void importFiles(List<String> paths, Consumer<List<AbstractResourceMetadata>> callback) {
         new Thread(() -> {
             List<AbstractImportData> importedFiles = new ArrayList<>();
             for (String path : paths) {
@@ -52,17 +52,21 @@ public class ImporterService implements Loggable {
                 }
             }
 
-            List<String> response = new ArrayList<>();
+            List<AbstractResourceMetadata> response = new ArrayList<>();
 
             for (var imported : importedFiles) {
-                getLogger().warn("Persisting {} of type {}", imported.id, imported.getResourceType());
-                AbstractImporter importer = importers.get(imported.getResourceType());
-                if (importer != null) {
-                    AbstractResourceMetadata metadata = importer.persist(imported);
-                    if (FSUtil.write(metadata, getMetadataPath(metadata.id))) {
-                        response.add(imported.id);
-                    }
-                }
+              try{
+                  getLogger().warn("Persisting {} of type {}", imported.id, imported.getResourceType());
+                  AbstractImporter importer = importers.get(imported.getResourceType());
+                  if (importer != null) {
+                      AbstractResourceMetadata metadata = importer.persist(imported);
+                      if (FSUtil.write(metadata, getMetadataPath(metadata.id))) {
+                          response.add(metadata);
+                      }
+                  }
+              }catch (Exception e){
+                  getLogger().error("Error while persisting file",  e);
+              }
             }
 
             callback.accept(response);

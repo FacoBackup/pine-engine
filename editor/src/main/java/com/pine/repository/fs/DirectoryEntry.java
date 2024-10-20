@@ -7,7 +7,7 @@ public class DirectoryEntry implements IEntry, Serializable {
     public final String id = UUID.randomUUID().toString();
     public String name;
     public final DirectoryEntry parent;
-    public List<DirectoryEntry> directories = new ArrayList<>();
+    public final Map<String, DirectoryEntry> directories = new HashMap<>();
     public Set<String> files = new HashSet<>();
 
     public DirectoryEntry(String name, DirectoryEntry parent) {

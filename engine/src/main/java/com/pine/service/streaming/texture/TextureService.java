@@ -37,7 +37,8 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
             STBImage.stbi_set_flip_vertically_on_load(true);
             imageBuffer = STBImage.stbi_load(pathToFile, widthBuffer, heightBuffer, channelsBuffer, 4);
             if (imageBuffer == null) {
-                throw new RuntimeException(pathToFile + ": Failed to load image: " + STBImage.stbi_failure_reason());
+                getLogger().error("{}: Failed to load image: {}", pathToFile, STBImage.stbi_failure_reason());
+                return null;
             }
 
             width = widthBuffer.get();
