@@ -12,7 +12,8 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.util.nfd.NativeFileDialog.*;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OKAY;
+import static org.lwjgl.util.nfd.NativeFileDialog.NFD_OpenDialogMultiple;
 
 @PBean
 public class NativeDialogService {

@@ -20,28 +20,29 @@ public class AddComponentRequest extends AbstractRequest {
         this.entity = entity;
     }
 
-    private static void addComponent(Class<? extends AbstractComponent> clazz, Entity entity, WorldRepository repository) throws Exception {
-        if (entity.components.containsKey(clazz.getSimpleName())) {
+    private static void addComponent(ComponentType type, Entity entity, WorldRepository repository) throws Exception {
+        if (entity.components.containsKey(type)) {
             return;
         }
+        Class<? extends AbstractComponent> clazz = type.getClazz();
         var instance = clazz.getConstructor(Entity.class).newInstance(entity);
         repository.registerComponent(instance);
-        Set<Class<? extends AbstractComponent>> dependencies = instance.getDependencies();
+        Set<ComponentType> dependencies = instance.getDependencies();
         for (var dependency : dependencies) {
             addComponent(dependency, entity, repository);
         }
-        entity.components.put(clazz.getSimpleName(), instance);
+        entity.components.put(type, instance);
     }
 
     public static void add(List<ComponentType> components, Entity entity, WorldRepository repository) throws Exception {
         for (var type : components) {
-            AddComponentRequest.addComponent(type.getClazz(), entity, repository);
+            AddComponentRequest.addComponent(type, entity, repository);
         }
     }
 
     @Override
     public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
-        if (entity.components.containsKey(type.getClazz().getSimpleName())) {
+        if (entity.components.containsKey(type)) {
             return new Message("Entity already has component of type " + type.getTitle(), MessageSeverity.WARN);
         }
         try {

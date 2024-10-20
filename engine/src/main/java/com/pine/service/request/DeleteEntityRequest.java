@@ -24,9 +24,16 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
             if (entity != repository.rootEntity) {
                 Transformation t = entity.transformation;
                 t.parent.children.remove(t);
-                repository.unregisterComponents(entity);
+                removeComponentsHierarchically(entity, repository);
             }
         }
         return new Message(entities.size() + " entities deleted", MessageSeverity.SUCCESS);
+    }
+
+    private void removeComponentsHierarchically(Entity entity, WorldRepository repository) {
+        repository.unregisterComponents(entity);
+        entity.transformation.children.forEach(c -> {
+            removeComponentsHierarchically(c.entity, repository);
+        });
     }
 }

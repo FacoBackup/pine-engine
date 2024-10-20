@@ -1,15 +1,15 @@
 package com.pine.panels.resources;
 
 import com.pine.component.ComponentType;
-import com.pine.component.MeshComponent;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.repository.voxelization.VoxelRepository;
-import com.pine.service.streaming.mesh.MeshService;
-import com.pine.service.streaming.texture.TextureService;
+import com.pine.repository.VoxelRepository;
+import com.pine.service.streaming.impl.MeshService;
+import com.pine.service.streaming.impl.TextureService;
+import com.pine.service.svo.VoxelService;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 
@@ -17,7 +17,6 @@ import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
 
 
 public class ResourcesPanel extends AbstractDockPanel {
-    private static final String MESH = MeshComponent.class.getSimpleName();
     @PInject
     public RenderingRepository renderingRepository;
 
@@ -28,7 +27,7 @@ public class ResourcesPanel extends AbstractDockPanel {
     public TextureService textureService;
 
     @PInject
-    public VoxelRepository voxelRepository;
+    public VoxelService voxelService;
 
     @PInject
     public StreamingRepository streamingRepository;
@@ -49,7 +48,7 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Textures", textureService.getTotalTextureCount());
 
-            render("Voxels", voxelRepository.getVoxelCount());
+            render("Voxels", voxelService.getVoxelCount());
 
             render("Resources to be streamed in", streamingRepository.schedule.size());
 

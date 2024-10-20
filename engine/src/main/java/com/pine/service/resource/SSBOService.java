@@ -6,6 +6,7 @@ import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 @PBean
 public class SSBOService extends AbstractResourceService<ShaderStorageBufferObject, SSBOCreationData> {
@@ -36,6 +37,12 @@ public class SSBOService extends AbstractResourceService<ShaderStorageBufferObje
     }
 
     public void updateBuffer(ShaderStorageBufferObject ssbo, FloatBuffer data, int offset) {
+        bindInternal(ssbo);
+        GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, data);
+        unbind();
+    }
+
+    public void updateBuffer(ShaderStorageBufferObject ssbo, IntBuffer data, int offset) {
         bindInternal(ssbo);
         GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, data);
         unbind();

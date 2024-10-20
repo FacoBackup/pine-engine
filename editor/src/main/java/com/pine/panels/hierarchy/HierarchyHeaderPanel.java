@@ -9,8 +9,6 @@ import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.type.ImString;
 
-import java.util.List;
-
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class HierarchyHeaderPanel extends AbstractView {

@@ -1,23 +1,25 @@
 package com.pine.service.importer.impl;
 
 import com.pine.injection.PBean;
-import com.pine.repository.streaming.AbstractStreamableResource;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.AbstractImporter;
-
-import java.util.Collections;
-import java.util.List;
+import com.pine.service.importer.data.AbstractImportData;
+import com.pine.service.importer.data.AudioImportData;
+import com.pine.service.importer.metadata.AbstractResourceMetadata;
+import com.pine.service.importer.metadata.AudioResourceMetadata;
 
 @PBean
 public class AudioImporter extends AbstractImporter {
 
     @Override
-    public List<AbstractStreamableResource<?>> load(String path) {
-        return Collections.emptyList();
+    public StreamableResourceType getResourceType() {
+        return StreamableResourceType.AUDIO;
     }
 
     @Override
-    public StreamableResourceType getResourceType() {
-        return StreamableResourceType.AUDIO;
+    public AbstractResourceMetadata persist(AbstractImportData data) {
+        var cast = (AudioImportData) data;
+        var file = persistInternal(data);
+        return new AudioResourceMetadata(data.name, data.id);
     }
 }

@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class LogMessage {
-    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("MM-dd HH:mm");
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("HH:mm:ss");
 
     public final String message;
     public final Level level;

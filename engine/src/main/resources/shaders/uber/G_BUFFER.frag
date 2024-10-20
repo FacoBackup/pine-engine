@@ -10,6 +10,7 @@
 #define POSITION 11
 #define RANDOM 13
 #define WIREFRAME 17
+#define UV_FLAG 18
 #define LIT -1
 
 #define ISOTROPIC 1
@@ -166,6 +167,9 @@ void main() {
             break;
             case POSITION:
             gBufferAlbedoSampler.rgb = vec3(worldSpacePosition);
+            break;
+            case UV_FLAG:
+            gBufferAlbedoSampler.rgb = vec3(UV, 0);
             break;
         }
         gBufferAlbedoSampler.a = debugShadingMode != LIGHT_ONLY ? 1 : 0;

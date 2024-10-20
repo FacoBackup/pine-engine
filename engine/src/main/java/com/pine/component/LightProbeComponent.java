@@ -1,10 +1,6 @@
 package com.pine.component;
 
-import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
-import com.pine.theme.Icons;
-
-import java.util.LinkedList;
 
 
 public class LightProbeComponent extends AbstractComponent {

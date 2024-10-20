@@ -1,9 +1,5 @@
 package com.pine.component;
 
-import com.pine.injection.PBean;
-import com.pine.theme.Icons;
-
-import java.util.LinkedList;
 import java.util.Set;
 
 
@@ -14,8 +10,8 @@ public class RigidBodyComponent extends AbstractComponent {
     }
 
     @Override
-    public Set<Class<? extends AbstractComponent>> getDependencies() {
-        return Set.of(PhysicsColliderComponent.class);
+    public Set<ComponentType> getDependencies() {
+        return Set.of(ComponentType.PHYSICS_COLLIDER);
     }
 
     @Override

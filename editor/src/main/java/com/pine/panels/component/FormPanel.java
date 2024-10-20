@@ -4,15 +4,12 @@ import com.pine.component.Transformation;
 import com.pine.core.view.AbstractView;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
+import com.pine.inspection.ResourceTypeField;
 import com.pine.panels.component.impl.*;
-import com.pine.repository.streaming.AbstractStreamableResource;
-import com.pine.theme.Icons;
 import imgui.ImGui;
-import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public class FormPanel extends AbstractView {
@@ -43,15 +40,16 @@ public class FormPanel extends AbstractView {
             group.title = field.getGroup();
             switch (field.getType()) {
                 case CUSTOM:
-                    if (AbstractStreamableResource.class.isAssignableFrom(field.getField().getType())) {
-                        group.appendChild(new ResourceField(field, changeHandler));
-                    }
                     if (Transformation.class.isAssignableFrom(field.getField().getType())) {
                         group.appendChild(new TransformationField(field, changeHandler));
                     }
                     break;
                 case STRING:
-                    group.appendChild(new StringField(field, changeHandler));
+                    if (field.getField().isAnnotationPresent(ResourceTypeField.class)) {
+                        group.appendChild(new ResourceField(field, changeHandler));
+                    }else {
+                        group.appendChild(new StringField(field, changeHandler));
+                    }
                     break;
                 case INT:
                     group.appendChild(new IntField(field, changeHandler));

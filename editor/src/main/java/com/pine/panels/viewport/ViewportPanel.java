@@ -3,7 +3,6 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.panels.header.ViewportHeaderPanel;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;
@@ -79,8 +78,8 @@ public class ViewportPanel extends AbstractDockPanel {
 
         gizmo.render();
 
-        ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 16);
-        ImGui.setNextWindowSize(size.x, 16);
+        ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 25);
+        ImGui.setNextWindowSize(size.x - 16, 16);
         if (ImGui.begin(imguiId + "cameraPos", OPEN, CAMERA_FLAGS)) {
             Vector3f positionCamera = cameraRepository.currentCamera.position;
             ImGui.textColored(RED, "X: " + positionCamera.x);

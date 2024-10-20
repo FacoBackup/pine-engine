@@ -50,7 +50,7 @@ struct Stack {
     float scale;
 };
 
-bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
+bool intersect(inout vec3 boxMin, inout vec3 boxMax, inout Ray r) {
     vec3 t1 = (boxMin - r.o) * r.invDir;
     vec3 t2 = (boxMax - r.o) * r.invDir;
 
@@ -63,7 +63,7 @@ bool intersect(const vec3 boxMin, const vec3 boxMax, const Ray r) {
     return tEnter <= tExit && tExit > 0.0;
 }
 
-bool intersectWithDistance(const vec3 boxMin, const vec3 boxMax, const Ray r, out float entryDist) {
+bool intersectWithDistance(inout vec3 boxMin, inout vec3 boxMax, inout Ray r, out float entryDist) {
     vec3 t1 = (boxMin - r.o) * r.invDir;
     vec3 t2 = (boxMax - r.o) * r.invDir;
 
@@ -77,25 +77,15 @@ bool intersectWithDistance(const vec3 boxMin, const vec3 boxMax, const Ray r, ou
 }
 
 
-vec3 unpackColor(int color) {
-    int rInt = (color >> 20) & 0x3FF;// 10 bits for r (mask: 0x3FF is 1023 in binary)
-    int gInt = (color >> 10) & 0x3FF;// 10 bits for g
-    int bInt = color & 0x3FF;// 10 bits for b
+vec3 unpackColor(uint packedColor) {
+    uint r = (packedColor >> 16u) & 0x7Fu;// Extract red (bits 16-22), mask with 0x7F (0111 1111)
+    uint g = (packedColor >> 9u) & 0x7Fu;// Extract green (bits 9-15), mask with 0x7F
+    uint b = (packedColor >> 2u) & 0x7Fu;// Extract blue (bits 2-8), mask with 0x7F
 
-    // Convert the quantized integers back to floats in the range [0, 1]
-    float r = rInt / 1023.0f;
-    float g = gInt / 1023.0f;
-    float b = bInt / 1023.0f;
-
-    // Scale back to the original [-1, 1] range
-    r = r * 2.0f - 1.0f;
-    g = g * 2.0f - 1.0f;
-    b = b * 2.0f - 1.0f;
-
-    return vec3(r, g, b);
+    return vec3(r/255f, g/255f, b/255f);
 }
 
-uint countSetBitsBefore(uint mask, uint childIndex) {
+uint countSetBitsBefore(inout uint mask, inout uint childIndex) {
     uint maskBefore = mask & ((1u << childIndex) - 1u);
     return bitCount(maskBefore);
 }
@@ -108,12 +98,11 @@ bool showRaySearchCount,
 bool showRayTestCount
 ) {
     vec3 center = centerScale.xyz;
-    float scale = centerScale.w;
+    float scale = centerScale.w/2;
     vec3 minBox = center - scale;
     vec3 maxBox = center + scale;
     float minDistance = 1e10;// Large initial value
     if (!intersect(minBox, maxBox, ray)) return vec4(0);
-
 
     Stack stack[10];
     scale *= 0.5f;
@@ -159,7 +148,9 @@ bool showRayTestCount
             if (entryDist < minDistance) {
                 if (isLeafGroup) {
                     if (randomColors){
-                        finalColor.rgb = randomColor(float(index));
+                        finalColor.rgb = randomColor(float(index) + countSetBitsBefore(childMask, i));
+                    } else {
+                        finalColor.rgb = unpackColor(childGroupIndex);
                     }
                     finalColor.a = 1;
                     minDistance = entryDist;

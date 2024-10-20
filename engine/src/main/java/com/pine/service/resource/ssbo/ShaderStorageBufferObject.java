@@ -15,7 +15,7 @@ public class ShaderStorageBufferObject extends AbstractResource {
         return LocalResourceType.SSBO;
     }
 
-    private final int bindingPoint;
+    private int bindingPoint;
     private final int buffer;
 
     public ShaderStorageBufferObject(String id, SSBOCreationData dto) {
@@ -41,6 +41,10 @@ public class ShaderStorageBufferObject extends AbstractResource {
 
     public int getBindingPoint() {
         return bindingPoint;
+    }
+
+    public void setBindingPoint(int bindingPoint) {
+        this.bindingPoint = bindingPoint;
     }
 
     @Override

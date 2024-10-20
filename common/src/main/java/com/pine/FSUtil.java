@@ -3,8 +3,7 @@ package com.pine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 
 public class FSUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FSUtil.class);
@@ -31,5 +30,34 @@ public class FSUtil {
             return fileName;
         }
         return fileName.substring(0, lastIndexOfDot);
+    }
+
+    public static boolean write(Object obj, String path) {
+        try {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path))) {
+                out.writeObject(obj);
+            }
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Could not write file {}", path, e);
+            return false;
+        }
+    }
+
+    public static Object read(String path) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
+            return in.readObject();
+        } catch (Exception e) {
+            LOGGER.error("Could not read file {}", path, e);
+            return null;
+        }
+    }
+
+    public static Object readSilent(String path) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
+            return in.readObject();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -4,22 +4,28 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class SparseVoxelOctree implements Serializable {
-    private final int resolution;
+    private final int size;
     private final int maxDepth;
-    private final OctreeNode root = new OctreeNode();
-    private final float voxelizationStepSize;
+    private transient OctreeNode root = new OctreeNode();
     private final float voxelSize;
+    private final BoundingBox boundingBox;
+    private final Vector3f center;
     private int nodeQuantity = 1;
-    private int bufferIndex = 0;
-    private int[] voxels;
+    private transient int bufferIndex = 0;
+    private transient int[] voxels;
+    private final String id = UUID.randomUUID().toString();
 
-    public SparseVoxelOctree(int resolution, int maxDepth, float voxelizationStepSize) {
-        this.resolution = resolution;
+    public SparseVoxelOctree(Vector3f center, int size, int maxDepth) {
+        this.center = center;
+        this.size = size;
         this.maxDepth = maxDepth;
-        this.voxelizationStepSize = Math.min(voxelizationStepSize, .01f);
-        this.voxelSize = (float) (resolution / Math.pow(2, maxDepth));
+        this.voxelSize = (float) (size / Math.pow(2, maxDepth));
+        this.boundingBox = new BoundingBox();
+        boundingBox.max = new Vector3f(center).add(size / 2f, size / 2f, size / 2f);
+        boundingBox.min = new Vector3f(center).sub(size / 2f, size / 2f, size / 2f);
     }
 
     public int getNodeQuantity() {
@@ -27,7 +33,10 @@ public class SparseVoxelOctree implements Serializable {
     }
 
     public void insert(Vector3f point, VoxelData data) {
-        insertInternal(root, point, data, new Vector3i(0), 0);
+        if (boundingBox.intersects(point)) {
+            worldToChunkLocal(point);
+            insertInternal(root, point, data, new Vector3i(0), 0);
+        }
     }
 
     private void insertInternal(OctreeNode node, Vector3f point, VoxelData data, Vector3i position, int depth) {
@@ -37,7 +46,7 @@ public class SparseVoxelOctree implements Serializable {
             return;
         }
 
-        float size = (float) (resolution / Math.pow(2, depth));
+        float size = (float) (this.size / Math.pow(2, depth));
         Vector3i childPos = new Vector3i(
                 point.x >= ((size * position.x) + (size / 2)) ? 1 : 0,
                 point.y >= ((size * position.y) + (size / 2)) ? 1 : 0,
@@ -68,16 +77,12 @@ public class SparseVoxelOctree implements Serializable {
         return root;
     }
 
-    public float getDepth() {
+    public int getDepth() {
         return maxDepth;
     }
 
-    public int getResolution() {
-        return resolution;
-    }
-
-    public float getVoxelizationStepSize() {
-        return voxelizationStepSize;
+    public int getSize() {
+        return size;
     }
 
     public float getVoxelSize() {
@@ -95,18 +100,24 @@ public class SparseVoxelOctree implements Serializable {
     private void fillStorage(OctreeNode node) {
         if (node.isLeaf()) {
             return;
-//            voxelRepository.voxels[node.getDataIndex()] = node.getData().compress(); // LEAF WILL ONLY STORE COLOR INFORMATION
         }
+
         voxels[node.getDataIndex()] = node.packVoxelData(bufferIndex);
+        boolean isParentOfLeaf = true;
         for (var child : node.getChildren()) {
             if (child != null && !child.isLeaf()) {
                 putData(child);
+                isParentOfLeaf = false;
             }
         }
+
         for (var child : node.getChildren()) {
             if (child != null) {
                 fillStorage(child);
             }
+        }
+        if (isParentOfLeaf && node.getData() != null) {
+            voxels[node.getDataIndex()] = node.packVoxelData(node.getData().compress());
         }
     }
 
@@ -118,4 +129,32 @@ public class SparseVoxelOctree implements Serializable {
         node.setDataIndex(bufferIndex);
         bufferIndex++;
     }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
+    }
+
+    public Vector3f getCenter() {
+        return center;
+    }
+
+    public void purgeData() {
+        voxels = null;
+        root = null;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    private void worldToChunkLocal(Vector3f worldCoordinate) {
+        float minX = center.x - size / 2f;
+        float minY = center.y - size / 2f;
+        float minZ = center.z - size / 2f;
+
+        worldCoordinate.x = worldCoordinate.x - minX;
+        worldCoordinate.y = worldCoordinate.y - minY;
+        worldCoordinate.z = worldCoordinate.z - minZ;
+    }
+
 }

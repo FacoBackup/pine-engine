@@ -1,5 +1,6 @@
 package com.pine.panels.hierarchy;
 
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
@@ -27,7 +28,6 @@ import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
 
 public class HierarchyPanel extends AbstractDockPanel {
     private static final byte BYTE = 1;
-    private static final String MESH_COMPONENT = MeshComponent.class.getSimpleName();
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
 
@@ -168,8 +168,8 @@ public class HierarchyPanel extends AbstractDockPanel {
                 ImGui.tableNextColumn();
                 ImGui.textDisabled("--");
             }
-            if (node.components.containsKey(MESH_COMPONENT)) {
-                MeshComponent meshComponent = (MeshComponent) node.components.get(MESH_COMPONENT);
+            if (node.components.containsKey(ComponentType.MESH)) {
+                MeshComponent meshComponent = (MeshComponent) node.components.get(ComponentType.MESH);
                 if (meshComponent.isInstancedRendering) {
                     renderInstancedComponent(node, meshComponent);
                 }

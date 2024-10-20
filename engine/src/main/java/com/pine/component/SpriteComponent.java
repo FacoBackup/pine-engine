@@ -1,16 +1,17 @@
 package com.pine.component;
 
-import com.pine.injection.PBean;
 import com.pine.inspection.MutableField;
-import com.pine.service.streaming.texture.TextureStreamableResource;
-import com.pine.theme.Icons;
-
-import java.util.LinkedList;
+import com.pine.inspection.ResourceTypeField;
+import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.streaming.ref.TextureResourceRef;
 
 
 public class SpriteComponent extends AbstractComponent {
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
     @MutableField(label = "Texture")
-    public TextureStreamableResource heightMapTexture;
+    public String texture;
+
+    public transient TextureResourceRef textureRef;
 
     @MutableField(label = "Keep same size")
     public boolean keepSameSize = true;

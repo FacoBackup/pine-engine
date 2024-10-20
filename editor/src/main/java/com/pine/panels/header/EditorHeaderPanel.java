@@ -1,6 +1,5 @@
 package com.pine.panels.header;
 
-import com.pine.core.WindowService;
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
@@ -8,12 +7,10 @@ import com.pine.service.ProjectService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.ImGuiIO;
-import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImString;
 
-import static com.pine.panels.header.ViewportHeaderPanel.largeSpacing;
 import static com.pine.panels.header.ViewportHeaderPanel.spacing;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
