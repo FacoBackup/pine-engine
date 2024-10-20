@@ -8,44 +8,49 @@ import org.joml.Vector4f;
 
 public class VoxelizerUtil {
 
-    public static void traverseMesh(MeshImportData rawMeshData, Matrix4f globalMatrix, SparseVoxelOctree octree) {
-
+    public static void traverseMesh(MeshImportData rawMeshData, SparseVoxelOctree octree, float stepSize) {
         int[] indices = rawMeshData.indices;
         float[] vertices = rawMeshData.vertices;
 
         for (int i = 0; i < indices.length; i += 3) {
-            Vector4f v0 = new Vector4f(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2], 1).mul(globalMatrix);
-            Vector4f v1 = new Vector4f(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2], 1).mul(globalMatrix);
-            Vector4f v2 = new Vector4f(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2], 1).mul(globalMatrix);
+            Vector4f v0 = new Vector4f(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2], 1);
+            Vector4f v1 = new Vector4f(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2], 1);
+            Vector4f v2 = new Vector4f(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2], 1);
 
-            iterateTriangle(v0, v1, v2, octree);
+            iterateTriangle(v0, v1, v2, octree, stepSize);
         }
     }
 
-    private static void iterateTriangle(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree) {
+    private static void iterateTriangle(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree, float stepSize) {
         Vector3f size = computeTriangleSize(v0, v1, v2);
         float triangleArea = computeSurfaceArea(size.x, size.y, size.z);
         // For triangles smaller than a voxel
         if (triangleArea <= octree.getVoxelSize()) {
-            octree.insert(new Vector3f(v0.x + octree.getOffset(), v0.y + octree.getOffset(), v0.z + octree.getOffset()), new VoxelData(1, 0, 1));
-            octree.insert(new Vector3f(v1.x + octree.getOffset(), v1.y + octree.getOffset(), v1.z + octree.getOffset()), new VoxelData(1, 0, 1));
-            octree.insert(new Vector3f(v2.x + octree.getOffset(), v2.y + octree.getOffset(), v2.z + octree.getOffset()), new VoxelData(1, 0, 1));
+            doFastIntersection(v0, v1, v2, octree);
             return;
         }
 
+        float offset = octree.getSize() / 2f;
         // Iterate over barycentric coordinates for triangles bigger than a voxel
-        for (float lambda1 = 0; lambda1 <= 1; lambda1 += octree.getVoxelizationStepSize()) {
-            for (float lambda2 = 0; lambda2 <= 1 - lambda1; lambda2 += octree.getVoxelizationStepSize()) {
+        for (float lambda1 = 0; lambda1 <= 1; lambda1 += stepSize) {
+            for (float lambda2 = 0; lambda2 <= 1 - lambda1; lambda2 += stepSize) {
                 float lambda0 = 1 - lambda1 - lambda2;
                 octree.insert(
                         new Vector3f(
-                                lambda0 * v0.x + lambda1 * v1.x + lambda2 * v2.x + octree.getOffset(),
-                                lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y + octree.getOffset(),
-                                lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z + octree.getOffset()
+                                lambda0 * v0.x + lambda1 * v1.x + lambda2 * v2.x + offset,
+                                lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y + offset,
+                                lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z + offset
                         ),
                         new VoxelData(1, 0, 1));
             }
         }
+    }
+
+    private static void doFastIntersection(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree) {
+        float offset = octree.getSize() / 2f;
+        octree.insert(new Vector3f(v0.x + offset, v0.y + offset, v0.z + offset), new VoxelData(1, 0, 1));
+        octree.insert(new Vector3f(v1.x + offset, v1.y + offset, v1.z + offset), new VoxelData(1, 0, 1));
+        octree.insert(new Vector3f(v2.x + offset, v2.y + offset, v2.z + offset), new VoxelData(1, 0, 1));
     }
 
     private static Vector3f computeTriangleSize(Vector4f v0, Vector4f v1, Vector4f v2) {

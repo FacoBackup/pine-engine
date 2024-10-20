@@ -4,24 +4,28 @@ import org.joml.Vector3f;
 import org.joml.Vector3i;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class SparseVoxelOctree implements Serializable {
-    private final int scale;
+    private final int size;
     private final int maxDepth;
-    private final OctreeNode root = new OctreeNode();
-    private final float voxelizationStepSize;
+    private transient OctreeNode root = new OctreeNode();
     private final float voxelSize;
-    private final int offset;
+    private final BoundingBox boundingBox;
+    private final Vector3f center;
     private int nodeQuantity = 1;
-    private int bufferIndex = 0;
-    private int[] voxels;
+    private transient int bufferIndex = 0;
+    private transient int[] voxels;
+    private final String id = UUID.randomUUID().toString();
 
-    public SparseVoxelOctree(int scale, int maxDepth, float voxelizationStepSize) {
-        this.scale = scale;
+    public SparseVoxelOctree(Vector3f center, int size, int maxDepth) {
+        this.center = center;
+        this.size = size;
         this.maxDepth = maxDepth;
-        this.voxelizationStepSize = Math.min(voxelizationStepSize, .01f);
-        this.voxelSize = (float) (scale / Math.pow(2, maxDepth));
-        offset = scale / 2;
+        this.voxelSize = (float) (size / Math.pow(2, maxDepth));
+        this.boundingBox = new BoundingBox();
+        boundingBox.max = new Vector3f(center).add(size / 2f, size / 2f, size / 2f);
+        boundingBox.min = new Vector3f(center).sub(size / 2f, size / 2f, size / 2f);
     }
 
     public int getNodeQuantity() {
@@ -39,7 +43,7 @@ public class SparseVoxelOctree implements Serializable {
             return;
         }
 
-        float size = (float) (scale / Math.pow(2, depth));
+        float size = (float) (this.size / Math.pow(2, depth));
         Vector3i childPos = new Vector3i(
                 point.x >= ((size * position.x) + (size / 2)) ? 1 : 0,
                 point.y >= ((size * position.y) + (size / 2)) ? 1 : 0,
@@ -70,16 +74,12 @@ public class SparseVoxelOctree implements Serializable {
         return root;
     }
 
-    public float getDepth() {
+    public int getDepth() {
         return maxDepth;
     }
 
-    public int getScale() {
-        return scale;
-    }
-
-    public float getVoxelizationStepSize() {
-        return voxelizationStepSize;
+    public int getSize() {
+        return size;
     }
 
     public float getVoxelSize() {
@@ -121,7 +121,20 @@ public class SparseVoxelOctree implements Serializable {
         bufferIndex++;
     }
 
-    public float getOffset() {
-        return offset;
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
+    }
+
+    public Vector3f getCenter() {
+        return center;
+    }
+
+    public void purgeData() {
+        voxels = null;
+        root = null;
+    }
+
+    public String getId() {
+        return id;
     }
 }

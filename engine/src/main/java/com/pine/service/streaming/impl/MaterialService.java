@@ -1,4 +1,4 @@
-package com.pine.service.streaming.material;
+package com.pine.service.streaming.impl;
 
 import com.pine.FSUtil;
 import com.pine.injection.PBean;
@@ -9,9 +9,9 @@ import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.data.MaterialImportData;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.MaterialStreamData;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.service.streaming.texture.TextureService;
 
 @PBean
 public class MaterialService extends AbstractStreamableService<MaterialResourceRef> {

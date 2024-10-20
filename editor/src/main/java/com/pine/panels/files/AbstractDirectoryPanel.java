@@ -17,7 +17,7 @@ import com.pine.service.importer.data.SceneImportData;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddEntityRequest;
 import com.pine.service.request.LoadSceneRequest;
-import com.pine.service.streaming.scene.SceneService;
+import com.pine.service.streaming.impl.SceneService;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiKey;
@@ -25,7 +25,6 @@ import imgui.flag.ImGuiMouseButton;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class AbstractDirectoryPanel extends AbstractView {

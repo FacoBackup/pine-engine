@@ -1,4 +1,4 @@
-package com.pine.service.streaming.audio;
+package com.pine.service.streaming.impl;
 
 import com.pine.injection.PBean;
 import com.pine.repository.streaming.AbstractResourceRef;

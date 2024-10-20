@@ -10,6 +10,8 @@ import com.pine.theme.Icons;
 @PBean
 public class EngineSettingsRepository extends Inspectable implements SerializableRepository {
 
+    public boolean disableCullingGlobally = false;
+
     @MutableField(label = "Background color")
     public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
 

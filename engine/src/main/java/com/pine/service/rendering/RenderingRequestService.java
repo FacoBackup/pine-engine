@@ -4,6 +4,7 @@ import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamingService;
@@ -21,6 +22,9 @@ public class RenderingRequestService {
     @PInject
     public StreamingService streamingService;
 
+    @PInject
+    public EngineSettingsRepository engineSettings;
+
     public RenderingRequest prepareInstanced(MeshComponent scene, Transformation t) {
         MeshResourceRef mesh = selectLOD(scene);
         if (mesh == null) return null;
@@ -37,7 +41,7 @@ public class RenderingRequestService {
     private void fillInstanceRequest(MeshComponent scene, Transformation t) {
         for (var primitive : scene.primitives) {
             transformationService.updateMatrix(primitive, t);
-            primitive.isCulled = scene.isCullingEnabled && transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+            primitive.isCulled = (scene.isCullingEnabled || engineSettings.disableCullingGlobally) && transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
             if (primitive.isCulled) {
                 continue;
             }
@@ -67,7 +71,7 @@ public class RenderingRequestService {
         MeshResourceRef mesh = selectLOD(scene);
         if (mesh == null) return null;
 
-        transform.isCulled = scene.isCullingEnabled && transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+        transform.isCulled = (scene.isCullingEnabled || engineSettings.disableCullingGlobally) && transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
         if (!transform.isCulled) {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);

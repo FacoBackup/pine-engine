@@ -10,13 +10,13 @@ import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.*;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.repository.voxelization.VoxelRepository;
+import com.pine.repository.VoxelRepository;
 import com.pine.service.resource.ComputeService;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.UBOService;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.streaming.mesh.MeshService;
+import com.pine.service.streaming.impl.MeshService;
 
 public abstract class AbstractPass extends MetricCollector {
     @PInject

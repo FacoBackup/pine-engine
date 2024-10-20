@@ -1,4 +1,4 @@
-package com.pine.service.streaming.scene;
+package com.pine.service.streaming.impl;
 
 import com.pine.FSUtil;
 import com.pine.injection.PBean;

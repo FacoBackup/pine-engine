@@ -6,9 +6,9 @@ import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.repository.voxelization.VoxelRepository;
-import com.pine.service.streaming.mesh.MeshService;
-import com.pine.service.streaming.texture.TextureService;
+import com.pine.repository.VoxelRepository;
+import com.pine.service.streaming.impl.MeshService;
+import com.pine.service.streaming.impl.TextureService;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 

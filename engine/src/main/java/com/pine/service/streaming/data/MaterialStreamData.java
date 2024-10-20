@@ -1,4 +1,4 @@
-package com.pine.service.streaming.material;
+package com.pine.service.streaming.data;
 
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamData;

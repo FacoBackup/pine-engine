@@ -1,4 +1,4 @@
-package com.pine.service.streaming.texture;
+package com.pine.service.streaming.impl;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -7,6 +7,7 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
