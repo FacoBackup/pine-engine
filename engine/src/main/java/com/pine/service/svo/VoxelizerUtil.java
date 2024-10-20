@@ -1,31 +1,36 @@
 package com.pine.service.svo;
 
 import com.pine.service.importer.data.MeshImportData;
+import com.pine.service.streaming.data.TextureStreamData;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 
 public class VoxelizerUtil {
 
-    public static void voxelize(MeshImportData rawMeshData, SparseVoxelOctree octree, float stepSize) {
+    public static void voxelize(MeshImportData rawMeshData, SparseVoxelOctree octree, float stepSize, TextureStreamData albedoTexture) {
         int[] indices = rawMeshData.indices;
         float[] vertices = rawMeshData.vertices;
+        float[] uvs = rawMeshData.uvs;
 
         for (int i = 0; i < indices.length; i += 3) {
             Vector4f v0 = new Vector4f(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2], 1);
             Vector4f v1 = new Vector4f(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2], 1);
             Vector4f v2 = new Vector4f(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2], 1);
-
-            iterateTriangle(v0, v1, v2, octree, stepSize);
+            VoxelData color = new VoxelData(0, 0, 0);
+            if (albedoTexture != null && uvs != null) {
+                color = TextureUtil.sampleTextureAtUV(albedoTexture, uvs[i], uvs[i + 1]);
+            }
+            iterateTriangle(v0, v1, v2, octree, stepSize, color);
         }
     }
 
-    private static void iterateTriangle(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree, float stepSize) {
+    private static void iterateTriangle(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree, float stepSize, VoxelData color) {
         Vector3f size = computeTriangleSize(v0, v1, v2);
         float triangleArea = computeSurfaceArea(size.x, size.y, size.z);
         // For triangles smaller than a voxel
         if (triangleArea <= octree.getVoxelSize()) {
-            doFastIntersection(v0, v1, v2, octree);
+            doFastIntersection(v0, v1, v2, octree, color);
             return;
         }
 
@@ -39,15 +44,15 @@ public class VoxelizerUtil {
                                 lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y,
                                 lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z
                         ),
-                        new VoxelData(1, 0, 1));
+                        color);
             }
         }
     }
 
-    private static void doFastIntersection(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree) {
-        octree.insert(new Vector3f(v0.x, v0.y, v0.z), new VoxelData(1, 0, 1));
-        octree.insert(new Vector3f(v1.x, v1.y, v1.z), new VoxelData(1, 0, 1));
-        octree.insert(new Vector3f(v2.x, v2.y, v2.z), new VoxelData(1, 0, 1));
+    private static void doFastIntersection(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree, VoxelData color) {
+        octree.insert(new Vector3f(v0.x, v0.y, v0.z), color);
+        octree.insert(new Vector3f(v1.x, v1.y, v1.z), color);
+        octree.insert(new Vector3f(v2.x, v2.y, v2.z), color);
     }
 
     private static Vector3f computeTriangleSize(Vector4f v0, Vector4f v1, Vector4f v2) {

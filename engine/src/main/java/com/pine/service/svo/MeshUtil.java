@@ -50,6 +50,6 @@ public class MeshUtil {
             verticesNew[indices[i + 2] * 3 + 2] = v2.z;
         }
 
-        return new MeshImportData(null, verticesNew, indices, null, null);
+        return new MeshImportData(null, verticesNew, indices, null, stream.uvs);
     }
 }

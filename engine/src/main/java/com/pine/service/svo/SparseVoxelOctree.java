@@ -33,7 +33,7 @@ public class SparseVoxelOctree implements Serializable {
     }
 
     public void insert(Vector3f point, VoxelData data) {
-        if(boundingBox.intersects(point)) {
+        if (boundingBox.intersects(point)) {
             worldToChunkLocal(point);
             insertInternal(root, point, data, new Vector3i(0), 0);
         }
@@ -100,18 +100,24 @@ public class SparseVoxelOctree implements Serializable {
     private void fillStorage(OctreeNode node) {
         if (node.isLeaf()) {
             return;
-//            voxelRepository.voxels[node.getDataIndex()] = node.getData().compress(); // LEAF WILL ONLY STORE COLOR INFORMATION
         }
+
         voxels[node.getDataIndex()] = node.packVoxelData(bufferIndex);
+        boolean isParentOfLeaf = true;
         for (var child : node.getChildren()) {
             if (child != null && !child.isLeaf()) {
                 putData(child);
+                isParentOfLeaf = false;
             }
         }
+
         for (var child : node.getChildren()) {
             if (child != null) {
                 fillStorage(child);
             }
+        }
+        if (isParentOfLeaf && node.getData() != null) {
+            voxels[node.getDataIndex()] = node.packVoxelData(node.getData().compress());
         }
     }
 
