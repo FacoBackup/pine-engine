@@ -6,6 +6,8 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 
+import java.util.Map;
+
 public abstract class AbstractStreamableService<T extends AbstractResourceRef<?>> implements Loggable {
 
     @PInject
@@ -32,7 +34,7 @@ public abstract class AbstractStreamableService<T extends AbstractResourceRef<?>
 
     public abstract StreamableResourceType getResourceType();
 
-    public abstract StreamData stream(String pathToFile);
+    public abstract StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources);
 
     public abstract AbstractResourceRef<?> newInstance(String key);
 }

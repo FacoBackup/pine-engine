@@ -7,6 +7,8 @@ import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.ref.AudioResourceRef;
 
+import java.util.Map;
+
 @PBean
 public class AudioService extends AbstractStreamableService<AudioResourceRef> {
     @Override
@@ -15,7 +17,7 @@ public class AudioService extends AbstractStreamableService<AudioResourceRef> {
     }
 
     @Override
-    public StreamData stream(String pathToFile) {
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
         return null;
     }
 

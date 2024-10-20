@@ -24,6 +24,7 @@ import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,7 +159,7 @@ public class AbstractDirectoryPanel extends AbstractView {
         } else {
             switch (((FileEntry) root).metadata.getResourceType()) {
                 case SCENE -> {
-                    var scene = (SceneImportData) sceneService.stream(importerService.getPathToFile(root.getId(), StreamableResourceType.SCENE));
+                    var scene = (SceneImportData) sceneService.stream(importerService.getPathToFile(root.getId(), StreamableResourceType.SCENE), Collections.emptyMap(), Collections.emptyMap());
                     requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, scene));
                 }
                 case MESH -> {

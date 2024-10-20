@@ -82,11 +82,6 @@ vec3 unpackColor(uint packedColor) {
     uint g = (packedColor >> 9u) & 0x7Fu;// Extract green (bits 9-15), mask with 0x7F
     uint b = (packedColor >> 2u) & 0x7Fu;// Extract blue (bits 2-8), mask with 0x7F
 
-    // Scale from 7 bits (0-127) to 8 bits (0-255) by multiplying by 2
-    r = r << 1;
-    g = g << 1;
-    b = b << 1;
-
     return vec3(r/255f, g/255f, b/255f);
 }
 

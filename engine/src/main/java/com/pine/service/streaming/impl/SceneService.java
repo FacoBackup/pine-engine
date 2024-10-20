@@ -9,6 +9,8 @@ import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.ref.SceneResourceRef;
 
+import java.util.Map;
+
 @PBean
 public class SceneService extends AbstractStreamableService<SceneResourceRef> {
     @Override
@@ -17,7 +19,7 @@ public class SceneService extends AbstractStreamableService<SceneResourceRef> {
     }
 
     @Override
-    public StreamData stream(String pathToFile) {
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
         return (SceneImportData) FSUtil.read(pathToFile);
     }
 

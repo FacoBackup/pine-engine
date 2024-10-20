@@ -17,19 +17,21 @@ public class VoxelizerUtil {
             Vector4f v0 = new Vector4f(vertices[indices[i] * 3], vertices[indices[i] * 3 + 1], vertices[indices[i] * 3 + 2], 1);
             Vector4f v1 = new Vector4f(vertices[indices[i + 1] * 3], vertices[indices[i + 1] * 3 + 1], vertices[indices[i + 1] * 3 + 2], 1);
             Vector4f v2 = new Vector4f(vertices[indices[i + 2] * 3], vertices[indices[i + 2] * 3 + 1], vertices[indices[i + 2] * 3 + 2], 1);
-            VoxelData color = new VoxelData(0, 0, 0);
-            if (albedoTexture != null && uvs != null) {
-                color = TextureUtil.sampleTextureAtUV(albedoTexture, uvs[i], uvs[i + 1]);
-            }
-            iterateTriangle(v0, v1, v2, octree, stepSize, color);
+            float u = uvs != null ? uvs[i] : 0;
+            float v = uvs != null ? uvs[i + 1] : 0;
+            iterateTriangle(v0, v1, v2, octree, stepSize, u, v, albedoTexture);
         }
     }
 
-    private static void iterateTriangle(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree, float stepSize, VoxelData color) {
+    private static void iterateTriangle(Vector4f v0, Vector4f v1, Vector4f v2, SparseVoxelOctree octree, float stepSize, float u, float v, TextureStreamData albedoTexture) {
         Vector3f size = computeTriangleSize(v0, v1, v2);
         float triangleArea = computeSurfaceArea(size.x, size.y, size.z);
         // For triangles smaller than a voxel
         if (triangleArea <= octree.getVoxelSize()) {
+            VoxelData color = new VoxelData(0, 0, 0);
+            if (albedoTexture != null) {
+                color = TextureUtil.sampleTextureAtUV(albedoTexture, u, v);
+            }
             doFastIntersection(v0, v1, v2, octree, color);
             return;
         }
@@ -44,7 +46,8 @@ public class VoxelizerUtil {
                                 lambda0 * v0.y + lambda1 * v1.y + lambda2 * v2.y,
                                 lambda0 * v0.z + lambda1 * v1.z + lambda2 * v2.z
                         ),
-                        color);
+                        TextureUtil.sampleTextureAtUV(albedoTexture, u * lambda0, v * lambda0)
+                );
             }
         }
     }

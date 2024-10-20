@@ -36,7 +36,7 @@ public class StreamingTask extends AbstractTask implements Loggable {
                 for (var service : services) {
                     if (service.getResourceType() == scheduled.getValue()) {
                         getLogger().warn("Streaming resource {} of type {}", scheduled.getKey(), scheduled.getValue());
-                        StreamData streamData = service.stream(importerService.getPathToFile(scheduled.getKey(), scheduled.getValue()));
+                        StreamData streamData = service.stream(importerService.getPathToFile(scheduled.getKey(), scheduled.getValue()), streamingRepository.schedule, streamingRepository.streamableResources);
                         if (streamData != null) {
                             streamingRepository.loadedResources.put(scheduled.getKey(), streamData);
                             if (!streamingRepository.streamableResources.containsKey(scheduled.getKey())) {

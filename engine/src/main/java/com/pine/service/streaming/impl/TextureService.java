@@ -14,6 +14,7 @@ import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Map;
 
 @PBean
 public class TextureService extends AbstractStreamableService<TextureResourceRef> {
@@ -27,7 +28,7 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
     }
 
     @Override
-    public StreamData stream(String pathToFile) {
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
         ByteBuffer imageBuffer;
         int width, height;
         try (MemoryStack stack = MemoryStack.stackPush()) {

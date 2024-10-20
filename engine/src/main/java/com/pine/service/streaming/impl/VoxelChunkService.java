@@ -10,9 +10,8 @@ import com.pine.service.streaming.data.VoxelChunkStreamData;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 import org.lwjgl.system.MemoryUtil;
 
-import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.nio.IntBuffer;
+import java.util.Map;
 
 @PBean
 public class VoxelChunkService extends AbstractStreamableService<VoxelChunkResourceRef> {
@@ -22,7 +21,7 @@ public class VoxelChunkService extends AbstractStreamableService<VoxelChunkResou
     }
 
     @Override
-    public StreamData stream(String pathToFile) {
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
         var dataRaw = (int[]) FSUtil.read(pathToFile);
         if (dataRaw == null) {
             getLogger().error("Error while reading voxel chunk {}", pathToFile);

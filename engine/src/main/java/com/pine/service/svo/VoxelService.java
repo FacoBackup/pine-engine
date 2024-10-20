@@ -13,10 +13,7 @@ import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.importer.data.MaterialImportData;
 import com.pine.service.importer.data.MeshImportData;
-import com.pine.service.importer.data.TextureImportData;
-import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.data.MaterialStreamData;
 import com.pine.service.streaming.data.TextureStreamData;
@@ -29,6 +26,8 @@ import org.lwjgl.stb.STBImage;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 @PBean
@@ -80,7 +79,7 @@ public class VoxelService implements Loggable {
     }
 
     private void voxelize() {
-        try{
+        try {
             if (voxelRepository.grid != null) {
                 for (var chunk : voxelRepository.grid.chunks) {
                     try {
@@ -108,33 +107,33 @@ public class VoxelService implements Loggable {
                     getLogger().warn("No intersections found for {}", meshComponent.entity.name);
                     continue;
                 }
+                TextureStreamData albedoTexture = null;
+                try {
+                    if (mesh.uvs != null && meshComponent.material != null) {
+                        var material = (MaterialStreamData) materialService.stream(importerService.getPathToFile(meshComponent.material, StreamableResourceType.MATERIAL), new HashMap<>(), new HashMap<>());
+                        if (material.albedo != null) {
+                            albedoTexture = (TextureStreamData) textureService.stream(importerService.getPathToFile(material.albedo.id, StreamableResourceType.TEXTURE), Collections.emptyMap(), Collections.emptyMap());
+                        }
+                    }
+                } catch (Exception e) {
+                    getLogger().error("Could not voxelize mesh", e);
+                }
 
                 getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.entity.name);
-                for (SparseVoxelOctree chunk : intersectingChunks) {
-                    long startLocal = System.currentTimeMillis();
-                    TextureStreamData albedoTexture = null;
-                    try {
-                        if (mesh.uvs != null && meshComponent.material != null) {
-                            var material = (MaterialStreamData) materialService.stream(importerService.getPathToFile(meshComponent.material, StreamableResourceType.MATERIAL));
-                            materialService.repository.streamableResources.clear();
 
-                            if (material.albedo != null) {
-                                albedoTexture = (TextureStreamData) textureService.stream(importerService.getPathToFile(material.albedo.id, StreamableResourceType.TEXTURE));
-                            }
-                        }
-                        VoxelizerUtil.voxelize(mesh, chunk, voxelRepository.voxelizationStepSize, albedoTexture);
-                    } catch (Exception e) {
-                        getLogger().error("Could not voxelize mesh", e);
-                    }
-                    if (albedoTexture != null) {
-                        STBImage.stbi_image_free(albedoTexture.imageBuffer);
-                    }
-                    getLogger().warn("Voxelization of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
+                long startLocal = System.currentTimeMillis();
+                for (SparseVoxelOctree chunk : intersectingChunks) {
+                    VoxelizerUtil.voxelize(mesh, chunk, voxelRepository.voxelizationStepSize, albedoTexture);
+                }
+                getLogger().warn("Voxelization of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
+
+                if (albedoTexture != null) {
+                    STBImage.stbi_image_free(albedoTexture.imageBuffer);
                 }
             }
 
             writeChunks(grid);
-        }catch (Exception e){
+        } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
         isVoxelizing = false;
@@ -142,7 +141,7 @@ public class VoxelService implements Loggable {
 
     private @NotNull MeshImportData streamMesh(String meshLOD, Matrix4f globalMatrix, MeshComponent meshComponent) {
         long startLocal = System.currentTimeMillis();
-        var mesh = MeshUtil.transformVertices((MeshImportData) meshService.stream(importerService.getPathToFile(meshLOD, StreamableResourceType.MESH)), globalMatrix);
+        var mesh = MeshUtil.transformVertices((MeshImportData) meshService.stream(importerService.getPathToFile(meshLOD, StreamableResourceType.MESH), Collections.emptyMap(), Collections.emptyMap()), globalMatrix);
         getLogger().warn("Streaming of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
         return mesh;
     }

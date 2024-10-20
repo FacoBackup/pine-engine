@@ -16,15 +16,19 @@ public class TextureUtil {
     }
 
     public static VoxelData sampleTextureAtUV(TextureStreamData image, float u, float v) {
+        if (image == null) {
+            return new VoxelData(0, 0, 0);
+        }
+
         int[] pixelCoords = uvToPixelCoords(u, v, image.width, image.height);
         int x = pixelCoords[0];
         int y = pixelCoords[1];
 
         int pixelIndex = (y * image.width + x) * 4; // 4 bytes per pixel (RGBA)
 
-        int r = (image.imageBuffer.get(pixelIndex) & 0xFF) >> 1;   // Red channel, reduced to 7 bits
-        int g = (image.imageBuffer.get(pixelIndex + 1) & 0xFF) >> 1; // Green channel, reduced to 7 bits
-        int b = (image.imageBuffer.get(pixelIndex + 2) & 0xFF) >> 1; // Blue channel, reduced to 7 bits
+        int r = (image.imageBuffer.get(pixelIndex) & 0xFF);
+        int g = (image.imageBuffer.get(pixelIndex + 1) & 0xFF);
+        int b = (image.imageBuffer.get(pixelIndex + 2) & 0xFF);
 
         return new VoxelData(r, g, b);
     }
