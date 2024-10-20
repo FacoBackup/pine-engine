@@ -67,14 +67,10 @@ public class RenderingTask extends AbstractTask implements Loggable {
                 // TODO - SORT BY DISTANCE
                 for (var chunk : voxelRepository.grid.chunks) {
                     boolean culled = false;// transformationService.isCulled(chunk.getCenter(), 100, new Vector3f((float) chunk.getSize()));
-                    if (culled || filled >= 3) {
+                    if (culled || filled > 3) {
                         continue;
                     }
                     var chunkStream = (VoxelChunkResourceRef) streamingService.stream(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
-                    if (chunkStream != null && chunkStream.getQuantity() == 1) {
-                        continue;
-                    }
-                    filled++;
                     renderingRepository.newVoxelChunks[filled] = chunkStream;
                     if (chunkStream != null) {
                         filledWithContent++;
@@ -82,6 +78,7 @@ public class RenderingTask extends AbstractTask implements Loggable {
                         chunkStream.center = chunk.getCenter();
                         chunkStream.depth = chunk.getDepth();
                     }
+                    filled++;
                 }
                 renderingRepository.voxelChunksFilled = filledWithContent;
             }

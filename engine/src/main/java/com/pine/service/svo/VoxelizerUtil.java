@@ -1,14 +1,13 @@
 package com.pine.service.svo;
 
 import com.pine.service.importer.data.MeshImportData;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 
 public class VoxelizerUtil {
 
-    public static void traverseMesh(MeshImportData rawMeshData, SparseVoxelOctree octree, float stepSize) {
+    public static void voxelize(MeshImportData rawMeshData, SparseVoxelOctree octree, float stepSize) {
         int[] indices = rawMeshData.indices;
         float[] vertices = rawMeshData.vertices;
 

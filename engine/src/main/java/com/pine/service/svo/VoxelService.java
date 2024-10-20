@@ -8,26 +8,19 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.core.CoreSSBORepository;
-import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.VoxelRepository;
+import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.data.MeshImportData;
-import com.pine.service.resource.SSBOService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.impl.MeshService;
-import com.pine.tasks.SyncTask;
 import org.joml.Matrix4f;
-import org.lwjgl.system.MemoryUtil;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @PBean
 public class VoxelService implements Loggable {
@@ -45,13 +38,22 @@ public class VoxelService implements Loggable {
     public MeshService meshService;
 
     @PInject
+    public RenderingRepository renderingRepository;
+
+    @PInject
     public StreamingService streamingService;
 
-    public void buildFromScratch() {
+    private boolean isVoxelizing;
+
+    public boolean buildFromScratch() {
+        if (isVoxelizing) {
+            return false;
+        }
+        isVoxelizing = true;
         if (voxelRepository.grid != null) {
             for (var chunk : voxelRepository.grid.chunks) {
                 AbstractResourceRef<?> ref = streamingService.repository.streamableResources.get(chunk.getId());
-                if(ref != null){
+                if (ref != null) {
                     ref.dispose();
                 }
                 streamingService.repository.failedStreams.put(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
@@ -59,6 +61,7 @@ public class VoxelService implements Loggable {
             }
         }
         new Thread(this::voxelize).start();
+        return true;
     }
 
     private void voxelize() {
@@ -95,13 +98,14 @@ public class VoxelService implements Loggable {
                 getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.entity.name);
                 for (SparseVoxelOctree chunk : intersectingChunks) {
                     startLocal = System.currentTimeMillis();
-                    VoxelizerUtil.traverseMesh(mesh, chunk, voxelRepository.voxelizationStepSize);
+                    VoxelizerUtil.voxelize(mesh, chunk, voxelRepository.voxelizationStepSize);
                     getLogger().warn("Voxelization of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
                 }
             }
         }
 
         writeChunks(grid);
+        isVoxelizing = false;
     }
 
     private void writeChunks(SVOGrid grid) {
@@ -126,5 +130,15 @@ public class VoxelService implements Loggable {
         toRemove.forEach(grid.chunks::remove);
         voxelRepository.grid = grid;
         getLogger().warn("Writing voxels took {}ms", System.currentTimeMillis() - startMemory);
+    }
+
+    public int getVoxelCount() {
+        int total = 0;
+        for(var chunk : renderingRepository.voxelChunks){
+            if(chunk != null){
+                total += chunk.getQuantity();
+            }
+        }
+        return total;
     }
 }

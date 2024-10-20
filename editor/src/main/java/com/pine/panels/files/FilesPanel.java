@@ -164,10 +164,11 @@ public class FilesPanel extends AbstractDockPanel {
                 byType.putIfAbsent(data.getResourceType(), new ArrayList<>());
                 byType.get(data.getResourceType()).add(data);
             }
+            var index = context.currentDirectory.directories.size();
             if (byType.size() > 1) {
                 for (var entry : byType.entrySet()) {
                     var k = entry.getKey();
-                    var d = new DirectoryEntry("Imported - " + k.getTitle(), context.currentDirectory);
+                    var d = new DirectoryEntry("(" + index + ") imported - " + k.getTitle(), context.currentDirectory);
                     context.currentDirectory.directories.put(d.id, d);
                     for (var f : entry.getValue()) {
                         d.files.add(f.id);

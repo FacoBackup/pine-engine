@@ -9,6 +9,7 @@ import com.pine.repository.streaming.StreamingRepository;
 import com.pine.repository.VoxelRepository;
 import com.pine.service.streaming.impl.MeshService;
 import com.pine.service.streaming.impl.TextureService;
+import com.pine.service.svo.VoxelService;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 
@@ -26,7 +27,7 @@ public class ResourcesPanel extends AbstractDockPanel {
     public TextureService textureService;
 
     @PInject
-    public VoxelRepository voxelRepository;
+    public VoxelService voxelService;
 
     @PInject
     public StreamingRepository streamingRepository;
@@ -47,7 +48,7 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Textures", textureService.getTotalTextureCount());
 
-            render("Voxels", voxelRepository.getVoxelCount());
+            render("Voxels", voxelService.getVoxelCount());
 
             render("Resources to be streamed in", streamingRepository.schedule.size());
 

@@ -2,6 +2,8 @@ package com.pine.panels.header;
 
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
+import com.pine.messaging.MessageRepository;
+import com.pine.messaging.MessageSeverity;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.DebugShadingModel;
 import com.pine.repository.EditorRepository;
@@ -40,10 +42,15 @@ public class ViewportHeaderPanel extends AbstractView {
     @PInject
     public VoxelService voxelService;
 
+    @PInject
+    public MessageRepository messageRepository;
+
     @Override
     public void render() {
         if (ImGui.button(Icons.apps + "Repackage scene voxels##vp")) {
-            voxelService.buildFromScratch();
+            if(!voxelService.buildFromScratch()){
+                messageRepository.pushMessage("Already voxelizing scene", MessageSeverity.WARN);
+            }
         }
 
         largeSpacing();

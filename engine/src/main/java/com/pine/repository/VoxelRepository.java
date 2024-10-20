@@ -41,12 +41,4 @@ public class VoxelRepository extends Inspectable implements SerializableReposito
     public String getIcon() {
         return Icons.apps;
     }
-
-    public int getVoxelCount() {
-        // TODO
-//        if (voxels != null) {
-//            return voxels.length;
-//        }
-        return 0;
-    }
 }
