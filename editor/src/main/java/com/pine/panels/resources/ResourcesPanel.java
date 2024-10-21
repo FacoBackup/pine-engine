@@ -6,7 +6,6 @@ import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.repository.VoxelRepository;
 import com.pine.service.streaming.impl.MeshService;
 import com.pine.service.streaming.impl.TextureService;
 import com.pine.service.svo.VoxelService;
@@ -50,9 +49,9 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Voxels", voxelService.getVoxelCount());
 
-            render("Resources to be streamed in", streamingRepository.schedule.size());
+            render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
 
-            render("Resources to be streamed in", streamingRepository.schedule.size());
+            render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
 
             render("Renderable entities", worldRepository.components.get(ComponentType.MESH).size());
 

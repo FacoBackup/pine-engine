@@ -30,17 +30,17 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     private long sinceLastCleanup;
 
     public AbstractResourceRef<?> stream(String id, StreamableResourceType type) {
-        if (id == null || repository.schedule.containsKey(id)) {
+        if (id == null || repository.scheduleToLoad.containsKey(id)) {
             return null;
         }
-        AbstractResourceRef<?> val = repository.streamableResources.get(id);
+        AbstractResourceRef<?> val = repository.loadedResources.get(id);
         if (val != null) {
             if (val.isLoaded()) {
                 return val;
             }
         }
-        if (!repository.failedStreams.containsKey(id)) {
-            repository.schedule.put(id, type);
+        if (!repository.discardedResources.containsKey(id)) {
+            repository.scheduleToLoad.put(id, type);
             getLogger().warn("Requesting stream of {} of type {}", id, type);
         }
         return null;
@@ -48,14 +48,14 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
 
     @Override
     public void sync() {
-        for (String resource : repository.loadedResources.keySet()) {
-            AbstractResourceRef<?> ref = repository.streamableResources.get(resource);
+        for (String resource : repository.toLoadResources.keySet()) {
+            AbstractResourceRef<?> ref = repository.loadedResources.get(resource);
             if (ref != null) {
                 getLogger().warn("Loading streamed resource {} of type {}", resource, ref.getResourceType());
-                ref.load(repository.loadedResources.get(resource));
+                ref.load(repository.toLoadResources.get(resource));
             }
-            repository.loadedResources.remove(resource);
-            repository.schedule.remove(resource);
+            repository.toLoadResources.remove(resource);
+            repository.scheduleToLoad.remove(resource);
         }
         disposeOfUnusedResources();
     }
@@ -64,10 +64,10 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
         if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
             sinceLastCleanup = clock.totalTime;
             getLogger().warn("Disposing of unused resources");
-            for (AbstractResourceRef<?> resource : repository.streamableResources.values()) {
+            for (AbstractResourceRef<?> resource : repository.loadedResources.values()) {
                 if ((clock.totalTime - resource.lastUse) >= MAX_TIMEOUT) {
                     resource.dispose();
-                    repository.streamableResources.remove(resource.id);
+                    repository.loadedResources.remove(resource.id);
                 }
             }
         }
@@ -75,7 +75,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
 
     @Override
     public void dispose() {
-        for (var resource : repository.streamableResources.values()) {
+        for (var resource : repository.loadedResources.values()) {
             if (!resource.isLoaded()) {
                 continue;
             }

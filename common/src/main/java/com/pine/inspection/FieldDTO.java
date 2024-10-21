@@ -10,9 +10,9 @@ public class FieldDTO {
     private final Field field;
     private final Object instance;
     private final List<SelectableEnum> options;
-    private final MutableField delegate;
+    private final InspectableField delegate;
 
-    public FieldDTO(FieldType type, MutableField delegate, Field field, Object instance, List<SelectableEnum> options) {
+    public FieldDTO(FieldType type, InspectableField delegate, Field field, Object instance, List<SelectableEnum> options) {
         this.type = type;
         this.delegate = delegate;
         this.id =  "##" + UUID.randomUUID().toString().replaceAll("-", "");
@@ -55,6 +55,10 @@ public class FieldDTO {
 
     public boolean isDirectChange() {
         return delegate.isDirectChange();
+    }
+
+    public boolean isDisabled() {
+        return delegate.disabled();
     }
 
     public List<SelectableEnum> getOptions() {

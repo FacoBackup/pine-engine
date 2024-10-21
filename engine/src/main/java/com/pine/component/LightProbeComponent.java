@@ -1,15 +1,15 @@
 package com.pine.component;
 
-import com.pine.inspection.MutableField;
+import com.pine.inspection.InspectableField;
 
 
 public class LightProbeComponent extends AbstractComponent {
-    @MutableField(label = "Mipmaps")
+    @InspectableField(label = "Mipmaps")
     public int mipmaps = 6;
     /**
      * Only entities within  this radius will be rendered into the probe
      */
-    @MutableField(label = "Radius")
+    @InspectableField(label = "Radius")
     public int collectionRadius = 50;
 
     public LightProbeComponent(Entity entity) {

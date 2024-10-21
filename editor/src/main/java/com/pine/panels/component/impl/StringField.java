@@ -18,8 +18,12 @@ public class StringField extends AbstractFormField {
     @Override
     public void render() {
         ImGui.text(dto.getLabel());
-        if(ImGui.inputText(dto.getId(), value)){
-            changerHandler.accept(dto, value.get());
+        if (dto.isDisabled()) {
+            ImGui.textDisabled(value.get());
+        } else {
+            if (ImGui.inputText(dto.getId(), value)) {
+                changerHandler.accept(dto, value.get());
+            }
         }
     }
 }

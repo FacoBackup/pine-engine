@@ -2,7 +2,7 @@ package com.pine.component;
 
 import com.pine.Mutable;
 import com.pine.inspection.Inspectable;
-import com.pine.inspection.MutableField;
+import com.pine.inspection.InspectableField;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.theme.Icons;
 import org.joml.Matrix4f;
@@ -14,11 +14,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Transformation extends Inspectable implements Mutable, Serializable {
-    @MutableField(label = "Translation")
+    @InspectableField(label = "Translation")
     public Vector3f translation = new Vector3f();
-    @MutableField(label = "Scale")
+    @InspectableField(label = "Scale")
     public Vector3f scale = new Vector3f(1);
-    @MutableField(label = "Rotation")
+    @InspectableField(label = "Rotation")
     public Quaternionf rotation = new Quaternionf();
 
     public final boolean isInstance;

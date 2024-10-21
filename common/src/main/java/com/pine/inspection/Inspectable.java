@@ -12,13 +12,13 @@ public abstract class Inspectable {
     final public List<FieldDTO> getFieldsAnnotated() {
         if (fieldsAnnotated.isEmpty()) {
             for (var field : getClass().getFields()) {
-                MutableField mutableField = field.getAnnotation(MutableField.class);
-                if (mutableField != null) {
+                InspectableField inspectableField = field.getAnnotation(InspectableField.class);
+                if (inspectableField != null) {
                     FieldType fieldType = FieldType.getFieldType(field.getType());
                     if (fieldType != null) {
                         fieldsAnnotated.add(new FieldDTO(
                                 fieldType,
-                                mutableField,
+                                inspectableField,
                                 field,
                                 this,
                                 getOptions(field)

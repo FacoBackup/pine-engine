@@ -1,7 +1,7 @@
 package com.pine.component;
 
 import com.pine.inspection.Inspectable;
-import com.pine.inspection.MutableField;
+import com.pine.inspection.InspectableField;
 import com.pine.theme.Icons;
 
 import java.io.Serializable;
@@ -10,10 +10,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Entity extends Inspectable implements Serializable {
-    @MutableField(label = "Name")
+    @InspectableField(label = "Name")
     public String name = "New Entity";
 
-    @MutableField(label = "Transformation")
+    @InspectableField(label = "Transformation")
     public final Transformation transformation = new Transformation(this, false);
 
     /**

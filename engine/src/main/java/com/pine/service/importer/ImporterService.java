@@ -10,6 +10,7 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.data.AbstractImportData;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,39 +56,31 @@ public class ImporterService implements Loggable {
             List<AbstractResourceMetadata> response = new ArrayList<>();
 
             for (var imported : importedFiles) {
-              try{
-                  getLogger().warn("Persisting {} of type {}", imported.id, imported.getResourceType());
-                  AbstractImporter importer = importers.get(imported.getResourceType());
-                  if (importer != null) {
-                      AbstractResourceMetadata metadata = importer.persist(imported);
-                      if (FSUtil.write(metadata, getMetadataPath(metadata.id))) {
-                          response.add(metadata);
-                      }
-                  }
-              }catch (Exception e){
-                  getLogger().error("Error while persisting file",  e);
-              }
+                try {
+                    getLogger().warn("Persisting {} of type {}", imported.id, imported.getResourceType());
+                    AbstractImporter importer = importers.get(imported.getResourceType());
+                    if (importer != null) {
+                        AbstractResourceMetadata metadata = importer.persist(imported);
+                        metadata.setSize(new File(getPathToFile(metadata.id, metadata.getResourceType())).length());
+                        if (FSUtil.write(metadata, getPathToMetadata(metadata.id))) {
+                            response.add(metadata);
+                        }
+                    }
+                } catch (Exception e) {
+                    getLogger().error("Error while persisting file", e);
+                }
             }
 
             callback.accept(response);
         }).start();
     }
 
-    private String getMetadataPath(String id) {
+    public String getPathToMetadata(String id) {
         return engine.getMetadataDirectory() + id + ".dat";
     }
 
-    public AbstractResourceMetadata readMetadata(String id) {
-        String absolutePath = getMetadataPath(id);
-        Object read = FSUtil.read(absolutePath);
-        if (read != null) {
-            return (AbstractResourceMetadata) read;
-        }
-        return null;
-    }
-
     public AbstractImportData readFile(AbstractResourceMetadata metadata) {
-        if(!metadata.getResourceType().isReadable()){
+        if (!metadata.getResourceType().isReadable()) {
             return null;
         }
         String path = getPathToFile(metadata.id, metadata.getResourceType());
@@ -96,5 +89,19 @@ public class ImporterService implements Loggable {
 
     public String getPathToFile(String id, StreamableResourceType type) {
         return engine.getResourceDirectory() + id + "." + type.name();
+    }
+
+    public static String getSizeWithUnit(float size) {
+        String sizeUnit = "mb";
+        double fileSize = (double) size / (1024 * 1024);
+        if (fileSize > 1000) {
+            fileSize = fileSize / 1024;
+            sizeUnit = "gb";
+        }
+        if (fileSize < 1) {
+            fileSize = (double) size / 1024;
+            sizeUnit = "kb";
+        }
+        return String.format("%.2f", fileSize) + sizeUnit;
     }
 }

@@ -14,7 +14,8 @@ import imgui.ImGui;
 public class FileInspectorPanel extends AbstractView {
 
     private FilesContext context;
-    private FormPanel form;
+    private FormPanel dataForm;
+    private FormPanel metadataForm;
     private AbstractResourceMetadata currentMetadata;
 
     @PInject
@@ -26,44 +27,52 @@ public class FileInspectorPanel extends AbstractView {
     @Override
     public void onInitialize() {
         context = (FilesContext) getContext();
-        appendChild(form = new FormPanel(this::handleChange));
+        appendChild(dataForm = new FormPanel(this::handleChange));
+        appendChild(metadataForm = new FormPanel(this::handleMetadataChange));
         context.subscribe(() -> {
             if (context.inspection == null) {
-                form.setInspectable(null);
+                dataForm.setInspectable(null);
                 currentMetadata = null;
                 return;
             }
             currentMetadata = context.inspection.metadata;
             if (currentMetadata.getResourceType().isMutable()) {
-                form.setInspectable(importerService.readFile(currentMetadata));
+                dataForm.setInspectable(importerService.readFile(currentMetadata));
             } else {
-                form.setInspectable(null);
+                dataForm.setInspectable(null);
             }
+
+            metadataForm.setInspectable(currentMetadata);
         });
     }
 
     private void handleChange(FieldDTO dto, Object object) {
+        onChange(dto, object, importerService.getPathToFile(currentMetadata.id, currentMetadata.getResourceType()), true);
+    }
+
+    private void handleMetadataChange(FieldDTO dto, Object object) {
+        onChange(dto, object, importerService.getPathToMetadata(currentMetadata.id), false);
+    }
+
+    private void onChange(FieldDTO dto, Object object, String path, boolean dispose) {
         try {
             dto.getField().set(dto.getInstance(), object);
-            FSUtil.write(dto.getInstance(), importerService.getPathToFile(currentMetadata.id, currentMetadata.getResourceType()));
-            AbstractResourceRef<?> ref = streamingRepository.streamableResources.get(currentMetadata.id);
-            if (ref != null) {
-                ref.dispose();
+            FSUtil.write(dto.getInstance(), path);
+            if (dispose) {
+                AbstractResourceRef<?> ref = streamingRepository.loadedResources.get(currentMetadata.id);
+                if (ref != null) {
+                    ref.dispose();
+                }
             }
         } catch (Exception e) {
-            getLogger().error("Error while updating file {}", form.getInspectable().getTitle());
+            getLogger().error("Error while updating metadata file {}", dataForm.getInspectable().getTitle(), e);
         }
     }
 
     @Override
     public void render() {
         if (ImGui.beginChild(imguiId)) {
-            if (form.getInspectable() != null) {
-                super.render();
-            } else {
-                // TODO - RENDER METADATA
-//                ImGui.text("Select a file");
-            }
+            super.render();
         }
         ImGui.endChild();
     }

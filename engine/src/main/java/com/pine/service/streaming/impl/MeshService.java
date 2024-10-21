@@ -113,7 +113,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
 
     public int getTotalTriangleCount() {
         int total = 0;
-        for (var resourceRef : repository.streamableResources.values()) {
+        for (var resourceRef : repository.loadedResources.values()) {
             if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.MESH) {
                 total += ((MeshResourceRef) resourceRef).triangleCount;
             }

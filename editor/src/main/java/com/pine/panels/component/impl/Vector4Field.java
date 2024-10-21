@@ -22,10 +22,17 @@ public class Vector4Field extends AbstractFormField {
         values[1] = valVec.y;
         values[2] = valVec.z;
         values[3] = valVec.w;
-
         ImGui.text(dto.getLabel());
-        if (ImGui.dragFloat4(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
-            changerHandler.accept(dto, values);
+
+        if (dto.isDisabled()) {
+            ImGui.text("X: " + values[0]);
+            ImGui.text("Y: " + values[1]);
+            ImGui.text("Z: " + values[2]);
+            ImGui.text("W: " + values[3]);
+        } else {
+            if (ImGui.dragFloat4(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
+                changerHandler.accept(dto, values);
+            }
         }
     }
 }

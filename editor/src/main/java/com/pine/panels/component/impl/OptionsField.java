@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 
 public class OptionsField extends AbstractFormField {
     private SelectableEnum selected;
+
     public OptionsField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
         selected = (SelectableEnum) dto.getValue();
@@ -16,11 +17,16 @@ public class OptionsField extends AbstractFormField {
 
     @Override
     public void render() {
-        ImGui.text(dto.getLabel());
-        for(var op : dto.getOptions()){
-            if(ImGui.checkbox(op.getTitle(), selected == op)){
-                selected = op;
-                changerHandler.accept(dto, op);
+        if (dto.isDisabled()) {
+            ImGui.text(dto.getLabel() + ": ");
+            ImGui.textDisabled((selected == null ? "None" : selected.getTitle()));
+        } else {
+            ImGui.text(dto.getLabel());
+            for (var op : dto.getOptions()) {
+                if (ImGui.checkbox(op.getTitle(), selected == op)) {
+                    selected = op;
+                    changerHandler.accept(dto, op);
+                }
             }
         }
     }
