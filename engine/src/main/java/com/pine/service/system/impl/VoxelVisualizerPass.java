@@ -34,10 +34,10 @@ public class VoxelVisualizerPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
+        bindGlobal();
+
         for (var chunk : renderingRepository.voxelChunks) {
             if (chunk != null && chunk.getQuantity() > 1) {
-                bindGlobal();
-
                 chunk.lastUse = clockRepository.totalTime;
 
                 chunk.getBuffer().setBindingPoint(BUFFER_BINDING_POINT);
@@ -48,10 +48,10 @@ public class VoxelVisualizerPass extends AbstractPass {
                 centerScaleBuffer.put(2, chunk.center.z);
                 centerScaleBuffer.put(3, chunk.size);
                 computeService.bindUniform(centerScale, centerScaleBuffer);
-
                 computeService.dispatch(COMPUTE_RUNTIME_DATA);
             }
         }
+        computeService.unbind();
     }
 
     private void bindGlobal() {

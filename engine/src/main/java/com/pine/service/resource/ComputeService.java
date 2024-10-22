@@ -41,13 +41,11 @@ public class ComputeService extends AbstractResourceService<Compute, ComputeCrea
     public void dispatch(ComputeRuntimeData data){
         GL46.glDispatchCompute(data.groupX, data.groupY, data.groupZ);
         GL46.glMemoryBarrier(data.memoryBarrier);
-        unbind();
     }
 
     public void dispatch(){
         GL46.glDispatchCompute(DEFAULT_COMPUTE.groupX, DEFAULT_COMPUTE.groupY, DEFAULT_COMPUTE.groupZ);
         GL46.glMemoryBarrier(DEFAULT_COMPUTE.memoryBarrier);
-        unbind();
     }
 
     @Override

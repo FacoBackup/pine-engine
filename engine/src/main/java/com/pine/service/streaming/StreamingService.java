@@ -9,7 +9,12 @@ import com.pine.repository.ClockRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.streaming.impl.TextureService;
+import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.tasks.SyncTask;
+
+import java.util.Collections;
+import java.util.UUID;
 
 /**
  * Responsible for instantiating resources, creating requests for loading resources and disposing of loaded resources
@@ -21,6 +26,9 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
 
     @PInject
     public ClockRepository clock;
+
+    @PInject
+    public TextureService textureService;
 
     @PInject
     public Engine engine;
@@ -81,5 +89,17 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
             }
             resource.dispose();
         }
+    }
+
+    public TextureResourceRef streamTextureSync(String path) {
+        var texture = textureService.stream(path, Collections.emptyMap(), Collections.emptyMap());
+        if (texture != null) {
+            String id = UUID.randomUUID().toString();
+            var textureRef = new TextureResourceRef(id);
+            textureRef.load(texture);
+            repository.loadedResources.put(id, textureRef);
+            return textureRef;
+        }
+        return null;
     }
 }

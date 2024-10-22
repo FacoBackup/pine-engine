@@ -9,7 +9,7 @@ public class TextureResourceMetadata extends AbstractResourceMetadata {
     @InspectableField(label = "Width", disabled = true)
     public final int originalWidth;
 
-    @TypePreviewField(type = StreamableResourceType.TEXTURE)
+    @TypePreviewField
     @InspectableField(label = "Preview", disabled = true)
     public final String pathToPreview;
 

@@ -44,6 +44,7 @@ public class FilesPanel extends AbstractDockPanel {
     private FilesContext context;
     private String searchPath = "";
     private FileInspectorPanel fileInspector;
+    private boolean isFirstRender;
 
     @Override
     public void onInitialize() {
@@ -74,6 +75,12 @@ public class FilesPanel extends AbstractDockPanel {
         directoryPanel.isWindowFocused = isWindowFocused;
 
         ImGui.columns(2, "##filesColumns" + imguiId);
+
+        if(!isFirstRender){
+            isFirstRender = true;
+            ImGui.setColumnWidth(0, size.x  * .75f);
+        }
+
         directoryPanel.render();
         ImGui.nextColumn();
         if (context.inspection != null) {
@@ -101,12 +108,13 @@ public class FilesPanel extends AbstractDockPanel {
         ImGui.text(searchPath);
 
         ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 150, 0);
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 100, 0);
 
         ImGui.sameLine();
         if (ImGui.button(Icons.file_open + " Import File##importFile")) {
             importFile();
         }
+        ImGui.separator();
     }
 
     private void importFile() {
