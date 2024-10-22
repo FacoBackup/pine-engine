@@ -17,8 +17,10 @@ public class BooleanField extends AbstractFormField {
     @Override
     public void render() {
         if(ImGui.checkbox(dto.getLabel(), value)){
-            value = !value;
-            changerHandler.accept(dto, value);
+            if(!dto.isDisabled()) {
+                value = !value;
+                changerHandler.accept(dto, value);
+            }
         }
     }
 }

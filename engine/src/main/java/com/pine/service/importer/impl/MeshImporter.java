@@ -146,6 +146,6 @@ public class MeshImporter extends AbstractImporter {
     public AbstractResourceMetadata persist(AbstractImportData data) {
         var cast = (MeshImportData) data;
         persistInternal(data);
-        return new MeshResourceMetadata(data.name, data.id, cast.vertices.length, cast.indices.length, cast.normals != null, cast.uvs != null);
+        return new MeshResourceMetadata(data.name, data.id, cast.vertices.length, cast.indices.length/3, cast.normals != null, cast.uvs != null);
     }
 }

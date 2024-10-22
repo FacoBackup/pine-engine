@@ -18,14 +18,19 @@ public class Vector3Field extends AbstractFormField {
 
     @Override
     public void render() {
-
         values[0] = valVec3.x;
         values[1] = valVec3.y;
         values[2] = valVec3.z;
-
         ImGui.text(dto.getLabel());
-        if (ImGui.dragFloat3(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
-            changerHandler.accept(dto, values);
+
+        if (dto.isDisabled()) {
+            ImGui.text("X: " + values[0]);
+            ImGui.text("Y: " + values[1]);
+            ImGui.text("Z: " + values[2]);
+        } else {
+            if (ImGui.dragFloat3(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
+                changerHandler.accept(dto, values);
+            }
         }
     }
 }

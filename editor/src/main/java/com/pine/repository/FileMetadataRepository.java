@@ -7,6 +7,7 @@ import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.fs.FileEntry;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,6 +25,9 @@ public class FileMetadataRepository implements Loggable {
 
     @PInject
     public EditorRepository editorRepository;
+
+    @PInject
+    public ImporterService importerService;
 
     private final Map<String, FileEntry> files = new HashMap<>();
     private final Map<StreamableResourceType, List<FileEntry>> byType = new HashMap<>();
@@ -62,7 +66,9 @@ public class FileMetadataRepository implements Loggable {
             try {
                 Object data = FSUtil.read(path);
                 if (data != null) {
-                    File file = new File(path);
+                    var casted = (AbstractResourceMetadata) data;
+
+                    File file = new File(importerService.getPathToFile(casted.id, casted.getResourceType()));
                     var fileData = new FileEntry((AbstractResourceMetadata) data, file);
                     byType.putIfAbsent(fileData.metadata.getResourceType(), new ArrayList<>());
                     byType.get(fileData.metadata.getResourceType()).add(fileData);

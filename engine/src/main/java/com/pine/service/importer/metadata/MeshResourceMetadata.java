@@ -1,10 +1,20 @@
 package com.pine.service.importer.metadata;
 
+import com.pine.inspection.InspectableField;
 import com.pine.repository.streaming.StreamableResourceType;
 
 public class MeshResourceMetadata extends AbstractResourceMetadata {
-    public final int vertices, triangles;
-    public final boolean hasNormals, hasUVs;
+    @InspectableField(label = "Number of vertices", disabled = true)
+    public final int vertices;
+
+    @InspectableField(label = "Number of triangles", disabled = true)
+    public final int triangles;
+
+    @InspectableField(label = "Has Normal information", disabled = true)
+    public final boolean hasNormals;
+
+    @InspectableField(label = "Has UV information", disabled = true)
+    public final boolean hasUVs;
 
     public MeshResourceMetadata(String name, String id, int vertices, int triangles, boolean hasNormals, boolean hasUVs) {
         super(name, id);

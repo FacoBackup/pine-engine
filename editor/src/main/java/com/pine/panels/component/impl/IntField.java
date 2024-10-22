@@ -17,9 +17,14 @@ public class IntField extends AbstractFormField {
 
     @Override
     public void render() {
-        ImGui.text(dto.getLabel());
-        if (ImGui.dragInt(imguiId, values, 1, dto.getMin(), dto.getMax())) {
-            changerHandler.accept(dto, values[0]);
+        if (dto.isDisabled()) {
+            ImGui.text(dto.getLabel() + ": ");
+            ImGui.textDisabled(String.valueOf(values[0]));
+        } else {
+            ImGui.text(dto.getLabel());
+            if (ImGui.dragInt(imguiId, values, 1, dto.getMin(), dto.getMax())) {
+                changerHandler.accept(dto, values[0]);
+            }
         }
     }
 }

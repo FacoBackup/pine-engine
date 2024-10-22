@@ -2,12 +2,12 @@ package com.pine.component.light;
 
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
-import com.pine.inspection.MutableField;
+import com.pine.inspection.InspectableField;
 import com.pine.type.LightType;
 
 
 public class SphereLightComponent extends AbstractLightComponent {
-    @MutableField(label = "Area light Radius")
+    @InspectableField(label = "Area light Radius")
     public float areaRadius = 1;
 
     public SphereLightComponent(Entity entity) {

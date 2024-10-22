@@ -55,8 +55,8 @@ public class FilesService implements Loggable {
 
     private void delete(FileEntry file) {
         try {
-            var metadataPath = file.path;
-            var filePath = importerService.getPathToFile(file.getId(), file.metadata.getResourceType());
+            var filePath = file.path;
+            var metadataPath = importerService.getPathToMetadata(file.getId());
             var previewPath = filePath + PREVIEW_EXT;
 
             new File(metadataPath).delete();
@@ -64,10 +64,10 @@ public class FilesService implements Loggable {
 
             getLogger().warn("Deleted file {}", file.metadata.name);
 
-            streamingRepository.failedStreams.put(file.getId(), file.metadata.getResourceType());
-            streamingRepository.streamableResources.remove(file.getId());
+            streamingRepository.discardedResources.put(file.getId(), file.metadata.getResourceType());
             streamingRepository.loadedResources.remove(file.getId());
-            streamingRepository.schedule.remove(file.getId());
+            streamingRepository.toLoadResources.remove(file.getId());
+            streamingRepository.scheduleToLoad.remove(file.getId());
             new File(previewPath).delete();
         } catch (Exception e) {
             getLogger().error("Error while deleting file {}", file.getId());

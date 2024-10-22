@@ -55,8 +55,8 @@ public class ViewportPanel extends AbstractDockPanel {
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
-    private final ImVec2 INV_X = new ImVec2(1, 0);
-    private final ImVec2 INV_Y = new ImVec2(0, 1);
+    public static final ImVec2 INV_X = new ImVec2(1, 0);
+    public static final ImVec2 INV_Y = new ImVec2(0, 1);
     private GizmoPanel gizmo;
     private ViewportContext context;
     private ImGuiIO io;

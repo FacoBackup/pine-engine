@@ -4,7 +4,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MutableField {
+public @interface InspectableField {
     String label() default "-";
 
     String group() default "";
@@ -18,4 +18,6 @@ public @interface MutableField {
     boolean isDirectChange() default false;
 
     String help() default "";
+
+    boolean disabled() default false;
 }

@@ -20,10 +20,15 @@ public class Vector2Field extends AbstractFormField {
     public void render() {
         values[0] = valVec2.x;
         values[1] = valVec2.y;
-
         ImGui.text(dto.getLabel());
-        if (ImGui.dragFloat2(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
-            changerHandler.accept(dto, values);
+
+        if (dto.isDisabled()) {
+            ImGui.text("X: " + values[0]);
+            ImGui.text("Y: " + values[1]);
+        } else {
+            if (ImGui.dragFloat2(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
+                changerHandler.accept(dto, values);
+            }
         }
     }
 }

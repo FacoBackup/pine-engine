@@ -1,6 +1,7 @@
 package com.pine.repository.fs;
 
 
+import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
 
 import java.io.File;
@@ -21,17 +22,7 @@ public class FileEntry implements IEntry {
         this.metadata = metadata;
         this.size = file.length();
         this.path = file.getAbsolutePath();
-        String sizeUnit = "mb";
-        double fileSize = (double) size / (1024 * 1024);
-        if (fileSize > 1000) {
-            fileSize = fileSize / 1024;
-            sizeUnit = "gb";
-        }
-        if (fileSize < 1) {
-            fileSize = (double) size / 1024;
-            sizeUnit = "kb";
-        }
-        sizeText = String.format("%.2f", fileSize) + sizeUnit;
+        sizeText = ImporterService.getSizeWithUnit(size);
     }
 
     @Override

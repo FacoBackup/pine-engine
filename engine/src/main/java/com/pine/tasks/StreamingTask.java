@@ -32,21 +32,21 @@ public class StreamingTask extends AbstractTask implements Loggable {
     @Override
     protected void tickInternal() {
         try {
-            for (var scheduled : streamingRepository.schedule.entrySet()) {
+            for (var scheduled : streamingRepository.scheduleToLoad.entrySet()) {
                 for (var service : services) {
                     if (service.getResourceType() == scheduled.getValue()) {
                         getLogger().warn("Streaming resource {} of type {}", scheduled.getKey(), scheduled.getValue());
-                        StreamData streamData = service.stream(importerService.getPathToFile(scheduled.getKey(), scheduled.getValue()), streamingRepository.schedule, streamingRepository.streamableResources);
+                        StreamData streamData = service.stream(importerService.getPathToFile(scheduled.getKey(), scheduled.getValue()), streamingRepository.scheduleToLoad, streamingRepository.loadedResources);
                         if (streamData != null) {
-                            streamingRepository.loadedResources.put(scheduled.getKey(), streamData);
-                            if (!streamingRepository.streamableResources.containsKey(scheduled.getKey())) {
-                                streamingRepository.streamableResources.put(scheduled.getKey(), service.newInstance(scheduled.getKey()));
+                            streamingRepository.toLoadResources.put(scheduled.getKey(), streamData);
+                            if (!streamingRepository.loadedResources.containsKey(scheduled.getKey())) {
+                                streamingRepository.loadedResources.put(scheduled.getKey(), service.newInstance(scheduled.getKey()));
                             }
                         } else {
-                            streamingRepository.failedStreams.put(scheduled.getKey(), scheduled.getValue());
-                            streamingRepository.loadedResources.remove(scheduled.getKey());
+                            streamingRepository.discardedResources.put(scheduled.getKey(), scheduled.getValue());
+                            streamingRepository.toLoadResources.remove(scheduled.getKey());
                         }
-                        streamingRepository.schedule.remove(scheduled.getKey());
+                        streamingRepository.scheduleToLoad.remove(scheduled.getKey());
                     }
                 }
             }

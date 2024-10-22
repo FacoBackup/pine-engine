@@ -6,7 +6,7 @@ import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
-import com.pine.inspection.MutableField;
+import com.pine.inspection.InspectableField;
 import com.pine.repository.fs.DirectoryEntry;
 import com.pine.theme.Icons;
 import com.pine.tools.types.ExecutionEnvironment;
@@ -22,28 +22,28 @@ import java.util.Map;
 
 @PBean
 public class EditorRepository extends Inspectable implements SerializableRepository {
-    @MutableField(group = "Grid", label = "Show grid")
+    @InspectableField(group = "Grid", label = "Show grid")
     public boolean showGrid = true;
 
-    @MutableField(group = "Grid", label = "Grid color", min = 0, max = 1)
+    @InspectableField(group = "Grid", label = "Grid color", min = 0, max = 1)
     public float gridColor = 0.3f;
 
-    @MutableField(group = "Grid", label = "Grid scale", min = 1, max = 10)
+    @InspectableField(group = "Grid", label = "Grid scale", min = 1, max = 10)
     public float gridScale = 1f;
 
-    @MutableField(group = "Grid", label = "Grid threshold", max = 500, min = 100)
+    @InspectableField(group = "Grid", label = "Grid threshold", max = 500, min = 100)
     public int gridThreshold = 100;
 
-    @MutableField(group = "Grid", label = "Grid opacity")
+    @InspectableField(group = "Grid", label = "Grid opacity")
     public float gridOpacity = 1f;
 
-    @MutableField(group = "Editor", label = "Accent color")
+    @InspectableField(group = "Editor", label = "Accent color")
     public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);
 
     public transient final ImVec4 accent = new ImVec4();
     public int accentU32 = 0;
 
-    @MutableField(group = "Editor", label = "Dark mode")
+    @InspectableField(group = "Editor", label = "Dark mode")
     public boolean isDarkMode = true;
 
     // Icon settings

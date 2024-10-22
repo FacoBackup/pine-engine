@@ -7,8 +7,8 @@ import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.VoxelRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -67,12 +67,12 @@ public class VoxelService implements Loggable {
         isVoxelizing = true;
         if (voxelRepository.grid != null) {
             for (var chunk : voxelRepository.grid.chunks) {
-                AbstractResourceRef<?> ref = streamingService.repository.streamableResources.get(chunk.getId());
+                AbstractResourceRef<?> ref = streamingService.repository.loadedResources.get(chunk.getId());
                 if (ref != null) {
                     ref.dispose();
                 }
-                streamingService.repository.failedStreams.put(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
-                streamingService.repository.streamableResources.remove(chunk.getId());
+                streamingService.repository.discardedResources.put(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
+                streamingService.repository.loadedResources.remove(chunk.getId());
             }
         }
         new Thread(this::voxelize).start();

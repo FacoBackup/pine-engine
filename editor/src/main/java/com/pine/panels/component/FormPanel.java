@@ -5,6 +5,7 @@ import com.pine.core.view.AbstractView;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.ResourceTypeField;
+import com.pine.inspection.TypePreviewField;
 import com.pine.panels.component.impl.*;
 import imgui.ImGui;
 
@@ -47,7 +48,9 @@ public class FormPanel extends AbstractView {
                 case STRING:
                     if (field.getField().isAnnotationPresent(ResourceTypeField.class)) {
                         group.appendChild(new ResourceField(field, changeHandler));
-                    }else {
+                    } else if (field.getField().isAnnotationPresent(TypePreviewField.class)) {
+                        group.appendChild(new PreviewField(field, changeHandler));
+                    } else {
                         group.appendChild(new StringField(field, changeHandler));
                     }
                     break;

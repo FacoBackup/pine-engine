@@ -14,8 +14,6 @@ import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
 import com.pine.theme.Icons;
 import imgui.ImGui;
-import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiTableColumnFlags;
 import imgui.flag.ImGuiTableFlags;
 
 import java.util.ArrayList;
@@ -45,8 +43,8 @@ public class FilesPanel extends AbstractDockPanel {
     private AbstractDirectoryPanel directoryPanel;
     private FilesContext context;
     private String searchPath = "";
-    private boolean isListView;
     private FileInspectorPanel fileInspector;
+    private boolean isFirstRender;
 
     @Override
     public void onInitialize() {
@@ -57,7 +55,8 @@ public class FilesPanel extends AbstractDockPanel {
         }
         updateDirectoryPath();
         appendChild(fileInspector = new FileInspectorPanel());
-        switchViewMode();
+
+        appendChild(directoryPanel = new ListViewDirectoryPanel());
     }
 
     private void updateDirectoryPath() {
@@ -70,32 +69,24 @@ public class FilesPanel extends AbstractDockPanel {
         searchPath = path.toString();
     }
 
-    private void switchViewMode() {
-        if (directoryPanel == null || directoryPanel instanceof CardViewDirectoryPanel) {
-            appendChild(directoryPanel = new ListViewDirectoryPanel());
-            removeChild(directoryPanel);
-            isListView = true;
-        } else {
-            appendChild(directoryPanel = new CardViewDirectoryPanel());
-            removeChild(directoryPanel);
-            isListView = false;
-        }
-    }
-
     @Override
     public void render() {
         renderHeader();
         directoryPanel.isWindowFocused = isWindowFocused;
 
-        if (context.inspection != null) {
-            ImGui.columns(2, "##filesColumns" + imguiId);
-            directoryPanel.render();
-            ImGui.nextColumn();
-            fileInspector.render();
-            ImGui.columns(1);
-        } else {
-            directoryPanel.render();
+        ImGui.columns(2, "##filesColumns" + imguiId);
+
+        if(!isFirstRender){
+            isFirstRender = true;
+            ImGui.setColumnWidth(0, size.x  * .75f);
         }
+
+        directoryPanel.render();
+        ImGui.nextColumn();
+        if (context.inspection != null) {
+            fileInspector.render();
+        }
+        ImGui.columns(1);
     }
 
     private void renderHeader() {
@@ -117,37 +108,13 @@ public class FilesPanel extends AbstractDockPanel {
         ImGui.text(searchPath);
 
         ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 150, 0);
-
-        ImGui.sameLine();
-        if (renderWithHighlight(Icons.dashboard + "##cardView", !isListView)) {
-            switchViewMode();
-        }
-
-        ImGui.sameLine();
-        if (renderWithHighlight(Icons.list + "##listView", isListView)) {
-            switchViewMode();
-        }
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 100, 0);
 
         ImGui.sameLine();
         if (ImGui.button(Icons.file_open + " Import File##importFile")) {
             importFile();
         }
-    }
-
-    private boolean renderWithHighlight(String label, boolean highlight) {
-        int popStyle = 0;
-        if (highlight) {
-            ImGui.pushStyleColor(ImGuiCol.Button, editorRepository.accent);
-            popStyle++;
-        }
-
-        if (ImGui.button(label, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            ImGui.popStyleColor(popStyle);
-            return true;
-        }
-        ImGui.popStyleColor(popStyle);
-        return false;
+        ImGui.separator();
     }
 
     private void importFile() {
