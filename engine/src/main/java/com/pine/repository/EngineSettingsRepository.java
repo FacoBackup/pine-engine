@@ -12,6 +12,9 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
 
     public boolean disableCullingGlobally = false;
 
+    @InspectableField(label = "Probe capture resolution")
+    public int probeCaptureResolution;
+
     @InspectableField(label = "Background color")
     public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
 
@@ -90,20 +93,8 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     @InspectableField(group = "Ambient occlusion", label = "Max Samples")
     public int ssaoMaxSamples = 64;
 
-    @InspectableField(label = "Physics Sub Steps")
-    public int physicsSubSteps = 10;
-
-    @InspectableField(label = "Physics Simulation Step")
-    public float physicsSimulationStep = 16.66666f;
-
-    @InspectableField(label = "Shadow Atlas Quantity")
-    public int shadowAtlasQuantity = 4;
-
-    @InspectableField(label = "Shadow Map Resolution")
-    public int shadowMapResolution = 4096;
 
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
-
 
     @Override
     public String getTitle() {

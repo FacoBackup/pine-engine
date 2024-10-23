@@ -1,6 +1,7 @@
-package com.pine.service.svo;
+package com.pine.service.voxelization.util;
 
 import com.pine.service.streaming.data.TextureStreamData;
+import com.pine.service.voxelization.VoxelData;
 
 public class TextureUtil {
     private static int[] uvToPixelCoords(float u, float v, int imgWidth, int imgHeight) {

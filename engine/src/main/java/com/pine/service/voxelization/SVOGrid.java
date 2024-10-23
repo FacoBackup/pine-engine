@@ -1,4 +1,4 @@
-package com.pine.service.svo;
+package com.pine.service.voxelization;
 
 import org.joml.Vector3f;
 

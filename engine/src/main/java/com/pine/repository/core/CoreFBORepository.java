@@ -23,8 +23,6 @@ public class CoreFBORepository implements CoreRepository {
     @PInject
     public ResourceService resources;
     @PInject
-    public EngineSettingsRepository configuration;
-    @PInject
     public RuntimeRepository runtimeRepository;
 
 
@@ -44,8 +42,6 @@ public class CoreFBORepository implements CoreRepository {
     public int ssaoSampler;
     public FrameBufferObject ssaoBlurred;
     public int ssaoBlurredSampler;
-    public FrameBufferObject shadows;
-    public int shadowsSampler;
     public int brdfSampler;
     public final List<FrameBufferObject> upscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> downscaleBloom = new ArrayList<>();
@@ -108,16 +104,12 @@ public class CoreFBORepository implements CoreRepository {
         ssgiFallbackSampler = ssgiFallback.getSamplers().getFirst();
         auxSampler = auxBuffer.getSamplers().getFirst();
 
-        shadows = (FrameBufferObject) resources.addResource(new FBOCreationData(configuration.shadowMapResolution, configuration.shadowMapResolution).setDepthTexture(true).staticResource());
-        shadowsSampler = shadows.getDepthSampler();
-
         all.add(gBuffer);
         all.add(auxBuffer);
         all.add(ssgi);
         all.add(ssgiFallback);
         all.add(ssao);
         all.add(ssaoBlurred);
-        all.add(shadows);
         all.addAll(upscaleBloom);
         all.addAll(downscaleBloom);
     }

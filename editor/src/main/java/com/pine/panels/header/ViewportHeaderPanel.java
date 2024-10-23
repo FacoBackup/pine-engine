@@ -8,7 +8,8 @@ import com.pine.repository.CameraRepository;
 import com.pine.repository.DebugShadingModel;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.EngineSettingsRepository;
-import com.pine.service.svo.VoxelService;
+import com.pine.service.environment.EnvironmentMapGenService;
+import com.pine.service.voxelization.VoxelizationService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -40,17 +41,25 @@ public class ViewportHeaderPanel extends AbstractView {
     public CameraRepository cameraRepository;
 
     @PInject
-    public VoxelService voxelService;
+    public VoxelizationService voxelizationService;
+
+    @PInject
+    public EnvironmentMapGenService environmentMapGenService;
 
     @PInject
     public MessageRepository messageRepository;
 
     @Override
     public void render() {
-        if (ImGui.button(Icons.apps + "Repackage scene voxels##vp")) {
-            if(!voxelService.buildFromScratch()){
+        if (ImGui.button(Icons.apps + "Bake voxelized scene##vp")) {
+            if(!voxelizationService.bake()){
                 messageRepository.pushMessage("Already voxelizing scene", MessageSeverity.WARN);
             }
+        }
+
+        ImGui.sameLine();
+        if (ImGui.button(Icons.panorama + "Bake environment maps##env")) {
+            environmentMapGenService.bake();
         }
 
         largeSpacing();

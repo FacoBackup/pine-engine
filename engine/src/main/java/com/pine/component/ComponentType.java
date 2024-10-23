@@ -15,7 +15,7 @@ public enum ComponentType implements Serializable {
     SPHERE_LIGHT(LightType.SPHERE.getTitle(), Icons.circle, SphereLightComponent.class),
     SPOT_LIGHT(LightType.SPOT.getTitle(), Icons.highlight, SpotLightComponent.class),
     DECAL("Decal Component", Icons.format_shapes, DecalComponent.class),
-    LIGHT_PROBE("Light Probe Component", Icons.panorama, LightProbeComponent.class),
+    ENVIRONMENT_PROBE("Environment Probe Component", Icons.panorama, EnvironmentProbeComponent.class),
     MESH("Mesh Component", Icons.category, MeshComponent.class),
     PHYSICS_COLLIDER("Physics Collider Component", Icons.widgets, PhysicsColliderComponent.class),
     RIGID_BODY("Rigid Body Component", Icons.widgets, RigidBodyComponent.class),
