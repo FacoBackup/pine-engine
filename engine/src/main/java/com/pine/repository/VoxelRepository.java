@@ -4,7 +4,7 @@ import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
-import com.pine.service.svo.SVOGrid;
+import com.pine.service.voxelization.SVOGrid;
 import com.pine.theme.Icons;
 
 @PBean

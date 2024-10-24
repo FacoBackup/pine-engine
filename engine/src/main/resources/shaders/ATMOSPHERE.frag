@@ -20,6 +20,8 @@ uniform float rayleighHeight;
 uniform float mieHeight;
 uniform float threshold;
 uniform int samples;
+uniform bool renderStatic;
+uniform mat4 invViewStatic;
 out vec4 fragColor;
 
 float mu;
@@ -114,13 +116,13 @@ vec3 getSkyColor(vec3 pa, vec3 pb) {
 
 }
 
-vec3 createRay() {
+vec3 createRay(mat4 invView) {
     vec2 pxNDS = texCoords * 2. - 1.;
     vec3 pointNDS = vec3(pxNDS, -1.);
     vec4 pointNDSH = vec4(pointNDS, 1.0);
     vec4 dirEye = invSkyProjectionMatrix * pointNDSH;
     dirEye.w = 0.;
-    vec3 dirWorld = (invViewMatrix * dirEye).xyz;
+    vec3 dirWorld = (invView * dirEye).xyz;
     return normalize(dirWorld);
 }
 
@@ -138,7 +140,7 @@ void main() {
     planetRadius1 *= 6360e3;
 
     sunDirection = normalize(vec3(sin(elapsedTime), cos(elapsedTime), 1.0f));
-    vec3 dir = createRay();
+    vec3 dir = createRay(renderStatic ? invViewStatic : invViewMatrix);
 
     fragColor = vec4(0., 0., 0., 1.);
     if (dir.y >= threshold) {

@@ -4,6 +4,9 @@ import com.pine.service.resource.compute.ComputeRuntimeData;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -15,8 +18,8 @@ public class VoxelVisualizerPass extends AbstractPass {
     private static final int LOCAL_SIZE_X = 8;
     private static final int LOCAL_SIZE_Y = 8;
     private static final int BUFFER_BINDING_POINT = 12;
-    private final FloatBuffer centerScaleBuffer = MemoryUtil.memAllocFloat(4);
-    private final IntBuffer settingsBuffer = MemoryUtil.memAllocInt(3);
+    private final Vector4f centerScaleBuffer = new Vector4f();
+    private final Vector3i settingsBuffer = new Vector3i();
     private UniformDTO centerScale;
     private UniformDTO settings;
 
@@ -43,11 +46,13 @@ public class VoxelVisualizerPass extends AbstractPass {
                 chunk.getBuffer().setBindingPoint(BUFFER_BINDING_POINT);
                 ssboService.bind(chunk.getBuffer());
 
-                centerScaleBuffer.put(0, chunk.center.x);
-                centerScaleBuffer.put(1, chunk.center.y);
-                centerScaleBuffer.put(2, chunk.center.z);
-                centerScaleBuffer.put(3, chunk.size);
-                computeService.bindUniform(centerScale, centerScaleBuffer);
+                centerScaleBuffer.set(
+                        chunk.center.x,
+                        chunk.center.y,
+                        chunk.center.z,
+                        chunk.size
+                );
+                shaderService.bindVec4(centerScaleBuffer, centerScale);
                 computeService.dispatch(COMPUTE_RUNTIME_DATA);
             }
         }
@@ -63,10 +68,8 @@ public class VoxelVisualizerPass extends AbstractPass {
         COMPUTE_RUNTIME_DATA.groupZ = 1;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_NONE;
 
-        settingsBuffer.put(0, voxelRepository.randomColors ? 1 : 0);
-        settingsBuffer.put(1, voxelRepository.showRaySearchCount ? 1 : 0);
-        settingsBuffer.put(2, voxelRepository.showRayTestCount ? 1 : 0);
-        computeService.bindUniform(settings, settingsBuffer);
+        settingsBuffer.set(voxelRepository.randomColors ? 1 : 0, voxelRepository.showRaySearchCount ? 1 : 0, voxelRepository.showRayTestCount ? 1 : 0);
+        shaderService.bindVec3i(settingsBuffer, settings);
     }
 
     @Override

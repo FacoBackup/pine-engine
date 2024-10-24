@@ -77,11 +77,14 @@ bool intersectWithDistance(inout vec3 boxMin, inout vec3 boxMax, inout Ray r, ou
 }
 
 
-vec3 unpackColor(uint packedColor) {
-    uint r = (packedColor >> 16u) & 0x7Fu;// Extract red (bits 16-22), mask with 0x7F (0111 1111)
-    uint g = (packedColor >> 9u) & 0x7Fu;// Extract green (bits 9-15), mask with 0x7F
-    uint b = (packedColor >> 2u) & 0x7Fu;// Extract blue (bits 2-8), mask with 0x7F
+vec3 unpackColor(int compressedColor) {
+    int r = (compressedColor >> 16) & 0x7F;
+    int g = (compressedColor >> 8) & 0xFF;
+    int b = compressedColor & 0x7F;
 
+    // Scale back up
+    r = r * 2;
+    b = b * 2;
     return vec3(r/255f, g/255f, b/255f);
 }
 
@@ -150,7 +153,7 @@ bool showRayTestCount
                     if (randomColors){
                         finalColor.rgb = randomColor(float(index) + countSetBitsBefore(childMask, i));
                     } else {
-                        finalColor.rgb = unpackColor(childGroupIndex);
+                        finalColor.rgb = unpackColor(int(childGroupIndex));
                     }
                     finalColor.a = 1;
                     minDistance = entryDist;

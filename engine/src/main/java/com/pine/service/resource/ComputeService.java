@@ -57,8 +57,4 @@ public class ComputeService extends AbstractResourceService<Compute, ComputeCrea
     public LocalResourceType getResourceType() {
         return LocalResourceType.COMPUTE;
     }
-
-    public void bindUniform(UniformDTO uniformDTO, Object value) {
-        shaderService.bindUniform(uniformDTO, value);
-    }
 }

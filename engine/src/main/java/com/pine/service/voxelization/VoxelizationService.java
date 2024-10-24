@@ -1,4 +1,4 @@
-package com.pine.service.svo;
+package com.pine.service.voxelization;
 
 import com.pine.FSUtil;
 import com.pine.component.AbstractComponent;
@@ -20,6 +20,8 @@ import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.impl.MaterialService;
 import com.pine.service.streaming.impl.MeshService;
 import com.pine.service.streaming.impl.TextureService;
+import com.pine.service.voxelization.util.MeshUtil;
+import com.pine.service.voxelization.util.VoxelizerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
@@ -32,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @PBean
-public class VoxelService implements Loggable {
+public class VoxelizationService implements Loggable {
 
     @PInject
     public VoxelRepository voxelRepository;
@@ -60,7 +62,7 @@ public class VoxelService implements Loggable {
 
     private boolean isVoxelizing;
 
-    public boolean buildFromScratch() {
+    public boolean bake() {
         if (isVoxelizing) {
             return false;
         }

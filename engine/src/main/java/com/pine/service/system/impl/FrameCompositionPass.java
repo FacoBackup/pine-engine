@@ -4,6 +4,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
+import org.joml.Vector2f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -20,8 +21,6 @@ public class FrameCompositionPass extends AbstractQuadPassPass {
     private UniformDTO currentFrame;
     private UniformDTO filmGrainSeed;
     private final float[] lookUpRandom = new float[2000];
-    private final FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(2);
-    private final IntBuffer intBuffer = MemoryUtil.memAllocInt(1);
     private int lookUpIndex = 0;
 
     @Override
@@ -57,33 +56,15 @@ public class FrameCompositionPass extends AbstractQuadPassPass {
 
     @Override
     protected void bindUniforms() {
-
-        floatBuffer.put(0, runtimeRepository.getInvDisplayW());
-        floatBuffer.put(1, runtimeRepository.getInvDisplayH());
-        shaderService.bindUniform(inverseFilterTextureSize, floatBuffer);
-
-        intBuffer.put(0, settingsRepository.fxaaEnabled ? 1 : 0);
-        shaderService.bindUniform(useFXAA, intBuffer);
-
-        intBuffer.put(0, cameraRepository.filmGrain ? 1 : 0);
-        shaderService.bindUniform(filmGrainEnabled, intBuffer);
-
-        floatBuffer.put(0, settingsRepository.fxaaSpanMax);
-        shaderService.bindUniform(FXAASpanMax, floatBuffer);
-
-        floatBuffer.put(0, settingsRepository.fxaaReduceMin);
-        shaderService.bindUniform(FXAAReduceMin, floatBuffer);
-
-        floatBuffer.put(0, settingsRepository.fxaaReduceMul);
-        shaderService.bindUniform(FXAAReduceMul, floatBuffer);
-
-        floatBuffer.put(0, cameraRepository.filmGrainStrength);
-        shaderService.bindUniform(filmGrainStrength, floatBuffer);
-
-        shaderService.bindUniform(currentFrame, fboRepository.auxSampler);
-
-        floatBuffer.put(0, lookupNoise());
-        shaderService.bindUniform(filmGrainSeed, floatBuffer);
+        shaderService.bindVec2(runtimeRepository.getInvResolution(), inverseFilterTextureSize);
+        shaderService.bindBoolean(settingsRepository.fxaaEnabled, useFXAA);
+        shaderService.bindBoolean(cameraRepository.filmGrain, filmGrainEnabled);
+        shaderService.bindFloat(settingsRepository.fxaaSpanMax, FXAASpanMax);
+        shaderService.bindFloat(settingsRepository.fxaaReduceMin, FXAAReduceMin);
+        shaderService.bindFloat(settingsRepository.fxaaReduceMul, FXAAReduceMul);
+        shaderService.bindFloat(cameraRepository.filmGrainStrength, filmGrainStrength);
+        shaderService.bindSampler2d(fboRepository.auxSampler, currentFrame);
+        shaderService.bindFloat(lookupNoise(), filmGrainSeed);
     }
 
     @Override

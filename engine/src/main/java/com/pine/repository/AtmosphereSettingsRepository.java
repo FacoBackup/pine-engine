@@ -17,9 +17,9 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
     @InspectableField(label = "Max samples", max = 20, min = 1, isDirectChange = false, isAngle = false)
     public int maxSamples = 10;
     @InspectableField(label = "Mie height")
-    public int mieHeight = 1000;
+    public float mieHeight = 1000;
     @InspectableField(label = "Rayleigh Height")
-    public int rayleighHeight = 8000;
+    public float rayleighHeight = 8000;
     @InspectableField(label = "Atmosphere Radius")
     public float atmosphereRadius = 1;
     @InspectableField(label = "Planet Radius")

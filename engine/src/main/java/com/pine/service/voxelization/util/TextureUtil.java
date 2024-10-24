@@ -1,16 +1,17 @@
-package com.pine.service.svo;
+package com.pine.service.voxelization.util;
 
 import com.pine.service.streaming.data.TextureStreamData;
+import com.pine.service.voxelization.VoxelData;
 
 public class TextureUtil {
     private static int[] uvToPixelCoords(float u, float v, int imgWidth, int imgHeight) {
+        // Clamp UV coordinates to ensure they are within [0,1]
         u = Math.max(0, Math.min(u, 1));
         v = Math.max(0, Math.min(v, 1));
 
+        // Correct horizontal flipping by flipping the U coordinate
         int x = (int) (u * (imgWidth - 1));
         int y = (int) (v * (imgHeight - 1));
-
-        y = imgHeight - y - 1;
 
         return new int[]{x, y};
     }

@@ -71,37 +71,27 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
     protected void bindUniforms() {
         ssboService.bind(ssboRepository.lightMetadataSSBO);
 
-        floatBuffer.put(0, settingsRepository.ssrFalloff);
-        shaderService.bindUniform(SSRFalloff, floatBuffer);
-        floatBuffer.put(0, settingsRepository.ssrStepSize);
-        shaderService.bindUniform(stepSizeSSR, floatBuffer);
-        floatBuffer.put(0, settingsRepository.sssMaxDistance);
-        shaderService.bindUniform(maxSSSDistance, floatBuffer);
-        floatBuffer.put(0, settingsRepository.sssDepthThickness);
-        shaderService.bindUniform(SSSDepthThickness, floatBuffer);
-        floatBuffer.put(0, settingsRepository.sssEdgeFalloff);
-        shaderService.bindUniform(SSSEdgeAttenuation, floatBuffer);
-        floatBuffer.put(0, settingsRepository.sssDepthDelta);
-        shaderService.bindUniform(SSSDepthDelta, floatBuffer);
-        floatBuffer.put(0, settingsRepository.ssaoFalloffDistance);
-        shaderService.bindUniform(SSAOFalloff, floatBuffer);
-        intBoolBuffer.put(0, settingsRepository.ssrMaxSteps);
-        shaderService.bindUniform(maxStepsSSR, intBoolBuffer);
-        intBoolBuffer.put(0, settingsRepository.sssMaxSteps);
-        shaderService.bindUniform(maxStepsSSS, intBoolBuffer);
-        intBoolBuffer.put(0, renderingRepository.lightCount);
-        shaderService.bindUniform(lightCount, intBoolBuffer);
+        shaderService.bindFloat(settingsRepository.ssrFalloff, SSRFalloff);
+        shaderService.bindFloat(settingsRepository.ssrStepSize, stepSizeSSR);
+        shaderService.bindFloat(settingsRepository.sssMaxDistance, maxSSSDistance);
+        shaderService.bindFloat(settingsRepository.sssDepthThickness, SSSDepthThickness);
+        shaderService.bindFloat(settingsRepository.sssEdgeFalloff, SSSEdgeAttenuation);
+        shaderService.bindFloat(settingsRepository.sssDepthDelta, SSSDepthDelta);
+        shaderService.bindFloat(settingsRepository.ssaoFalloffDistance, SSAOFalloff);
+        shaderService.bindInt(settingsRepository.ssrMaxSteps, maxStepsSSR);
+        shaderService.bindInt(settingsRepository.sssMaxSteps, maxStepsSSS);
+        shaderService.bindInt(renderingRepository.lightCount, lightCount);
 
-        shaderService.bindUniform(gBufferAlbedoSampler, fboRepository.gBufferAlbedoSampler);
-        shaderService.bindUniform(gBufferNormalSampler, fboRepository.gBufferNormalSampler);
-        shaderService.bindUniform(gBufferRMAOSampler, fboRepository.gBufferRMAOSampler);
-        shaderService.bindUniform(gBufferMaterialSampler, fboRepository.gBufferMaterialSampler);
-        shaderService.bindUniform(sceneDepth, fboRepository.gBufferDepthSampler);
+        shaderService.bindSampler2d(fboRepository.gBufferAlbedoSampler, gBufferAlbedoSampler);
+        shaderService.bindSampler2d(fboRepository.gBufferNormalSampler, gBufferNormalSampler);
+        shaderService.bindSampler2d(fboRepository.gBufferRMAOSampler, gBufferRMAOSampler);
+        shaderService.bindSampler2d(fboRepository.gBufferMaterialSampler, gBufferMaterialSampler);
+        shaderService.bindSampler2d(fboRepository.gBufferDepthSampler, sceneDepth);
 
-        shaderService.bindUniform(brdfSampler, fboRepository.brdfSampler);
-        shaderService.bindUniform(SSAO, fboRepository.ssaoBlurredSampler);
-        shaderService.bindUniform(SSGI, fboRepository.ssgiSampler);
-        shaderService.bindUniform(previousFrame, engine.getTargetFBO().getMainSampler());
+        shaderService.bindSampler2d(fboRepository.brdfSampler, brdfSampler);
+        shaderService.bindSampler2d(fboRepository.ssaoBlurredSampler, SSAO);
+        shaderService.bindSampler2d(fboRepository.ssgiSampler, SSGI);
+        shaderService.bindSampler2d(engine.getTargetFBO().getMainSampler(), previousFrame);
     }
 
     @Override
