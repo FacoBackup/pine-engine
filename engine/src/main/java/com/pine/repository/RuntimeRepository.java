@@ -2,6 +2,7 @@ package com.pine.repository;
 
 
 import com.pine.injection.PBean;
+import org.joml.Vector2f;
 
 @PBean
 public class RuntimeRepository  {
@@ -9,9 +10,8 @@ public class RuntimeRepository  {
 
     private int displayW;
     private int displayH;
-    private float invDisplayW;
-    private float invDisplayH;
 
+    private final Vector2f invResolution = new Vector2f();
     public boolean fasterPressed = false;
     public boolean forwardPressed = false;
     public boolean backwardPressed = false;
@@ -33,11 +33,11 @@ public class RuntimeRepository  {
     }
 
     public void setInvDisplayW(float invDisplayW) {
-        this.invDisplayW = invDisplayW;
+        invResolution.x = invDisplayW;
     }
 
     public void setInvDisplayH(float invDisplayH) {
-        this.invDisplayH = invDisplayH;
+        invResolution.y = invDisplayH;
     }
 
     public int getDisplayH() {
@@ -48,11 +48,7 @@ public class RuntimeRepository  {
         return displayW;
     }
 
-    public float getInvDisplayH() {
-        return invDisplayH;
-    }
-
-    public float getInvDisplayW() {
-        return invDisplayW;
+    public Vector2f getInvResolution() {
+        return invResolution;
     }
 }

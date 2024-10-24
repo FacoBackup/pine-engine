@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 public record VoxelData(int r, int g, int b) implements Serializable {
     public int compress() {
-        return (r << 16) | (g << 9) | (b << 2);
+        int red = (r / 2) & 0x7F;      // Scale down and mask to 7 bits
+        int green = g & 0xFF;          // No change, 8 bits
+        int blue = (b / 2) & 0x7F;     // Scale down and mask to 7 bits
+
+        return (red << 16) | (green << 8) | blue;
     }
 }

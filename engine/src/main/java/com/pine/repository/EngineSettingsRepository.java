@@ -13,7 +13,7 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     public boolean disableCullingGlobally = false;
 
     @InspectableField(label = "Probe capture resolution")
-    public int probeCaptureResolution;
+    public int probeCaptureResolution = 128;
 
     @InspectableField(label = "Background color")
     public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);

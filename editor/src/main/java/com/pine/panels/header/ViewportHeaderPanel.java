@@ -58,7 +58,7 @@ public class ViewportHeaderPanel extends AbstractView {
         }
 
         ImGui.sameLine();
-        if (ImGui.button(Icons.panorama + "Bake environment maps##env")) {
+        if (ImGui.button(Icons.panorama_photosphere + "Bake environment maps##env")) {
             environmentMapGenService.bake();
         }
 

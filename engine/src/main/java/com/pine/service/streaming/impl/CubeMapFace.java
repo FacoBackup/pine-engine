@@ -6,5 +6,6 @@ public enum CubeMapFace {
     TOP,
     BOTTOM,
     FRONT,
-    BACK
+    BACK;
+    public static final int SIZE = 6;
 }

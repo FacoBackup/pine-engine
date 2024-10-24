@@ -13,7 +13,7 @@ public class Camera implements Mutable, Serializable {
     public final Vector3f orbitCenter = new Vector3f();
     public float pitch = 0f;
     public float yaw = 0f;
-    public float orbitRadius = 1;
+    public float orbitRadius = 10;
     public boolean orbitalMode = false;
     public boolean isOrthographic = false;
     public float zFar = 10000;

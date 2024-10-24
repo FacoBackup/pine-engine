@@ -6,17 +6,19 @@ import com.pine.component.ComponentType;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
+import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.streaming.LevelOfDetail;
+import com.pine.service.streaming.impl.CubeMapFace;
+import com.pine.service.system.SystemService;
+import com.pine.service.system.impl.AtmospherePass;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.List;
-import java.util.UUID;
 
 import static com.pine.service.environment.CubeMapWriteUtil.saveCubeMapToDisk;
 
@@ -66,7 +68,17 @@ public class EnvironmentMapGenService implements Loggable {
     @PInject
     public Engine engine;
 
+    @PInject
+    public SystemService systemService;
+
+    @PInject
+    public AtmosphereSettingsRepository atmosphere;
+
+    private AtmospherePass atmospherePass;
+
     public void bake() {
+        getLogger().warn("Starting probe baking");
+        atmospherePass = (AtmospherePass) systemService.getSystems().stream().filter(a -> a instanceof AtmospherePass).findFirst().orElse(null);
         // TODO - DELETE PREVIOUSLY GENERATED PROBES
         // TODO - KEEP TRACK OF GENERATED PROBES
 
@@ -77,31 +89,49 @@ public class EnvironmentMapGenService implements Loggable {
     }
 
     private void capture(String resourceId, Vector3f cameraPosition) {
+        getLogger().warn("Baking probe {} at position X{} Y{} Z{}", resourceId, cameraPosition.x, cameraPosition.y, cameraPosition.z);
         int baseResolution = engineSettingsRepository.probeCaptureResolution;
         int[] ids = CubeMapGenerator.generateFramebufferAndCubeMapTexture(baseResolution);
         int framebufferId = ids[0];
         int cubeMapTextureId = ids[1];
 
-        generateSpecularLOD(cameraPosition, framebufferId, baseResolution, cubeMapTextureId, resourceId);
+        generate(cameraPosition, framebufferId, baseResolution, cubeMapTextureId, resourceId);
 
         GL46.glDeleteBuffers(framebufferId);
         GL46.glDeleteTextures(cubeMapTextureId);
     }
 
-    private void generateSpecularLOD(Vector3f cameraPosition, int framebufferId, int baseResolution, int cubeMapTextureId, String resourceId) {
+    private void generate(Vector3f cameraPosition, int framebufferId, int baseResolution, int cubeMapTextureId, String resourceId) {
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, framebufferId);
+        Matrix4f invView = new Matrix4f();
+        Matrix4f invProjection = new Matrix4f();
         Matrix4f projection = new Matrix4f();
         projection.setPerspective(FOV_Y, ASPECT_RATIO, Z_NEAR, Z_FAR);
-        for (int i = 0; i < 6; i++) {
+//        projection.transpose(projection);
+        projection.invert(invProjection);
+
+        for (int i = 0; i < CubeMapFace.SIZE; i++) {
             GL46.glViewport(0, 0, baseResolution, baseResolution);
             GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, CUBEMAP_FACES[i], cubeMapTextureId, 0);
             Matrix4f viewMatrix = createViewMatrixForFace(i, cameraPosition);
+            viewMatrix.transpose(viewMatrix);
+
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
 
-            // TODO - RENDER SCENE + ATMOSPHERE IF ENABLED
+            renderFace(resourceId, i, viewMatrix, invView, invProjection);
         }
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
-        saveCubeMapToDisk(cubeMapTextureId, baseResolution, importerService.getPathToFile(resourceId, StreamableResourceType.ENVIRONMENT_MAP), LevelOfDetail.LOD_0);
+        getLogger().warn("Writing to disk {}", resourceId);
+        saveCubeMapToDisk(cubeMapTextureId, baseResolution, importerService.getPathToFile(resourceId, StreamableResourceType.ENVIRONMENT_MAP));
+    }
+
+    private void renderFace(String resourceId, int face, Matrix4f viewMatrix, Matrix4f invView, Matrix4f invProjection) {
+        getLogger().warn("Rendering face {} for probe {}", face, resourceId);
+        if (atmosphere.enabled) {
+            viewMatrix.invert(invView);
+            atmospherePass.renderToCubeMap(invView, invProjection);
+        }
+        // TODO - RENDER SCENE + ATMOSPHERE IF ENABLED
     }
 
     private Matrix4f createViewMatrixForFace(int faceIndex, Vector3f cameraPosition) {

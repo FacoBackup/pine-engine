@@ -9,7 +9,6 @@ public class ViewportContext extends AbstractPanelContext {
     public ViewportContext() {
         camera.pitch = (float) -(Math.PI/4);
         camera.yaw = (float) (Math.PI/4);
-        camera.orbitRadius = 50;
         camera.orbitalMode = true;
     }
 }

@@ -27,7 +27,6 @@ public interface IShader extends Loggable {
         return shader;
     }
 
-
     default UniformDTO addUniformDeclaration(String name, GLSLType type) {
         GL46.glUseProgram(getProgram());
         UniformDTO uniformDTO = new UniformDTO(type, name, GL46.glGetUniformLocation(getProgram(), name));

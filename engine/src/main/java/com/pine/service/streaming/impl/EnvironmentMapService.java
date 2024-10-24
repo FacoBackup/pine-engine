@@ -8,7 +8,6 @@ import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.LevelOfDetail;
 import com.pine.service.streaming.StreamData;
-import com.pine.service.streaming.data.EnvironmentMapLOD;
 import com.pine.service.streaming.data.EnvironmentMapStreamData;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
@@ -39,21 +38,17 @@ public class EnvironmentMapService extends AbstractStreamableService<Environment
 
     @Override
     public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
-        EnvironmentMapLOD[] lodTextures = new EnvironmentMapLOD[LevelOfDetail.values().length];
-        for (int j = 0; j < LevelOfDetail.values().length; j++) {
-            LevelOfDetail lod = LevelOfDetail.values()[j];
-            ByteBuffer[] textures = new ByteBuffer[6];
-            int imageSize = 0;
-            for (int i = 0; i < CubeMapFace.values().length; i++) {
-                CubeMapFace face = CubeMapFace.values()[i];
-                String path = getPathToFile(pathToFile, lod, face);
-                var textureData = (TextureStreamData) textureService.stream(path, Collections.emptyMap(), Collections.emptyMap());
-                textures[i] = textureData.imageBuffer;
-                imageSize = textureData.width;
-            }
-            lodTextures[j] = new EnvironmentMapLOD(textures, imageSize);
+        int imageSize = 0;
+        ByteBuffer[] textures = new ByteBuffer[6];
+        for (int i = 0; i < CubeMapFace.values().length; i++) {
+            CubeMapFace face = CubeMapFace.values()[i];
+            String path = getPathToFile(pathToFile, face);
+            var textureData = (TextureStreamData) textureService.stream(path, Collections.emptyMap(), Collections.emptyMap());
+            textures[i] = textureData.imageBuffer;
+            imageSize = textureData.width;
         }
-        return new EnvironmentMapStreamData(lodTextures);
+
+        return new EnvironmentMapStreamData(imageSize, textures);
     }
 
     @Override
