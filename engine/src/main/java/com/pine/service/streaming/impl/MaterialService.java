@@ -3,9 +3,11 @@ package com.pine.service.streaming.impl;
 import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.repository.ClockRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.data.MaterialImportData;
+import com.pine.service.resource.ShaderService;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.data.MaterialStreamData;
@@ -19,6 +21,10 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
 
     @PInject
     public TextureService textureService;
+    @PInject
+    public ShaderService shaderService;
+    @PInject
+    public ClockRepository clockRepository;
 
     @Override
     public AbstractResourceRef<?> newInstance(String key) {
@@ -81,5 +87,44 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
             streamableResources.putIfAbsent(importData, textureService.newInstance(importData));
             schedule.putIfAbsent(importData, StreamableResourceType.TEXTURE);
         }
+    }
+
+    public void bindMaterial(MaterialResourceRef request) {
+        request.lastUse = clockRepository.totalTime;
+
+        if (request.albedo != null) {
+            shaderService.bindSampler2dDirect(request.albedo, request.albedoLocation);
+            request.albedo.lastUse = request.lastUse;
+        }
+        if (request.roughness != null) {
+            shaderService.bindSampler2dDirect(request.roughness, request.roughnessLocation);
+            request.roughness.lastUse = request.lastUse;
+        }
+        if (request.metallic != null) {
+            shaderService.bindSampler2dDirect(request.metallic, request.metallicLocation);
+            request.metallic.lastUse = request.lastUse;
+        }
+        if (request.ao != null) {
+            shaderService.bindSampler2dDirect(request.ao, request.aoLocation);
+            request.ao.lastUse = request.lastUse;
+        }
+        if (request.normal != null) {
+            shaderService.bindSampler2dDirect(request.normal, request.normalLocation);
+            request.normal.lastUse = request.lastUse;
+        }
+        if (request.heightMap != null) {
+            shaderService.bindSampler2dDirect(request.heightMap, request.heightMapLocation);
+            request.heightMap.lastUse = request.lastUse;
+        }
+        shaderService.bindFloat(request.anisotropicRotation, request.anisotropicRotationUniform);
+        shaderService.bindFloat(request.anisotropy, request.anisotropyUniform);
+        shaderService.bindFloat(request.clearCoat, request.clearCoatUniform);
+        shaderService.bindFloat(request.sheen, request.sheenUniform);
+        shaderService.bindFloat(request.sheenTint, request.sheenTintUniform);
+        shaderService.bindInt(request.renderingMode.getId(), request.renderingModeUniform);
+        shaderService.bindInt(request.ssrEnabled ? 1 : 0, request.ssrEnabledUniform);
+        shaderService.bindFloat(request.parallaxHeightScale, request.parallaxHeightScaleUniform);
+        shaderService.bindInt(request.parallaxLayers, request.parallaxLayersUniform);
+        shaderService.bindBoolean(request.useParallax, request.useParallaxUniform);
     }
 }

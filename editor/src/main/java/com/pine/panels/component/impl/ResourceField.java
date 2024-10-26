@@ -46,7 +46,7 @@ public class ResourceField extends AbstractFormField {
         if (previousSize != allByType.size()) {
             previousSize = allByType.size();
             itemsArr = new String[allByType.size()];
-            for (int i = 0, allByTypeSize = allByType.size(); i < allByTypeSize; i++) {
+            for (int i = 0, allByTypeSize = itemsArr.length; i < allByTypeSize; i++) {
                 var file = allByType.get(i);
                 itemsArr[i] = file.metadata.name;
             }

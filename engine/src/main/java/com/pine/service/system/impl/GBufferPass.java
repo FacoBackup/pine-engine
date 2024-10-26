@@ -32,14 +32,11 @@ public class GBufferPass extends AbstractPass implements Loggable {
 
     @Override
     public void onInitialize() {
-
         debugShadingMode = shaderRepository.gBufferShader.addUniformDeclaration("debugShadingMode", GLSLType.INT);
         transformationIndex = shaderRepository.gBufferShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
-
         parallaxHeightScale = shaderRepository.gBufferShader.addUniformDeclaration("parallaxHeightScale", GLSLType.FLOAT);
         parallaxLayers = shaderRepository.gBufferShader.addUniformDeclaration("parallaxLayers", GLSLType.INT);
         useParallax = shaderRepository.gBufferShader.addUniformDeclaration("useParallax", GLSLType.BOOL);
-
         anisotropicRotation = shaderRepository.gBufferShader.addUniformDeclaration("anisotropicRotation", GLSLType.FLOAT);
         anisotropy = shaderRepository.gBufferShader.addUniformDeclaration("anisotropy", GLSLType.FLOAT);
         clearCoat = shaderRepository.gBufferShader.addUniformDeclaration("clearCoat", GLSLType.FLOAT);
@@ -47,7 +44,6 @@ public class GBufferPass extends AbstractPass implements Loggable {
         sheenTint = shaderRepository.gBufferShader.addUniformDeclaration("sheenTint", GLSLType.FLOAT);
         renderingMode = shaderRepository.gBufferShader.addUniformDeclaration("renderingMode", GLSLType.INT);
         ssrEnabled = shaderRepository.gBufferShader.addUniformDeclaration("ssrEnabled", GLSLType.BOOL);
-        fallbackMaterial = shaderRepository.gBufferShader.addUniformDeclaration("fallbackMaterial", GLSLType.BOOL);
         fallbackMaterial = shaderRepository.gBufferShader.addUniformDeclaration("fallbackMaterial", GLSLType.BOOL);
     }
 
@@ -86,8 +82,7 @@ public class GBufferPass extends AbstractPass implements Loggable {
             var request = requests.get(i);
             shaderService.bindInt((i + instancedOffset), transformationIndex);
             if (request.material != null) {
-                shaderService.bindBoolean(false, fallbackMaterial);
-                bindMaterial(request.material);
+                bindMaterial(request);
             } else {
                 shaderService.bindBoolean(true, fallbackMaterial);
             }
@@ -99,43 +94,28 @@ public class GBufferPass extends AbstractPass implements Loggable {
         }
     }
 
-    private void bindMaterial(MaterialResourceRef request) {
-        request.lastUse = clockRepository.totalTime;
+    private void bindMaterial(RenderingRequest request) {
+        shaderService.bindBoolean(false, fallbackMaterial);
 
-        if (request.albedo != null) {
-            shaderService.bindSampler2dDirect(request.albedo, 3);
-            request.albedo.lastUse = request.lastUse;
-        }
-        if (request.roughness != null) {
-            shaderService.bindSampler2dDirect(request.roughness, 4);
-            request.roughness.lastUse = request.lastUse;
-        }
-        if (request.metallic != null) {
-            shaderService.bindSampler2dDirect(request.metallic, 5);
-            request.metallic.lastUse = request.lastUse;
-        }
-        if (request.ao != null) {
-            shaderService.bindSampler2dDirect(request.ao, 6);
-            request.ao.lastUse = request.lastUse;
-        }
-        if (request.normal != null) {
-            shaderService.bindSampler2dDirect(request.normal, 7);
-            request.normal.lastUse = request.lastUse;
-        }
-        if (request.heightMap != null) {
-            shaderService.bindSampler2dDirect(request.heightMap, 8);
-            request.heightMap.lastUse = request.lastUse;
-        }
-        shaderService.bindFloat(request.anisotropicRotation, anisotropicRotation);
-        shaderService.bindFloat(request.anisotropy, anisotropy);
-        shaderService.bindFloat(request.clearCoat, clearCoat);
-        shaderService.bindFloat(request.sheen, sheen);
-        shaderService.bindFloat(request.sheenTint, sheenTint);
-        shaderService.bindInt(request.renderingMode.getId(), renderingMode);
-        shaderService.bindInt(request.ssrEnabled ? 1 : 0, ssrEnabled);
-        shaderService.bindFloat(request.parallaxHeightScale, parallaxHeightScale);
-        shaderService.bindInt(request.parallaxLayers, parallaxLayers);
-        shaderService.bindBoolean(request.useParallax, useParallax);
+        request.material.anisotropicRotationUniform = anisotropicRotation;
+        request.material.anisotropyUniform = anisotropy;
+        request.material.clearCoatUniform = clearCoat;
+        request.material.sheenUniform = sheen;
+        request.material.sheenTintUniform = sheenTint;
+        request.material.renderingModeUniform = renderingMode;
+        request.material.ssrEnabledUniform = ssrEnabled;
+        request.material.parallaxHeightScaleUniform = parallaxHeightScale;
+        request.material.parallaxLayersUniform = parallaxLayers;
+        request.material.useParallaxUniform = useParallax;
+
+        request.material.albedoLocation = 3;
+        request.material.roughnessLocation = 4;
+        request.material.metallicLocation = 5;
+        request.material.aoLocation = 6;
+        request.material.normalLocation = 7;
+        request.material.heightMapLocation = 8;
+
+        materialService.bindMaterial(request.material);
     }
 
     @Override

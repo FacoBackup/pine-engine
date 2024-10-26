@@ -25,10 +25,8 @@ import java.util.stream.Collectors;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class FilesPanel extends AbstractDockPanel {
-    private static final int TABLE_FLAGS = ImGuiTableFlags.Resizable | ImGuiTableFlags.NoBordersInBody;
-
     @PInject
-    public ImporterService resourceLoader;
+    public ImporterService importerService;
     @PInject
     public MessageRepository messageRepository;
     @PInject
@@ -76,9 +74,9 @@ public class FilesPanel extends AbstractDockPanel {
 
         ImGui.columns(2, "##filesColumns" + imguiId);
 
-        if(!isFirstRender){
+        if (!isFirstRender) {
             isFirstRender = true;
-            ImGui.setColumnWidth(0, size.x  * .75f);
+            ImGui.setColumnWidth(0, size.x * .75f);
         }
 
         directoryPanel.render();
@@ -108,10 +106,21 @@ public class FilesPanel extends AbstractDockPanel {
         ImGui.text(searchPath);
 
         ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 100, 0);
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 210, 0);
 
         ImGui.sameLine();
-        if (ImGui.button(Icons.file_open + " Import File##importFile")) {
+        if (ImGui.button(StreamableResourceType.MATERIAL.getIcon() + "Create material##addFile" + imguiId)) {
+            var response = importerService.createNew(StreamableResourceType.MATERIAL);
+            if (response == null) {
+                messageRepository.pushMessage("Could not create new file", MessageSeverity.ERROR);
+            } else {
+                context.currentDirectory.files.add(response);
+                fileMetadataRepository.refresh();
+            }
+        }
+
+        ImGui.sameLine();
+        if (ImGui.button(Icons.file_open + "Import File##importFile" + imguiId)) {
             importFile();
         }
         ImGui.separator();
@@ -122,7 +131,7 @@ public class FilesPanel extends AbstractDockPanel {
         if (paths.isEmpty()) {
             return;
         }
-        resourceLoader.importFiles(paths, response -> {
+        importerService.importFiles(paths, response -> {
             if (response.isEmpty()) {
                 messageRepository.pushMessage("Could not import files: " + paths, MessageSeverity.ERROR);
             }

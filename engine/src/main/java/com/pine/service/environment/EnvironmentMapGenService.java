@@ -3,15 +3,18 @@ package com.pine.service.environment;
 import com.pine.Engine;
 import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
+import com.pine.component.Entity;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.WorldRepository;
+import com.pine.repository.core.CoreShaderRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
+import com.pine.service.resource.ShaderService;
 import com.pine.service.streaming.impl.CubeMapFace;
 import com.pine.service.system.SystemService;
 import com.pine.service.system.impl.AtmospherePass;
@@ -30,8 +33,18 @@ public class EnvironmentMapGenService implements Loggable {
     private static final float Z_NEAR = .1f;
     private static final float Z_FAR = 10000f;
 
+
     @PInject
     public WorldRepository worldRepository;
+
+    @PInject
+    public EnvironmentMapGenPass environmentMapGenPass;
+
+    @PInject
+    public ShaderService shaderService;
+
+    @PInject
+    public CoreShaderRepository coreShaderRepository;
 
     @PInject
     public EngineSettingsRepository engineSettingsRepository;
@@ -52,11 +65,11 @@ public class EnvironmentMapGenService implements Loggable {
     public StreamingRepository streamingRepository;
 
     public boolean isBaked = true;
-    private AtmospherePass atmospherePass;
 
     public void bake() {
+
+
         getLogger().warn("Starting probe baking");
-        atmospherePass = (AtmospherePass) systemService.getSystems().stream().filter(a -> a instanceof AtmospherePass).findFirst().orElse(null);
         // TODO - DELETE PREVIOUSLY GENERATED PROBES
         // TODO - KEEP TRACK OF GENERATED PROBES
 
@@ -104,21 +117,15 @@ public class EnvironmentMapGenService implements Loggable {
             viewMatrix.invert(invView);
 
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+            getLogger().warn("Rendering face {} for probe {}", i, resourceId);
 
-            renderFace(resourceId, i, viewMatrix, invView, invProjection);
+            environmentMapGenPass.renderFace(viewMatrix, invView, projection, invProjection);
         }
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
         getLogger().warn("Writing to disk {}", resourceId);
         saveCubeMapToDisk(cubeMapTextureId, baseResolution, importerService.getPathToFile(resourceId, StreamableResourceType.ENVIRONMENT_MAP));
     }
 
-    private void renderFace(String resourceId, int face, Matrix4f viewMatrix, Matrix4f invView, Matrix4f invProjection) {
-        getLogger().warn("Rendering face {} for probe {}", face, resourceId);
-        if (atmosphere.enabled) {
-            atmospherePass.renderToCubeMap(invView, invProjection);
-        }
-        // TODO - RENDER SCENE + ATMOSPHERE IF ENABLED
-    }
 
     private Matrix4f createViewMatrixForFace(int faceIndex, Vector3f cameraPosition) {
         return new Matrix4f().lookAt(new Vector3f(0), CubeMapFace.values()[faceIndex].getTarget(), CubeMapFace.values()[faceIndex].getUp());

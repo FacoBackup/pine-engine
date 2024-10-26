@@ -34,6 +34,7 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader brdfShader;
     public Shader debugVoxelShader;
     public Shader gBufferShading;
+    public Shader environmentMap;
 
     @PInject
     public ResourceService resources;
@@ -64,5 +65,6 @@ public class CoreShaderRepository implements CoreRepository {
         gaussianShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "GAUSSIAN.frag").staticResource());
         upSamplingShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "UPSAMPLE_TENT.glsl").staticResource());
         atmosphereShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "ATMOSPHERE.frag").staticResource());
+        environmentMap = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "uber/ENVIRONMENT_MAP.vert", LOCAL_SHADER + "uber/ENVIRONMENT_MAP.frag").staticResource());
     }
 }

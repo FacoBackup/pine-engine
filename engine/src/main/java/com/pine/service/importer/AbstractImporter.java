@@ -37,4 +37,8 @@ public abstract class AbstractImporter implements Loggable {
     protected String getPathToFile(AbstractImportData data) {
         return importerService.getPathToFile(data.id, data.getResourceType());
     }
+
+    public AbstractResourceMetadata createNew() {
+        return null;
+    }
 }

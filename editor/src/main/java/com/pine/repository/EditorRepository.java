@@ -16,12 +16,16 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 
+import java.io.Serial;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 @PBean
 public class EditorRepository extends Inspectable implements SerializableRepository {
+    @Serial
+    private static final long serialVersionUID = -5292170530653725873L;
+
     @InspectableField(group = "Grid", label = "Show grid")
     public boolean showGrid = true;
 
@@ -79,6 +83,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public boolean gizmoExternalChange = false;
     public Entity mainSelection = null;
     public final LinkedList<Entity> selected = new LinkedList<>();
+    public final LinkedList<String> copied = new LinkedList<>();
     public final DirectoryEntry root = new DirectoryEntry("Files", null);
 
     @Override

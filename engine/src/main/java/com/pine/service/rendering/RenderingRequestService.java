@@ -39,7 +39,7 @@ public class RenderingRequestService {
     }
 
     private void fillInstanceRequest(MeshComponent scene, Transformation t) {
-        for (var primitive : scene.primitives) {
+        for (var primitive : scene.instances) {
             transformationService.updateMatrix(primitive, t);
             if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
                 primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
@@ -56,11 +56,11 @@ public class RenderingRequestService {
     }
 
     private static void prepareTransformations(MeshComponent scene, Transformation t, MeshResourceRef mesh) {
-        if (scene.primitives.size() > scene.numberOfInstances) {
-            scene.primitives = new ArrayList<>(scene.primitives.subList(0, scene.numberOfInstances));
-        } else if (scene.primitives.size() < scene.numberOfInstances) {
-            for (int i = scene.primitives.size(); i < scene.numberOfInstances; i++) {
-                scene.primitives.add(new Transformation(scene.entity, true));
+        if (scene.instances.size() > scene.numberOfInstances) {
+            scene.instances = new ArrayList<>(scene.instances.subList(0, scene.numberOfInstances));
+        } else if (scene.instances.size() < scene.numberOfInstances) {
+            for (int i = scene.instances.size(); i < scene.numberOfInstances; i++) {
+                scene.instances.add(new Transformation(scene.entity, true));
             }
         }
 

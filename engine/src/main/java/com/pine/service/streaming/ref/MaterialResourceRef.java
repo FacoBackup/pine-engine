@@ -2,6 +2,7 @@ package com.pine.service.streaming.ref;
 
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.data.MaterialStreamData;
 import com.pine.type.MaterialRenderingMode;
 
@@ -23,6 +24,26 @@ public class MaterialResourceRef extends AbstractResourceRef<MaterialStreamData>
     public float anisotropy;
     public float sheen;
     public float sheenTint;
+
+
+    public UniformDTO anisotropicRotationUniform;
+    public UniformDTO anisotropyUniform;
+    public UniformDTO clearCoatUniform;
+    public UniformDTO sheenUniform;
+    public UniformDTO sheenTintUniform;
+    public UniformDTO renderingModeUniform;
+    public UniformDTO ssrEnabledUniform;
+    public UniformDTO parallaxHeightScaleUniform;
+    public UniformDTO parallaxLayersUniform;
+    public UniformDTO useParallaxUniform;
+
+
+    public int albedoLocation;
+    public int roughnessLocation;
+    public int metallicLocation;
+    public int aoLocation;
+    public int normalLocation;
+    public int heightMapLocation;
 
     public MaterialResourceRef(String id) {
         super(id);

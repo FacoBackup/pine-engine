@@ -6,6 +6,8 @@ import com.pine.component.MeshComponent;
 import com.pine.component.Transformation;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
+import com.pine.messaging.MessageRepository;
+import com.pine.messaging.MessageSeverity;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
@@ -33,15 +35,14 @@ public class HierarchyPanel extends AbstractDockPanel {
 
     @PInject
     public SelectionService selectionService;
-
     @PInject
     public WorldRepository world;
-
     @PInject
     public EditorRepository stateRepository;
-
     @PInject
     public RequestProcessingService requestProcessingService;
+    @PInject
+    public MessageRepository messageRepository;
 
     private HierarchyHeaderPanel header;
     private Entity onDrag;
@@ -58,13 +59,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     @Override
     public void render() {
         isOnSearch = search.isNotEmpty();
-        if (isWindowFocused && ImGui.isKeyPressed(ImGuiKey.Delete) && !stateRepository.selected.isEmpty()) {
-            requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected));
-            stateRepository.selected.forEach(s -> stateRepository.pinnedEntities.remove(s.id));
-            stateRepository.selected.clear();
-            stateRepository.mainSelection = null;
-            stateRepository.primitiveSelected = null;
-        }
+        hotKeys();
 
         header.render();
         if (ImGui.beginTable("##hierarchy" + imguiId, 3, TABLE_FLAGS)) {
@@ -78,6 +73,32 @@ public class HierarchyPanel extends AbstractDockPanel {
             }
             renderNode(world.rootEntity);
             ImGui.endTable();
+        }
+    }
+
+    private void hotKeys() {
+        if(!isWindowFocused || stateRepository.selected.isEmpty()){
+            return;
+        }
+        if (ImGui.isKeyPressed(ImGuiKey.Delete)) {
+            messageRepository.pushMessage("Deleting selected", MessageSeverity.WARN);
+            requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected));
+            stateRepository.selected.forEach(s -> stateRepository.pinnedEntities.remove(s.id));
+            stateRepository.selected.clear();
+            stateRepository.mainSelection = null;
+            stateRepository.primitiveSelected = null;
+        }
+
+        if (ImGui.isKeyPressed(ImGuiKey.C)) {
+            messageRepository.pushMessage("Copying "  + stateRepository.selected.size() + " entities", MessageSeverity.WARN);
+            stateRepository.copied.addAll(stateRepository.selected.stream().map(s -> s.id).toList());
+        }
+
+        if (ImGui.isKeyPressed(ImGuiKey.V)) {
+            messageRepository.pushMessage("Pasting "  + stateRepository.copied.size() + " entities", MessageSeverity.WARN);
+            for(String id : stateRepository.copied){
+
+            }
         }
     }
 
@@ -178,7 +199,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     }
 
     private void renderInstancedComponent(Entity node, MeshComponent instanced) {
-        List<Transformation> primitives = instanced.primitives;
+        List<Transformation> primitives = instanced.instances;
         for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
             Transformation p = primitives.get(i);
             ImGui.tableNextRow();

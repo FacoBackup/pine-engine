@@ -12,6 +12,7 @@ import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.UBOService;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.streaming.impl.MaterialService;
 import com.pine.service.streaming.impl.MeshService;
 
 public abstract class AbstractPass extends MetricCollector {
@@ -31,6 +32,8 @@ public abstract class AbstractPass extends MetricCollector {
     public ComputeService computeService;
     @PInject
     public ShaderService shaderService;
+    @PInject
+    public MaterialService materialService;
     @PInject
     public SSBOService ssboService;
     @PInject
