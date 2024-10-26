@@ -1,6 +1,7 @@
 package com.pine.repository.rendering;
 
 import com.pine.injection.PBean;
+import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 
 import java.util.ArrayList;
@@ -15,6 +16,8 @@ public class RenderingRepository {
 
     public VoxelChunkResourceRef[] voxelChunks = new VoxelChunkResourceRef[4];
     public VoxelChunkResourceRef[] newVoxelChunks = new VoxelChunkResourceRef[4];
+
+    public EnvironmentMapResourceRef[] environmentMaps = new EnvironmentMapResourceRef[3];
 
     public int pendingTransformations = 0;
     public int lightCount = 0;

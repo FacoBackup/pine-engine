@@ -25,6 +25,13 @@ public class Camera implements Mutable, Serializable {
     public int changes = 0;
     public int frozenVersion = -1;
 
+    public Camera(){}
+
+    public Camera(float pitch, float yaw) {
+        this.pitch = pitch;
+        this.yaw = yaw;
+    }
+
     @Override
     public int getChangeId() {
         return changes;

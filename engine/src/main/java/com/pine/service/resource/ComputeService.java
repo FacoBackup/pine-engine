@@ -5,7 +5,6 @@ import com.pine.injection.PInject;
 import com.pine.service.resource.compute.Compute;
 import com.pine.service.resource.compute.ComputeCreationData;
 import com.pine.service.resource.compute.ComputeRuntimeData;
-import com.pine.service.resource.shader.UniformDTO;
 import org.lwjgl.opengl.GL46;
 
 @PBean

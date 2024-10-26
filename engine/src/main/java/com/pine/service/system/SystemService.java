@@ -17,8 +17,8 @@ public class SystemService implements SyncTask {
             new BRDFGenPass(),
             new ShaderDataSyncPass(),
             new GBufferPass(),
-            new GBufferShadingPass(),
             new AtmospherePass(),
+            new GBufferShadingPass(),
             new VoxelVisualizerPass(),
             new FrameCompositionPass()
     );

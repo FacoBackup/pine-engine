@@ -3,7 +3,6 @@ package com.pine.repository.core;
 import com.pine.Engine;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.ShaderService;

@@ -9,6 +9,7 @@ in vec2 texCoords;
 in mat4 S;
 uniform sampler2D iconSampler;
 out vec4 finalColor;
+uniform sampler2D sceneDepth;
 
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 

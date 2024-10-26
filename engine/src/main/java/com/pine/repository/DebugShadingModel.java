@@ -16,7 +16,9 @@ public enum DebugShadingModel implements SelectableEnum, Serializable {
     RANDOM("Random", 13, 8),
     WIREFRAME("Wireframe", 17, 9),
     UV("UV", 18, 10),
-    LIT("Lit", -1, 11);
+    INDIRECT_DIFFUSE("Indirect diffuse", 19, 11),
+    INDIRECT_SPECULAR("Indirect specular", 20, 12),
+    LIT("Lit", -1, 13);
 
     private final int index;
     private final int id;

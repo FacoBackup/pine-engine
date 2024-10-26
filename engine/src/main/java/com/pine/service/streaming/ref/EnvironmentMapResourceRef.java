@@ -3,9 +3,14 @@ package com.pine.service.streaming.ref;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.data.EnvironmentMapStreamData;
+import com.pine.service.streaming.impl.CubeMapFace;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.opengl.GL46C;
 import org.lwjgl.stb.STBImage;
+
+import java.nio.ByteBuffer;
+
+import static com.pine.service.environment.CubeMapGenerator.setUpCubeMapTexture;
 
 public class EnvironmentMapResourceRef extends AbstractResourceRef<EnvironmentMapStreamData> {
     public int texture;
@@ -21,27 +26,21 @@ public class EnvironmentMapResourceRef extends AbstractResourceRef<EnvironmentMa
 
     @Override
     protected void loadInternal(EnvironmentMapStreamData data) {
-        int texID = GL46C.glGenTextures();
-        GL46C.glBindTexture(GL46C.GL_TEXTURE_CUBE_MAP, texID);
+        this.texture = GL46.glGenTextures();
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, texture);
 
-        for (int j = 0; j < data.images().length; j++) {
-            GL46C.glTexImage2D(
-                    GL46C.GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0,
-                    GL46C.GL_RGBA, data.imageSize(), data.imageSize(), 0,
-                    GL46C.GL_RGBA, GL46C.GL_UNSIGNED_BYTE, data.images()[j]
+        ByteBuffer[] images = data.images();
+        for (int i = 0; i < CubeMapFace.values().length; i++) {
+            GL46.glTexImage2D(
+                    CubeMapFace.values()[i].getGlFace(), 0,
+                    GL46.GL_RGBA8, data.imageSize(), data.imageSize(), 0,
+                    GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, images[i]
             );
-            STBImage.stbi_image_free(data.images()[j]);
+            STBImage.stbi_image_free(images[i]);
         }
 
-        GL46C.glTexParameteri(GL46C.GL_TEXTURE_CUBE_MAP, GL46C.GL_TEXTURE_MIN_FILTER, GL46C.GL_LINEAR);
-        GL46C.glTexParameteri(GL46C.GL_TEXTURE_CUBE_MAP, GL46C.GL_TEXTURE_MAG_FILTER, GL46C.GL_LINEAR);
-        GL46C.glTexParameteri(GL46C.GL_TEXTURE_CUBE_MAP, GL46C.GL_TEXTURE_WRAP_S, GL46C.GL_CLAMP_TO_EDGE);
-        GL46C.glTexParameteri(GL46C.GL_TEXTURE_CUBE_MAP, GL46C.GL_TEXTURE_WRAP_T, GL46C.GL_CLAMP_TO_EDGE);
-        GL46C.glTexParameteri(GL46C.GL_TEXTURE_CUBE_MAP, GL46C.GL_TEXTURE_WRAP_R, GL46C.GL_CLAMP_TO_EDGE);
-
-        GL46C.glBindTexture(GL46C.GL_TEXTURE_CUBE_MAP, 0);
-
-        this.texture = texID;
+        setUpCubeMapTexture();
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, GL11.GL_NONE);
     }
 
     @Override

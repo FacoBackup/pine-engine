@@ -4,23 +4,8 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import org.lwjgl.system.MemoryUtil;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 public class GBufferShadingPass extends AbstractQuadPassPass {
-    private final IntBuffer intBoolBuffer = MemoryUtil.memAllocInt(1);
-    private final FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(1);
-
-    private UniformDTO gBufferAlbedoSampler;
-    private UniformDTO gBufferNormalSampler;
-    private UniformDTO gBufferRMAOSampler;
-    private UniformDTO gBufferMaterialSampler;
-    private UniformDTO brdfSampler;
-    private UniformDTO SSAO;
-    private UniformDTO SSGI;
-    private UniformDTO previousFrame;
     private UniformDTO SSRFalloff;
     private UniformDTO stepSizeSSR;
     private UniformDTO maxSSSDistance;
@@ -30,7 +15,6 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
     private UniformDTO SSAOFalloff;
     private UniformDTO maxStepsSSR;
     private UniformDTO maxStepsSSS;
-    private UniformDTO sceneDepth;
     private UniformDTO lightCount;
 
     @Override
@@ -40,16 +24,6 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
 
     @Override
     public void onInitialize() {
-        sceneDepth = shaderRepository.gBufferShading.addUniformDeclaration("sceneDepth", GLSLType.SAMPLER_2_D);
-        gBufferAlbedoSampler = shaderRepository.gBufferShading.addUniformDeclaration("gBufferAlbedoSampler", GLSLType.SAMPLER_2_D);
-        gBufferNormalSampler = shaderRepository.gBufferShading.addUniformDeclaration("gBufferNormalSampler", GLSLType.SAMPLER_2_D);
-        gBufferRMAOSampler = shaderRepository.gBufferShading.addUniformDeclaration("gBufferRMAOSampler", GLSLType.SAMPLER_2_D);
-        gBufferMaterialSampler = shaderRepository.gBufferShading.addUniformDeclaration("gBufferMaterialSampler", GLSLType.SAMPLER_2_D);
-        brdfSampler = shaderRepository.gBufferShading.addUniformDeclaration("brdfSampler", GLSLType.SAMPLER_2_D);
-        SSAO = shaderRepository.gBufferShading.addUniformDeclaration("SSAO", GLSLType.SAMPLER_2_D);
-        SSGI = shaderRepository.gBufferShading.addUniformDeclaration("SSGI", GLSLType.SAMPLER_2_D);
-        previousFrame = shaderRepository.gBufferShading.addUniformDeclaration("previousFrame", GLSLType.SAMPLER_2_D);
-
         SSRFalloff = shaderRepository.gBufferShading.addUniformDeclaration("SSRFalloff", GLSLType.FLOAT);
         stepSizeSSR = shaderRepository.gBufferShading.addUniformDeclaration("stepSizeSSR", GLSLType.FLOAT);
         maxSSSDistance = shaderRepository.gBufferShading.addUniformDeclaration("maxSSSDistance", GLSLType.FLOAT);
@@ -82,16 +56,15 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
         shaderService.bindInt(settingsRepository.sssMaxSteps, maxStepsSSS);
         shaderService.bindInt(renderingRepository.lightCount, lightCount);
 
-        shaderService.bindSampler2d(fboRepository.gBufferAlbedoSampler, gBufferAlbedoSampler);
-        shaderService.bindSampler2d(fboRepository.gBufferNormalSampler, gBufferNormalSampler);
-        shaderService.bindSampler2d(fboRepository.gBufferRMAOSampler, gBufferRMAOSampler);
-        shaderService.bindSampler2d(fboRepository.gBufferMaterialSampler, gBufferMaterialSampler);
-        shaderService.bindSampler2d(fboRepository.gBufferDepthSampler, sceneDepth);
-
-        shaderService.bindSampler2d(fboRepository.brdfSampler, brdfSampler);
-        shaderService.bindSampler2d(fboRepository.ssaoBlurredSampler, SSAO);
-        shaderService.bindSampler2d(fboRepository.ssgiSampler, SSGI);
-        shaderService.bindSampler2d(engine.getTargetFBO().getMainSampler(), previousFrame);
+        shaderService.bindSampler2dDirect(fboRepository.gBufferAlbedoSampler, 0);
+        shaderService.bindSampler2dDirect(fboRepository.gBufferNormalSampler, 1);
+        shaderService.bindSampler2dDirect(fboRepository.gBufferRMAOSampler, 2);
+        shaderService.bindSampler2dDirect(fboRepository.gBufferMaterialSampler, 3);
+        shaderService.bindSampler2dDirect(fboRepository.brdfSampler, 4);
+        shaderService.bindSampler2dDirect(fboRepository.ssaoBlurredSampler, 5);
+        shaderService.bindSampler2dDirect(fboRepository.ssgiSampler, 6);
+        shaderService.bindSampler2dDirect(engine.getTargetFBO().getMainSampler(), 7);
+        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthSampler, 8);
     }
 
     @Override

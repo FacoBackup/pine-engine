@@ -7,12 +7,6 @@ import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import org.joml.Matrix4f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL46;
-import org.lwjgl.system.MemoryUtil;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 public class AtmospherePass extends AbstractQuadPassPass {
 
@@ -55,11 +49,6 @@ public class AtmospherePass extends AbstractQuadPassPass {
     @Override
     protected FrameBufferObject getTargetFBO() {
         return fboRepository.auxBuffer;
-    }
-
-    @Override
-    protected boolean shouldClearFBO() {
-        return true;
     }
 
     @Override

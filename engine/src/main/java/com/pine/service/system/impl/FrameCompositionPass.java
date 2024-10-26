@@ -4,11 +4,6 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import org.joml.Vector2f;
-import org.lwjgl.system.MemoryUtil;
-
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 public class FrameCompositionPass extends AbstractQuadPassPass {
     private UniformDTO inverseFilterTextureSize;

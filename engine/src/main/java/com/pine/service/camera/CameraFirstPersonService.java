@@ -67,7 +67,6 @@ public class CameraFirstPersonService extends AbstractCameraService {
 
     @Override
     public void createViewMatrix(Camera camera) {
-
         float cosPitch = (float) Math.cos(camera.pitch);
         float sinPitch = (float) Math.sin(camera.pitch);
         float cosYaw = (float) Math.cos(camera.yaw);

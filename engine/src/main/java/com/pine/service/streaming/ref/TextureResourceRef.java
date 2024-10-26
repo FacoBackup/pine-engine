@@ -4,6 +4,7 @@ import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.data.TextureStreamData;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.opengl.GL46C;
 import org.lwjgl.stb.STBImage;
 
 public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
@@ -31,6 +32,7 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
 
         GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
+        GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
         STBImage.stbi_image_free(data.imageBuffer);
     }
 

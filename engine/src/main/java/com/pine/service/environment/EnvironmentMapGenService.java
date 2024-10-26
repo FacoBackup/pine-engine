@@ -10,6 +10,7 @@ import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.streaming.impl.CubeMapFace;
 import com.pine.service.system.SystemService;
@@ -29,33 +30,6 @@ public class EnvironmentMapGenService implements Loggable {
     private static final float Z_NEAR = .1f;
     private static final float Z_FAR = 10000f;
 
-    private static final int[] CUBEMAP_FACES = {
-            GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-            GL46.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-            GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-            GL46.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-            GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-            GL46.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-    };
-
-    private static final Vector3f[] TARGETS = {
-            new Vector3f(1.0f, 0.0f, 0.0f),   // +X
-            new Vector3f(-1.0f, 0.0f, 0.0f),  // -X
-            new Vector3f(0.0f, 1.0f, 0.0f),   // +Y
-            new Vector3f(0.0f, -1.0f, 0.0f),  // -Y
-            new Vector3f(0.0f, 0.0f, 1.0f),   // +Z
-            new Vector3f(0.0f, 0.0f, -1.0f)   // -Z
-    };
-
-    private static final Vector3f[] UP_VECTORS = {
-            new Vector3f(0.0f, -1.0f, 0.0f),  // +X
-            new Vector3f(0.0f, -1.0f, 0.0f),  // -X
-            new Vector3f(0.0f, 0.0f, 1.0f),   // +Y
-            new Vector3f(0.0f, 0.0f, -1.0f),  // -Y
-            new Vector3f(0.0f, -1.0f, 0.0f),  // +Z
-            new Vector3f(0.0f, -1.0f, 0.0f)   // -Z
-    };
-
     @PInject
     public WorldRepository worldRepository;
 
@@ -74,6 +48,10 @@ public class EnvironmentMapGenService implements Loggable {
     @PInject
     public AtmosphereSettingsRepository atmosphere;
 
+    @PInject
+    public StreamingRepository streamingRepository;
+
+    public boolean isBaked = true;
     private AtmospherePass atmospherePass;
 
     public void bake() {
@@ -85,7 +63,15 @@ public class EnvironmentMapGenService implements Loggable {
         List<AbstractComponent> probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE);
         for (var probe : probes) {
             capture(probe.entity.id, probe.entity.transformation.translation);
+            var probeOld = streamingRepository.loadedResources.get(probe.entity.id);
+            if(probeOld != null){
+                probeOld.dispose();
+            }
+            streamingRepository.scheduleToLoad.remove(probe.entity.id);
+            streamingRepository.toLoadResources.remove(probe.entity.id);
+            streamingRepository.discardedResources.remove(probe.entity.id);
         }
+        isBaked = true;
     }
 
     private void capture(String resourceId, Vector3f cameraPosition) {
@@ -103,18 +89,19 @@ public class EnvironmentMapGenService implements Loggable {
 
     private void generate(Vector3f cameraPosition, int framebufferId, int baseResolution, int cubeMapTextureId, String resourceId) {
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, framebufferId);
-        Matrix4f invView = new Matrix4f();
         Matrix4f invProjection = new Matrix4f();
         Matrix4f projection = new Matrix4f();
         projection.setPerspective(FOV_Y, ASPECT_RATIO, Z_NEAR, Z_FAR);
 //        projection.transpose(projection);
         projection.invert(invProjection);
 
-        for (int i = 0; i < CubeMapFace.SIZE; i++) {
+        for (int i = 0; i < CubeMapFace.values().length; i++) {
             GL46.glViewport(0, 0, baseResolution, baseResolution);
-            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, CUBEMAP_FACES[i], cubeMapTextureId, 0);
+            GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, CubeMapFace.values()[i].getGlFace(), cubeMapTextureId, 0);
             Matrix4f viewMatrix = createViewMatrixForFace(i, cameraPosition);
+            Matrix4f invView = new Matrix4f();
             viewMatrix.transpose(viewMatrix);
+            viewMatrix.invert(invView);
 
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
 
@@ -128,15 +115,12 @@ public class EnvironmentMapGenService implements Loggable {
     private void renderFace(String resourceId, int face, Matrix4f viewMatrix, Matrix4f invView, Matrix4f invProjection) {
         getLogger().warn("Rendering face {} for probe {}", face, resourceId);
         if (atmosphere.enabled) {
-            viewMatrix.invert(invView);
             atmospherePass.renderToCubeMap(invView, invProjection);
         }
         // TODO - RENDER SCENE + ATMOSPHERE IF ENABLED
     }
 
     private Matrix4f createViewMatrixForFace(int faceIndex, Vector3f cameraPosition) {
-        Vector3f target = TARGETS[faceIndex];
-        Vector3f up = UP_VECTORS[faceIndex];
-        return new Matrix4f().lookAt(cameraPosition, target, up);
+        return new Matrix4f().lookAt(new Vector3f(0), CubeMapFace.values()[faceIndex].getTarget(), CubeMapFace.values()[faceIndex].getUp());
     }
 }

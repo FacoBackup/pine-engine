@@ -11,25 +11,13 @@ import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.List;
 
 public class GBufferPass extends AbstractPass implements Loggable {
 
-    private final IntBuffer intBuffer = MemoryUtil.memAllocInt(1);
-    private final FloatBuffer floatBuffer = MemoryUtil.memAllocFloat(1);
-
     private UniformDTO transformationIndex;
     private UniformDTO debugShadingMode;
-    private UniformDTO albedo;
-    private UniformDTO roughness;
-    private UniformDTO metallic;
-    private UniformDTO ao;
-    private UniformDTO normal;
-    private UniformDTO heightMap;
     private UniformDTO parallaxHeightScale;
     private UniformDTO parallaxLayers;
     private UniformDTO useParallax;
@@ -44,14 +32,10 @@ public class GBufferPass extends AbstractPass implements Loggable {
 
     @Override
     public void onInitialize() {
+
         debugShadingMode = shaderRepository.gBufferShader.addUniformDeclaration("debugShadingMode", GLSLType.INT);
         transformationIndex = shaderRepository.gBufferShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
-        albedo = shaderRepository.gBufferShader.addUniformDeclaration("albedo", GLSLType.SAMPLER_2_D);
-        roughness = shaderRepository.gBufferShader.addUniformDeclaration("roughness", GLSLType.SAMPLER_2_D);
-        metallic = shaderRepository.gBufferShader.addUniformDeclaration("metallic", GLSLType.SAMPLER_2_D);
-        ao = shaderRepository.gBufferShader.addUniformDeclaration("ao", GLSLType.SAMPLER_2_D);
-        normal = shaderRepository.gBufferShader.addUniformDeclaration("normal", GLSLType.SAMPLER_2_D);
-        heightMap = shaderRepository.gBufferShader.addUniformDeclaration("heightMap", GLSLType.SAMPLER_2_D);
+
         parallaxHeightScale = shaderRepository.gBufferShader.addUniformDeclaration("parallaxHeightScale", GLSLType.FLOAT);
         parallaxLayers = shaderRepository.gBufferShader.addUniformDeclaration("parallaxLayers", GLSLType.INT);
         useParallax = shaderRepository.gBufferShader.addUniformDeclaration("useParallax", GLSLType.BOOL);
@@ -63,6 +47,7 @@ public class GBufferPass extends AbstractPass implements Loggable {
         sheenTint = shaderRepository.gBufferShader.addUniformDeclaration("sheenTint", GLSLType.FLOAT);
         renderingMode = shaderRepository.gBufferShader.addUniformDeclaration("renderingMode", GLSLType.INT);
         ssrEnabled = shaderRepository.gBufferShader.addUniformDeclaration("ssrEnabled", GLSLType.BOOL);
+        fallbackMaterial = shaderRepository.gBufferShader.addUniformDeclaration("fallbackMaterial", GLSLType.BOOL);
         fallbackMaterial = shaderRepository.gBufferShader.addUniformDeclaration("fallbackMaterial", GLSLType.BOOL);
     }
 
@@ -83,9 +68,17 @@ public class GBufferPass extends AbstractPass implements Loggable {
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
         ssboService.bind(ssboRepository.transformationSSBO);
+
         shaderService.bind(shaderRepository.gBufferShader);
 
         shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
+        for (int i = 0; i < renderingRepository.environmentMaps.length; i++) {
+            var current = renderingRepository.environmentMaps[i];
+            if (current != null) {
+                shaderService.bindSamplerCubeDirect(current, i);
+                current.lastUse = clockRepository.totalTime;
+            }
+        }
 
         List<RenderingRequest> requests = renderingRepository.requests;
         int instancedOffset = 0;
@@ -97,7 +90,6 @@ public class GBufferPass extends AbstractPass implements Loggable {
                 bindMaterial(request.material);
             } else {
                 shaderService.bindBoolean(true, fallbackMaterial);
-                intBuffer.put(0, 1);
             }
 
             meshService.bind(request.mesh);
@@ -111,27 +103,27 @@ public class GBufferPass extends AbstractPass implements Loggable {
         request.lastUse = clockRepository.totalTime;
 
         if (request.albedo != null) {
-            shaderService.bindSampler2d(request.albedo, albedo);
+            shaderService.bindSampler2dDirect(request.albedo, 3);
             request.albedo.lastUse = request.lastUse;
         }
         if (request.roughness != null) {
-            shaderService.bindSampler2d(request.roughness, roughness);
+            shaderService.bindSampler2dDirect(request.roughness, 4);
             request.roughness.lastUse = request.lastUse;
         }
         if (request.metallic != null) {
-            shaderService.bindSampler2d(request.metallic, metallic);
+            shaderService.bindSampler2dDirect(request.metallic, 5);
             request.metallic.lastUse = request.lastUse;
         }
         if (request.ao != null) {
-            shaderService.bindSampler2d(request.ao, ao);
+            shaderService.bindSampler2dDirect(request.ao, 6);
             request.ao.lastUse = request.lastUse;
         }
         if (request.normal != null) {
-            shaderService.bindSampler2d(request.normal, normal);
+            shaderService.bindSampler2dDirect(request.normal, 7);
             request.normal.lastUse = request.lastUse;
         }
         if (request.heightMap != null) {
-            shaderService.bindSampler2d(request.heightMap, heightMap);
+            shaderService.bindSampler2dDirect(request.heightMap, 8);
             request.heightMap.lastUse = request.lastUse;
         }
         shaderService.bindFloat(request.anisotropicRotation, anisotropicRotation);

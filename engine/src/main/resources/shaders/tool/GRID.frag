@@ -2,6 +2,8 @@ in vec3 worldPosition;
 in vec3 cameraPosition;
 uniform vec4 settings;
 
+uniform sampler2D sceneDepth;
+
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 
 out vec4 finalColor;
@@ -39,7 +41,7 @@ void main() {
     if (gridValue != .1) discard;
 
     float depth = getLogDepth(quadUV);
-    if (depth - gl_FragCoord.z <= .001 && depth > 0.) discard;
+    if (depth - gl_FragCoord.z <= .001) discard;
 
     float lineScale = .4 / scale;
     float offset = .5 / scale;

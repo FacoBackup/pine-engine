@@ -21,7 +21,7 @@ public interface IShader extends Loggable {
 
         if (!compiled) {
             String error = GL46.glGetShaderInfoLog(shader);
-            getLogger().error("Shader compilation error: {} {}", error, shaderCode);
+            getLogger().error("Shader compilation error: {}", error);
         }
 
         return shader;

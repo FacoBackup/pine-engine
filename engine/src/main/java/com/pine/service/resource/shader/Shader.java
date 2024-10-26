@@ -44,6 +44,7 @@ public class Shader extends AbstractResource implements IShader {
 
         GL46.glLinkProgram(program);
         GL46.glFlush();
+
     }
 
     @Override

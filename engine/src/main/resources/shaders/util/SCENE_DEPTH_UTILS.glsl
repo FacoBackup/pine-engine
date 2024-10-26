@@ -1,7 +1,5 @@
 #include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
 
-uniform sampler2D sceneDepth;
-
 float getLogDepth(vec2 uv) {
     float half_co = logDepthFC * .5;
     float exponent = textureLod(sceneDepth, uv, 2.).r / half_co;

@@ -1,5 +1,6 @@
 package com.pine.service.environment;
 
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.impl.CubeMapFace;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
@@ -20,8 +21,8 @@ public class CubeMapWriteUtil {
     public static void saveCubeMapToDisk(int textureId, int imageSize, String basePath) {
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, textureId);
         ByteBuffer buffer = BufferUtils.createByteBuffer(imageSize * imageSize * CHANNELS);
-        for (int i = 0; i < CubeMapFace.SIZE; i++) {
-            GL46.glGetTexImage(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, buffer);
+        for (int i = 0; i < CubeMapFace.values().length; i++) {
+            GL46.glGetTexImage(CubeMapFace.values()[i].getGlFace(), 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, buffer);
             String path = getPathToFile(basePath, CubeMapFace.values()[i]);
             saveImage(path, imageSize, buffer);
         }
@@ -47,6 +48,7 @@ public class CubeMapWriteUtil {
     }
 
     public static String getPathToFile(String basePath, CubeMapFace face) {
-        return basePath + face.name();
+        String type = StreamableResourceType.ENVIRONMENT_MAP.name();
+        return basePath.replace("." + type, "-" + face.name() + type + ".png");
     }
 }

@@ -6,18 +6,12 @@ import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.LevelOfDetail;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.data.EnvironmentMapStreamData;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
-import com.pine.service.streaming.ref.TextureResourceRef;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
@@ -53,6 +47,6 @@ public class EnvironmentMapService extends AbstractStreamableService<Environment
 
     @Override
     public AbstractResourceRef<?> newInstance(String key) {
-        return new TextureResourceRef(key);
+        return new EnvironmentMapResourceRef(key);
     }
 }

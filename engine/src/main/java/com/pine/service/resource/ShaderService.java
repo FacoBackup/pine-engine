@@ -4,7 +4,6 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.core.CoreUBORepository;
-import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;
 import com.pine.service.resource.shader.UniformDTO;
@@ -185,14 +184,17 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
         currentSamplerIndex++;
     }
 
-    public void bindSamplerCube(EnvironmentMapResourceRef sampler, UniformDTO uniform) {
-        bindSamplerCube(sampler.texture, uniform);
+    public void bindSamplerCubeDirect(EnvironmentMapResourceRef sampler, int bindingPoint) {
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + bindingPoint);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, sampler.texture);
     }
 
-    public void bindSamplerCube(int sampler, UniformDTO uniform) {
-        GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
-        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, sampler);
-        GL46.glUniform1i(uniform.location, currentSamplerIndex);
-        currentSamplerIndex++;
+    public void bindSampler2dDirect(TextureResourceRef sampler, int bindingPoint) {
+        bindSampler2dDirect(sampler.texture, bindingPoint);
+    }
+
+    public void bindSampler2dDirect(int sampler, int bindingPoint) {
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + bindingPoint);
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, sampler);
     }
 }

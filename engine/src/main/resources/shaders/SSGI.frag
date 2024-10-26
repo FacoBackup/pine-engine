@@ -12,6 +12,8 @@ uniform sampler2D previousFrame;
 uniform vec3 rayMarchSettings;
 out vec4 fragColor;
 
+uniform sampler2D sceneDepth;
+
 #include "./util/SCENE_DEPTH_UTILS.glsl"
 
 #include "./util/RAY_MARCHER.glsl"

@@ -5,6 +5,7 @@
 #define BLUR_NUMBER 100
 #define ROTATE_2D mat2(cos(GOLDEN_ANGLE), sin(GOLDEN_ANGLE), -sin(GOLDEN_ANGLE), cos(GOLDEN_ANGLE))
 #define APERTURE 7.8
+uniform sampler2D sceneDepth;
 
 #include "./POST_PROCESSING_UNIFORMS.glsl"
 #include "./util/SCENE_DEPTH_UTILS.glsl"
