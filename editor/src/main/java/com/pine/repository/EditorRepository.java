@@ -82,7 +82,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public Transformation primitiveSelected = null;
     public boolean gizmoExternalChange = false;
     public Entity mainSelection = null;
-    public final LinkedList<Entity> selected = new LinkedList<>();
+    public final Map<String, Boolean> selected = new HashMap<>();
     public final LinkedList<String> copied = new LinkedList<>();
     public final DirectoryEntry root = new DirectoryEntry("Files", null);
 

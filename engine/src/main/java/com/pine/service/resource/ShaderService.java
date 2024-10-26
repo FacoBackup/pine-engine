@@ -173,6 +173,12 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
         GL46.glUniformMatrix4fv(uniform.location, false, bufferMat4);
     }
 
+    public void bindMat4Transposed(Matrix4f matrix, UniformDTO uniform) {
+        bufferMat4.position(0);
+        matrix.get(bufferMat4);
+        GL46.glUniformMatrix4fv(uniform.location, true, bufferMat4);
+    }
+
     public void bindSampler2d(TextureResourceRef sampler, UniformDTO uniform) {
         bindSampler2d(sampler.texture, uniform);
     }

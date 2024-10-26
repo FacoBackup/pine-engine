@@ -30,7 +30,7 @@ public class CoreFBORepository implements CoreRepository {
     public int gBufferNormalSampler;
     public int gBufferRMAOSampler;
     public int gBufferMaterialSampler;
-    public int gBufferDepthSampler;
+    public int gBufferDepthIndexSampler;
     public FrameBufferObject auxBuffer;
     public int auxSampler;
     public FrameBufferObject postProcessingBuffer;
@@ -66,20 +66,21 @@ public class CoreFBORepository implements CoreRepository {
                 // X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
                 // Y channel: 16 bits for clearCoat + 16 bits for sheen
                 // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
+                // W channel: 32 bit render index
                 .addSampler(3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
-                .addSampler(4, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth
+                .addSampler(4, GL46.GL_RG16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth
         );
         gBufferAlbedoSampler = gBuffer.getSamplers().get(0);
         gBufferNormalSampler = gBuffer.getSamplers().get(1);
         gBufferRMAOSampler = gBuffer.getSamplers().get(2);
         gBufferMaterialSampler = gBuffer.getSamplers().get(3);
-        gBufferDepthSampler = gBuffer.getSamplers().get(4);
+        gBufferDepthIndexSampler = gBuffer.getSamplers().get(4);
 
         auxBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
                 .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
                 .staticResource());
 
-        postProcessingBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
+        postProcessingBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, false)
                 .addSampler()
                 .staticResource());
 

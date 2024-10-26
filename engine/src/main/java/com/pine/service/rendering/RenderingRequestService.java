@@ -67,6 +67,7 @@ public class RenderingRequestService {
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest(mesh, t, new ArrayList<>());
         }
+        scene.renderRequest.entity = scene.entity;
         scene.renderRequest.transformations.clear();
     }
 
@@ -84,6 +85,7 @@ public class RenderingRequestService {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
+            transform.renderRequest.entity = scene.entity;
             prepareMaterial(scene, transform.renderRequest);
 
             transform.renderRequest.mesh = mesh;

@@ -31,6 +31,7 @@ public class AddEntityRequest extends AbstractRequest implements Loggable {
     @Override
     public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
         entity = new Entity();
+        repository.entityMap.put(entity.id, entity);
         entity.transformation.parent = repository.rootEntity.transformation;
         repository.rootEntity.transformation.children.add(entity.transformation);
         try {

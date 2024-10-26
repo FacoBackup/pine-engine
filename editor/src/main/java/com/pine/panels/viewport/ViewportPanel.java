@@ -12,6 +12,7 @@ import com.pine.service.camera.CameraThirdPersonService;
 import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.tools.repository.ToolsResourceRepository;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
@@ -139,6 +140,8 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = sizeVec.y;
         repo.viewportW = sizeVec.x;
+        repo.viewportX = position.x;
+        repo.viewportY = position.y;
     }
 
     private void hotKeys(boolean focused) {

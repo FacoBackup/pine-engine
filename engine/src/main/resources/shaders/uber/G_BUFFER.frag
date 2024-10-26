@@ -60,6 +60,7 @@ layout (location = 2) out vec4 gBufferRMAOSampler;
 // X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
 // Y channel: 16 bits for clearCoat + 16 bits for sheen
 // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
+// W channel: 32 bit render index
 layout (location = 3) out vec4 gBufferMaterialSampler;
 layout (location = 4) out vec4 gBufferDepthSampler;
 
@@ -76,7 +77,7 @@ void main() {
         UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
     vec3 N = normalVec;
-    gBufferDepthSampler = vec4(encode(depthFunc), 0, 0, 1);
+    gBufferDepthSampler = vec4(encode(depthFunc), renderingIndex, 0, 1);
     if (!fallbackMaterial){
         gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 0);
         N = vec3(normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0)));

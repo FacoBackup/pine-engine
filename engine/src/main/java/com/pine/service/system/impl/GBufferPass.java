@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL46;
 
 import java.util.List;
 
-public class GBufferPass extends AbstractPass implements Loggable {
+public class GBufferPass extends AbstractPass {
 
     private UniformDTO transformationIndex;
     private UniformDTO debugShadingMode;
@@ -56,11 +56,11 @@ public class GBufferPass extends AbstractPass implements Loggable {
     protected void renderInternal() {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
         GL46.glDisable(GL11.GL_BLEND);
-        GL46.glEnable(GL11.GL_CULL_FACE);
         if (settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
             GL46.glDisable(GL11.GL_CULL_FACE);
         } else {
+            GL46.glEnable(GL11.GL_CULL_FACE);
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
         ssboService.bind(ssboRepository.transformationSSBO);

@@ -16,10 +16,6 @@ public class SelectionService {
     @PInject
     public WorldRepository worldRepository;
 
-    public LinkedList<Entity> getSelected() {
-        return stateRepository.selected;
-    }
-
     public void addSelected(Entity entity) {
         if (stateRepository.selected.isEmpty() || entity == null) {
             stateRepository.mainSelection = entity;
@@ -29,11 +25,12 @@ public class SelectionService {
                 stateRepository.primitiveSelected = stateRepository.mainSelection.transformation;
             }
         }
-        stateRepository.selected.add(entity);
+        if (entity != null) {
+            stateRepository.selected.put(entity.id, true);
+        }
     }
 
     public void clearSelection() {
-        stateRepository.selected.forEach(e -> e.selected = false);
         stateRepository.selected.clear();
     }
 

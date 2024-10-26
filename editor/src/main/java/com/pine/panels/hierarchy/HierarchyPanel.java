@@ -82,8 +82,8 @@ public class HierarchyPanel extends AbstractDockPanel {
         }
         if (ImGui.isKeyPressed(ImGuiKey.Delete)) {
             messageRepository.pushMessage("Deleting selected", MessageSeverity.WARN);
-            requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected));
-            stateRepository.selected.forEach(s -> stateRepository.pinnedEntities.remove(s.id));
+            requestProcessingService.addRequest(new DeleteEntityRequest(stateRepository.selected.keySet()));
+            stateRepository.selected.keySet().forEach(s -> stateRepository.pinnedEntities.remove(s));
             stateRepository.selected.clear();
             stateRepository.mainSelection = null;
             stateRepository.primitiveSelected = null;
@@ -91,7 +91,7 @@ public class HierarchyPanel extends AbstractDockPanel {
 
         if (ImGui.isKeyPressed(ImGuiKey.C)) {
             messageRepository.pushMessage("Copying "  + stateRepository.selected.size() + " entities", MessageSeverity.WARN);
-            stateRepository.copied.addAll(stateRepository.selected.stream().map(s -> s.id).toList());
+            stateRepository.copied.addAll(stateRepository.selected.keySet());
         }
 
         if (ImGui.isKeyPressed(ImGuiKey.V)) {
@@ -105,7 +105,7 @@ public class HierarchyPanel extends AbstractDockPanel {
     private void renderNodePinned(Entity node) {
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
-        if (node.selected) {
+        if (stateRepository.selected.containsKey(node.id)) {
             ImGui.textColored(stateRepository.accent, getNodeLabel(node, false));
         } else {
             ImGui.text(getNodeLabel(node, false));
@@ -212,7 +212,6 @@ public class HierarchyPanel extends AbstractDockPanel {
             }
             if (ImGui.isItemClicked()) {
                 stateRepository.primitiveSelected = p;
-                node.selected = true;
             }
             ImGui.tableNextColumn();
             ImGui.textDisabled("--");
@@ -223,7 +222,7 @@ public class HierarchyPanel extends AbstractDockPanel {
 
     private int getFlags(Entity node) {
         int flags = ImGuiTreeNodeFlags.SpanFullWidth;
-        if (node.selected) {
+        if (stateRepository.selected.containsKey(node.id)) {
             flags |= ImGuiTreeNodeFlags.Selected;
         }
         if (isOnSearch) {
@@ -269,7 +268,6 @@ public class HierarchyPanel extends AbstractDockPanel {
                 selectionService.clearSelection();
             }
             selectionService.addSelected(node);
-            node.selected = true;
         }
     }
 

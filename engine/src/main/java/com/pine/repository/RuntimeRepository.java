@@ -23,6 +23,8 @@ public class RuntimeRepository  {
     public float mouseY = 0;
     public float viewportW = 0;
     public float viewportH = 0;
+    public float viewportX = 0;
+    public float viewportY = 0;
 
     public void setDisplayH(int displayH) {
         this.displayH = displayH;
