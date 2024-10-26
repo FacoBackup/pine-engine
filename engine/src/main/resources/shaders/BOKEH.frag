@@ -7,7 +7,6 @@
 #define APERTURE 7.8
 uniform sampler2D sceneDepth;
 
-#include "./POST_PROCESSING_UNIFORMS.glsl"
 #include "./util/SCENE_DEPTH_UTILS.glsl"
 
 in vec2 texCoords;
@@ -19,25 +18,25 @@ out vec4 fragColor;
 
 void main() {
 
-    float iterations = float(BLUR_NUMBER);
-    float DEPTH = getLogDepth(texCoords);
-    float distanceFromCamera = length(viewSpacePositionFromDepth(DEPTH, texCoords) - placement.xyz);
-    float percentage = min(distanceFromCamera, focusDistanceDOF) / focusDistanceDOF;
-    float interpolation = DEPTH == 0. ? 1. : mix(0., 1., percentage);
-    vec3 col = vec3(0.);
-    vec3 tot = col;
-    float radius = (APERTURE - APERTURE * .5 * apertureDOF) * interpolation;
-    vec2 angle = vec2(radius / (max(textureSizeXDOF, textureSizeYDOF) * focalLengthDOF * iterations));
-
-    for (float i = 0.;i < iterations; ++i) {
-        angle = ROTATE_2D * angle;
-        vec3 c = texture(sceneColor, texCoords + i * angle).rgb;
-        col += c * c;
-        tot += c;
-    }
-    if (length(tot) > 0.)
-    col /= tot;
-    fragColor = vec4(col, 1.);
+//    float iterations = float(BLUR_NUMBER);
+//    float DEPTH = getLogDepth(texCoords);
+//    float distanceFromCamera = length(viewSpacePositionFromDepth(DEPTH, texCoords) - placement.xyz);
+//    float percentage = min(distanceFromCamera, focusDistanceDOF) / focusDistanceDOF;
+//    float interpolation = DEPTH == 0. ? 1. : mix(0., 1., percentage);
+//    vec3 col = vec3(0.);
+//    vec3 tot = col;
+//    float radius = (APERTURE - APERTURE * .5 * apertureDOF) * interpolation;
+//    vec2 angle = vec2(radius / (max(textureSizeXDOF, textureSizeYDOF) * focalLengthDOF * iterations));
+//
+//    for (float i = 0.;i < iterations; ++i) {
+//        angle = ROTATE_2D * angle;
+//        vec3 c = texture(sceneColor, texCoords + i * angle).rgb;
+//        col += c * c;
+//        tot += c;
+//    }
+//    if (length(tot) > 0.)
+//    col /= tot;
+//    fragColor = vec4(col, 1.);
 
 }
 

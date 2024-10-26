@@ -1,4 +1,3 @@
-
 in vec2 texCoords;
 #define A  0.15
 #define B  0.50
@@ -8,7 +7,19 @@ in vec2 texCoords;
 #define F  0.30
 #define W  11.2
 
-#include "./POST_PROCESSING_UNIFORMS.glsl"
+uniform float distortionIntensity;
+uniform float chromaticAberrationIntensity;
+uniform bool distortionEnabled;
+uniform bool chromaticAberrationEnabled;
+uniform bool bloomEnabled;
+uniform float focusDistanceDOF;
+uniform float apertureDOF;
+uniform float focalLengthDOF;
+uniform float samplesDOF;
+uniform bool vignetteEnabled;
+uniform float vignetteStrength;
+uniform float gamma;
+uniform float exposure;
 
 uniform sampler2D bloomColor;
 uniform sampler2D sceneColor;

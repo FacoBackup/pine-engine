@@ -33,7 +33,7 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
     @InspectableField(label = "Beta Mie")
     public final Vector3f betaMie = new Vector3f(1);
     @InspectableField(label = "Threshold", max = 10, min = -1, isDirectChange = false, isAngle = false)
-    public float threshold = 0;
+    public float threshold = -.1f;
 
     @Override
     public String getTitle() {

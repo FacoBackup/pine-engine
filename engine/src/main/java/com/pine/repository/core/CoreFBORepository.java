@@ -33,6 +33,8 @@ public class CoreFBORepository implements CoreRepository {
     public int gBufferDepthSampler;
     public FrameBufferObject auxBuffer;
     public int auxSampler;
+    public FrameBufferObject postProcessingBuffer;
+    public int postProcessingSampler;
     public FrameBufferObject ssgi;
     public int ssgiSampler;
     public FrameBufferObject ssgiFallback;
@@ -74,7 +76,11 @@ public class CoreFBORepository implements CoreRepository {
         gBufferDepthSampler = gBuffer.getSamplers().get(4);
 
         auxBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
-                .addSampler(0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false)
+                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
+                .staticResource());
+
+        postProcessingBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
+                .addSampler()
                 .staticResource());
 
         ssgi = (FrameBufferObject) resources.addResource(new FBOCreationData(halfResW, halfResH).addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, true, false).staticResource());
@@ -102,8 +108,10 @@ public class CoreFBORepository implements CoreRepository {
         ssgiSampler = ssgi.getSamplers().getFirst();
         ssgiFallbackSampler = ssgiFallback.getSamplers().getFirst();
         auxSampler = auxBuffer.getSamplers().getFirst();
+        postProcessingSampler = postProcessingBuffer.getSamplers().getFirst();
 
         all.add(gBuffer);
+        all.add(postProcessingBuffer);
         all.add(auxBuffer);
         all.add(ssgi);
         all.add(ssgiFallback);

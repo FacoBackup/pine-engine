@@ -33,7 +33,7 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     public boolean cameraMotionBlur = false;
 
     @InspectableField(group = "Post processing", label = "Bloom")
-    public boolean bloom = false;
+    public boolean bloomEnabled = false;
 
     @InspectableField(group = "Post processing", label = "Film Grain")
     public boolean filmGrain = false;
@@ -42,10 +42,10 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     public boolean vignetteEnabled = false;
 
     @InspectableField(group = "Post processing", label = "Chromatic Aberration")
-    public boolean chromaticAberration = false;
+    public boolean chromaticAberrationEnabled = false;
 
     @InspectableField(group = "Post processing", label = "Distortion")
-    public boolean distortion = false;
+    public boolean distortionEnabled = false;
 
     @InspectableField(group = "Depth of Field", label = "Enable DOF")
     public boolean DOF = false;
@@ -77,17 +77,17 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     @InspectableField(group = "Post processing", label = "Bloom Offset")
     public int bloomOffset = 0;
 
-    @InspectableField(group = "Post processing", label = "Gamma")
+    @InspectableField(group = "Post processing", label = "Gamma", min = 1)
     public float gamma = 2.2f;
 
-    @InspectableField(group = "Post processing", label = "Exposure")
+    @InspectableField(group = "Post processing", label = "Exposure", min = 0)
     public float exposure = 1.f;
 
-    @InspectableField(group = "Post processing", label = "Chromatic Aberration Strength")
-    public int chromaticAberrationStrength = 1;
+    @InspectableField(group = "Post processing", label = "Chromatic Aberration Strength", min = 0)
+    public float chromaticAberrationIntensity = 1;
 
-    @InspectableField(group = "Post processing", label = "Distortion Strength")
-    public int distortionStrength = 1;
+    @InspectableField(group = "Post processing", label = "Distortion Strength", min = 0)
+    public float distortionIntensity = 1;
 
     public final Matrix4f viewMatrix = new Matrix4f();
     public final Matrix4f projectionMatrix = new Matrix4f();

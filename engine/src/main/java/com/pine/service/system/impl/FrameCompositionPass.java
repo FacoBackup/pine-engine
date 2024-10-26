@@ -20,15 +20,15 @@ public class FrameCompositionPass extends AbstractQuadPassPass {
 
     @Override
     public void onInitialize() {
-        inverseFilterTextureSize = shaderRepository.atmosphereShader.addUniformDeclaration("inverseFilterTextureSize", GLSLType.VEC_2);
-        useFXAA = shaderRepository.atmosphereShader.addUniformDeclaration("useFXAA", GLSLType.BOOL);
-        filmGrainEnabled = shaderRepository.atmosphereShader.addUniformDeclaration("filmGrainEnabled", GLSLType.BOOL);
-        FXAASpanMax = shaderRepository.atmosphereShader.addUniformDeclaration("FXAASpanMax", GLSLType.FLOAT);
-        FXAAReduceMin = shaderRepository.atmosphereShader.addUniformDeclaration("FXAAReduceMin", GLSLType.FLOAT);
-        FXAAReduceMul = shaderRepository.atmosphereShader.addUniformDeclaration("FXAAReduceMul", GLSLType.FLOAT);
-        filmGrainStrength = shaderRepository.atmosphereShader.addUniformDeclaration("filmGrainStrength", GLSLType.FLOAT);
-        currentFrame = shaderRepository.atmosphereShader.addUniformDeclaration("currentFrame", GLSLType.SAMPLER_2_D);
-        filmGrainSeed = shaderRepository.atmosphereShader.addUniformDeclaration("filmGrainSeed", GLSLType.FLOAT);
+        inverseFilterTextureSize = shaderRepository.frameComposition.addUniformDeclaration("inverseFilterTextureSize", GLSLType.VEC_2);
+        useFXAA = shaderRepository.frameComposition.addUniformDeclaration("useFXAA", GLSLType.BOOL);
+        filmGrainEnabled = shaderRepository.frameComposition.addUniformDeclaration("filmGrainEnabled", GLSLType.BOOL);
+        FXAASpanMax = shaderRepository.frameComposition.addUniformDeclaration("FXAASpanMax", GLSLType.FLOAT);
+        FXAAReduceMin = shaderRepository.frameComposition.addUniformDeclaration("FXAAReduceMin", GLSLType.FLOAT);
+        FXAAReduceMul = shaderRepository.frameComposition.addUniformDeclaration("FXAAReduceMul", GLSLType.FLOAT);
+        filmGrainStrength = shaderRepository.frameComposition.addUniformDeclaration("filmGrainStrength", GLSLType.FLOAT);
+        currentFrame = shaderRepository.frameComposition.addUniformDeclaration("currentFrame", GLSLType.SAMPLER_2_D);
+        filmGrainSeed = shaderRepository.frameComposition.addUniformDeclaration("filmGrainSeed", GLSLType.FLOAT);
 
         for (int i = 0; i < 2000; i++) {
             lookUpRandom[i] = (float) Math.random();
@@ -58,12 +58,12 @@ public class FrameCompositionPass extends AbstractQuadPassPass {
         shaderService.bindFloat(settingsRepository.fxaaReduceMin, FXAAReduceMin);
         shaderService.bindFloat(settingsRepository.fxaaReduceMul, FXAAReduceMul);
         shaderService.bindFloat(cameraRepository.filmGrainStrength, filmGrainStrength);
-        shaderService.bindSampler2d(fboRepository.auxSampler, currentFrame);
+        shaderService.bindSampler2d(fboRepository.postProcessingSampler, currentFrame);
         shaderService.bindFloat(lookupNoise(), filmGrainSeed);
     }
 
     @Override
     public String getTitle() {
-        return "Post processing";
+        return "Frame composition";
     }
 }
