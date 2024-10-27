@@ -1,6 +1,7 @@
 package com.pine.service.system.impl;
 
 import com.pine.repository.rendering.RenderingMode;
+import com.pine.service.environment.CubeMapGenerator;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.impl.CubeMapFace;
@@ -52,7 +53,7 @@ public class IrradianceGenPass extends AbstractPass {
     protected void renderInternal() {
         for (var env : renderingRepository.environmentMaps) {
             if (env != null && env.isLoaded() && !env.hasIrradianceGenerated) {
-                genTexture(env);
+                env.irradiance = CubeMapGenerator.generateTexture(RES);
                 shaderService.bindSamplerCubeDirect(env, 0);
                 GL46.glDisable(GL11.GL_CULL_FACE);
                 GL46.glClearColor(0, 0, 0, 1);
@@ -81,24 +82,8 @@ public class IrradianceGenPass extends AbstractPass {
         meshService.draw();
     }
 
-    private void genTexture(EnvironmentMapResourceRef env) {
-        int irradianceMap = GL46.glGenTextures();
-        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, irradianceMap);
-        for (int i = 0; i < CubeMapFace.values().length; ++i) {
-            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16F, RES, RES, 0, GL46.GL_RGB, GL46.GL_FLOAT, (ByteBuffer) null);
-        }
-
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
-
-        env.irradiance = irradianceMap;
-    }
-
     @Override
     public String getTitle() {
-        return "GBuffer generation";
+        return "Irradiance generation";
     }
 }

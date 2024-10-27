@@ -30,7 +30,7 @@ layout(binding = 5) uniform sampler2D SSAO;
 layout(binding = 6) uniform sampler2D SSGI;
 layout(binding = 7) uniform sampler2D previousFrame;
 layout(binding = 8) uniform sampler2D sceneDepth;
-
+layout(binding = 9) uniform sampler2D gBufferIndirect;
 
 uniform float SSRFalloff;
 uniform float stepSizeSSR;
@@ -130,7 +130,7 @@ void main() {
     V = placement.xyz - worldSpacePosition;
     distanceFromCamera = length(V);
 
-    color = vec4(pbLightComputation(lightCount), 1.);
+    color = vec4(pbLightComputation(lightCount, gBufferIndirect), 1.);
 }
 
 

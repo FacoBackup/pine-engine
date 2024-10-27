@@ -24,40 +24,44 @@ public class UpdateFieldRequest extends AbstractRequest {
     @Override
     public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
         try {
-            switch (fieldDTO.getType()) {
-                case VECTOR2 -> {
-                    var field = (Vector2f) fieldDTO.getValue();
-                    field.set((float[]) newValue);
-                }
-                case VECTOR3 -> {
-                    var field = (Vector3f) fieldDTO.getValue();
-                    field.set((float[]) newValue);
-                }
-                case VECTOR4 -> {
-                    var field = (Vector4f) fieldDTO.getValue();
-                    field.set((float[]) newValue);
-                }
-                case QUATERNION -> {
-                    var field = (Quaternionf) fieldDTO.getValue();
-                    var cast = (float[]) newValue;
-                    field.x = cast[0];
-                    field.y = cast[1];
-                    field.z = cast[2];
-                    field.w = cast[3];
-                }
-                case COLOR -> {
-                    var field = (Color) fieldDTO.getValue();
-                    field.set((float[]) newValue);
-                }
-                default -> fieldDTO.getField().set(fieldDTO.getInstance(), newValue);
-            }
-            if(fieldDTO.getInstance() instanceof Mutable){
-                ((Mutable) fieldDTO.getInstance()).registerChange();
-            }
+            process(fieldDTO, newValue);
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
             return new Message("Could not update field " + fieldDTO.getField().getName(), MessageSeverity.ERROR);
         }
         return null;
+    }
+
+    public static void process(FieldDTO fieldDTO, Object newValue) throws IllegalAccessException {
+        switch (fieldDTO.getType()) {
+            case VECTOR2 -> {
+                var field = (Vector2f) fieldDTO.getValue();
+                field.set((float[]) newValue);
+            }
+            case VECTOR3 -> {
+                var field = (Vector3f) fieldDTO.getValue();
+                field.set((float[]) newValue);
+            }
+            case VECTOR4 -> {
+                var field = (Vector4f) fieldDTO.getValue();
+                field.set((float[]) newValue);
+            }
+            case QUATERNION -> {
+                var field = (Quaternionf) fieldDTO.getValue();
+                var cast = (float[]) newValue;
+                field.x = cast[0];
+                field.y = cast[1];
+                field.z = cast[2];
+                field.w = cast[3];
+            }
+            case COLOR -> {
+                var field = (Color) fieldDTO.getValue();
+                field.set((float[]) newValue);
+            }
+            default -> fieldDTO.getField().set(fieldDTO.getInstance(), newValue);
+        }
+        if(fieldDTO.getInstance() instanceof Mutable){
+            ((Mutable) fieldDTO.getInstance()).registerChange();
+        }
     }
 }

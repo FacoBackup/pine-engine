@@ -55,12 +55,20 @@ public class EnvironmentMapGenPass implements Initializable {
     private UniformDTO fallbackMaterial;
     private UniformDTO viewProjection;
     private UniformDTO model;
+    private UniformDTO albedoColor;
+    private UniformDTO roughnessMetallic;
+    private UniformDTO useAlbedoRoughnessMetallicAO;
+    private UniformDTO useNormalTexture;
 
     @Override
     public void onInitialize() {
         atmospherePass = (AtmospherePass) systemService.getSystems().stream().filter(a -> a instanceof AtmospherePass).findFirst().orElse(null);
         fallbackMaterial = shaderRepository.environmentMap.addUniformDeclaration("fallbackMaterial");
         viewProjection = shaderRepository.environmentMap.addUniformDeclaration("viewProjection");
+        albedoColor = shaderRepository.environmentMap.addUniformDeclaration("albedoColor");
+        roughnessMetallic = shaderRepository.environmentMap.addUniformDeclaration("roughnessMetallic");
+        useAlbedoRoughnessMetallicAO = shaderRepository.environmentMap.addUniformDeclaration("useAlbedoRoughnessMetallicAO");
+        useNormalTexture = shaderRepository.environmentMap.addUniformDeclaration("useNormalTexture");
         model = shaderRepository.environmentMap.addUniformDeclaration("model");
     }
 
@@ -122,6 +130,11 @@ public class EnvironmentMapGenPass implements Initializable {
             material.parallaxHeightScaleUniform = UniformDTO.EMPTY;
             material.parallaxLayersUniform = UniformDTO.EMPTY;
             material.useParallaxUniform = UniformDTO.EMPTY;
+
+            material.albedoColorLocation = albedoColor;
+            material.roughnessMetallicLocation = roughnessMetallic;
+            material.useAlbedoRoughnessMetallicAO = useAlbedoRoughnessMetallicAO;
+            material.useNormalTexture = useNormalTexture;
 
             material.albedoLocation = 0;
             material.roughnessLocation = 1;

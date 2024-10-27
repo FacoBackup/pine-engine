@@ -13,6 +13,9 @@ import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.data.MaterialStreamData;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.Map;
 
@@ -25,6 +28,9 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
     public ShaderService shaderService;
     @PInject
     public ClockRepository clockRepository;
+
+    private final Vector4f useAlbedoRoughnessMetallicAO = new Vector4f();
+    private final Vector2f roughnessMetallic = new Vector2f();
 
     @Override
     public AbstractResourceRef<?> newInstance(String key) {
@@ -78,6 +84,10 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
         streamData.anisotropy = importData.anisotropy;
         streamData.sheen = importData.sheen;
         streamData.sheenTint = importData.sheenTint;
+        streamData.roughnessVal = importData.roughnessVal;
+        streamData.metallicVal = importData.metallicVal;
+        streamData.albedoColor = importData.albedoColor;
+
 
         return streamData;
     }
@@ -91,31 +101,45 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
 
     public void bindMaterial(MaterialResourceRef request) {
         request.lastUse = clockRepository.totalTime;
-
+        useAlbedoRoughnessMetallicAO.zero();
         if (request.albedo != null) {
             shaderService.bindSampler2dDirect(request.albedo, request.albedoLocation);
             request.albedo.lastUse = request.lastUse;
+            useAlbedoRoughnessMetallicAO.x = 1;
         }
         if (request.roughness != null) {
             shaderService.bindSampler2dDirect(request.roughness, request.roughnessLocation);
             request.roughness.lastUse = request.lastUse;
+            useAlbedoRoughnessMetallicAO.y = 1;
         }
         if (request.metallic != null) {
             shaderService.bindSampler2dDirect(request.metallic, request.metallicLocation);
             request.metallic.lastUse = request.lastUse;
+            useAlbedoRoughnessMetallicAO.z = 1;
         }
         if (request.ao != null) {
             shaderService.bindSampler2dDirect(request.ao, request.aoLocation);
             request.ao.lastUse = request.lastUse;
+            useAlbedoRoughnessMetallicAO.w = 1;
         }
         if (request.normal != null) {
             shaderService.bindSampler2dDirect(request.normal, request.normalLocation);
+            shaderService.bindBoolean(true, request.useNormalTexture);
             request.normal.lastUse = request.lastUse;
+        } else {
+            shaderService.bindBoolean(false, request.useNormalTexture);
         }
+
         if (request.heightMap != null) {
             shaderService.bindSampler2dDirect(request.heightMap, request.heightMapLocation);
             request.heightMap.lastUse = request.lastUse;
         }
+        roughnessMetallic.x = request.roughnessVal;
+        roughnessMetallic.y = request.metallicVal;
+
+        shaderService.bindVec3(request.albedoColor, request.albedoColorLocation);
+        shaderService.bindVec2(roughnessMetallic, request.roughnessMetallicLocation);
+        shaderService.bindVec4(useAlbedoRoughnessMetallicAO, request.useAlbedoRoughnessMetallicAO);
         shaderService.bindFloat(request.anisotropicRotation, request.anisotropicRotationUniform);
         shaderService.bindFloat(request.anisotropy, request.anisotropyUniform);
         shaderService.bindFloat(request.clearCoat, request.clearCoatUniform);

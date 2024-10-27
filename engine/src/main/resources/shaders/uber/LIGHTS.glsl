@@ -230,7 +230,7 @@ vec3 processLight(inout int attributeOffset) {
     return vec3(0);
 }
 
-vec3 pbLightComputation(int lightCount) {
+vec3 pbLightComputation(int lightCount, sampler2D gBufferIndirect) {
     VrN = reflect(-V, N);
     albedoOverPI = albedo / PI;
     vec3 indirectIllumination = vec3(0.0);
@@ -245,7 +245,6 @@ vec3 pbLightComputation(int lightCount) {
         directIllumination += processLight(attributeOffset);
     }
 
-    indirectIllumination = sampleIndirectLight();
-    return vec3(directIllumination);
+    return vec3(directIllumination) + sampleIndirectLight(gBufferIndirect);
 }
 

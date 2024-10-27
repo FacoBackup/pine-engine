@@ -212,6 +212,12 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, sampler);
     }
 
+    public void bindSamplerCubeDirectTriLinear(int sampler, int bindingPoint) {
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + bindingPoint);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, sampler);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR_MIPMAP_LINEAR);
+    }
+
     public void bindSampler2dDirect(TextureResourceRef sampler, int bindingPoint) {
         bindSampler2dDirect(sampler.texture, bindingPoint);
     }

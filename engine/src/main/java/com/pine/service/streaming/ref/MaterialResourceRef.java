@@ -1,5 +1,6 @@
 package com.pine.service.streaming.ref;
 
+import com.pine.inspection.Color;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.UniformDTO;
@@ -25,6 +26,9 @@ public class MaterialResourceRef extends AbstractResourceRef<MaterialStreamData>
     public float sheen;
     public float sheenTint;
 
+    public float roughnessVal;
+    public float metallicVal;
+    public Color albedoColor;
 
     public UniformDTO anisotropicRotationUniform;
     public UniformDTO anisotropyUniform;
@@ -37,6 +41,10 @@ public class MaterialResourceRef extends AbstractResourceRef<MaterialStreamData>
     public UniformDTO parallaxLayersUniform;
     public UniformDTO useParallaxUniform;
 
+    public UniformDTO albedoColorLocation;
+    public UniformDTO roughnessMetallicLocation;
+    public UniformDTO useAlbedoRoughnessMetallicAO;
+    public UniformDTO useNormalTexture;
 
     public int albedoLocation;
     public int roughnessLocation;
@@ -72,6 +80,10 @@ public class MaterialResourceRef extends AbstractResourceRef<MaterialStreamData>
         anisotropy = data.anisotropy;
         sheen = data.sheen;
         sheenTint = data.sheenTint;
+
+        roughnessVal = data.roughnessVal;
+        metallicVal = data.metallicVal;
+        albedoColor = data.albedoColor;
     }
 
     @Override

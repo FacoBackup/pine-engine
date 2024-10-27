@@ -30,9 +30,19 @@ public class GBufferPass extends AbstractPass {
     private UniformDTO renderingMode;
     private UniformDTO ssrEnabled;
     private UniformDTO fallbackMaterial;
+    private UniformDTO probeFilteringLevels;
+    private UniformDTO albedoColor;
+    private UniformDTO roughnessMetallic;
+    private UniformDTO useAlbedoRoughnessMetallicAO;
+    private UniformDTO useNormalTexture;
 
     @Override
     public void onInitialize() {
+        albedoColor = addUniformDeclaration("albedoColor");
+        roughnessMetallic = addUniformDeclaration("roughnessMetallic");
+        useAlbedoRoughnessMetallicAO = addUniformDeclaration("useAlbedoRoughnessMetallicAO");
+        useNormalTexture = addUniformDeclaration("useNormalTexture");
+        probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
         debugShadingMode = addUniformDeclaration("debugShadingMode");
         transformationIndex = addUniformDeclaration("transformationIndex");
         parallaxHeightScale = addUniformDeclaration("parallaxHeightScale");
@@ -72,20 +82,20 @@ public class GBufferPass extends AbstractPass {
         ssboService.bind(ssboRepository.transformationSSBO);
 
         shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
+        shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels);
 
         boolean isFirst = true;
         int samplerOffset = 0;
         for (int i = 0; i < renderingRepository.environmentMaps.length; i++) {
             var current = renderingRepository.environmentMaps[i];
             if (current != null && samplerOffset < MAX_CUBE_MAPS) {
-                if (isFirst && current.hasIrradianceGenerated) {
-                    shaderService.bindSamplerCubeDirect(current.texture, samplerOffset);
+                if (isFirst) {
+                    shaderService.bindSamplerCubeDirectTriLinear(current.texture, samplerOffset);
                     samplerOffset++;
                     shaderService.bindSamplerCubeDirect(current.irradiance, samplerOffset);
                     samplerOffset++;
-//                    shaderService.bindSamplerCubeDirect(current, samplerOffset);
                 } else {
-                    shaderService.bindSamplerCubeDirect(current.texture, samplerOffset);
+                    shaderService.bindSamplerCubeDirectTriLinear(current.hasIrradianceGenerated ? current.irradiance : current.texture, samplerOffset);
                     samplerOffset++;
                 }
                 current.lastUse = clockRepository.totalTime;
@@ -107,7 +117,7 @@ public class GBufferPass extends AbstractPass {
             meshService.bind(request.mesh);
             meshService.setInstanceCount(request.transformations.size());
             meshService.draw();
-            if(!request.transformations.isEmpty()) {
+            if (!request.transformations.isEmpty()) {
                 instancedOffset += request.transformations.size() - 1;
             }
         }
@@ -126,6 +136,11 @@ public class GBufferPass extends AbstractPass {
         request.material.parallaxHeightScaleUniform = parallaxHeightScale;
         request.material.parallaxLayersUniform = parallaxLayers;
         request.material.useParallaxUniform = useParallax;
+
+        request.material.albedoColorLocation = albedoColor;
+        request.material.roughnessMetallicLocation = roughnessMetallic;
+        request.material.useAlbedoRoughnessMetallicAO = useAlbedoRoughnessMetallicAO;
+        request.material.useNormalTexture = useNormalTexture;
 
         request.material.albedoLocation = 3;
         request.material.roughnessLocation = 4;

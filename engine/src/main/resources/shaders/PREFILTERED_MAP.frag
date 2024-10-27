@@ -1,7 +1,7 @@
 out vec4 FragColor;
 in vec3 worldSpacePosition;
 
-uniform samplerCube environmentMap;
+layout(binding=0) uniform samplerCube environmentMap;
 uniform float roughness;
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------

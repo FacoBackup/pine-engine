@@ -15,6 +15,9 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     @InspectableField(label = "Probe capture resolution")
     public int probeCaptureResolution = 128;
 
+    @InspectableField(label = "Probe filtering levels", min = 1, max = 10)
+    public int probeFiltering = 5;
+
     @InspectableField(label = "Background color")
     public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
 

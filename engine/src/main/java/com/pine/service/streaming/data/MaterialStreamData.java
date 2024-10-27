@@ -1,5 +1,6 @@
 package com.pine.service.streaming.data;
 
+import com.pine.inspection.Color;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.ref.TextureResourceRef;
@@ -22,6 +23,11 @@ public class MaterialStreamData implements StreamData {
     public float anisotropy;
     public float sheen;
     public float sheenTint;
+
+    public float roughnessVal;
+    public float metallicVal;
+    public Color albedoColor;
+
 
     @Override
     public StreamableResourceType getResourceType() {

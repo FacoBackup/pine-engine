@@ -14,10 +14,10 @@ import static com.pine.service.environment.CubeMapGenerator.setUpCubeMapTexture;
 
 public class EnvironmentMapResourceRef extends AbstractResourceRef<EnvironmentMapStreamData> {
     public int texture;
-    public int prefiltered1;
-    public int prefiltered2;
+    public int resolution;
     public int irradiance;
     public boolean hasIrradianceGenerated = false;
+    public boolean hasFiltering = false;
 
     public EnvironmentMapResourceRef(String id) {
         super(id);
@@ -45,11 +45,13 @@ public class EnvironmentMapResourceRef extends AbstractResourceRef<EnvironmentMa
 
         setUpCubeMapTexture();
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, GL11.GL_NONE);
+        resolution = data.imageSize();
     }
 
     @Override
     protected void disposeInternal() {
         hasIrradianceGenerated = false;
+        hasFiltering = false;
         GL46.glDeleteTextures(texture);
     }
 }
