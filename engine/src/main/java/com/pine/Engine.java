@@ -3,6 +3,7 @@ package com.pine;
 import com.pine.injection.EngineExternalModule;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.inspection.Color;
 import com.pine.messaging.Loggable;
 import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.RuntimeRepository;
@@ -26,11 +27,10 @@ public class Engine extends MetricCollector implements Loggable {
     public static final int MAX_ENTITIES = 100000;
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
+    public Color clearColor = new Color(0, 0, 0);
 
     @PInject
     public EngineModulesService modules;
-    @PInject
-    public EngineSettingsRepository settingsRepository;
     @PInject
     public SystemService systemsService;
     @PInject
@@ -104,15 +104,16 @@ public class Engine extends MetricCollector implements Loggable {
         if (!ready) {
             return;
         }
-
+        GL46.glClearColor(clearColor.x, clearColor.y, clearColor.z, 1);
         start();
-        GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
         for (FrameBufferObject fbo : fboRepository.all) {
             fbo.clear();
         }
+
         if (targetFBO != null) {
             targetFBO.clear();
         }
+
         for (var syncTask : syncTasks) {
             syncTask.sync();
         }

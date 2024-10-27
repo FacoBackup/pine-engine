@@ -18,9 +18,6 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     @InspectableField(label = "Probe filtering levels", min = 1, max = 10)
     public int probeFiltering = 5;
 
-    @InspectableField(label = "Background color")
-    public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
-
     @InspectableField(group = "Anti aliasing",label = "FXAA Enabled")
     public boolean fxaaEnabled = true;
 

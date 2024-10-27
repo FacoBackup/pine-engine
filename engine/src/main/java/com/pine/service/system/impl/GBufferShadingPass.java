@@ -4,6 +4,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
+import org.lwjgl.opengl.GL46;
 
 public class GBufferShadingPass extends AbstractQuadPassPass {
     private UniformDTO SSRFalloff;
@@ -43,6 +44,7 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
 
     @Override
     protected void bindUniforms() {
+
         ssboService.bind(ssboRepository.lightMetadataSSBO);
 
         shaderService.bindFloat(settingsRepository.ssrFalloff, SSRFalloff);
@@ -67,6 +69,7 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
         shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 8);
         shaderService.bindSampler2dDirect(fboRepository.gBufferIndirectSampler, 9);
     }
+
 
     @Override
     public String getTitle() {

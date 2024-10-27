@@ -102,6 +102,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
         updateCamera();
         engine.setTargetFBO(fbo);
+        engine.clearColor = editorRepository.backgroundColor;
         engine.render();
 
         sizeVec.x = size.x;

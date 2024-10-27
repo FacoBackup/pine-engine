@@ -20,9 +20,6 @@ public class VoxelRepository extends Inspectable implements SerializableReposito
     @InspectableField(label = "Max depth", min = 1, max = 10)
     public int maxDepth = 6;
 
-    @InspectableField(label = "Voxelization step size", min = 0, max = 1)
-    public float voxelizationStepSize = .1f;
-
     @InspectableField(group = "Debug", label = "Random colors")
     public boolean randomColors = true;
 

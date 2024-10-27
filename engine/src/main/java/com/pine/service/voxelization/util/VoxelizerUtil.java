@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 public class VoxelizerUtil {
 
-    public static void voxelize(MeshImportData rawMeshData, SparseVoxelOctree octree, float stepSize, TextureStreamData albedoTexture) {
+    public static void voxelize(MeshImportData rawMeshData, SparseVoxelOctree octree, TextureStreamData albedoTexture) {
         int[] indices = rawMeshData.indices;
         float[] vertices = rawMeshData.vertices;
         float[] uvs = rawMeshData.uvs;
@@ -36,66 +36,34 @@ public class VoxelizerUtil {
                 triangle.uv2.x = uvs[index2 * 2];
                 triangle.uv2.y = uvs[index2 * 2 + 1];
             }
-            iterateTriangle(triangle, octree, stepSize, albedoTexture);
+            iterateTriangle(triangle, octree, albedoTexture);
         }
     }
 
-    private static void iterateTriangle(Triangle triangle, SparseVoxelOctree octree, float stepSize, TextureStreamData albedoTexture) {
-        Vector3f size = computeTriangleSize(triangle);
-        float triangleArea = computeSurfaceArea(size.x, size.y, size.z);
+    private static void iterateTriangle(Triangle triangle, SparseVoxelOctree octree, TextureStreamData albedoTexture) {
+        float edgeLength1 = triangle.v0.distance(triangle.v1);
+        float edgeLength2 = triangle.v1.distance(triangle.v2);
+        float edgeLength3 = triangle.v2.distance(triangle.v0);
 
-        // For triangles smaller than a voxel
-        if (triangleArea <= octree.getVoxelSize()) {
-            VoxelData color = new VoxelData(0, 0, 0);
-            if (albedoTexture != null) {
-                color = TextureUtil.sampleTextureAtUV(albedoTexture, triangle.uv0.x, triangle.uv0.y);
-            }
-            octree.insert(new Vector3f(triangle.v0.x, triangle.v0.y, triangle.v0.z), color);
-            octree.insert(new Vector3f(triangle.v1.x, triangle.v1.y, triangle.v1.z), color);
-            octree.insert(new Vector3f(triangle.v2.x, triangle.v2.y, triangle.v2.z), color);
-        } else {
+        float maxEdgeLength = Math.max(edgeLength1, Math.max(edgeLength2, edgeLength3));
+        float stepSize = octree.getVoxelSize() / maxEdgeLength;
 
-            // Iterate over barycentric coordinates for triangles bigger than a voxel
-            for (float lambda1 = 0; lambda1 <= 1; lambda1 += stepSize) {
-                for (float lambda2 = 0; lambda2 <= 1 - lambda1; lambda2 += stepSize) {
-                    float lambda0 = 1 - lambda1 - lambda2;
+        for (float lambda1 = 0; lambda1 <= 1; lambda1 += stepSize) {
+            for (float lambda2 = 0; lambda2 <= 1 - lambda1; lambda2 += stepSize) {
+                float lambda0 = 1 - lambda1 - lambda2;
 
-                    float u = lambda0 * triangle.uv0.x + lambda1 * triangle.uv1.x + lambda2 * triangle.uv2.x;
-                    float v = lambda0 * triangle.uv0.y + lambda1 * triangle.uv1.y + lambda2 * triangle.uv2.y;
+                float u = lambda0 * triangle.uv0.x + lambda1 * triangle.uv1.x + lambda2 * triangle.uv2.x;
+                float v = lambda0 * triangle.uv0.y + lambda1 * triangle.uv1.y + lambda2 * triangle.uv2.y;
 
-                    octree.insert(
-                            new Vector3f(
-                                    lambda0 * triangle.v0.x + lambda1 * triangle.v1.x + lambda2 * triangle.v2.x,
-                                    lambda0 * triangle.v0.y + lambda1 * triangle.v1.y + lambda2 * triangle.v2.y,
-                                    lambda0 * triangle.v0.z + lambda1 * triangle.v1.z + lambda2 * triangle.v2.z
-                            ),
-                            TextureUtil.sampleTextureAtUV(albedoTexture, u, v)
-                    );
-                }
+                octree.insert(
+                        new Vector3f(
+                                lambda0 * triangle.v0.x + lambda1 * triangle.v1.x + lambda2 * triangle.v2.x,
+                                lambda0 * triangle.v0.y + lambda1 * triangle.v1.y + lambda2 * triangle.v2.y,
+                                lambda0 * triangle.v0.z + lambda1 * triangle.v1.z + lambda2 * triangle.v2.z
+                        ),
+                        TextureUtil.sampleTextureAtUV(albedoTexture, u, v)
+                );
             }
         }
-    }
-
-    private static Vector3f computeTriangleSize(Triangle triangle) {
-        Vector3f min = new Vector3f(
-                Math.min(triangle.v0.x, Math.min(triangle.v1.x, triangle.v2.x)),
-                Math.min(triangle.v0.y, Math.min(triangle.v1.y, triangle.v2.y)),
-                Math.min(triangle.v0.z, Math.min(triangle.v1.z, triangle.v2.z))
-        );
-        Vector3f max = new Vector3f(
-                Math.max(triangle.v0.x, Math.max(triangle.v1.x, triangle.v2.x)),
-                Math.max(triangle.v0.y, Math.max(triangle.v1.y, triangle.v2.y)),
-                Math.max(triangle.v0.z, Math.max(triangle.v1.z, triangle.v2.z))
-        );
-
-        return new Vector3f(
-                max.x - min.x,
-                max.y - min.y,
-                max.z - min.z
-        );
-    }
-
-    public static float computeSurfaceArea(float width, float height, float depth) {
-        return 2 * (width * height + height * depth + width * depth);
     }
 }

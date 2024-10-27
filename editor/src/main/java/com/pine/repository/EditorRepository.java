@@ -26,6 +26,9 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     @Serial
     private static final long serialVersionUID = -5292170530653725873L;
 
+    @InspectableField(label = "Background color")
+    public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
+
     @InspectableField(group = "Grid", label = "Show grid")
     public boolean showGrid = true;
 

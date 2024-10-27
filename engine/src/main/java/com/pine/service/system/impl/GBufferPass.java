@@ -69,9 +69,14 @@ public class GBufferPass extends AbstractPass {
     }
 
     @Override
+    protected boolean shouldClearFBO() {
+        GL46.glClearColor(0, 0, 0, 1);
+        return true;
+    }
+
+    @Override
     protected void renderInternal() {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
-        GL46.glDisable(GL11.GL_BLEND);
         if (settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
             GL46.glDisable(GL11.GL_CULL_FACE);
@@ -121,6 +126,7 @@ public class GBufferPass extends AbstractPass {
                 instancedOffset += request.transformations.size() - 1;
             }
         }
+        GL46.glClearColor(engine.clearColor.x, engine.clearColor.y, engine.clearColor.z, 1);
     }
 
     private void bindMaterial(RenderingRequest request) {

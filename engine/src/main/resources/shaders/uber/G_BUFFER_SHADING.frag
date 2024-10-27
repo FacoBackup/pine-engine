@@ -98,7 +98,7 @@ void main() {
     quadUV = gl_FragCoord.xy / bufferResolution;
 
     depthData = getLogDepth(quadUV);
-    if (depthData > 1.){
+    if (depthData == 1.){
         discard;
     }
     vec4 albedoEmissive = texture(gBufferAlbedoSampler, quadUV);

@@ -114,7 +114,7 @@ public class VoxelizationService implements Loggable {
                 TextureStreamData albedoTexture = streamTexture(mesh, meshComponent);
                 long startLocal = System.currentTimeMillis();
                 for (SparseVoxelOctree chunk : intersectingChunks) {
-                    VoxelizerUtil.voxelize(mesh, chunk, voxelRepository.voxelizationStepSize, albedoTexture);
+                    VoxelizerUtil.voxelize(mesh, chunk, albedoTexture);
                 }
                 getLogger().warn("Voxelization of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
 

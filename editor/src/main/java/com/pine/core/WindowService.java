@@ -4,6 +4,7 @@ import com.pine.FSUtil;
 import com.pine.GLSLVersion;
 import com.pine.injection.*;
 import com.pine.messaging.Loggable;
+import com.pine.repository.EditorRepository;
 import com.pine.theme.Icons;
 import com.pine.window.EditorWindow;
 import imgui.*;
@@ -33,6 +34,10 @@ public class WindowService implements Disposable, Loggable {
 
     @PInject
     public PInjector injector;
+
+    @PInject
+    public EditorRepository settingsRepository;
+
     private boolean isMinimized;
 
     @PostCreation(order = Integer.MAX_VALUE)
@@ -206,7 +211,7 @@ public class WindowService implements Disposable, Loggable {
     }
 
     private void clearBuffer() {
-        GL46.glClearColor(0, 0, 0, 1);
+        GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }
 

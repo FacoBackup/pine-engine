@@ -80,7 +80,7 @@ public class CoreFBORepository implements CoreRepository {
         gBufferIndirectSampler = gBuffer.getSamplers().get(5);
 
         auxBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, true)
-                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
+                .addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false)
                 .staticResource());
 
         postProcessingBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, false)
@@ -114,7 +114,6 @@ public class CoreFBORepository implements CoreRepository {
         auxSampler = auxBuffer.getSamplers().getFirst();
         postProcessingSampler = postProcessingBuffer.getSamplers().getFirst();
 
-        all.add(gBuffer);
         all.add(auxBuffer);
         all.add(ssgi);
         all.add(ssgiFallback);
