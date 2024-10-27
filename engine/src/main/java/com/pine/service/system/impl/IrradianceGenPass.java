@@ -1,0 +1,101 @@
+package com.pine.service.system.impl;
+
+import com.pine.repository.rendering.RenderingMode;
+import com.pine.service.resource.shader.Shader;
+import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.impl.CubeMapFace;
+import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
+import com.pine.service.system.AbstractPass;
+import org.joml.Vector3f;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL46;
+
+import java.nio.ByteBuffer;
+
+public class IrradianceGenPass extends AbstractPass {
+    private static final int RES = 32;
+    private UniformDTO viewMatrix;
+    private UniformDTO projectionMatrix;
+    private int captureFBO;
+    private int captureRBO;
+
+    @Override
+    public void onInitialize() {
+        viewMatrix = addUniformDeclaration("viewMatrix");
+        projectionMatrix = addUniformDeclaration("projectionMatrix");
+
+        captureFBO = GL46.glGenFramebuffers();
+        captureRBO = GL46.glGenRenderbuffers();
+        bindBuffers();
+        GL46.glRenderbufferStorage(GL46.GL_RENDERBUFFER, GL46.GL_DEPTH_COMPONENT24, RES, RES);
+        unbindBuffers();
+    }
+
+    private void bindBuffers() {
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, captureFBO);
+        GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, captureRBO);
+    }
+
+    private void unbindBuffers() {
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, GL46.GL_NONE);
+        GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, GL46.GL_NONE);
+    }
+
+    @Override
+    protected Shader getShader() {
+        return shaderRepository.irradianceShader;
+    }
+
+    @Override
+    protected void renderInternal() {
+        for (var env : renderingRepository.environmentMaps) {
+            if (env != null && env.isLoaded() && !env.hasIrradianceGenerated) {
+                bindBuffers();
+                shaderService.bindSamplerCubeDirect(env, 0);
+                genTexture(env);
+                GL46.glClearColor(0, 0, 0, 1);
+
+                GL46.glViewport(0, 0, RES, RES);
+                GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, captureFBO);
+                for (int i = 0; i < CubeMapFace.values().length; ++i) {
+                    var face = CubeMapFace.values()[i];
+                    GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, face.getGlFace(), env.irradiance, 0);
+                    GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+                    draw(CubeMapFace.values()[i]);
+                }
+                env.hasIrradianceGenerated = true;
+                unbindBuffers();
+            }
+        }
+    }
+
+    private void draw(CubeMapFace face) {
+        shaderService.bindMat4(CubeMapFace.projection, projectionMatrix);
+        shaderService.bindMat4(CubeMapFace.createViewMatrixForFace(face, new Vector3f(0)), viewMatrix);
+        meshService.bind(meshRepository.cubeMesh);
+        meshService.setInstanceCount(0);
+        meshService.setRenderingMode(RenderingMode.TRIANGLES);
+        meshService.draw();
+    }
+
+    private void genTexture(EnvironmentMapResourceRef env) {
+        int irradianceMap = GL46.glGenTextures();
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, irradianceMap);
+        for (int i = 0; i < CubeMapFace.values().length; ++i) {
+            GL46.glTexImage2D(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL46.GL_RGB16F, RES, RES, 0, GL46.GL_RGB, GL46.GL_FLOAT, (ByteBuffer) null);
+        }
+
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_S, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_T, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_WRAP_R, GL46.GL_CLAMP_TO_EDGE);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
+
+        env.irradiance = irradianceMap;
+    }
+
+    @Override
+    public String getTitle() {
+        return "GBuffer generation";
+    }
+}

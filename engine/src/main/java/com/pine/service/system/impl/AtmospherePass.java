@@ -84,6 +84,7 @@ public class AtmospherePass extends AbstractQuadPassPass {
     }
 
     public void renderToCubeMap(Matrix4f invViewMatrix, Matrix4f invProjection) {
+        shaderService.bind(getShader());
         bindUniforms();
         shaderService.bindMat4(invViewMatrix, invViewStatic);
         shaderService.bindMat4(invProjection, invSkyProjectionMatrix);

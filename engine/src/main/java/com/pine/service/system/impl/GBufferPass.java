@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL46;
 import java.util.List;
 
 public class GBufferPass extends AbstractPass {
-
+    private static final int MAX_CUBE_MAPS = 3;
     private UniformDTO transformationIndex;
     private UniformDTO debugShadingMode;
     private UniformDTO parallaxHeightScale;
@@ -72,11 +72,24 @@ public class GBufferPass extends AbstractPass {
         ssboService.bind(ssboRepository.transformationSSBO);
 
         shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
+
+        boolean isFirst = true;
+        int samplerOffset = 0;
         for (int i = 0; i < renderingRepository.environmentMaps.length; i++) {
             var current = renderingRepository.environmentMaps[i];
-            if (current != null) {
-                shaderService.bindSamplerCubeDirect(current, i);
+            if (current != null && samplerOffset < MAX_CUBE_MAPS) {
+                if (isFirst && current.hasIrradianceGenerated) {
+                    shaderService.bindSamplerCubeDirect(current.texture, samplerOffset);
+                    samplerOffset++;
+                    shaderService.bindSamplerCubeDirect(current.irradiance, samplerOffset);
+                    samplerOffset++;
+//                    shaderService.bindSamplerCubeDirect(current, samplerOffset);
+                } else {
+                    shaderService.bindSamplerCubeDirect(current.texture, samplerOffset);
+                    samplerOffset++;
+                }
                 current.lastUse = clockRepository.totalTime;
+                isFirst = false;
             }
         }
 
@@ -94,7 +107,9 @@ public class GBufferPass extends AbstractPass {
             meshService.bind(request.mesh);
             meshService.setInstanceCount(request.transformations.size());
             meshService.draw();
-            instancedOffset += request.transformations.size() - 1;
+            if(!request.transformations.isEmpty()) {
+                instancedOffset += request.transformations.size() - 1;
+            }
         }
     }
 

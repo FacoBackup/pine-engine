@@ -1,6 +1,7 @@
 package com.pine.service.environment;
 
 import com.pine.service.streaming.impl.CubeMapFace;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
@@ -34,8 +35,8 @@ public class CubeMapGenerator {
         GL46.glFramebufferRenderbuffer(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_ATTACHMENT, GL46.GL_RENDERBUFFER, depthRenderBufferId);
 
         // Unbind the framebuffer and the cube map texture
-        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
-        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, GL11.GL_NONE);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, GL11.GL_NONE);
 
         return new int[]{framebufferId, cubeMapTextureId};
     }

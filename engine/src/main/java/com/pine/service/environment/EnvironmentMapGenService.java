@@ -28,12 +28,6 @@ import static com.pine.service.environment.CubeMapWriteUtil.saveCubeMapToDisk;
 
 @PBean
 public class EnvironmentMapGenService implements Loggable {
-    private static final float FOV_Y = (float) (Math.PI / 2f);
-    private static final float ASPECT_RATIO = 1f;
-    private static final float Z_NEAR = .1f;
-    private static final float Z_FAR = 10000f;
-
-
     @PInject
     public WorldRepository worldRepository;
 
@@ -42,9 +36,6 @@ public class EnvironmentMapGenService implements Loggable {
 
     @PInject
     public ShaderService shaderService;
-
-    @PInject
-    public CoreShaderRepository coreShaderRepository;
 
     @PInject
     public EngineSettingsRepository engineSettingsRepository;
@@ -56,19 +47,11 @@ public class EnvironmentMapGenService implements Loggable {
     public Engine engine;
 
     @PInject
-    public SystemService systemService;
-
-    @PInject
-    public AtmosphereSettingsRepository atmosphere;
-
-    @PInject
     public StreamingRepository streamingRepository;
 
     public boolean isBaked = true;
 
     public void bake() {
-
-
         getLogger().warn("Starting probe baking");
         // TODO - DELETE PREVIOUSLY GENERATED PROBES
         // TODO - KEEP TRACK OF GENERATED PROBES
@@ -77,7 +60,7 @@ public class EnvironmentMapGenService implements Loggable {
         for (var probe : probes) {
             capture(probe.entity.id(), probe.entity.transformation.translation);
             var probeOld = streamingRepository.loadedResources.get(probe.entity.id());
-            if(probeOld != null){
+            if (probeOld != null) {
                 probeOld.dispose();
             }
             streamingRepository.scheduleToLoad.remove(probe.entity.id());
@@ -102,32 +85,19 @@ public class EnvironmentMapGenService implements Loggable {
 
     private void generate(Vector3f cameraPosition, int framebufferId, int baseResolution, int cubeMapTextureId, String resourceId) {
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, framebufferId);
-        Matrix4f invProjection = new Matrix4f();
-        Matrix4f projection = new Matrix4f();
-        projection.setPerspective(FOV_Y, ASPECT_RATIO, Z_NEAR, Z_FAR);
-//        projection.transpose(projection);
-        projection.invert(invProjection);
-
+        GL46.glClearColor(0, 0, 0, 1);
         for (int i = 0; i < CubeMapFace.values().length; i++) {
             GL46.glViewport(0, 0, baseResolution, baseResolution);
             GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, CubeMapFace.values()[i].getGlFace(), cubeMapTextureId, 0);
-            Matrix4f viewMatrix = createViewMatrixForFace(i, cameraPosition);
-            Matrix4f invView = new Matrix4f();
-            viewMatrix.transpose(viewMatrix);
-            viewMatrix.invert(invView);
 
             GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
             getLogger().warn("Rendering face {} for probe {}", i, resourceId);
 
-            environmentMapGenPass.renderFace(viewMatrix, invView, projection, invProjection);
+            environmentMapGenPass.renderFace(CubeMapFace.values()[i], cameraPosition);
         }
-        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, 0);
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, GL46.GL_NONE);
         getLogger().warn("Writing to disk {}", resourceId);
         saveCubeMapToDisk(cubeMapTextureId, baseResolution, importerService.getPathToFile(resourceId, StreamableResourceType.ENVIRONMENT_MAP));
     }
 
-
-    private Matrix4f createViewMatrixForFace(int faceIndex, Vector3f cameraPosition) {
-        return new Matrix4f().lookAt(new Vector3f(0), CubeMapFace.values()[faceIndex].getTarget(), CubeMapFace.values()[faceIndex].getUp());
-    }
 }

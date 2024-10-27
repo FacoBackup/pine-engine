@@ -15,6 +15,7 @@ public class SystemService implements SyncTask {
 
     private List<AbstractPass> systems = List.of(
             new BRDFGenPass(),
+            new IrradianceGenPass(),
             new ShaderDataSyncPass(),
             new GBufferPass(),
             new AtmospherePass(),

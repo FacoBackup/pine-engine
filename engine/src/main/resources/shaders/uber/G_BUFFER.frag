@@ -125,7 +125,7 @@ void main() {
             gBufferAlbedoSampler.rgb = texture(specularProbe, reflect(-V, N)).rgb;
             break;
             case INDIRECT_DIFFUSE:
-            gBufferAlbedoSampler.rgb = texture(diffuseProbe0, reflect(-V, N)).rgb * .5;
+            gBufferAlbedoSampler.rgb = texture(diffuseProbe0, reflect(-V, N)).rgb;
             break;
         }
         gBufferAlbedoSampler.a = debugShadingMode != LIGHT_ONLY ? 1 : 0;

@@ -14,6 +14,10 @@ import static com.pine.service.environment.CubeMapGenerator.setUpCubeMapTexture;
 
 public class EnvironmentMapResourceRef extends AbstractResourceRef<EnvironmentMapStreamData> {
     public int texture;
+    public int prefiltered1;
+    public int prefiltered2;
+    public int irradiance;
+    public boolean hasIrradianceGenerated = false;
 
     public EnvironmentMapResourceRef(String id) {
         super(id);
@@ -45,6 +49,7 @@ public class EnvironmentMapResourceRef extends AbstractResourceRef<EnvironmentMa
 
     @Override
     protected void disposeInternal() {
+        hasIrradianceGenerated = false;
         GL46.glDeleteTextures(texture);
     }
 }

@@ -20,13 +20,16 @@ public class CubeMapWriteUtil {
 
     public static void saveCubeMapToDisk(int textureId, int imageSize, String basePath) {
         GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, textureId);
+        GL46.glReadBuffer(GL46.GL_COLOR_ATTACHMENT0);
         ByteBuffer buffer = BufferUtils.createByteBuffer(imageSize * imageSize * CHANNELS);
         for (int i = 0; i < CubeMapFace.values().length; i++) {
             GL46.glGetTexImage(CubeMapFace.values()[i].getGlFace(), 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, buffer);
             String path = getPathToFile(basePath, CubeMapFace.values()[i]);
             saveImage(path, imageSize, buffer);
         }
-        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, 0);
+        GL46.glReadBuffer(GL46.GL_NONE);
+        GL46.glBindTexture(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_NONE);
+        GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, GL46.GL_NONE);
     }
 
     private static void saveImage(String filePath, int imageSize, ByteBuffer buffer) {

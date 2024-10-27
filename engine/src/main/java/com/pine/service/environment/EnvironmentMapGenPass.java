@@ -2,6 +2,7 @@ package com.pine.service.environment;
 
 import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
+import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
@@ -13,6 +14,7 @@ import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.impl.CubeMapFace;
 import com.pine.service.streaming.impl.MaterialService;
 import com.pine.service.streaming.impl.MeshService;
 import com.pine.service.streaming.ref.MaterialResourceRef;
@@ -20,6 +22,7 @@ import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.system.SystemService;
 import com.pine.service.system.impl.AtmospherePass;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 @PBean
 public class EnvironmentMapGenPass implements Initializable {
@@ -61,18 +64,25 @@ public class EnvironmentMapGenPass implements Initializable {
         model = shaderRepository.environmentMap.addUniformDeclaration("model");
     }
 
-    public void renderFace(Matrix4f viewMatrix, Matrix4f invView, Matrix4f projection, Matrix4f invProjection) {
+    public void renderFace(CubeMapFace face, Vector3f cameraPosition) {
         if (!initialized) {
             onInitialize();
             initialized = true;
         }
 
         if (atmosphereSettingsRepository.enabled) {
-            atmospherePass.renderToCubeMap(invView, invProjection);
+            Matrix4f centeredViewMatrixInv = CubeMapFace.createViewMatrixForFace(face, new Vector3f(0));
+            centeredViewMatrixInv.transpose(centeredViewMatrixInv);
+            centeredViewMatrixInv.invert(centeredViewMatrixInv);
+            atmospherePass.renderToCubeMap(centeredViewMatrixInv, CubeMapFace.invProjection);
         }
 
+
+        Matrix4f viewMatrix = CubeMapFace.createViewMatrixForFace(face, cameraPosition);
+        viewMatrix.transpose(viewMatrix);
+
         var viewProjection = new Matrix4f();
-        viewProjection.set(projection).mul(viewMatrix);
+        viewProjection.set(CubeMapFace.projection).mul(viewMatrix);
         shaderService.bind(shaderRepository.environmentMap);
         shaderService.bindMat4(viewProjection, this.viewProjection);
 
@@ -82,43 +92,50 @@ public class EnvironmentMapGenPass implements Initializable {
                 var mesh = (MeshResourceRef) streamingService.streamSync(meshComp.lod0, StreamableResourceType.MESH);
                 var material = (MaterialResourceRef) streamingService.streamSync(meshComp.material, StreamableResourceType.MATERIAL);
                 if (mesh != null) {
-                    if (material != null) {
-                        shaderService.bindBoolean(false, fallbackMaterial);
-                        material.anisotropicRotationUniform = UniformDTO.EMPTY;
-                        material.anisotropyUniform = UniformDTO.EMPTY;
-                        material.clearCoatUniform = UniformDTO.EMPTY;
-                        material.sheenUniform = UniformDTO.EMPTY;
-                        material.sheenTintUniform = UniformDTO.EMPTY;
-                        material.renderingModeUniform = UniformDTO.EMPTY;
-                        material.ssrEnabledUniform = UniformDTO.EMPTY;
-                        material.parallaxHeightScaleUniform = UniformDTO.EMPTY;
-                        material.parallaxLayersUniform = UniformDTO.EMPTY;
-                        material.useParallaxUniform = UniformDTO.EMPTY;
-
-                        material.albedoLocation = 0;
-                        material.roughnessLocation = 1;
-                        material.metallicLocation = 2;
-                        material.aoLocation = 3;
-                        material.normalLocation = 4;
-                        material.heightMapLocation = 5;
-
-                        materialService.bindMaterial(material);
-                    } else {
-                        shaderService.bindBoolean(true, fallbackMaterial);
-                    }
-
-                    meshService.bind(mesh);
-                    if (meshComp.isInstancedRendering) {
-                        meshComp.instances.forEach(i -> {
-                            shaderService.bindMat4(i.globalMatrix, model);
-                            meshService.draw();
-                        });
-                    } else {
-                        shaderService.bindMat4(meshComp.entity.transformation.globalMatrix, model);
-                        meshService.draw();
-                    }
+                    bindMaterial(material);
+                    draw(mesh, meshComp);
                 }
             }
+        }
+    }
+
+    private void draw(MeshResourceRef mesh, MeshComponent meshComp) {
+        meshService.bind(mesh);
+        if (meshComp.isInstancedRendering) {
+            for (Transformation i : meshComp.instances) {
+                shaderService.bindMat4(i.globalMatrix, model);
+                meshService.draw();
+            }
+        } else {
+            shaderService.bindMat4(meshComp.entity.transformation.globalMatrix, model);
+            meshService.draw();
+        }
+    }
+
+    private void bindMaterial(MaterialResourceRef material) {
+        if (material != null) {
+            shaderService.bindBoolean(false, fallbackMaterial);
+            material.anisotropicRotationUniform = UniformDTO.EMPTY;
+            material.anisotropyUniform = UniformDTO.EMPTY;
+            material.clearCoatUniform = UniformDTO.EMPTY;
+            material.sheenUniform = UniformDTO.EMPTY;
+            material.sheenTintUniform = UniformDTO.EMPTY;
+            material.renderingModeUniform = UniformDTO.EMPTY;
+            material.ssrEnabledUniform = UniformDTO.EMPTY;
+            material.parallaxHeightScaleUniform = UniformDTO.EMPTY;
+            material.parallaxLayersUniform = UniformDTO.EMPTY;
+            material.useParallaxUniform = UniformDTO.EMPTY;
+
+            material.albedoLocation = 0;
+            material.roughnessLocation = 1;
+            material.metallicLocation = 2;
+            material.aoLocation = 3;
+            material.normalLocation = 4;
+            material.heightMapLocation = 5;
+
+            materialService.bindMaterial(material);
+        } else {
+            shaderService.bindBoolean(true, fallbackMaterial);
         }
     }
 }
