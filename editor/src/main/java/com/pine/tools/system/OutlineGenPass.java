@@ -48,12 +48,14 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
+        ssboService.bind(ssboRepository.transformationSSBO);
+
         for (String selected : editorRepository.selected.keySet()) {
             var request = renderingRepository.toBeRendered.get(selected);
             if (request != null) {
                 shaderService.bindInt(request.renderIndex, renderIndex);
                 meshService.bind(request.mesh);
-                meshService.setInstanceCount(request.transformations.size());
+                meshService.setInstanceCount(request.transformationComponents.size());
                 meshService.draw();
             }
         }

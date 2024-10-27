@@ -1,14 +1,16 @@
 package com.pine.panels.viewport;
 
-import com.pine.component.Transformation;
+import com.pine.component.TransformationComponent;
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.WorldRepository;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 public class GizmoPanel extends AbstractView {
     @PInject
@@ -17,12 +19,17 @@ public class GizmoPanel extends AbstractView {
     @PInject
     public CameraRepository cameraRepository;
 
+    @PInject
+    public WorldRepository world;
+
+    private final Matrix4f cacheMatrix4 = new Matrix4f();
     private final float[] cacheMatrix = new float[16];
     private final float[] viewMatrixCache = new float[16];
     private final float[] projectionMatrixCache = new float[16];
     private final ImVec2 size;
     private final ImVec2 position;
-    private Transformation localSelected;
+    private TransformationComponent localSelected;
+    private int localChangeId;
 
     public GizmoPanel(ImVec2 position, ImVec2 size) {
         this.size = size;
@@ -33,12 +40,14 @@ public class GizmoPanel extends AbstractView {
     public void render() {
         if (stateRepository.primitiveSelected == null) {
             localSelected = null;
+            localChangeId = 0;
             return;
         }
-        if (stateRepository.primitiveSelected != localSelected || stateRepository.gizmoExternalChange && !localSelected.isNotFrozen()) {
-            stateRepository.primitiveSelected.localMatrix.get(cacheMatrix);
+        if (stateRepository.primitiveSelected != localSelected || localSelected.getChangeId() != localChangeId) {
+            stateRepository.primitiveSelected.globalMatrix.get(cacheMatrix);
             localSelected = stateRepository.primitiveSelected;
-            stateRepository.gizmoExternalChange = false;
+            getLogger().warn("Updating gizmo {} {}", stateRepository.primitiveSelected != localSelected, localSelected.getChangeId() != localChangeId);
+            localChangeId = localSelected.getChangeId();
         }
         recomposeMatrix();
         float[] snap = getSnapValues();
@@ -83,14 +92,14 @@ public class GizmoPanel extends AbstractView {
     }
 
     private void decomposeMatrix() {
-        Transformation p = stateRepository.primitiveSelected;
-        p.localMatrix.set(cacheMatrix);
+        cacheMatrix4.set(cacheMatrix);
+        cacheMatrix4.getTranslation(localSelected.translation);
+        cacheMatrix4.getUnnormalizedRotation(localSelected.rotation);
+        cacheMatrix4.getScale(localSelected.scale);
 
-        p.localMatrix.getTranslation(p.translation);
-        p.localMatrix.getUnnormalizedRotation(p.rotation);
-        p.localMatrix.getScale(p.scale);
-
-        p.registerChange();
+        world.withChangedData.add(localSelected);
+        localSelected.registerChange();
+        localChangeId =  localSelected.getChangeId();
     }
 
     private void recomposeMatrix() {

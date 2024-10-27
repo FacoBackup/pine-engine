@@ -2,7 +2,7 @@ package com.pine.repository;
 
 import com.pine.SerializableRepository;
 import com.pine.component.Entity;
-import com.pine.component.Transformation;
+import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
@@ -82,8 +82,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public boolean showOnlyEntitiesHierarchy = false;
 
     public Map<String, Boolean> pinnedEntities = new HashMap<>();
-    public Transformation primitiveSelected = null;
-    public boolean gizmoExternalChange = false;
+    public TransformationComponent primitiveSelected = null;
     public Entity mainSelection = null;
     public final Map<String, Boolean> selected = new HashMap<>();
     public final LinkedList<String> copied = new LinkedList<>();

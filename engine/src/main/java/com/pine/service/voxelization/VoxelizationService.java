@@ -102,7 +102,7 @@ public class VoxelizationService implements Loggable {
                 }
 
                 getLogger().warn("Voxelizing entity {}", meshComponent.getEntity().name);
-                Matrix4f globalMatrix = meshComponent.getEntity().transformation.globalMatrix;
+                Matrix4f globalMatrix = worldRepository.getTransformationComponent(meshComponent.entity.id()).globalMatrix;
                 var mesh = streamMesh(meshComponent.lod0, globalMatrix, meshComponent);
                 List<SparseVoxelOctree> intersectingChunks = getIntersectingChunks(mesh, grid, meshComponent);
                 if (intersectingChunks.isEmpty()) {

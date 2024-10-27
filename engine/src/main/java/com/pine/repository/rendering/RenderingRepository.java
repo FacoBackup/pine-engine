@@ -1,6 +1,8 @@
 package com.pine.repository.rendering;
 
 import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.repository.WorldRepository;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 
@@ -12,9 +14,9 @@ import java.util.Map;
 @PBean
 public class RenderingRepository {
     public List<RenderingRequest> requests = new ArrayList<>();
-    public final Map<String, RenderingRequest> newToBeRendered = new HashMap<>();
-    public final Map<String, RenderingRequest> toBeRendered = new HashMap<>();
     public List<RenderingRequest> newRequests = new ArrayList<>();
+    public Map<String, RenderingRequest> newToBeRendered = new HashMap<>();
+    public Map<String, RenderingRequest> toBeRendered = new HashMap<>();
 
     public VoxelChunkResourceRef[] voxelChunks = new VoxelChunkResourceRef[4];
     public VoxelChunkResourceRef[] newVoxelChunks = new VoxelChunkResourceRef[4];
@@ -30,7 +32,11 @@ public class RenderingRepository {
     public final Map<String, Boolean> auxAddedToBufferEntities = new HashMap<>();
     public int voxelChunksFilled;
 
-    public void switchRequests() {
+    @PInject
+    public WorldRepository worldRepository;
+
+    public void sync() {
+        // TODO - Fix concurrent modification
         pendingTransformations = pendingTransformationsInternal;
         var aux = requests;
         requests = newRequests;
@@ -41,18 +47,21 @@ public class RenderingRepository {
         voxelChunks = newVoxelChunks;
         newVoxelChunks = auxV;
 
-        toBeRendered.clear();
-        toBeRendered.putAll(newToBeRendered);
-        newToBeRendered.clear();
+        var aux2 = toBeRendered;
+        toBeRendered = newToBeRendered;
+        newToBeRendered = aux2;
+        aux2.clear();
+
+        worldRepository.withChangedData.clear();
     }
 
     public int getTotalTriangleCount() {
         int total = 0;
         for (RenderingRequest request : requests) {
-            if (request.transformations.isEmpty()) {
+            if (request.transformationComponents.isEmpty()) {
                 total += request.mesh.triangleCount;
             } else {
-                total += request.mesh.triangleCount * request.transformations.size();
+                total += request.mesh.triangleCount * request.transformationComponents.size();
             }
         }
         return total;

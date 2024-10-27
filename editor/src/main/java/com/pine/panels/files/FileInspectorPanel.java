@@ -57,7 +57,7 @@ public class FileInspectorPanel extends AbstractView {
 
     private void onChange(FieldDTO dto, Object object, String path, boolean dispose) {
         try {
-            UpdateFieldRequest.process(dto, object);
+            UpdateFieldRequest.process(dto, object, null);
             FSUtil.write(dto.getInstance(), path);
             if (dispose) {
                 streamingRepository.discardedResources.remove(currentMetadata.id);

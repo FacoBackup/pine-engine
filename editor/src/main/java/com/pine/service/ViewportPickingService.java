@@ -1,11 +1,14 @@
 package com.pine.service;
 
+import com.pine.component.Entity;
+import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.CoreFBORepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.repository.rendering.RenderingRequest;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import org.lwjgl.BufferUtils;
@@ -13,6 +16,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 
 @PBean
 public class ViewportPickingService implements Loggable {
@@ -47,15 +51,39 @@ public class ViewportPickingService implements Loggable {
 
         if (renderIndex >= 1) {
             var actualIndex = (int) renderIndex - 1;
-            var request = renderingRepository.requests.stream().filter(r -> r.renderIndex == actualIndex).findFirst().orElse(null);
-            if(!ImGui.isKeyDown(ImGuiKey.LeftCtrl)) {
+
+            if (!ImGui.isKeyDown(ImGuiKey.LeftCtrl)) {
                 selectionService.clearSelection();
             }
-            if(request != null) {
-                selectionService.addSelected(request.entity);
+
+            var transform = findEntity(actualIndex);
+            if (transform != null) {
+                selectionService.addSelected(transform.entity);
+                selectionService.stateRepository.primitiveSelected = transform;
             }
-        }else if(!ImGui.isKeyDown(ImGuiKey.LeftCtrl)){
+        } else if (!ImGui.isKeyDown(ImGuiKey.LeftCtrl)) {
             selectionService.clearSelection();
         }
+    }
+
+    private TransformationComponent findEntity(int actualIndex) {
+        int instancedOffset = 0;
+        for (int i = 0; i < renderingRepository.requests.size(); i++) {
+            var curr = renderingRepository.requests.get(i);
+            if (i + instancedOffset == actualIndex) {
+                return curr.transformationComponent;
+            }
+            List<TransformationComponent> transformationComponents = curr.transformationComponents;
+            for (int j = 0, transformationComponentsSize = transformationComponents.size(); j < transformationComponentsSize; j++) {
+                if (i + instancedOffset + j == actualIndex) {
+                    return curr.transformationComponents.get(j);
+                }
+            }
+
+            if (!renderingRepository.requests.get(i).transformationComponents.isEmpty()) {
+                instancedOffset += curr.transformationComponents.size() - 1;
+            }
+        }
+        return null;
     }
 }

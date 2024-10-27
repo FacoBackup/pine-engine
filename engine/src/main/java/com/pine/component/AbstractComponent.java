@@ -55,7 +55,7 @@ public abstract class AbstractComponent extends Inspectable implements Mutable, 
         return getType().getIcon();
     }
 
-    public AbstractComponent clone(Entity entity) {
+    public AbstractComponent cloneComponent(Entity entity) {
         try {
             var clone = (AbstractComponent) super.clone();
             clone.entity = entity;

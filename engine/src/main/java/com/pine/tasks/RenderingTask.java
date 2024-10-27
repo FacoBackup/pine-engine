@@ -1,6 +1,7 @@
 package com.pine.tasks;
 
 import com.pine.component.*;
+import com.pine.component.light.AbstractLightComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -62,37 +63,11 @@ public class RenderingTask extends AbstractTask implements Loggable {
         if (renderingRepository.infoUpdated) {
             return;
         }
+        start();
         try {
-            if (voxelRepository.grid != null) {
-                int filledWithContent = 0;
-                int filled = 0;
+            defineVoxelGrid();
 
-                // TODO - SORT BY DISTANCE
-                for (var chunk : voxelRepository.grid.chunks) {
-                    boolean culled = false;// transformationService.isCulled(chunk.getCenter(), 100, new Vector3f((float) chunk.getSize()));
-                    if (culled || filled > 3) {
-                        continue;
-                    }
-                    var chunkStream = (VoxelChunkResourceRef) streamingService.stream(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
-                    renderingRepository.newVoxelChunks[filled] = chunkStream;
-                    if (chunkStream != null) {
-                        filledWithContent++;
-                        chunkStream.size = chunk.getSize();
-                        chunkStream.center = chunk.getCenter();
-                        chunkStream.depth = chunk.getDepth();
-                    }
-                    filled++;
-                }
-                renderingRepository.voxelChunksFilled = filledWithContent;
-            }
-
-            var probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE);
-            if(environmentMapGenService.isBaked) {
-                var closest3 = findClosestPoints(probes, 3);
-                for (int i = 0; i < 3; i++) {
-                    renderingRepository.environmentMaps[i] = i >= closest3.size() ? null : (EnvironmentMapResourceRef) streamingService.stream(closest3.get(i).entity.id(), StreamableResourceType.ENVIRONMENT_MAP);
-                }
-            }
+            defineProbes();
 
             renderIndex = 0;
             renderingRepository.offset = 0;
@@ -100,49 +75,93 @@ public class RenderingTask extends AbstractTask implements Loggable {
             renderingRepository.pendingTransformationsInternal = 0;
             renderingRepository.newRequests.clear();
 
-            traverseTree(worldRepository.rootEntity);
+            List<AbstractComponent> withChangedData = worldRepository.withChangedData;
+            for (int i = 0, withChangedDataSize = withChangedData.size(); i < withChangedDataSize; i++) {
+                AbstractComponent c = withChangedData.get(i);
+                if (c instanceof TransformationComponent) {
+                    transformationService.updateHierarchy((TransformationComponent) c);
+                }
+            }
+
+            var meshes = worldRepository.components.get(ComponentType.MESH);
+            for (int i = 0, meshesSize = meshes.size(); i < meshesSize; i++) {
+                var comp = meshes.get(i);
+                var t = worldRepository.getTransformationComponent(comp.entity.id());
+                if (t != null) {
+                    updateMeshData((MeshComponent) comp, t);
+                }
+            }
+
             lightService.packageLights();
 
             renderingRepository.infoUpdated = true;
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
+        end();
+    }
+
+    private void defineProbes() {
+        var probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE);
+        if (environmentMapGenService.isBaked) {
+            var closest3 = findClosestPoints(probes, 3);
+            for (int i = 0; i < 3; i++) {
+                renderingRepository.environmentMaps[i] = i >= closest3.size() ? null : (EnvironmentMapResourceRef) streamingService.stream(closest3.get(i).entity.id(), StreamableResourceType.ENVIRONMENT_MAP);
+            }
+        }
+    }
+
+    private void defineVoxelGrid() {
+        if (voxelRepository.grid != null) {
+            int filledWithContent = 0;
+            int filled = 0;
+
+            // TODO - SORT BY DISTANCE
+            for (var chunk : voxelRepository.grid.chunks) {
+                boolean culled = false;// transformationService.isCulled(chunk.getCenter(), 100, new Vector3f((float) chunk.getSize()));
+                if (culled || filled > 3) {
+                    continue;
+                }
+                var chunkStream = (VoxelChunkResourceRef) streamingService.stream(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
+                renderingRepository.newVoxelChunks[filled] = chunkStream;
+                if (chunkStream != null) {
+                    filledWithContent++;
+                    chunkStream.size = chunk.getSize();
+                    chunkStream.center = chunk.getCenter();
+                    chunkStream.depth = chunk.getDepth();
+                }
+                filled++;
+            }
+            renderingRepository.voxelChunksFilled = filledWithContent;
+        }
     }
 
     private List<AbstractComponent> findClosestPoints(List<AbstractComponent> points, int k) {
-        points.sort(Comparator.comparingDouble(t -> transformationService.getDistanceFromCamera(t.entity.transformation.translation)));
+        points.sort(Comparator.comparingDouble(t -> transformationService.getDistanceFromCamera(worldRepository.getTransformationComponent(t.entity.id()).translation)));
         return points.subList(0, Math.min(k, points.size()));
     }
 
-    private void traverseTree(Entity entity) {
-        if (!entity.visible) {
-            return;
-        }
-        Transformation t = entity.transformation;
-        transformationService.updateMatrix(t);
-        if (entity.components.containsKey(ComponentType.MESH)) {
-            var meshComponent = (MeshComponent) entity.components.get(ComponentType.MESH);
-            meshComponent.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
-            if (meshComponent.isInstancedRendering) {
-                RenderingRequest request = renderingRequestService.prepareInstanced(meshComponent, t);
-                if (request != null) {
-                    request.renderIndex = renderIndex;
-                    renderIndex += request.transformations.size() + 1;
-                    renderingRepository.newRequests.add(request);
-                }
-            } else {
-                RenderingRequest request = renderingRequestService.prepareNormal(meshComponent, t);
-                if (request != null) {
-                    request.renderIndex = renderIndex;
-                    renderIndex++;
-                    renderingRepository.newRequests.add(request);
-                }
+    private void updateMeshData(MeshComponent meshComponent, TransformationComponent transformation) {
+        meshComponent.distanceFromCamera = transformationService.getDistanceFromCamera(transformation.translation);
+        if (meshComponent.isInstancedRendering) {
+            RenderingRequest request = renderingRequestService.prepareInstanced(meshComponent, transformation);
+            if (request != null) {
+                request.renderIndex = renderIndex;
+                renderIndex += request.transformationComponents.size() + 1;
+                renderingRepository.newRequests.add(request);
             }
-        }
-
-        for (var child : entity.transformation.children) {
-            traverseTree(child.entity);
+        } else {
+            RenderingRequest request = renderingRequestService.prepareNormal(meshComponent, transformation);
+            if (request != null) {
+                request.renderIndex = renderIndex;
+                renderIndex++;
+                renderingRepository.newRequests.add(request);
+            }
         }
     }
 
+    @Override
+    public String getTitle() {
+        return "Rendering logic";
+    }
 }

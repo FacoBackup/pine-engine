@@ -72,6 +72,12 @@ public class Engine extends MetricCollector implements Loggable {
         tasks.forEach(AbstractTask::start);
 
         this.targetDirectory = targetDirectory;
+        createDirectories();
+
+        ready = true;
+    }
+
+    private void createDirectories() {
         try {
             Path path = Paths.get(getResourceDirectory());
             if (!Files.exists(path)) {
@@ -85,8 +91,6 @@ public class Engine extends MetricCollector implements Loggable {
         } catch (Exception ex) {
             getLogger().error(ex.getMessage(), ex);
         }
-
-        ready = true;
     }
 
     private static void setupGL() {

@@ -5,6 +5,8 @@ import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.ref.TextureResourceRef;
 
+import java.util.Set;
+
 
 public class SpriteComponent extends AbstractComponent {
     @ResourceTypeField(type = StreamableResourceType.TEXTURE)
@@ -21,6 +23,11 @@ public class SpriteComponent extends AbstractComponent {
 
     public SpriteComponent(Entity entity) {
         super(entity);
+    }
+
+    @Override
+    public Set<ComponentType> getDependencies() {
+        return Set.of(ComponentType.TRANSFORMATION);
     }
 
     @Override

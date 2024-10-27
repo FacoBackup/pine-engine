@@ -52,7 +52,7 @@ public class EnvironmentMapGenService implements Loggable {
 
         List<AbstractComponent> probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE);
         for (var probe : probes) {
-            capture(probe.entity.id(), probe.entity.transformation.translation);
+            capture(probe.entity.id(), worldRepository.getTransformationComponent(probe.entity.id()).translation);
             var probeOld = streamingRepository.loadedResources.get(probe.entity.id());
             if (probeOld != null) {
                 probeOld.dispose();

@@ -17,7 +17,8 @@ public enum ComponentType implements Serializable {
     DECAL("Decal", Icons.format_shapes, DecalComponent.class),
     ENVIRONMENT_PROBE("Environment Probe", Icons.panorama_photosphere, EnvironmentProbeComponent.class),
     MESH("Mesh", Icons.category, MeshComponent.class),
-    SPRITE("Sprite", Icons.image, SpriteComponent.class);
+    SPRITE("Sprite", Icons.image, SpriteComponent.class),
+    TRANSFORMATION("Transformation", Icons.transform, TransformationComponent.class);
 
     private final String title;
     private final String icon;

@@ -1,10 +1,12 @@
 package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
-import com.pine.component.Transformation;
+import com.pine.component.ComponentType;
+import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
 import org.joml.Matrix4f;
@@ -13,7 +15,6 @@ import org.joml.Vector3f;
 
 @PBean
 public class TransformationService {
-    private static final float TO_RAD = (float) (Math.PI / 180);
     @PInject
     public CameraRepository cameraRepository;
 
@@ -23,47 +24,71 @@ public class TransformationService {
     @PInject
     public CoreSSBORepository ssboRepository;
 
+    @PInject
+    public WorldRepository worldRepository;
+
     private final Vector3f distanceAux = new Vector3f();
     private final Vector3f auxCubeMax = new Vector3f();
     private final Vector3f auxCubeMin = new Vector3f();
     private final Matrix4f auxMat4 = new Matrix4f();
+    private final Matrix4f auxMat42 = new Matrix4f();
 
-    public void updateMatrix(Transformation st) {
-        updateMatrix(st, st.parent);
-    }
+    public void updateHierarchy(TransformationComponent st) {
+        TransformationComponent parentTransform = findParent(st.entity.id());
+        transform(st, parentTransform);
 
-    public void updateMatrix(Transformation st, Transformation parentTransform) {
-        if (parentTransform != null) {
-            auxMat4.set(parentTransform.globalMatrix);
-            if (parentTransform.getChangeId() != st.parentChangeId || st.isNotFrozen()) {
-                st.parentChangeId = parentTransform.getChangeId();
-                transform(st);
+        var children = worldRepository.parentChildren.get(st.entity.id());
+        if (children != null) {
+            for (String child : children) {
+                var comp = worldRepository.getTransformationComponent(child);
+                if (comp != null) {
+                    updateHierarchy(comp);
+                }
             }
-        } else if (st.isNotFrozen()) {
-            auxMat4.identity();
-            transform(st);
         }
     }
 
-    public void extractTransformations(Transformation st) {
-        EngineUtils.copyWithOffset(ssboRepository.transformationSSBOState, st.globalMatrix, renderingRepository.offset);
-        renderingRepository.offset += 16;
+    public void transform(TransformationComponent st, TransformationComponent parentTransform) {
+        if (parentTransform != null) {
+            auxMat4.set(parentTransform.globalMatrix);
+            transformInternal(st);
+        } else if (st.isNotFrozen()) {
+            auxMat4.identity();
+            transformInternal(st);
+        }
     }
 
-    private void transform(Transformation st) {
-        st.localMatrix.identity();
-        st.localMatrix
+    private void transformInternal(TransformationComponent st) {
+        auxMat42.identity();
+        auxMat42
                 .translate(st.translation)
                 .rotate(st.rotation)
                 .scale(st.scale);
 
-        auxMat4.mul(st.localMatrix);
+        auxMat4.mul(auxMat42);
         st.globalMatrix.set(auxMat4);
-        st.registerChange();
-        st.freezeVersion();
-        for(var comp : st.entity.components.values()){
-            comp.registerChange();
+        for (var comp : st.entity.components.values()) {
+            if (comp.getType() != ComponentType.TRANSFORMATION && comp.getType() != ComponentType.MESH) {
+                comp.registerChange();
+            }
         }
+    }
+
+    private TransformationComponent findParent(String id) {
+        String current = id;
+        while (current != null && !current.equals(worldRepository.rootEntity.id())) {
+            current = worldRepository.childParent.get(current);
+            var t = worldRepository.getTransformationComponent(current);
+            if (t != null) {
+                return t;
+            }
+        }
+        return null;
+    }
+
+    public void extractTransformations(TransformationComponent st) {
+        EngineUtils.copyWithOffset(ssboRepository.transformationSSBOState, st.globalMatrix, renderingRepository.offset);
+        renderingRepository.offset += 16;
     }
 
     public float getDistanceFromCamera(Vector3f translation) {

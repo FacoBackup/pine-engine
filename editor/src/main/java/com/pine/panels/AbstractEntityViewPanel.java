@@ -27,10 +27,11 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
     public MessageRepository messageRepository;
 
     protected void hotKeys() {
-        if(!ImGui.isWindowHovered() || ImGuizmo.isUsing()){
+        if(!isWindowFocused || ImGuizmo.isUsing()){
             return;
         }
         var isNotEmptyOfSelection = !stateRepository.selected.isEmpty();
+        boolean ctrlDown = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
 
         if (isNotEmptyOfSelection && ImGui.isKeyPressed(ImGuiKey.Delete)) {
             messageRepository.pushMessage("Deleting selected", MessageSeverity.WARN);
@@ -47,11 +48,11 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
             stateRepository.copied.addAll(stateRepository.selected.keySet());
         }
 
-        if (ImGui.isKeyDown(ImGuiKey.LeftCtrl) && ImGui.isKeyPressed(ImGuiKey.A)) {
+        if (ctrlDown && ImGui.isKeyPressed(ImGuiKey.A)) {
             selectionService.addAllSelected(world.entityMap.values());
         }
 
-        if (!stateRepository.copied.isEmpty() && ImGui.isKeyPressed(ImGuiKey.V)) {
+        if (!stateRepository.copied.isEmpty() && ctrlDown && ImGui.isKeyPressed(ImGuiKey.V)) {
             messageRepository.pushMessage("Pasting "  + stateRepository.copied.size() + " entities", MessageSeverity.WARN);
             var request = new CopyEntitiesRequest(stateRepository.copied);
             requestProcessingService.addRequest(request);

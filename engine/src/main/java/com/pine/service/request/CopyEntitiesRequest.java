@@ -1,5 +1,6 @@
 package com.pine.service.request;
 
+import com.pine.component.AbstractComponent;
 import com.pine.component.Entity;
 import com.pine.messaging.Loggable;
 import com.pine.messaging.Message;
@@ -29,11 +30,12 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
             var entity = repository.entityMap.get(entityId);
             if (entity != repository.rootEntity) {
                 try{
-                    var cloned = entity.clone();
+                    var cloned = entity.cloneEntity();
                     repository.entityMap.put(cloned.id(), cloned);
-                    cloned.components.values().forEach(c -> {
-                        repository.components.get(c.getType()).add(c);
-                    });
+
+                    linkHierarchy(repository, entityId, cloned);
+
+                    cloneComponents(repository, cloned);
                     allCloned.add(cloned);
                 }catch (Exception e){
                     getLogger().error("Could not copy entity {}", entityId);
@@ -41,5 +43,17 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
             }
         }
         return new Message(entities.size() + " entities copied", MessageSeverity.SUCCESS);
+    }
+
+    private static void cloneComponents(WorldRepository repository, Entity cloned) {
+        for (AbstractComponent c : cloned.components.values()) {
+            repository.components.get(c.getType()).add(c);
+        }
+    }
+
+    private static void linkHierarchy(WorldRepository repository, String entityId, Entity cloned) {
+        String parent = repository.childParent.get(entityId);
+        repository.parentChildren.get(parent).add(cloned.id());
+        repository.childParent.put(cloned.id(), parent);
     }
 }

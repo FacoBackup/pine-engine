@@ -9,6 +9,8 @@ import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.data.SceneImportData;
 
+import java.util.LinkedList;
+
 public class LoadSceneRequest extends AbstractRequest {
     private final SceneImportData scene;
     private final Entity root;
@@ -25,19 +27,22 @@ public class LoadSceneRequest extends AbstractRequest {
     }
 
     private void traverse(Entity parent, SceneImportData localScene, WorldRepository repository) {
-        Entity newEntity = new Entity();
-        newEntity.name = localScene.name;
+        Entity entity = new Entity();
+        entity.name = localScene.name;
         if (localScene.meshResourceId != null) {
-            MeshComponent meshComponent = new MeshComponent(newEntity);
+            MeshComponent meshComponent = new MeshComponent(entity);
             repository.registerComponent(meshComponent);
-            newEntity.components.put(ComponentType.MESH, meshComponent);
+            entity.components.put(ComponentType.MESH, meshComponent);
             meshComponent.lod0 = localScene.meshResourceId;
             meshComponent.material = localScene.materialResourceId;
         }
-        newEntity.transformation.parent = parent.transformation;
-        parent.transformation.children.add(newEntity.transformation);
+
+        repository.childParent.put(entity.id(), parent.id());
+        repository.parentChildren.putIfAbsent(parent.id(), new LinkedList<>());
+        repository.parentChildren.get(parent.id()).add(entity.id());
+
         for (var childScene : localScene.children) {
-            traverse(newEntity, childScene, repository);
+            traverse(entity, childScene, repository);
         }
     }
 }

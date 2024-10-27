@@ -1,6 +1,7 @@
 package com.pine.service;
 
 import com.pine.component.Entity;
+import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
@@ -22,7 +23,7 @@ public class SelectionService {
             if (stateRepository.mainSelection == worldRepository.rootEntity) {
                 stateRepository.mainSelection = null;
             } else if (stateRepository.mainSelection != null) {
-                stateRepository.primitiveSelected = stateRepository.mainSelection.transformation;
+                stateRepository.primitiveSelected = getPrimitiveSelected();
             }
         }
         if (entity != null) {
@@ -39,8 +40,12 @@ public class SelectionService {
     public void addAllSelected(Collection<Entity> all) {
         stateRepository.selected.clear();
         stateRepository.mainSelection = all.stream().findFirst().orElse(null);
-        stateRepository.primitiveSelected = stateRepository.mainSelection != null ? stateRepository.mainSelection.transformation : null;
+        stateRepository.primitiveSelected = stateRepository.mainSelection != null ? getPrimitiveSelected() : null;
         all.forEach(a -> stateRepository.selected.put(a.id(), true));
+    }
+
+    private TransformationComponent getPrimitiveSelected() {
+        return worldRepository.getTransformationComponent(stateRepository.mainSelection.id());
     }
 }
 

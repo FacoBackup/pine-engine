@@ -108,6 +108,7 @@ public class GBufferPass extends AbstractPass {
         List<RenderingRequest> requests = renderingRepository.requests;
         int instancedOffset = 0;
         for (int i = 0; i < requests.size(); i++) {
+            // TODO - FIX Concurrent modification
             var request = requests.get(i);
             request.renderIndex = (i + instancedOffset);
             shaderService.bindInt(request.renderIndex, transformationIndex);
@@ -117,10 +118,10 @@ public class GBufferPass extends AbstractPass {
                 shaderService.bindBoolean(true, fallbackMaterial);
             }
             meshService.bind(request.mesh);
-            meshService.setInstanceCount(request.transformations.size());
+            meshService.setInstanceCount(request.transformationComponents.size());
             meshService.draw();
-            if (!request.transformations.isEmpty()) {
-                instancedOffset += request.transformations.size() - 1;
+            if (!request.transformationComponents.isEmpty()) {
+                instancedOffset += request.transformationComponents.size() - 1;
             }
         }
         GL46.glClearColor(engine.clearColor.x, engine.clearColor.y, engine.clearColor.z, 1);

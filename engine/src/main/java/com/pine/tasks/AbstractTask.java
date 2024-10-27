@@ -1,12 +1,13 @@
 package com.pine.tasks;
 
+import com.pine.MetricCollector;
 import com.pine.injection.Disposable;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public abstract class AbstractTask implements Disposable {
+public abstract class AbstractTask extends MetricCollector implements Disposable {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     protected int getTickIntervalMilliseconds() {

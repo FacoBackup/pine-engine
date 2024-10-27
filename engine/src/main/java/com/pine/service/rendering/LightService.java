@@ -38,7 +38,7 @@ public class LightService {
         List<DirectionalLightComponent> directionalLights = worldRepository.getComponentBag(ComponentType.DIRECTIONAL_LIGHT);
         for (DirectionalLightComponent light : directionalLights) {
             if (light.isNotFrozen() || isFirstRun) {
-                var transform = light.entity.transformation;
+                var transform = worldRepository.getTransformationComponent(light.entity.id());
                 int internalOffset = fillCommon(b, offset, light);
 
                 b.put(internalOffset, light.atlasFace.x);
@@ -89,7 +89,7 @@ public class LightService {
         List<SpotLightComponent> spotLights = worldRepository.getComponentBag(ComponentType.SPOT_LIGHT);
         for (SpotLightComponent light : spotLights) {
             if (light.isNotFrozen() || isFirstRun) {
-                var transform = light.entity.transformation;
+                var transform = worldRepository.getTransformationComponent(light.entity.id());
                 int internalOffset = fillCommon(b, offset, light);
 
                 cacheMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
@@ -111,7 +111,7 @@ public class LightService {
     }
 
     private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent light) {
-        var transform = light.entity.transformation;
+        var transform = worldRepository.getTransformationComponent(light.entity.id());
 
         lightSSBOState.put(offset, light.type.getTypeId());
         lightSSBOState.put(offset + 1, light.color.x * light.intensity);

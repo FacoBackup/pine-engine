@@ -8,11 +8,13 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 public class MeshComponent extends AbstractComponent {
     @InspectableField(label = "Casts shadow")
     public boolean castsShadows = true;
+
     @InspectableField(label = "Contribute to probes")
     public boolean contributeToProbes = true;
 
@@ -58,7 +60,7 @@ public class MeshComponent extends AbstractComponent {
     @InspectableField(group = "Instancing", label = "Number of instances", min = 1)
     public int numberOfInstances = 10;
     @InspectableField(group = "Instancing", label = "Scene members")
-    public List<Transformation> instances = new ArrayList<>();
+    public List<TransformationComponent> instances = new ArrayList<>();
 
     public transient RenderingRequest renderRequest;
 
@@ -77,9 +79,26 @@ public class MeshComponent extends AbstractComponent {
         super(entity);
     }
 
+    @Override
+    public Set<ComponentType> getDependencies() {
+        return Set.of(ComponentType.TRANSFORMATION);
+    }
 
     @Override
     public ComponentType getType() {
         return ComponentType.MESH;
+    }
+
+
+    @Override
+    public AbstractComponent cloneComponent(Entity entity) {
+        var clone = (MeshComponent) super.cloneComponent(entity);
+        clone.instances = new ArrayList<>();
+        if(clone.isInstancedRendering){
+            this.instances.forEach(i -> {
+                clone.instances.add((TransformationComponent) i.cloneComponent(entity));
+            });
+        }
+        return clone;
     }
 }

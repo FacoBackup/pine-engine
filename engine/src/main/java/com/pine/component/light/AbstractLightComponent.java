@@ -1,6 +1,7 @@
 package com.pine.component.light;
 
 import com.pine.component.AbstractComponent;
+import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.inspection.Color;
 import com.pine.inspection.InspectableField;
@@ -9,6 +10,7 @@ import com.pine.type.LightType;
 import org.joml.Vector2f;
 
 import java.io.Serial;
+import java.util.Set;
 
 public abstract class AbstractLightComponent extends AbstractComponent {
     @Serial
@@ -33,6 +35,10 @@ public abstract class AbstractLightComponent extends AbstractComponent {
         super(entity);
     }
 
+    @Override
+    public Set<ComponentType> getDependencies() {
+        return Set.of(ComponentType.TRANSFORMATION);
+    }
 
     abstract LightType getLightType();
 

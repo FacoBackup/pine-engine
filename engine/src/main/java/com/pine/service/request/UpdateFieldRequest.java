@@ -1,6 +1,7 @@
 package com.pine.service.request;
 
 import com.pine.Mutable;
+import com.pine.component.AbstractComponent;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.messaging.Message;
@@ -24,7 +25,7 @@ public class UpdateFieldRequest extends AbstractRequest {
     @Override
     public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
         try {
-            process(fieldDTO, newValue);
+            process(fieldDTO, newValue, repository);
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
             return new Message("Could not update field " + fieldDTO.getField().getName(), MessageSeverity.ERROR);
@@ -32,7 +33,7 @@ public class UpdateFieldRequest extends AbstractRequest {
         return null;
     }
 
-    public static void process(FieldDTO fieldDTO, Object newValue) throws IllegalAccessException {
+    public static void process(FieldDTO fieldDTO, Object newValue, WorldRepository repository) throws IllegalAccessException {
         switch (fieldDTO.getType()) {
             case VECTOR2 -> {
                 var field = (Vector2f) fieldDTO.getValue();
@@ -59,6 +60,9 @@ public class UpdateFieldRequest extends AbstractRequest {
                 field.set((float[]) newValue);
             }
             default -> fieldDTO.getField().set(fieldDTO.getInstance(), newValue);
+        }
+        if(fieldDTO.getInstance() instanceof AbstractComponent && repository != null){
+            repository.withChangedData.add((AbstractComponent) fieldDTO.getInstance());
         }
         if(fieldDTO.getInstance() instanceof Mutable){
             ((Mutable) fieldDTO.getInstance()).registerChange();
