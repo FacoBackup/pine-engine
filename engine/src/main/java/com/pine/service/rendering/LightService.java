@@ -26,6 +26,7 @@ public class LightService {
     @PInject
     public WorldRepository worldRepository;
 
+    private boolean isFirstRun = true;
 
     public void packageLights() {
         int offset = 0;
@@ -36,7 +37,7 @@ public class LightService {
 
         List<DirectionalLightComponent> directionalLights = worldRepository.getComponentBag(ComponentType.DIRECTIONAL_LIGHT);
         for (DirectionalLightComponent light : directionalLights) {
-            if (light.isNotFrozen()) {
+            if (light.isNotFrozen() || isFirstRun) {
                 var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
 
@@ -60,7 +61,7 @@ public class LightService {
 
         List<PointLightComponent> pointLights = worldRepository.getComponentBag(ComponentType.POINT_LIGHT);
         for (PointLightComponent light : pointLights) {
-            if (light.isNotFrozen()) {
+            if (light.isNotFrozen() || isFirstRun) {
                 int internalOffset = fillCommon(b, offset, light);
                 b.put(internalOffset, light.zFar);
                 b.put(internalOffset + 1, light.shadowMap ? 1 : 0);
@@ -76,7 +77,7 @@ public class LightService {
 
         List<SphereLightComponent> sphereLights = worldRepository.getComponentBag(ComponentType.SPHERE_LIGHT);
         for (SphereLightComponent light : sphereLights) {
-            if (light.isNotFrozen()) {
+            if (light.isNotFrozen() || isFirstRun) {
                 int internalOffset = fillCommon(b, offset, light);
                 b.put(internalOffset, light.areaRadius);
             }
@@ -87,7 +88,7 @@ public class LightService {
 
         List<SpotLightComponent> spotLights = worldRepository.getComponentBag(ComponentType.SPOT_LIGHT);
         for (SpotLightComponent light : spotLights) {
-            if (light.isNotFrozen()) {
+            if (light.isNotFrozen() || isFirstRun) {
                 var transform = light.entity.transformation;
                 int internalOffset = fillCommon(b, offset, light);
 
@@ -105,7 +106,7 @@ public class LightService {
             offset += light.type.getDataDisplacement();
             count++;
         }
-
+        isFirstRun = false;
         renderingRepository.lightCount = count;
     }
 

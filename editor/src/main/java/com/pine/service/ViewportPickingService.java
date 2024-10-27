@@ -10,6 +10,8 @@ import com.pine.repository.core.CoreFBORepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.service.serialization.SerializationService;
 import com.pine.tools.repository.ToolsResourceRepository;
+import imgui.ImGui;
+import imgui.flag.ImGuiKey;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
@@ -50,9 +52,16 @@ public class ViewportPickingService implements Loggable {
         GL46.glBindFramebuffer(GL46.GL_READ_FRAMEBUFFER, GL11.GL_NONE);
 
         if (renderIndex >= 1) {
-            var request = renderingRepository.requests.get((int) renderIndex - 1);
+            var actualIndex = (int) renderIndex - 1;
+            var request = renderingRepository.requests.stream().filter(r -> r.renderIndex == actualIndex).findFirst().orElse(null);
+            if(!ImGui.isKeyDown(ImGuiKey.LeftCtrl)) {
+                selectionService.clearSelection();
+            }
+            if(request != null) {
+                selectionService.addSelected(request.entity);
+            }
+        }else if(!ImGui.isKeyDown(ImGuiKey.LeftCtrl)){
             selectionService.clearSelection();
-            selectionService.addSelected(request.entity);
         }
     }
 }

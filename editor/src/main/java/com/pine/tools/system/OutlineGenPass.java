@@ -24,6 +24,7 @@ public class OutlineGenPass extends AbstractPass {
     private UniformDTO model;
     private UniformDTO renderIndex;
 
+
     @Override
     public void onInitialize() {
         model = addUniformDeclaration("model");
@@ -51,13 +52,10 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
-        List<RenderingRequest> requests = renderingRepository.requests;
-        for (int i = 0, requestsSize = requests.size(); i < requestsSize; i++) {
-            var request = requests.get(i);
-            if(editorRepository.selected.containsKey(request.entity.id)){
-                shaderService.bindMat4(request.transformation.globalMatrix, model);
-                shaderService.bindInt(i, renderIndex);
-
+        for (String selected : editorRepository.selected.keySet()) {
+            var request = renderingRepository.toBeRendered.get(selected);
+            if (request != null) {
+                shaderService.bindInt(request.renderIndex, renderIndex);
                 meshService.bind(request.mesh);
                 meshService.setInstanceCount(request.transformations.size());
                 meshService.draw();

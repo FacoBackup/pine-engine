@@ -90,7 +90,7 @@ public class RenderingTask extends AbstractTask implements Loggable {
             if(environmentMapGenService.isBaked) {
                 var closest3 = findClosestPoints(probes, 3);
                 for (int i = 0; i < 3; i++) {
-                    renderingRepository.environmentMaps[i] = i >= closest3.size() ? null : (EnvironmentMapResourceRef) streamingService.stream(closest3.get(i).entity.id, StreamableResourceType.ENVIRONMENT_MAP);
+                    renderingRepository.environmentMaps[i] = i >= closest3.size() ? null : (EnvironmentMapResourceRef) streamingService.stream(closest3.get(i).entity.id(), StreamableResourceType.ENVIRONMENT_MAP);
                 }
             }
 

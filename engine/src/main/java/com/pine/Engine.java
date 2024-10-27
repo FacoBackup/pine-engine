@@ -117,6 +117,7 @@ public class Engine extends MetricCollector implements Loggable {
             syncTask.sync();
         }
         end();
+        MetricCollector.shouldCollect = false;
     }
 
     public void setTargetFBO(@NotNull FrameBufferObject fbo) {

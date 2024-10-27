@@ -1,7 +1,7 @@
 out vec4 finalColor;
 
-uniform int renderIndex;
+flat in int rIndex;
 
 void main(){
-    finalColor = vec4(renderIndex);
+    finalColor = vec4(rIndex);
 }

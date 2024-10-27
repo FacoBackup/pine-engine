@@ -84,17 +84,17 @@ public class GBufferPass extends AbstractPass {
         int instancedOffset = 0;
         for (int i = 0; i < requests.size(); i++) {
             var request = requests.get(i);
-            shaderService.bindInt((i + instancedOffset), transformationIndex);
+            request.renderIndex = (i + instancedOffset);
+            shaderService.bindInt(request.renderIndex, transformationIndex);
             if (request.material != null) {
                 bindMaterial(request);
             } else {
                 shaderService.bindBoolean(true, fallbackMaterial);
             }
-
             meshService.bind(request.mesh);
             meshService.setInstanceCount(request.transformations.size());
             meshService.draw();
-            instancedOffset += request.transformations.size();
+            instancedOffset += request.transformations.size() - 1;
         }
     }
 

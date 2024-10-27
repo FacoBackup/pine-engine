@@ -14,14 +14,14 @@ public class Entity extends Inspectable implements Serializable {
     public String name = "New Entity";
 
     @InspectableField(label = "Transformation")
-    public final Transformation transformation = new Transformation(this, false);
+    public Transformation transformation = new Transformation(this, false);
 
     /**
      * Key: Class.simpleName
      * Value: Component instance
      */
     public final Map<ComponentType, AbstractComponent> components = new HashMap<>();
-    public final String id;
+    private final String id;
     public final long creationDate = System.currentTimeMillis();
     public boolean visible = true;
 
@@ -30,8 +30,13 @@ public class Entity extends Inspectable implements Serializable {
         this.name = name;
     }
 
+    public String id(){
+        return id;
+    }
+
     public Entity() {
-        this.id = UUID.randomUUID().toString().replaceAll("-", "");
+        id = UUID.randomUUID().toString();
+        name = "New Entity (" + id.substring(0, 4) + ")";
     }
 
     @Override
@@ -42,5 +47,15 @@ public class Entity extends Inspectable implements Serializable {
     @Override
     public String getIcon() {
         return Icons.inventory_2;
+    }
+
+    public Entity clone() {
+        var clone = new Entity(UUID.randomUUID().toString(), name + " (clone)");
+        clone.transformation = transformation.clone(clone, false);
+        transformation.parent.children.add(clone.transformation);
+        for(var component : components.values()) {
+            clone.components.put(component.getType(), component.clone(clone));
+        }
+        return clone;
     }
 }

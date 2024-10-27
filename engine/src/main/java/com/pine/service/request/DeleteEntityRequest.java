@@ -34,7 +34,7 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     }
 
     private void removeComponentsHierarchically(Entity entity, WorldRepository repository) {
-        repository.entityMap.remove(entity.id);
+        repository.entityMap.remove(entity.id());
         repository.unregisterComponents(entity);
         entity.transformation.children.forEach(c -> {
             removeComponentsHierarchically(c.entity, repository);

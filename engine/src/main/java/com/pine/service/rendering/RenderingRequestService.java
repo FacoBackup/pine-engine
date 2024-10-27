@@ -5,6 +5,7 @@ import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamingService;
@@ -24,6 +25,9 @@ public class RenderingRequestService {
 
     @PInject
     public EngineSettingsRepository engineSettings;
+
+    @PInject
+    public RenderingRepository renderingRepository;
 
     public RenderingRequest prepareInstanced(MeshComponent scene, Transformation t) {
         MeshResourceRef mesh = selectLOD(scene);
@@ -55,7 +59,7 @@ public class RenderingRequestService {
         prepareMaterial(scene, scene.renderRequest);
     }
 
-    private static void prepareTransformations(MeshComponent scene, Transformation t, MeshResourceRef mesh) {
+    private void prepareTransformations(MeshComponent scene, Transformation t, MeshResourceRef mesh) {
         if (scene.instances.size() > scene.numberOfInstances) {
             scene.instances = new ArrayList<>(scene.instances.subList(0, scene.numberOfInstances));
         } else if (scene.instances.size() < scene.numberOfInstances) {
@@ -67,6 +71,7 @@ public class RenderingRequestService {
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest(mesh, t, new ArrayList<>());
         }
+        renderingRepository.newToBeRendered.put(scene.entity.id(), scene.renderRequest);
         scene.renderRequest.entity = scene.entity;
         scene.renderRequest.transformations.clear();
     }
@@ -85,6 +90,7 @@ public class RenderingRequestService {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
+            renderingRepository.newToBeRendered.put(scene.entity.id(), transform.renderRequest);
             transform.renderRequest.entity = scene.entity;
             prepareMaterial(scene, transform.renderRequest);
 

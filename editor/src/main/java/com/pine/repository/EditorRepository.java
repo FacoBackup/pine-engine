@@ -78,7 +78,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public final ImInt shadingModelOption = new ImInt(DebugShadingModel.LIT.getIndex());
     public boolean showOnlyEntitiesHierarchy = false;
 
-    public Map<String, Entity> pinnedEntities = new HashMap<>();
+    public Map<String, Boolean> pinnedEntities = new HashMap<>();
     public Transformation primitiveSelected = null;
     public boolean gizmoExternalChange = false;
     public Entity mainSelection = null;
