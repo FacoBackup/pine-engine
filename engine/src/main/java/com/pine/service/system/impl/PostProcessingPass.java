@@ -17,28 +17,24 @@ public class PostProcessingPass extends AbstractQuadPassPass {
     private UniformDTO samplesDOF;
     private UniformDTO vignetteEnabled;
     private UniformDTO vignetteStrength;
-    private UniformDTO gamma;
-    private UniformDTO exposure;
     private UniformDTO sceneColor;
     private UniformDTO bloomColor;
 
     @Override
     public void onInitialize() {
-        distortionIntensity = getShader().addUniformDeclaration("distortionIntensity", GLSLType.FLOAT);
-        chromaticAberrationIntensity = getShader().addUniformDeclaration("chromaticAberrationIntensity", GLSLType.FLOAT);
-        distortionEnabled = getShader().addUniformDeclaration("distortionEnabled", GLSLType.BOOL);
-        chromaticAberrationEnabled = getShader().addUniformDeclaration("chromaticAberrationEnabled", GLSLType.BOOL);
-        bloomEnabled = getShader().addUniformDeclaration("bloomEnabled", GLSLType.BOOL);
-        focusDistanceDOF = getShader().addUniformDeclaration("focusDistanceDOF", GLSLType.FLOAT);
-        apertureDOF = getShader().addUniformDeclaration("apertureDOF", GLSLType.FLOAT);
-        focalLengthDOF = getShader().addUniformDeclaration("focalLengthDOF", GLSLType.FLOAT);
-        samplesDOF = getShader().addUniformDeclaration("samplesDOF", GLSLType.FLOAT);
-        vignetteEnabled = getShader().addUniformDeclaration("vignetteEnabled", GLSLType.BOOL);
-        vignetteStrength = getShader().addUniformDeclaration("vignetteStrength", GLSLType.FLOAT);
-        gamma = getShader().addUniformDeclaration("gamma", GLSLType.FLOAT);
-        exposure = getShader().addUniformDeclaration("exposure", GLSLType.FLOAT);
-        bloomColor = getShader().addUniformDeclaration("bloomColor", GLSLType.SAMPLER_2_D);
-        sceneColor = getShader().addUniformDeclaration("sceneColor", GLSLType.SAMPLER_2_D);
+        distortionIntensity = addUniformDeclaration("distortionIntensity");
+        chromaticAberrationIntensity = addUniformDeclaration("chromaticAberrationIntensity");
+        distortionEnabled = addUniformDeclaration("distortionEnabled");
+        chromaticAberrationEnabled = addUniformDeclaration("chromaticAberrationEnabled");
+        bloomEnabled = addUniformDeclaration("bloomEnabled");
+        focusDistanceDOF = addUniformDeclaration("focusDistanceDOF");
+        apertureDOF = addUniformDeclaration("apertureDOF");
+        focalLengthDOF = addUniformDeclaration("focalLengthDOF");
+        samplesDOF = addUniformDeclaration("samplesDOF");
+        vignetteEnabled = addUniformDeclaration("vignetteEnabled");
+        vignetteStrength = addUniformDeclaration("vignetteStrength");
+        bloomColor = addUniformDeclaration("bloomColor");
+        sceneColor = addUniformDeclaration("sceneColor");
     }
 
     @Override
@@ -64,8 +60,6 @@ public class PostProcessingPass extends AbstractQuadPassPass {
         shaderService.bindFloat(cameraRepository.samplesDOF, samplesDOF);
         shaderService.bindBoolean(cameraRepository.vignetteEnabled, vignetteEnabled);
         shaderService.bindFloat(cameraRepository.vignetteStrength, vignetteStrength);
-        shaderService.bindFloat(cameraRepository.gamma, gamma);
-        shaderService.bindFloat(cameraRepository.exposure, exposure);
 
 //        shaderService.bindSampler2d(, bloomColor);
         shaderService.bindSampler2d(fboRepository.auxSampler, sceneColor);

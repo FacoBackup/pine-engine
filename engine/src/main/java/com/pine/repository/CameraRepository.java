@@ -77,12 +77,6 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     @InspectableField(group = "Post processing", label = "Bloom Offset")
     public int bloomOffset = 0;
 
-    @InspectableField(group = "Post processing", label = "Gamma", min = 1)
-    public float gamma = 2.2f;
-
-    @InspectableField(group = "Post processing", label = "Exposure", min = 0)
-    public float exposure = 1.f;
-
     @InspectableField(group = "Post processing", label = "Chromatic Aberration Strength", min = 0)
     public float chromaticAberrationIntensity = 1;
 

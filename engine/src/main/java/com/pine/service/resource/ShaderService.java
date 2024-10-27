@@ -4,6 +4,7 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.core.CoreUBORepository;
+import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.ShaderCreationData;
 import com.pine.service.resource.shader.UniformDTO;
@@ -46,7 +47,9 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
             return;
         }
         currentShader = instance;
-        bindProgram(instance);
+        if (instance != null) {
+            bindProgram(instance);
+        }
     }
 
     @Override
@@ -57,20 +60,25 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
     @Override
     protected IResource addInternal(ShaderCreationData data) {
         if (data.isLocalResource()) {
-            String vertex = processShader(data.vertex());
-            String frag = processShader(data.fragment());
-            return create(getId(), new ShaderCreationData(vertex, frag));
+            if (data.getCompute() == null) {
+                String vertex = processShader(data.vertex());
+                String frag = processShader(data.fragment());
+                return create(getId(), new ShaderCreationData(vertex, frag));
+            } else {
+                String compute = processShader(data.getCompute());
+                return create(getId(), new ShaderCreationData(compute));
+            }
         }
         return create(getId(), data);
     }
 
     private Shader create(String id, ShaderCreationData data) {
         var instance = new Shader(id, data);
-        return (Shader) bindWithUBO(data.vertex() + "\n" + data.fragment(), instance);
+        return bindWithUBO(data.vertex() + "\n" + data.fragment(), instance);
     }
 
     @Nullable
-    public IShader bindWithUBO(String code, IShader instance) {
+    public Shader bindWithUBO(String code, Shader instance) {
         if (instance.isValid()) {
             if (code.contains(UBODeclaration.CAMERA_VIEW.getBlockName()))
                 uboService.bindWithShader(uboRepository.cameraViewUBO, instance.getProgram());
@@ -104,6 +112,11 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
         return finalResult;
     }
 
+    public void dispatch(ComputeRuntimeData data) {
+        GL46.glDispatchCompute(data.groupX, data.groupY, data.groupZ);
+        GL46.glMemoryBarrier(data.memoryBarrier);
+    }
+
     @Override
     protected void removeInternal(Shader shader) {
         GL46.glDeleteProgram(shader.getProgram());
@@ -114,7 +127,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
         return LocalResourceType.SHADER;
     }
 
-    public void bindProgram(IShader shader) {
+    public void bindProgram(Shader shader) {
         this.currentSamplerIndex = 0;
         GL46.glUseProgram(shader.getProgram());
     }
@@ -147,10 +160,10 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
     }
 
     public void bindVec4(Vector4f vec, UniformDTO uniform) {
-       bufferVec4.put(0, vec.x);
-       bufferVec4.put(1, vec.y);
-       bufferVec4.put(2, vec.z);
-       bufferVec4.put(3, vec.w);
+        bufferVec4.put(0, vec.x);
+        bufferVec4.put(1, vec.y);
+        bufferVec4.put(2, vec.z);
+        bufferVec4.put(3, vec.w);
         GL46.glUniform4fv(uniform.location, bufferVec4);
     }
 

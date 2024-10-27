@@ -6,6 +6,7 @@ import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.system.AbstractPass;
@@ -32,19 +33,24 @@ public class GBufferPass extends AbstractPass {
 
     @Override
     public void onInitialize() {
-        debugShadingMode = shaderRepository.gBufferShader.addUniformDeclaration("debugShadingMode", GLSLType.INT);
-        transformationIndex = shaderRepository.gBufferShader.addUniformDeclaration("transformationIndex", GLSLType.INT);
-        parallaxHeightScale = shaderRepository.gBufferShader.addUniformDeclaration("parallaxHeightScale", GLSLType.FLOAT);
-        parallaxLayers = shaderRepository.gBufferShader.addUniformDeclaration("parallaxLayers", GLSLType.INT);
-        useParallax = shaderRepository.gBufferShader.addUniformDeclaration("useParallax", GLSLType.BOOL);
-        anisotropicRotation = shaderRepository.gBufferShader.addUniformDeclaration("anisotropicRotation", GLSLType.FLOAT);
-        anisotropy = shaderRepository.gBufferShader.addUniformDeclaration("anisotropy", GLSLType.FLOAT);
-        clearCoat = shaderRepository.gBufferShader.addUniformDeclaration("clearCoat", GLSLType.FLOAT);
-        sheen = shaderRepository.gBufferShader.addUniformDeclaration("sheen", GLSLType.FLOAT);
-        sheenTint = shaderRepository.gBufferShader.addUniformDeclaration("sheenTint", GLSLType.FLOAT);
-        renderingMode = shaderRepository.gBufferShader.addUniformDeclaration("renderingMode", GLSLType.INT);
-        ssrEnabled = shaderRepository.gBufferShader.addUniformDeclaration("ssrEnabled", GLSLType.BOOL);
-        fallbackMaterial = shaderRepository.gBufferShader.addUniformDeclaration("fallbackMaterial", GLSLType.BOOL);
+        debugShadingMode = addUniformDeclaration("debugShadingMode");
+        transformationIndex = addUniformDeclaration("transformationIndex");
+        parallaxHeightScale = addUniformDeclaration("parallaxHeightScale");
+        parallaxLayers = addUniformDeclaration("parallaxLayers");
+        useParallax = addUniformDeclaration("useParallax");
+        anisotropicRotation = addUniformDeclaration("anisotropicRotation");
+        anisotropy = addUniformDeclaration("anisotropy");
+        clearCoat = addUniformDeclaration("clearCoat");
+        sheen = addUniformDeclaration("sheen");
+        sheenTint = addUniformDeclaration("sheenTint");
+        renderingMode = addUniformDeclaration("renderingMode");
+        ssrEnabled = addUniformDeclaration("ssrEnabled");
+        fallbackMaterial = addUniformDeclaration("fallbackMaterial");
+    }
+
+    @Override
+    protected Shader getShader() {
+        return shaderRepository.gBufferShader;
     }
 
     @Override
@@ -64,8 +70,6 @@ public class GBufferPass extends AbstractPass {
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
         ssboService.bind(ssboRepository.transformationSSBO);
-
-        shaderService.bind(shaderRepository.gBufferShader);
 
         shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
         for (int i = 0; i < renderingRepository.environmentMaps.length; i++) {

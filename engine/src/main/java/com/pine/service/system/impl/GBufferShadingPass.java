@@ -24,16 +24,16 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
 
     @Override
     public void onInitialize() {
-        SSRFalloff = shaderRepository.gBufferShading.addUniformDeclaration("SSRFalloff", GLSLType.FLOAT);
-        stepSizeSSR = shaderRepository.gBufferShading.addUniformDeclaration("stepSizeSSR", GLSLType.FLOAT);
-        maxSSSDistance = shaderRepository.gBufferShading.addUniformDeclaration("maxSSSDistance", GLSLType.FLOAT);
-        SSSDepthThickness = shaderRepository.gBufferShading.addUniformDeclaration("SSSDepthThickness", GLSLType.FLOAT);
-        SSSEdgeAttenuation = shaderRepository.gBufferShading.addUniformDeclaration("SSSEdgeAttenuation", GLSLType.FLOAT);
-        SSSDepthDelta = shaderRepository.gBufferShading.addUniformDeclaration("SSSDepthDelta", GLSLType.FLOAT);
-        SSAOFalloff = shaderRepository.gBufferShading.addUniformDeclaration("SSAOFalloff", GLSLType.FLOAT);
-        maxStepsSSR = shaderRepository.gBufferShading.addUniformDeclaration("maxStepsSSR", GLSLType.INT);
-        maxStepsSSS = shaderRepository.gBufferShading.addUniformDeclaration("maxStepsSSS", GLSLType.INT);
-        lightCount = shaderRepository.gBufferShading.addUniformDeclaration("lightCount", GLSLType.INT);
+        SSRFalloff = addUniformDeclaration("SSRFalloff");
+        stepSizeSSR = addUniformDeclaration("stepSizeSSR");
+        maxSSSDistance = addUniformDeclaration("maxSSSDistance");
+        SSSDepthThickness = addUniformDeclaration("SSSDepthThickness");
+        SSSEdgeAttenuation = addUniformDeclaration("SSSEdgeAttenuation");
+        SSSDepthDelta = addUniformDeclaration("SSSDepthDelta");
+        SSAOFalloff = addUniformDeclaration("SSAOFalloff");
+        maxStepsSSR = addUniformDeclaration("maxStepsSSR");
+        maxStepsSSS = addUniformDeclaration("maxStepsSSS");
+        lightCount = addUniformDeclaration("lightCount");
     }
 
     @Override

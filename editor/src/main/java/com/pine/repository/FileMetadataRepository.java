@@ -5,6 +5,7 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
+import com.pine.repository.fs.DirectoryEntry;
 import com.pine.repository.fs.FileEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.ImporterService;
@@ -36,15 +37,39 @@ public class FileMetadataRepository implements Loggable {
     public void refresh() {
         isLoading = true;
         new Thread(() -> {
+            files.clear();
             long start = System.currentTimeMillis();
             getLogger().warn("Refreshing files");
             List<String> filesToRead = readFiles();
             getLogger().warn("{} files found", filesToRead.size());
             putFiles(filesToRead);
 
+            List<String> filesLinked = new ArrayList<>();
+            collectLinkedFiles(editorRepository.root, filesLinked);
+            List<String> missingFiles = new ArrayList<>();
+            for (FileEntry file : files.values()) {
+                if(!filesLinked.contains(file.getId())){
+                    missingFiles.add(file.getId());
+                }
+            }
+
+            editorRepository.root.files.addAll(missingFiles);
+
             getLogger().warn("Files refreshed in {} ms", System.currentTimeMillis() - start);
             isLoading = false;
         }).start();
+    }
+
+    private void collectLinkedFiles(DirectoryEntry root, List<String> filesLinked) {
+        List<String> toRemove = new ArrayList<>();
+        for(var file : root.files){
+            if(!files.containsKey(file)){
+                toRemove.add(file);
+            }
+        }
+        toRemove.forEach(root.files::remove);
+        filesLinked.addAll(root.files);
+        root.directories.values().forEach(d -> collectLinkedFiles(d, filesLinked));
     }
 
     private @NotNull List<String> readFiles() {

@@ -1,4 +1,4 @@
-package com.pine.service.resource.compute;
+package com.pine.service.resource.shader;
 
 import org.lwjgl.opengl.GL46;
 

@@ -20,15 +20,15 @@ public class FrameCompositionPass extends AbstractQuadPassPass {
 
     @Override
     public void onInitialize() {
-        inverseFilterTextureSize = shaderRepository.frameComposition.addUniformDeclaration("inverseFilterTextureSize", GLSLType.VEC_2);
-        useFXAA = shaderRepository.frameComposition.addUniformDeclaration("useFXAA", GLSLType.BOOL);
-        filmGrainEnabled = shaderRepository.frameComposition.addUniformDeclaration("filmGrainEnabled", GLSLType.BOOL);
-        FXAASpanMax = shaderRepository.frameComposition.addUniformDeclaration("FXAASpanMax", GLSLType.FLOAT);
-        FXAAReduceMin = shaderRepository.frameComposition.addUniformDeclaration("FXAAReduceMin", GLSLType.FLOAT);
-        FXAAReduceMul = shaderRepository.frameComposition.addUniformDeclaration("FXAAReduceMul", GLSLType.FLOAT);
-        filmGrainStrength = shaderRepository.frameComposition.addUniformDeclaration("filmGrainStrength", GLSLType.FLOAT);
-        currentFrame = shaderRepository.frameComposition.addUniformDeclaration("currentFrame", GLSLType.SAMPLER_2_D);
-        filmGrainSeed = shaderRepository.frameComposition.addUniformDeclaration("filmGrainSeed", GLSLType.FLOAT);
+        inverseFilterTextureSize = addUniformDeclaration("inverseFilterTextureSize");
+        useFXAA = addUniformDeclaration("useFXAA");
+        filmGrainEnabled = addUniformDeclaration("filmGrainEnabled");
+        FXAASpanMax = addUniformDeclaration("FXAASpanMax");
+        FXAAReduceMin = addUniformDeclaration("FXAAReduceMin");
+        FXAAReduceMul = addUniformDeclaration("FXAAReduceMul");
+        filmGrainStrength = addUniformDeclaration("filmGrainStrength");
+        currentFrame = addUniformDeclaration("currentFrame");
+        filmGrainSeed = addUniformDeclaration("filmGrainSeed");
 
         for (int i = 0; i < 2000; i++) {
             lookUpRandom[i] = (float) Math.random();

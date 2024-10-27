@@ -26,8 +26,8 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     public void onInitialize() {
-        model = getShader().addUniformDeclaration("model", GLSLType.MAT_4);
-        renderIndex = getShader().addUniformDeclaration("renderIndex", GLSLType.INT);
+        model = addUniformDeclaration("model");
+        renderIndex = addUniformDeclaration("renderIndex");
     }
 
     @Override
@@ -51,9 +51,6 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
-        shaderService.bind(getShader());
-
-
         List<RenderingRequest> requests = renderingRepository.requests;
         for (int i = 0, requestsSize = requests.size(); i < requestsSize; i++) {
             var request = requests.get(i);

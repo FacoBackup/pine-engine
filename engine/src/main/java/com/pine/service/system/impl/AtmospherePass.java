@@ -30,20 +30,20 @@ public class AtmospherePass extends AbstractQuadPassPass {
 
     @Override
     public void onInitialize() {
-        renderStatic = shaderRepository.atmosphereShader.addUniformDeclaration("renderStatic", GLSLType.BOOL);
-        invViewStatic = shaderRepository.atmosphereShader.addUniformDeclaration("invViewStatic", GLSLType.MAT_4);
-        invSkyProjectionMatrix = shaderRepository.atmosphereShader.addUniformDeclaration("invSkyProjectionMatrix", GLSLType.MAT_4);
-        type = shaderRepository.atmosphereShader.addUniformDeclaration("type", GLSLType.INT);
-        elapsedTime = shaderRepository.atmosphereShader.addUniformDeclaration("elapsedTime", GLSLType.FLOAT);
-        rayleighBeta = shaderRepository.atmosphereShader.addUniformDeclaration("rayleighBeta", GLSLType.VEC_3);
-        mieBeta = shaderRepository.atmosphereShader.addUniformDeclaration("mieBeta", GLSLType.VEC_3);
-        intensity = shaderRepository.atmosphereShader.addUniformDeclaration("intensity", GLSLType.FLOAT);
-        atmosphereRadius = shaderRepository.atmosphereShader.addUniformDeclaration("atmosphereRadius", GLSLType.FLOAT);
-        planetRadius = shaderRepository.atmosphereShader.addUniformDeclaration("planetRadius", GLSLType.FLOAT);
-        rayleighHeight = shaderRepository.atmosphereShader.addUniformDeclaration("rayleighHeight", GLSLType.FLOAT);
-        mieHeight = shaderRepository.atmosphereShader.addUniformDeclaration("mieHeight", GLSLType.FLOAT);
-        threshold = shaderRepository.atmosphereShader.addUniformDeclaration("threshold", GLSLType.FLOAT);
-        samples = shaderRepository.atmosphereShader.addUniformDeclaration("samples", GLSLType.INT);
+        renderStatic = addUniformDeclaration("renderStatic");
+        invViewStatic = addUniformDeclaration("invViewStatic");
+        invSkyProjectionMatrix = addUniformDeclaration("invSkyProjectionMatrix");
+        type = addUniformDeclaration("type");
+        elapsedTime = addUniformDeclaration("elapsedTime");
+        rayleighBeta = addUniformDeclaration("rayleighBeta");
+        mieBeta = addUniformDeclaration("mieBeta");
+        intensity = addUniformDeclaration("intensity");
+        atmosphereRadius = addUniformDeclaration("atmosphereRadius");
+        planetRadius = addUniformDeclaration("planetRadius");
+        rayleighHeight = addUniformDeclaration("rayleighHeight");
+        mieHeight = addUniformDeclaration("mieHeight");
+        threshold = addUniformDeclaration("threshold");
+        samples = addUniformDeclaration("samples");
     }
 
     @Override
@@ -84,7 +84,6 @@ public class AtmospherePass extends AbstractQuadPassPass {
     }
 
     public void renderToCubeMap(Matrix4f invViewMatrix, Matrix4f invProjection) {
-        shaderService.bind(getShader());
         bindUniforms();
         shaderService.bindMat4(invViewMatrix, invViewStatic);
         shaderService.bindMat4(invProjection, invSkyProjectionMatrix);

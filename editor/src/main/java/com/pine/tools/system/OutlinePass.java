@@ -22,7 +22,7 @@ public class OutlinePass extends AbstractQuadPassPass {
 
     @Override
     public void onInitialize() {
-        outlineSampler = getShader().addUniformDeclaration("outlineSampler", GLSLType.SAMPLER_2_D);
+        outlineSampler = addUniformDeclaration("outlineSampler");
     }
 
     @Override

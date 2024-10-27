@@ -35,6 +35,7 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader debugVoxelShader;
     public Shader gBufferShading;
     public Shader environmentMap;
+    public Shader voxelRaymarchingCompute;
 
     @PInject
     public ResourceService resources;
@@ -66,5 +67,6 @@ public class CoreShaderRepository implements CoreRepository {
         upSamplingShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "UPSAMPLE_TENT.glsl").staticResource());
         atmosphereShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "ATMOSPHERE.frag").staticResource());
         environmentMap = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "uber/ENVIRONMENT_MAP.vert", LOCAL_SHADER + "uber/ENVIRONMENT_MAP.frag").staticResource());
+        voxelRaymarchingCompute = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "compute/VOXEL_RAY_MARCHING_COMPUTE.glsl").staticResource());
     }
 }

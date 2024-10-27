@@ -19,7 +19,7 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
 
     @InspectableField(group = "Anti aliasing",label = "FXAA Enabled")
-    public boolean fxaaEnabled = false;
+    public boolean fxaaEnabled = true;
 
     @InspectableField(group = "Anti aliasing",label = "FXAA Span Max")
     public float fxaaSpanMax = 8f;

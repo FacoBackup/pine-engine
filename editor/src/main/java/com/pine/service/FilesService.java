@@ -45,6 +45,9 @@ public class FilesService implements Loggable {
     }
 
     private void deleteRecursively(DirectoryEntry directoryEntry) {
+        if(directoryEntry == null){
+            return;
+        }
         for (var file : directoryEntry.files) {
             delete(fileMetadataRepository.getFile(file));
         }

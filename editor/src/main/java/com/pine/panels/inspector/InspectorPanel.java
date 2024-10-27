@@ -80,8 +80,8 @@ public class InspectorPanel extends AbstractDockPanel {
                 }
             }
             super.render();
-            ImGui.endChild();
         }
+        ImGui.endChild();
         ImGui.columns(1);
     }
 

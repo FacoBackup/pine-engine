@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 
 public class VoxelizerUtil {
-    private static final Logger LOGGER = LoggerFactory.getLogger(VoxelizerUtil.class);
 
     public static void voxelize(MeshImportData rawMeshData, SparseVoxelOctree octree, float stepSize, TextureStreamData albedoTexture) {
         int[] indices = rawMeshData.indices;
@@ -19,7 +18,6 @@ public class VoxelizerUtil {
         float[] uvs = rawMeshData.uvs;
 
         for (int i = 0; i < indices.length; i += 3) {
-            long start = System.currentTimeMillis();
             int index = indices[i];
             int index1 = indices[i + 1];
             int index2 = indices[i + 2];
@@ -39,7 +37,6 @@ public class VoxelizerUtil {
                 triangle.uv2.y = uvs[index2 * 2 + 1];
             }
             iterateTriangle(triangle, octree, stepSize, albedoTexture);
-            LOGGER.warn("Triangle ({} out of {}) voxelization took {}ms", i, indices.length / 3, System.currentTimeMillis() - start);
         }
     }
 

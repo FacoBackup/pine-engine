@@ -8,15 +8,11 @@ import org.lwjgl.opengl.GL46;
 
 public abstract class AbstractQuadPassPass extends AbstractPass implements Loggable {
 
-    protected abstract Shader getShader();
-
     protected abstract void bindUniforms();
 
     @Override
     final protected void renderInternal() {
-        shaderService.bind(getShader());
         bindUniforms();
-
         drawQuad();
     }
 

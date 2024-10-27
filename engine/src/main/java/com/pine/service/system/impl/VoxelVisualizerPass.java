@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
-import com.pine.service.resource.compute.ComputeRuntimeData;
-import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.shader.ComputeRuntimeData;
+import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
 import org.joml.Vector3i;
@@ -21,8 +21,13 @@ public class VoxelVisualizerPass extends AbstractPass {
 
     @Override
     public void onInitialize() {
-        centerScale = computeRepository.voxelRaymarchingCompute.addUniformDeclaration("centerScale", GLSLType.VEC_4);
-        settings = computeRepository.voxelRaymarchingCompute.addUniformDeclaration("settings", GLSLType.IVEC_3);
+        centerScale = addUniformDeclaration("centerScale");
+        settings = addUniformDeclaration("settings");
+    }
+
+    @Override
+    protected Shader getShader() {
+        return shaderRepository.voxelRaymarchingCompute;
     }
 
     @Override
@@ -48,15 +53,14 @@ public class VoxelVisualizerPass extends AbstractPass {
                         chunk.size
                 );
                 shaderService.bindVec4(centerScaleBuffer, centerScale);
-                computeService.dispatch(COMPUTE_RUNTIME_DATA);
+                shaderService.dispatch(COMPUTE_RUNTIME_DATA);
             }
         }
-        computeService.unbind();
+        shaderService.unbind();
     }
 
     private void bindGlobal() {
-        computeService.bind(computeRepository.voxelRaymarchingCompute);
-        fboRepository.auxBuffer.bindForCompute();
+        fboRepository.postProcessingBuffer.bindForCompute();
 
         COMPUTE_RUNTIME_DATA.groupX = (fboRepository.auxBuffer.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (fboRepository.auxBuffer.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;

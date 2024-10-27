@@ -5,6 +5,7 @@ import com.pine.repository.EditorRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
 import com.pine.tools.repository.ToolsResourceRepository;
@@ -27,8 +28,8 @@ public class GridPass extends AbstractPass {
 
     @Override
     public void onInitialize() {
-        settingsUniform = toolsResourceRepository.gridShader.addUniformDeclaration("settings", GLSLType.VEC_4);
-        depthUniform = toolsResourceRepository.gridShader.addUniformDeclaration("sceneDepth", GLSLType.SAMPLER_2_D);
+        settingsUniform = toolsResourceRepository.gridShader.addUniformDeclaration("settings");
+        depthUniform = toolsResourceRepository.gridShader.addUniformDeclaration("sceneDepth");
     }
 
     @Override
@@ -45,7 +46,6 @@ public class GridPass extends AbstractPass {
     protected void renderInternal() {
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glDisable(GL46.GL_CULL_FACE);
-        shaderService.bind(toolsResourceRepository.gridShader);
         buffer.set(
                 engineConfig.gridColor,
                 engineConfig.gridScale,
@@ -62,6 +62,11 @@ public class GridPass extends AbstractPass {
 
         meshService.draw();
         GL46.glEnable(GL46.GL_CULL_FACE);
+    }
+
+    @Override
+    protected Shader getShader() {
+        return toolsResourceRepository.gridShader;
     }
 
     @Override

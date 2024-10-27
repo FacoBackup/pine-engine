@@ -42,8 +42,6 @@ public class Engine extends MetricCollector implements Loggable {
     @PInject
     public CoreFBORepository fboRepository;
     @PInject
-    public CoreComputeRepository computeRepository;
-    @PInject
     public CoreMeshRepository primitiveRepository;
     @PInject
     public RuntimeRepository runtimeRepository;
@@ -67,7 +65,6 @@ public class Engine extends MetricCollector implements Loggable {
         uboRepository.initialize();
         fboRepository.initialize();
         shaderRepository.initialize();
-        computeRepository.initialize();
         systemsService.initialize();
 
         targetFBO = fboRepository.auxBuffer;

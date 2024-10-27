@@ -92,6 +92,6 @@ public class ProjectService implements Loggable {
 
     public void saveSilently() {
         serializationService.writeProjectMetadata(projectDirectory);
-        serializationService.serialize(projectDirectory, false);
+        serializationService.serialize(projectDirectory, true);
     }
 }

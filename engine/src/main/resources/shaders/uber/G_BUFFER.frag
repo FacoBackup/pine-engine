@@ -77,7 +77,7 @@ void main() {
         UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
     vec3 N = normalVec;
-    gBufferDepthSampler = vec4(encode(depthFunc), renderingIndex, 0, 1);
+    gBufferDepthSampler = vec4(encode(depthFunc), renderingIndex + 1, 0, 1);
     if (!fallbackMaterial){
         gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 0);
         N = vec3(normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0)));

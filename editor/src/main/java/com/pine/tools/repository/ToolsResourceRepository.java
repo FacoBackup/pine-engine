@@ -20,7 +20,6 @@ public class ToolsResourceRepository implements Initializable {
     public Shader gridShader;
     public Shader outlineGenShader;
     public Shader mouseOver;
-    public FrameBufferObject mouseOverBuffer;
     public FrameBufferObject outlineBuffer;
     public int mouseOverSampler;
     public int outlineSampler;
@@ -30,14 +29,9 @@ public class ToolsResourceRepository implements Initializable {
         outlineShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "tool/OUTLINE.frag"));
         outlineGenShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "tool/OUTLINE_GEN.vert", LOCAL_SHADER + "tool/OUTLINE_GEN.frag"));
         gridShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "tool/GRID.vert", LOCAL_SHADER + "tool/GRID.frag"));
-        mouseOver = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "tool/MOUSE_OVER.frag"));
-        mouseOverBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(1, 1)
-                .addSampler(0, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false)
-                .staticResource());
-        mouseOverSampler = mouseOverBuffer.getSamplers().getFirst();
 
         outlineBuffer = (FrameBufferObject) resources.addResource(new FBOCreationData(false, false)
-                .addSampler(0, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false)
+                .addSampler(0, GL46.GL_R32F, GL46.GL_RED, GL46.GL_FLOAT, false, false)
                 .staticResource());
         outlineSampler = outlineBuffer.getSamplers().getFirst();
     }

@@ -6,6 +6,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;
+import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
 import com.pine.service.camera.CameraFirstPersonService;
 import com.pine.service.camera.CameraThirdPersonService;
@@ -54,6 +55,9 @@ public class ViewportPanel extends AbstractDockPanel {
     @PInject
     public CameraFirstPersonService cameraFirstPersonService;
 
+    @PInject
+    public ViewportPickingService viewportPickingService;
+
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     public static final ImVec2 INV_X = new ImVec2(1, 0);
@@ -96,11 +100,16 @@ public class ViewportPanel extends AbstractDockPanel {
         cameraRepository.setCurrentCamera(context.camera);
 
         boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+
+
         hotKeys(focused);
         updateCamera(focused);
         engine.setTargetFBO(fbo);
         engine.render();
 
+        if(focused && ImGui.isMouseClicked(ImGuiMouseButton.Left)){
+            viewportPickingService.pick();
+        }
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
     }
@@ -141,7 +150,7 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.viewportH = sizeVec.y;
         repo.viewportW = sizeVec.x;
         repo.viewportX = position.x;
-        repo.viewportY = position.y;
+        repo.viewportY = position.y + FRAME_SIZE;
     }
 
     private void hotKeys(boolean focused) {

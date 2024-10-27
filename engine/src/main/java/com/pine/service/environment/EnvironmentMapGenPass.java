@@ -56,9 +56,9 @@ public class EnvironmentMapGenPass implements Initializable {
     @Override
     public void onInitialize() {
         atmospherePass = (AtmospherePass) systemService.getSystems().stream().filter(a -> a instanceof AtmospherePass).findFirst().orElse(null);
-        fallbackMaterial = shaderRepository.environmentMap.addUniformDeclaration("fallbackMaterial", GLSLType.BOOL);
-        viewProjection = shaderRepository.environmentMap.addUniformDeclaration("viewProjection", GLSLType.MAT_4);
-        model = shaderRepository.environmentMap.addUniformDeclaration("model", GLSLType.MAT_4);
+        fallbackMaterial = shaderRepository.environmentMap.addUniformDeclaration("fallbackMaterial");
+        viewProjection = shaderRepository.environmentMap.addUniformDeclaration("viewProjection");
+        model = shaderRepository.environmentMap.addUniformDeclaration("model");
     }
 
     public void renderFace(Matrix4f viewMatrix, Matrix4f invView, Matrix4f projection, Matrix4f invProjection) {

@@ -5,7 +5,6 @@ import com.pine.service.system.AbstractPass;
 import com.pine.service.system.impl.FrameCompositionPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.system.GridPass;
-import com.pine.tools.system.MouseOverPass;
 import com.pine.tools.system.OutlineGenPass;
 import com.pine.tools.system.OutlinePass;
 
@@ -22,7 +21,6 @@ public class ToolsModule implements EngineExternalModule {
         withTools.add(indexFc, new GridPass());
         withTools.add(indexFc, new OutlinePass());
         withTools.add(indexFc, new OutlineGenPass());
-        withTools.add(indexFc, new MouseOverPass());
         return withTools;
     }
 
