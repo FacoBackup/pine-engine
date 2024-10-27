@@ -16,8 +16,8 @@ public final class SSBOCreationData extends ResourceCreationData {
         this.expectedSize = expectedSize;
     }
 
-    public SSBOCreationData(int bindingPoint, Buffer data) {
-        this.bindingPoint = bindingPoint;
+    public SSBOCreationData(Buffer data) {
+        this.bindingPoint = 0;
         this.data = data;
     }
 

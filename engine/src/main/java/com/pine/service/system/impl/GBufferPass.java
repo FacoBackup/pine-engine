@@ -1,14 +1,11 @@
 package com.pine.service.system.impl;
 
-import com.pine.messaging.Loggable;
 import com.pine.repository.DebugShadingModel;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;

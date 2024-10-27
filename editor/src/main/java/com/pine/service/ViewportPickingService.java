@@ -2,14 +2,10 @@ package com.pine.service;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.injection.PInjector;
 import com.pine.messaging.Loggable;
-import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.CoreFBORepository;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.service.serialization.SerializationService;
-import com.pine.tools.repository.ToolsResourceRepository;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import org.lwjgl.BufferUtils;
@@ -17,8 +13,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
-
-import static com.pine.core.dock.DockWrapperPanel.FRAME_SIZE;
 
 @PBean
 public class ViewportPickingService implements Loggable {

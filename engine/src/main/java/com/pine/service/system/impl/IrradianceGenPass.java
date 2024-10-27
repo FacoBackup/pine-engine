@@ -5,15 +5,10 @@ import com.pine.service.environment.CubeMapGenerator;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.impl.CubeMapFace;
-import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.system.AbstractPass;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
-
-import java.nio.ByteBuffer;
 
 public class IrradianceGenPass extends AbstractPass {
     private static final int RES = 32;

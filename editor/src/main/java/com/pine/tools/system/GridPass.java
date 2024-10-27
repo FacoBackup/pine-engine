@@ -4,7 +4,6 @@ import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;

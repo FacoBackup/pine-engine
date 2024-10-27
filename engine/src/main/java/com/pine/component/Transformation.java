@@ -10,7 +10,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

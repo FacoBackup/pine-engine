@@ -1,6 +1,5 @@
 package com.pine.repository.rendering;
 
-import com.pine.component.Entity;
 import com.pine.injection.PBean;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;

@@ -10,7 +10,6 @@ import com.pine.repository.streaming.StreamingRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class DeleteEntityRequest extends AbstractRequest implements Loggable {

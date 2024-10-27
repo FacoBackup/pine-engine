@@ -14,7 +14,6 @@ import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
 import com.pine.theme.Icons;
 import imgui.ImGui;
-import imgui.flag.ImGuiTableFlags;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,10 +1,8 @@
 package com.pine.service.system.impl;
 
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import org.lwjgl.opengl.GL46;
 
 public class GBufferShadingPass extends AbstractQuadPassPass {
     private UniformDTO SSRFalloff;
