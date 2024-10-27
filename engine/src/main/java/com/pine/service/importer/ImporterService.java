@@ -61,10 +61,7 @@ public class ImporterService implements Loggable {
                     AbstractImporter importer = importers.get(imported.getResourceType());
                     if (importer != null) {
                         AbstractResourceMetadata metadata = importer.persist(imported);
-                        metadata.setSize(new File(getPathToFile(metadata.id, metadata.getResourceType())).length());
-                        if (FSUtil.write(metadata, getPathToMetadata(metadata.id))) {
-                            response.add(metadata);
-                        }
+                        persistMetadata(metadata, response);
                     }
                 } catch (Exception e) {
                     getLogger().error("Error while persisting file", e);
@@ -73,6 +70,13 @@ public class ImporterService implements Loggable {
 
             callback.accept(response);
         }).start();
+    }
+
+    private void persistMetadata(AbstractResourceMetadata metadata, List<AbstractResourceMetadata> response) {
+        metadata.setSize(new File(getPathToFile(metadata.id, metadata.getResourceType())).length());
+        if (FSUtil.write(metadata, getPathToMetadata(metadata.id))) {
+            response.add(metadata);
+        }
     }
 
     public String getPathToMetadata(String id) {
@@ -103,5 +107,19 @@ public class ImporterService implements Loggable {
             sizeUnit = "kb";
         }
         return String.format("%.2f", fileSize) + sizeUnit;
+    }
+
+    public String createNew(StreamableResourceType resourceType) {
+        AbstractResourceMetadata created = null;
+        for (AbstractImporter i : importersList) {
+            if (i.getResourceType() == resourceType) {
+                created = i.createNew();
+            }
+        }
+        if(created != null) {
+            persistMetadata(created, new ArrayList<>());
+            return created.id;
+        }
+        return null;
     }
 }

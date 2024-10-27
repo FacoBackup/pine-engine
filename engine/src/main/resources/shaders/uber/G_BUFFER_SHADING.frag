@@ -21,14 +21,17 @@ in flat int renderIndex;
 #define CLEAR_COAT 4
 #define TRANSPARENCY 5
 
-uniform sampler2D gBufferAlbedoSampler;
-uniform sampler2D gBufferNormalSampler;
-uniform sampler2D gBufferRMAOSampler;
-uniform sampler2D gBufferMaterialSampler;
-uniform sampler2D brdfSampler;
-uniform sampler2D SSAO;
-uniform sampler2D SSGI;
-uniform sampler2D previousFrame;
+layout(binding = 0) uniform sampler2D gBufferAlbedoSampler;
+layout(binding = 1) uniform sampler2D gBufferNormalSampler;
+layout(binding = 2) uniform sampler2D gBufferRMAOSampler;
+layout(binding = 3) uniform sampler2D gBufferMaterialSampler;
+layout(binding = 4) uniform sampler2D brdfSampler;
+layout(binding = 5) uniform sampler2D SSAO;
+layout(binding = 6) uniform sampler2D SSGI;
+layout(binding = 7) uniform sampler2D previousFrame;
+layout(binding = 8) uniform sampler2D sceneDepth;
+layout(binding = 9) uniform sampler2D gBufferIndirect;
+
 uniform float SSRFalloff;
 uniform float stepSizeSSR;
 uniform float maxSSSDistance;
@@ -93,11 +96,17 @@ out vec4 color;
 
 void main() {
     quadUV = gl_FragCoord.xy / bufferResolution;
+
+    depthData = getLogDepth(quadUV);
+    if (depthData == 1.){
+        discard;
+    }
     vec4 albedoEmissive = texture(gBufferAlbedoSampler, quadUV);
     if (albedoEmissive.a == 1) { // EMISSION
         color = vec4(albedoEmissive.rgb, 1.);
         return;
     }
+
     vec3 valueMaterialSampler = texture(gBufferMaterialSampler, quadUV).rgb;
     unpackValues(
     valueMaterialSampler,
@@ -116,13 +125,12 @@ void main() {
     naturalAO = valueRMAOSampler.b;
     roughness = valueRMAOSampler.r;
     metallic = valueRMAOSampler.g;
-    depthData = getLogDepth(quadUV);
     viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
     worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
     V = placement.xyz - worldSpacePosition;
     distanceFromCamera = length(V);
 
-    color = vec4(pbLightComputation(lightCount), 1.);
+    color = vec4(pbLightComputation(lightCount, gBufferIndirect), 1.);
 }
 
 

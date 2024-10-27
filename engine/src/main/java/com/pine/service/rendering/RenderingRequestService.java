@@ -5,6 +5,7 @@ import com.pine.component.Transformation;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamingService;
@@ -25,6 +26,9 @@ public class RenderingRequestService {
     @PInject
     public EngineSettingsRepository engineSettings;
 
+    @PInject
+    public RenderingRepository renderingRepository;
+
     public RenderingRequest prepareInstanced(MeshComponent scene, Transformation t) {
         MeshResourceRef mesh = selectLOD(scene);
         if (mesh == null) return null;
@@ -39,7 +43,7 @@ public class RenderingRequestService {
     }
 
     private void fillInstanceRequest(MeshComponent scene, Transformation t) {
-        for (var primitive : scene.primitives) {
+        for (var primitive : scene.instances) {
             transformationService.updateMatrix(primitive, t);
             if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
                 primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
@@ -55,18 +59,20 @@ public class RenderingRequestService {
         prepareMaterial(scene, scene.renderRequest);
     }
 
-    private static void prepareTransformations(MeshComponent scene, Transformation t, MeshResourceRef mesh) {
-        if (scene.primitives.size() > scene.numberOfInstances) {
-            scene.primitives = new ArrayList<>(scene.primitives.subList(0, scene.numberOfInstances));
-        } else if (scene.primitives.size() < scene.numberOfInstances) {
-            for (int i = scene.primitives.size(); i < scene.numberOfInstances; i++) {
-                scene.primitives.add(new Transformation(scene.entity, true));
+    private void prepareTransformations(MeshComponent scene, Transformation t, MeshResourceRef mesh) {
+        if (scene.instances.size() > scene.numberOfInstances) {
+            scene.instances = new ArrayList<>(scene.instances.subList(0, scene.numberOfInstances));
+        } else if (scene.instances.size() < scene.numberOfInstances) {
+            for (int i = scene.instances.size(); i < scene.numberOfInstances; i++) {
+                scene.instances.add(new Transformation(scene.entity, true));
             }
         }
 
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest(mesh, t, new ArrayList<>());
         }
+        renderingRepository.newToBeRendered.put(scene.entity.id(), scene.renderRequest);
+        scene.renderRequest.entity = scene.entity;
         scene.renderRequest.transformations.clear();
     }
 
@@ -84,6 +90,8 @@ public class RenderingRequestService {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
+            renderingRepository.newToBeRendered.put(scene.entity.id(), transform.renderRequest);
+            transform.renderRequest.entity = scene.entity;
             prepareMaterial(scene, transform.renderRequest);
 
             transform.renderRequest.mesh = mesh;

@@ -2,14 +2,13 @@ package com.pine.service.resource.shader;
 
 import com.pine.GLSLVersion;
 import com.pine.service.resource.AbstractResource;
-import com.pine.service.resource.IShader;
 import com.pine.service.resource.LocalResourceType;
 import org.lwjgl.opengl.GL46;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Shader extends AbstractResource implements IShader {
+public class Shader extends AbstractResource {
     private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;
@@ -18,24 +17,26 @@ public class Shader extends AbstractResource implements IShader {
         super(id);
         try {
             program = GL46.glCreateProgram();
-            prepareShaders(GLSLVersion.getVersion() + "\n" + dto.vertex(), GLSLVersion.getVersion() + "\n" + dto.fragment());
+            if (dto.getCompute() != null) {
+                prepareShadersCompute(GLSLVersion.getVersion() + "\n" + dto.getCompute());
+            } else {
+                prepareShadersDefault(GLSLVersion.getVersion() + "\n" + dto.vertex(), GLSLVersion.getVersion() + "\n" + dto.fragment());
+            }
         } catch (Exception ex) {
             getLogger().error("Error while creating shader", ex);
             valid = false;
         }
     }
 
-    @Override
     public boolean isValid() {
         return valid;
     }
 
-    @Override
     public int getProgram() {
         return program;
     }
 
-    private void prepareShaders(final String vertex, final String fragment) {
+    private void prepareShadersDefault(final String vertex, final String fragment) {
         int vertexShader = compileShader(vertex, GL46.GL_VERTEX_SHADER);
         int fragmentShader = compileShader(fragment, GL46.GL_FRAGMENT_SHADER);
 
@@ -46,7 +47,15 @@ public class Shader extends AbstractResource implements IShader {
         GL46.glFlush();
     }
 
-    @Override
+    private void prepareShadersCompute(final String code) {
+        int computeShader = compileShader(code, GL46.GL_COMPUTE_SHADER);
+
+        GL46.glAttachShader(program, computeShader);
+
+        GL46.glLinkProgram(program);
+        GL46.glFlush();
+    }
+
     public Map<String, UniformDTO> getUniforms() {
         return uniforms;
     }
@@ -59,6 +68,28 @@ public class Shader extends AbstractResource implements IShader {
     @Override
     public void dispose() {
         GL46.glDeleteProgram(program);
+    }
+
+    private int compileShader(String shaderCode, int shaderType) {
+        int shader = GL46.glCreateShader(shaderType);
+        GL46.glShaderSource(shader, shaderCode);
+        GL46.glCompileShader(shader);
+
+        boolean compiled = GL46.glGetShaderi(shader, GL46.GL_COMPILE_STATUS) != 0;
+
+        if (!compiled) {
+            String error = GL46.glGetShaderInfoLog(shader);
+            getLogger().error("Shader compilation error: {} {}", error, shaderCode);
+        }
+
+        return shader;
+    }
+
+    public UniformDTO addUniformDeclaration(String name) {
+        GL46.glUseProgram(getProgram());
+        UniformDTO uniformDTO = new UniformDTO(name, GL46.glGetUniformLocation(getProgram(), name));
+        getUniforms().put(name, uniformDTO);
+        return uniformDTO;
     }
 }
 

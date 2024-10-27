@@ -15,4 +15,4 @@ for everything.
 ### Voxelization
 ![c-1](artifacts/POST_VOXELIZATION.png)
 ![c0](artifacts/LORENZ-ATTRACTOR.png)
-![c1](artifacts/VOXELIZATION-WITH-TEXTURE.png)
+![c1](artifacts/VOXELIZATION-WITH-TEXTURE-2.png)

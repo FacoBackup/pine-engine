@@ -24,7 +24,7 @@ import static org.lwjgl.assimp.Assimp.*;
 
 @PBean
 public class MeshImporter extends AbstractImporter {
-    private static final int FLAGS = Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs | Assimp.aiProcess_GlobalScale | Assimp.aiProcess_FindInstances | Assimp.aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals | aiProcess_DropNormals;
+    private static final int FLAGS = Assimp.aiProcess_Triangulate | Assimp.aiProcess_FlipUVs | Assimp.aiProcess_GlobalScale | Assimp.aiProcess_FindInstances | Assimp.aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals;
 
     @PInject
     public TextureImporter textureImporter;
@@ -146,6 +146,6 @@ public class MeshImporter extends AbstractImporter {
     public AbstractResourceMetadata persist(AbstractImportData data) {
         var cast = (MeshImportData) data;
         persistInternal(data);
-        return new MeshResourceMetadata(data.name, data.id, cast.vertices.length, cast.indices.length/3, cast.normals != null, cast.uvs != null);
+        return new MeshResourceMetadata(data.name, data.id, cast.vertices.length, cast.indices.length / 3, cast.normals != null, cast.uvs != null);
     }
 }

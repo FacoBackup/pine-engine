@@ -68,7 +68,7 @@ public class TransformationService {
 
     public float getDistanceFromCamera(Vector3f translation) {
         distanceAux.set(cameraRepository.currentCamera.position);
-        return Math.abs(distanceAux.sub(translation).length());
+        return distanceAux.sub(translation).length();
     }
 
     public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f boundingBoxSize) {

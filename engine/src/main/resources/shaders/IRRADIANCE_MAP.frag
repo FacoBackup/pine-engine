@@ -1,11 +1,7 @@
-
-
-
 out vec4 fragColor;
 in vec3 worldSpacePosition;
 
-uniform vec3 multiplier;
-uniform samplerCube uSampler;
+layout(binding = 0) uniform samplerCube uSampler;
 
 const float PI = 3.14159265359;
 
@@ -31,5 +27,5 @@ void main(){
     }
     irradiance = PI * irradiance * (1.0 / float(nrSamples));
 
-    fragColor = vec4(irradiance * multiplier, 1.0);
+    fragColor = vec4(irradiance, 1.0);
 }

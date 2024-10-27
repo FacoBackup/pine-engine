@@ -57,22 +57,14 @@ float geometrySmith(float NdotL, float roughness) {
     return clamp(0.5 * 1. / (V + L), 0., 1.);
 }
 
-vec3 sampleIndirectLight() {
+vec3 sampleIndirectLight(sampler2D gBufferIndirect) {
     vec3 diffuseColor = texture(SSGI, quadUV).rgb * albedo;
     vec3 specularColor = ssrEnabled ? computeSSR() : vec3(0.);
-    return diffuseColor + specularColor;
-}
-
-vec3 computeSkylightAmbient(vec3 V, samplerCube skylightSpecular) {
-    vec3 specular = vec3(0.);
     vec3 F = fresnelSchlickRoughness(NdotV, F0, roughness);
-    vec3 kD = (1.0 - F) * (1.0 - metallic);
-    vec3 prefilteredColor = textureLod(skylightSpecular, reflect(-V, N), 0.).rgb;
 
-    specular = prefilteredColor;//* (F * brdf.r + brdf.g);
+    vec3 envIndirect = texture(gBufferIndirect, quadUV).rgb * albedo * (F * brdf.r + brdf.g);
 
-    //    vec3 diffuse = texture(skylight_diffuse, N).rgb * albedo * kD ;
-    return specular;//diffuse + specular;
+    return envIndirect + diffuseColor + specularColor;
 }
 
 float kelemen(float HdotV) {

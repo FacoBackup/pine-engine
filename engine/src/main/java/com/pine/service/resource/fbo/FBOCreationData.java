@@ -56,7 +56,7 @@ public class FBOCreationData extends ResourceCreationData {
     }
 
     public FBOCreationData addSampler() {
-        addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
+        addSampler(0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false);
         return this;
     }
 

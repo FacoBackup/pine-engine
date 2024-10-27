@@ -13,7 +13,7 @@ public class Camera implements Mutable, Serializable {
     public final Vector3f orbitCenter = new Vector3f();
     public float pitch = 0f;
     public float yaw = 0f;
-    public float orbitRadius = 1;
+    public float orbitRadius = 10;
     public boolean orbitalMode = false;
     public boolean isOrthographic = false;
     public float zFar = 10000;
@@ -24,6 +24,13 @@ public class Camera implements Mutable, Serializable {
 
     public int changes = 0;
     public int frozenVersion = -1;
+
+    public Camera(){}
+
+    public Camera(float pitch, float yaw) {
+        this.pitch = pitch;
+        this.yaw = yaw;
+    }
 
     @Override
     public int getChangeId() {

@@ -15,13 +15,13 @@ public class MetricsPanel extends AbstractDockPanel {
 
     private static final ImVec4 HIGH_COST_COLORED = new ImVec4(1.f, .1f, 0.f, 1);
     private static final ImVec4 MEDIUM_COST_COLORED = new ImVec4(.2f, 1f, 0f, 1);
-    private static final long MEDIUM_COST = 5;
-    private static final long HIGH_COST = 10;
+    private static final long MEDIUM_COST = 500000;
+    private static final long HIGH_COST = 1000000;
 
     @Override
     public void render() {
         Map<String, Long> metrics = MetricCollector.getMetrics();
-
+        MetricCollector.shouldCollect = true;
         if (ImGui.beginTable("##metrics" + imguiId, 2, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableSetupColumn("Time executing", ImGuiTableColumnFlags.WidthFixed, 120f);
@@ -33,11 +33,11 @@ public class MetricsPanel extends AbstractDockPanel {
                 ImGui.text(entry.getKey());
                 ImGui.tableNextColumn();
                 if (entry.getValue() >= HIGH_COST) {
-                    ImGui.textColored(HIGH_COST_COLORED, entry.getValue() + "ms");
+                    ImGui.textColored(HIGH_COST_COLORED, entry.getValue() + "ns");
                 } else if (entry.getValue() >= MEDIUM_COST) {
-                    ImGui.textColored(MEDIUM_COST_COLORED, entry.getValue() + "ms");
+                    ImGui.textColored(MEDIUM_COST_COLORED, entry.getValue() + "ns");
                 } else {
-                    ImGui.text(entry.getValue() + "ms");
+                    ImGui.text(entry.getValue() + "ns");
                 }
             }
             ImGui.endTable();

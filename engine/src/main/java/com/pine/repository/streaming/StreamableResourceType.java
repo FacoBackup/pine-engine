@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 public enum StreamableResourceType implements Serializable {
+    ENVIRONMENT_MAP(Collections.emptyList(), false, false, Icons.panorama_photosphere, "Environment Map"),
     VOXEL_CHUNK(Collections.emptyList(), false, false, Icons.grid_view, "Voxel chunk"),
     SCENE(Collections.emptyList(), false, true, Icons.inventory_2, "Scene"),
     MESH(List.of("gltf", "glb", "fbx", "obj", "blend"), false, true, Icons.category, "Mesh"),

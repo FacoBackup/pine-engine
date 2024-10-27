@@ -58,7 +58,7 @@ public class MeshComponent extends AbstractComponent {
     @InspectableField(group = "Instancing", label = "Number of instances", min = 1)
     public int numberOfInstances = 10;
     @InspectableField(group = "Instancing", label = "Scene members")
-    public List<Transformation> primitives = new ArrayList<>();
+    public List<Transformation> instances = new ArrayList<>();
 
     public transient RenderingRequest renderRequest;
 

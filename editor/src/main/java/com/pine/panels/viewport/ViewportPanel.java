@@ -1,11 +1,12 @@
 package com.pine.panels.viewport;
 
 import com.pine.Engine;
-import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
+import com.pine.panels.AbstractEntityViewPanel;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;
+import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
 import com.pine.service.camera.CameraFirstPersonService;
 import com.pine.service.camera.CameraThirdPersonService;
@@ -26,7 +27,7 @@ import org.joml.Vector3f;
 import static com.pine.core.dock.DockPanel.OPEN;
 import static com.pine.core.dock.DockWrapperPanel.FRAME_SIZE;
 
-public class ViewportPanel extends AbstractDockPanel {
+public class ViewportPanel extends AbstractEntityViewPanel {
     private static final int CAMERA_FLAGS = ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
     private static final ImVec4 RED = new ImVec4(1, 0, 0, 1);
     private static final ImVec4 GREEN = new ImVec4(0, 1, 0, 1);
@@ -53,6 +54,9 @@ public class ViewportPanel extends AbstractDockPanel {
     @PInject
     public CameraFirstPersonService cameraFirstPersonService;
 
+    @PInject
+    public ViewportPickingService viewportPickingService;
+
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     public static final ImVec2 INV_X = new ImVec2(1, 0);
@@ -73,6 +77,8 @@ public class ViewportPanel extends AbstractDockPanel {
 
     @Override
     public void render() {
+        hotKeys();
+
         tick();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
 
@@ -94,17 +100,18 @@ public class ViewportPanel extends AbstractDockPanel {
     private void tick() {
         cameraRepository.setCurrentCamera(context.camera);
 
-        boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
-        hotKeys(focused);
-        updateCamera(focused);
+        updateCamera();
         engine.setTargetFBO(fbo);
+        engine.clearColor = editorRepository.backgroundColor;
         engine.render();
 
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
     }
 
-    private void updateCamera(boolean focused) {
+    private void updateCamera() {
+        boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+
         AbstractCameraService cameraService;
         if (context.camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
@@ -139,17 +146,21 @@ public class ViewportPanel extends AbstractDockPanel {
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = sizeVec.y;
         repo.viewportW = sizeVec.x;
+        repo.viewportX = position.x;
+        repo.viewportY = position.y + FRAME_SIZE;
     }
 
-    private void hotKeys(boolean focused) {
-        if (!focused) {
-            return;
-        }
+    @Override
+    protected void hotKeysInternal() {
         if (ImGui.isKeyPressed(ImGuiKey.T))
             editorRepository.gizmoOperation = Operation.TRANSLATE;
         if (ImGui.isKeyPressed(ImGuiKey.R))
             editorRepository.gizmoOperation = Operation.ROTATE;
         if (ImGui.isKeyPressed(ImGuiKey.Y))
             editorRepository.gizmoOperation = Operation.SCALE;
+
+        if (!ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
+            viewportPickingService.pick();
+        }
     }
 }

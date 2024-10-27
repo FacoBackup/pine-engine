@@ -1,4 +1,3 @@
-
 in vec2 texCoords;
 #define A  0.15
 #define B  0.50
@@ -8,7 +7,17 @@ in vec2 texCoords;
 #define F  0.30
 #define W  11.2
 
-#include "./POST_PROCESSING_UNIFORMS.glsl"
+uniform float distortionIntensity;
+uniform float chromaticAberrationIntensity;
+uniform bool distortionEnabled;
+uniform bool chromaticAberrationEnabled;
+uniform bool bloomEnabled;
+uniform float focusDistanceDOF;
+uniform float apertureDOF;
+uniform float focalLengthDOF;
+uniform float samplesDOF;
+uniform bool vignetteEnabled;
+uniform float vignetteStrength;
 
 uniform sampler2D bloomColor;
 uniform sampler2D sceneColor;
@@ -33,20 +42,13 @@ vec2 lensDistortion(vec2 uv, float k) {
     vec2 nUv = f * t + .5;
     return nUv;
 }
-void uncharted2ToneMapping(inout vec3 color) {
-    color *= exposure;
-    color = ((color * (A * color + C * B) + D * E) / (color * (A * color + B) + D * F)) - E / F;
-    float white = ((W * (A * W + C * B) + D * E) / (W * (A * W + B) + D * F)) - E / F;
-    color /= white;
-    color = pow(color, vec3(1. / gamma));
-}
+
 void main(void) {
 
     vec2 texCoords = distortionEnabled ? lensDistortion(texCoords, distortionIntensity * .5) : texCoords;
     vec3 color = bloomEnabled ? aces(texture(bloomColor, texCoords).rgb) : vec3(0.);
     color += chromaticAberrationEnabled ? chromaticAberration(texCoords) : texture(sceneColor, texCoords).rgb;
-    uncharted2ToneMapping(color);
-    fragColor = vec4(color, 1.);
+    fragColor = vec4(aces(color), 1.);
 
     if (vignetteEnabled) {
         vec2 uv = texCoords;

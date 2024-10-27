@@ -9,6 +9,7 @@ import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
+import com.pine.service.request.UpdateFieldRequest;
 import imgui.ImGui;
 
 public class FileInspectorPanel extends AbstractView {
@@ -56,13 +57,15 @@ public class FileInspectorPanel extends AbstractView {
 
     private void onChange(FieldDTO dto, Object object, String path, boolean dispose) {
         try {
-            dto.getField().set(dto.getInstance(), object);
+            UpdateFieldRequest.process(dto, object);
             FSUtil.write(dto.getInstance(), path);
             if (dispose) {
+                streamingRepository.discardedResources.remove(currentMetadata.id);
                 AbstractResourceRef<?> ref = streamingRepository.loadedResources.get(currentMetadata.id);
                 if (ref != null) {
                     ref.dispose();
                 }
+                streamingRepository.loadedResources.remove(currentMetadata.id);
             }
         } catch (Exception e) {
             getLogger().error("Error while updating metadata file {}", dataForm.getInspectable().getTitle(), e);

@@ -6,8 +6,8 @@ import com.pine.inspection.Inspectable;
 
 import java.util.Set;
 
-public abstract class AbstractComponent extends Inspectable implements Mutable, SerializableRepository {
-    public final Entity entity;
+public abstract class AbstractComponent extends Inspectable implements Mutable, Cloneable, SerializableRepository {
+    public Entity entity;
     public int changes = 0;
     public int frozenVersion = -1;
 
@@ -53,5 +53,15 @@ public abstract class AbstractComponent extends Inspectable implements Mutable, 
     @Override
     public String getIcon() {
         return getType().getIcon();
+    }
+
+    public AbstractComponent clone(Entity entity) {
+        try {
+            var clone = (AbstractComponent) super.clone();
+            clone.entity = entity;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

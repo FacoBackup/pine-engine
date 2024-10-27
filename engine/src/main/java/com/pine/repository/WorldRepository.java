@@ -17,6 +17,7 @@ import java.util.Map;
 public class WorldRepository implements Mutable, SerializableRepository {
     public static final String ROOT_ID = Entity.class.getCanonicalName();
     public final Entity rootEntity = new Entity(ROOT_ID, "World");
+    public final Map<String, Entity> entityMap = new HashMap<>();
     public final Map<ComponentType, List<AbstractComponent>> components = new HashMap<>();
     private int changes = 0;
     private int frozenVersion = -1;

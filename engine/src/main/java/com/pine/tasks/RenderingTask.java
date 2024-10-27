@@ -1,9 +1,6 @@
 package com.pine.tasks;
 
-import com.pine.component.ComponentType;
-import com.pine.component.Entity;
-import com.pine.component.MeshComponent;
-import com.pine.component.Transformation;
+import com.pine.component.*;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -13,11 +10,16 @@ import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.environment.EnvironmentMapGenService;
 import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
+
+import java.util.Comparator;
+import java.util.List;
 
 
 /**
@@ -50,6 +52,9 @@ public class RenderingTask extends AbstractTask implements Loggable {
     @PInject
     public StreamingService streamingService;
 
+    @PInject
+    public EnvironmentMapGenService environmentMapGenService;
+
     private int renderIndex = 0;
 
     @Override
@@ -81,6 +86,14 @@ public class RenderingTask extends AbstractTask implements Loggable {
                 renderingRepository.voxelChunksFilled = filledWithContent;
             }
 
+            var probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE);
+            if(environmentMapGenService.isBaked) {
+                var closest3 = findClosestPoints(probes, 3);
+                for (int i = 0; i < 3; i++) {
+                    renderingRepository.environmentMaps[i] = i >= closest3.size() ? null : (EnvironmentMapResourceRef) streamingService.stream(closest3.get(i).entity.id(), StreamableResourceType.ENVIRONMENT_MAP);
+                }
+            }
+
             renderIndex = 0;
             renderingRepository.offset = 0;
             renderingRepository.auxAddedToBufferEntities.clear();
@@ -94,6 +107,11 @@ public class RenderingTask extends AbstractTask implements Loggable {
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
+    }
+
+    private List<AbstractComponent> findClosestPoints(List<AbstractComponent> points, int k) {
+        points.sort(Comparator.comparingDouble(t -> transformationService.getDistanceFromCamera(t.entity.transformation.translation)));
+        return points.subList(0, Math.min(k, points.size()));
     }
 
     private void traverseTree(Entity entity) {

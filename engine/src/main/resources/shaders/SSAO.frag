@@ -8,6 +8,9 @@ uniform int maxSamples;
 uniform sampler2D noiseSampler;
 out vec4 fragColor;
 
+uniform sampler2D sceneDepth;
+
+
 #include "./util/SCENE_DEPTH_UTILS.glsl"
 
 void main() {

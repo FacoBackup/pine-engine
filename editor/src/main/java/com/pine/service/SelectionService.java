@@ -6,7 +6,9 @@ import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
 
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 @PBean
 public class SelectionService {
@@ -15,10 +17,6 @@ public class SelectionService {
 
     @PInject
     public WorldRepository worldRepository;
-
-    public LinkedList<Entity> getSelected() {
-        return stateRepository.selected;
-    }
 
     public void addSelected(Entity entity) {
         if (stateRepository.selected.isEmpty() || entity == null) {
@@ -29,13 +27,22 @@ public class SelectionService {
                 stateRepository.primitiveSelected = stateRepository.mainSelection.transformation;
             }
         }
-        stateRepository.selected.add(entity);
+        if (entity != null) {
+            stateRepository.selected.put(entity.id(), true);
+        }
     }
 
     public void clearSelection() {
-        stateRepository.selected.forEach(e -> e.selected = false);
         stateRepository.selected.clear();
+        stateRepository.mainSelection = null;
+        stateRepository.primitiveSelected = null;
     }
 
+    public void addAllSelected(Collection<Entity> all) {
+        stateRepository.selected.clear();
+        stateRepository.mainSelection = all.stream().findFirst().orElse(null);
+        stateRepository.primitiveSelected = stateRepository.mainSelection != null ? stateRepository.mainSelection.transformation : null;
+        all.forEach(a -> stateRepository.selected.put(a.id(), true));
+    }
 }
 

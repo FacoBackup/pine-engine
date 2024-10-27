@@ -10,6 +10,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,14 +26,11 @@ public class Transformation extends Inspectable implements Mutable, Serializable
     public final Entity entity;
     public final List<Transformation> children = new LinkedList<>();
     public Transformation parent;
-
     public final Matrix4f globalMatrix = new Matrix4f();
     public final Matrix4f localMatrix = new Matrix4f();
-
     public int changes = 0;
     public int frozenVersion = -1;
     public transient RenderingRequest renderRequest;
-    public int renderIndex;
     public int parentChangeId = -1;
     public boolean isCulled = false;
 
@@ -69,5 +67,17 @@ public class Transformation extends Inspectable implements Mutable, Serializable
     @Override
     public void freezeVersion() {
         frozenVersion = getChangeId();
+    }
+
+    public Transformation clone(Entity entity, boolean isInstance)  {
+        var clone = new Transformation(entity, isInstance);
+        clone.translation.set(translation);
+        clone.rotation.set(rotation);
+        clone.scale.set(scale);
+        clone.parent = parent;
+        clone.globalMatrix.set(globalMatrix);
+        clone.localMatrix.set(localMatrix);
+
+        return clone;
     }
 }

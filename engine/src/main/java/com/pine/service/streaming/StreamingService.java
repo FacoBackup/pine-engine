@@ -11,6 +11,7 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.impl.TextureService;
 import com.pine.service.streaming.ref.TextureResourceRef;
+import com.pine.tasks.StreamingTask;
 import com.pine.tasks.SyncTask;
 
 import java.util.Collections;
@@ -29,6 +30,9 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
 
     @PInject
     public TextureService textureService;
+
+    @PInject
+    public StreamingTask streamingTask;
 
     @PInject
     public Engine engine;
@@ -101,5 +105,15 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
             return textureRef;
         }
         return null;
+    }
+
+    public AbstractResourceRef<?> streamSync(String id, StreamableResourceType type) {
+        if (id == null) {
+            return null;
+        }
+        stream(id, type);
+        streamingTask.streamAll();
+        sync();
+        return repository.loadedResources.get(id);
     }
 }

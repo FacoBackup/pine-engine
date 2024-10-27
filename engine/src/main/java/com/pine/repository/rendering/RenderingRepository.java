@@ -1,6 +1,8 @@
 package com.pine.repository.rendering;
 
+import com.pine.component.Entity;
 import com.pine.injection.PBean;
+import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 
 import java.util.ArrayList;
@@ -11,10 +13,14 @@ import java.util.Map;
 @PBean
 public class RenderingRepository {
     public List<RenderingRequest> requests = new ArrayList<>();
+    public final Map<String, RenderingRequest> newToBeRendered = new HashMap<>();
+    public final Map<String, RenderingRequest> toBeRendered = new HashMap<>();
     public List<RenderingRequest> newRequests = new ArrayList<>();
 
     public VoxelChunkResourceRef[] voxelChunks = new VoxelChunkResourceRef[4];
     public VoxelChunkResourceRef[] newVoxelChunks = new VoxelChunkResourceRef[4];
+
+    public EnvironmentMapResourceRef[] environmentMaps = new EnvironmentMapResourceRef[3];
 
     public int pendingTransformations = 0;
     public int lightCount = 0;
@@ -35,6 +41,10 @@ public class RenderingRepository {
         var auxV = voxelChunks;
         voxelChunks = newVoxelChunks;
         newVoxelChunks = auxV;
+
+        toBeRendered.clear();
+        toBeRendered.putAll(newToBeRendered);
+        newToBeRendered.clear();
     }
 
     public int getTotalTriangleCount() {

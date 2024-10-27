@@ -4,15 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class MetricCollector {
+    public static boolean shouldCollect = false;
     private static final Map<String, Long> metrics = new HashMap<>();
     private long start;
 
     protected void start() {
-        start = System.currentTimeMillis();
+        if (shouldCollect) {
+            start = System.nanoTime();
+        }
     }
 
     protected void end() {
-        metrics.put(getTitle(), System.currentTimeMillis() - start);
+        if (shouldCollect) {
+            metrics.put(getTitle(), System.nanoTime() - start);
+        }
     }
 
     public static Map<String, Long> getMetrics() {
