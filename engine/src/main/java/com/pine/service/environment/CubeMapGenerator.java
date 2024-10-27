@@ -23,7 +23,7 @@ public class CubeMapGenerator {
 
         // Allocate texture storage for each cube map face
         for (CubeMapFace face : CubeMapFace.values()) {
-            GL46.glTexImage2D(face.getGlFace(), 0, GL46.GL_RGBA8, imageSize, imageSize, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, (ByteBuffer) null);
+            GL46.glTexImage2D(face.getGlFace(), 0, GL46.GL_RGBA16F, imageSize, imageSize, 0, GL46.GL_RGBA, GL46.GL_FLOAT, (ByteBuffer) null);
         }
 
         // Set texture parameters

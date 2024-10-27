@@ -6,8 +6,10 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.impl.CubeMapFace;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.system.AbstractPass;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
@@ -50,13 +52,13 @@ public class IrradianceGenPass extends AbstractPass {
     protected void renderInternal() {
         for (var env : renderingRepository.environmentMaps) {
             if (env != null && env.isLoaded() && !env.hasIrradianceGenerated) {
-                bindBuffers();
-                shaderService.bindSamplerCubeDirect(env, 0);
                 genTexture(env);
+                shaderService.bindSamplerCubeDirect(env, 0);
+                GL46.glDisable(GL11.GL_CULL_FACE);
                 GL46.glClearColor(0, 0, 0, 1);
 
                 GL46.glViewport(0, 0, RES, RES);
-                GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, captureFBO);
+                bindBuffers();
                 for (int i = 0; i < CubeMapFace.values().length; ++i) {
                     var face = CubeMapFace.values()[i];
                     GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, face.getGlFace(), env.irradiance, 0);
@@ -72,6 +74,7 @@ public class IrradianceGenPass extends AbstractPass {
     private void draw(CubeMapFace face) {
         shaderService.bindMat4(CubeMapFace.projection, projectionMatrix);
         shaderService.bindMat4(CubeMapFace.createViewMatrixForFace(face, new Vector3f(0)), viewMatrix);
+
         meshService.bind(meshRepository.cubeMesh);
         meshService.setInstanceCount(0);
         meshService.setRenderingMode(RenderingMode.TRIANGLES);

@@ -72,15 +72,12 @@ public class EnvironmentMapGenPass implements Initializable {
 
         if (atmosphereSettingsRepository.enabled) {
             Matrix4f centeredViewMatrixInv = CubeMapFace.createViewMatrixForFace(face, new Vector3f(0));
-            centeredViewMatrixInv.transpose(centeredViewMatrixInv);
             centeredViewMatrixInv.invert(centeredViewMatrixInv);
             atmospherePass.renderToCubeMap(centeredViewMatrixInv, CubeMapFace.invProjection);
         }
 
 
         Matrix4f viewMatrix = CubeMapFace.createViewMatrixForFace(face, cameraPosition);
-        viewMatrix.transpose(viewMatrix);
-
         var viewProjection = new Matrix4f();
         viewProjection.set(CubeMapFace.projection).mul(viewMatrix);
         shaderService.bind(shaderRepository.environmentMap);
