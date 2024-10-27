@@ -1,5 +1,6 @@
 package com.pine.service.system.impl;
 
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -60,12 +61,13 @@ public class VoxelVisualizerPass extends AbstractPass {
     }
 
     private void bindGlobal() {
-        fboRepository.postProcessingBuffer.bindForCompute();
+        FrameBufferObject fbo = fboRepository.postProcessingBuffer;
+        fbo.bindForCompute();
 
-        COMPUTE_RUNTIME_DATA.groupX = (fboRepository.auxBuffer.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
-        COMPUTE_RUNTIME_DATA.groupY = (fboRepository.auxBuffer.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
+        COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
+        COMPUTE_RUNTIME_DATA.groupY = (fbo.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
-        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_NONE;
+        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 
         settingsBuffer.set(voxelRepository.randomColors ? 1 : 0, voxelRepository.showRaySearchCount ? 1 : 0, voxelRepository.showRayTestCount ? 1 : 0);
         shaderService.bindVec3i(settingsBuffer, settings);

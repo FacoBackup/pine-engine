@@ -2,16 +2,12 @@ package com.pine.tools.system;
 
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
-
-import java.util.List;
 
 
 public class OutlineGenPass extends AbstractPass {

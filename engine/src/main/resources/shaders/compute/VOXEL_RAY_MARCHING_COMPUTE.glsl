@@ -3,8 +3,8 @@ layout (local_size_x = 8, local_size_y = 8) in;
 layout (binding = 0) uniform writeonly image2D outputImage;
 
 layout(std430, binding = 12) buffer OctreeBuffer {
-// NON LEAF NODES - First 16 bits are the index pointing to the position of this voxel's children | 8 bits are the child mask | 8 bits indicate if the node is a leaf
-// LEAF NODES - Compressed RGB value 10 bits for red 10 bits for green and 10 bits for blue
+    // NON LEAF NODES - First 23 bits are the index pointing to the position of this voxel's children | 1 bits indicate if the node is a leaf | 8 bits are the child mask
+    // LEAF NODES - Not present, the parent will contain the child block color stored in the first 23 bits of its value
     int voxels[];
 };
 

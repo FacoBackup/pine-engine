@@ -2,7 +2,6 @@ package com.pine.repository;
 
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
-import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 import com.pine.theme.Icons;

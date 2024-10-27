@@ -36,6 +36,7 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader gBufferShading;
     public Shader environmentMap;
     public Shader voxelRaymarchingCompute;
+    public Shader meshletCompute;
 
     @PInject
     public ResourceService resources;
@@ -68,5 +69,6 @@ public class CoreShaderRepository implements CoreRepository {
         atmosphereShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "ATMOSPHERE.frag").staticResource());
         environmentMap = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "uber/ENVIRONMENT_MAP.vert", LOCAL_SHADER + "uber/ENVIRONMENT_MAP.frag").staticResource());
         voxelRaymarchingCompute = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "compute/VOXEL_RAY_MARCHING_COMPUTE.glsl").staticResource());
+        meshletCompute = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "compute/MESHLET_COMPUTE.glsl").staticResource());
     }
 }

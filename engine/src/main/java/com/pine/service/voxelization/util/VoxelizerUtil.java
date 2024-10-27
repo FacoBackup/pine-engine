@@ -4,10 +4,7 @@ import com.pine.service.importer.data.MeshImportData;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.voxelization.SparseVoxelOctree;
 import com.pine.service.voxelization.Triangle;
-import com.pine.service.voxelization.VoxelData;
 import org.joml.Vector3f;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 public class VoxelizerUtil {

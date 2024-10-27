@@ -10,7 +10,6 @@ import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Creates StreamLoadData for all the requests and inserts it inside the StreamingRepository.loadedResources map

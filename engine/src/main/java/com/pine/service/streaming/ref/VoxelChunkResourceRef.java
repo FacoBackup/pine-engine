@@ -27,7 +27,7 @@ public class VoxelChunkResourceRef extends AbstractResourceRef<VoxelChunkStreamD
     @Override
     protected void loadInternal(VoxelChunkStreamData data) {
         this.quantity = data.buffer().limit();
-        buffer = new ShaderStorageBufferObject(null, new SSBOCreationData(-1, data.buffer()));
+        buffer = new ShaderStorageBufferObject(null, new SSBOCreationData(data.buffer()));
         MemoryUtil.memFree(data.buffer());
     }
 
