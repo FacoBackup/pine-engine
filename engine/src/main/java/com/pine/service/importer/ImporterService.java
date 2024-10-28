@@ -74,13 +74,13 @@ public class ImporterService implements Loggable {
 
     private void persistMetadata(AbstractResourceMetadata metadata, List<AbstractResourceMetadata> response) {
         metadata.setSize(new File(getPathToFile(metadata.id, metadata.getResourceType())).length());
-        if (FSUtil.write(metadata, getPathToMetadata(metadata.id))) {
+        if (FSUtil.write(metadata, getPathToMetadata(metadata))) {
             response.add(metadata);
         }
     }
 
-    public String getPathToMetadata(String id) {
-        return engine.getMetadataDirectory() + id + ".dat";
+    public String getPathToMetadata(AbstractResourceMetadata metadata) {
+        return engine.getMetadataDirectory() + metadata.id + "." + metadata.getResourceType().name();
     }
 
     public AbstractImportData readFile(AbstractResourceMetadata metadata) {
@@ -88,7 +88,7 @@ public class ImporterService implements Loggable {
             return null;
         }
         String path = getPathToFile(metadata.id, metadata.getResourceType());
-        return (AbstractImportData) FSUtil.read(path);
+        return FSUtil.read(path, StreamableResourceType.dataClassOf(path));
     }
 
     public String getPathToFile(String id, StreamableResourceType type) {

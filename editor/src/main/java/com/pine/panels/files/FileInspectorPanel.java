@@ -52,7 +52,7 @@ public class FileInspectorPanel extends AbstractView {
     }
 
     private void handleMetadataChange(FieldDTO dto, Object object) {
-        onChange(dto, object, importerService.getPathToMetadata(currentMetadata.id), false);
+        onChange(dto, object, importerService.getPathToMetadata(currentMetadata), false);
     }
 
     private void onChange(FieldDTO dto, Object object, String path, boolean dispose) {

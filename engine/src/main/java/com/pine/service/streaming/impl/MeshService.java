@@ -7,6 +7,7 @@ import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.importer.data.MeshImportData;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.ref.MeshResourceRef;
@@ -108,7 +109,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
 
     @Override
     public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources){
-        return (StreamData) FSUtil.read(pathToFile);
+        return FSUtil.read(pathToFile, MeshImportData.class);
     }
 
     public int getTotalTriangleCount() {

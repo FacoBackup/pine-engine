@@ -59,7 +59,7 @@ public class FilesService implements Loggable {
     private void delete(FileEntry file) {
         try {
             var filePath = file.path;
-            var metadataPath = importerService.getPathToMetadata(file.getId());
+            var metadataPath = importerService.getPathToMetadata(file.metadata);
             var previewPath = filePath + PREVIEW_EXT;
 
             new File(metadataPath).delete();

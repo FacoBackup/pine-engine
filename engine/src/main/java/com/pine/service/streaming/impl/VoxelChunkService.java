@@ -22,7 +22,7 @@ public class VoxelChunkService extends AbstractStreamableService<VoxelChunkResou
 
     @Override
     public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
-        var dataRaw = (int[]) FSUtil.read(pathToFile);
+        var dataRaw = FSUtil.read(pathToFile, int[].class);
         if (dataRaw == null) {
             getLogger().error("Error while reading voxel chunk {}", pathToFile);
             return null;

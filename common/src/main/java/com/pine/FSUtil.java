@@ -1,9 +1,11 @@
 package com.pine;
 
+import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Files;
 
 public class FSUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FSUtil.class);
@@ -33,29 +35,36 @@ public class FSUtil {
     }
 
     public static boolean write(Object obj, String path) {
-        try {
-            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path))) {
-                out.writeObject(obj);
-            }
+        Gson gson = new Gson();
+        try (FileWriter writer = new FileWriter(path)) {
+            gson.toJson(obj, writer);
             return true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error("Could not write file {}", path, e);
             return false;
         }
     }
 
-    public static Object read(String path) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
-            return in.readObject();
+    public static <T> T read(String path, Class<T> classType) {
+        if(!new File(path).exists()) {
+            return null;
+        }
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(path)) {
+            return gson.fromJson(reader, classType);
         } catch (Exception e) {
             LOGGER.error("Could not read file {}", path, e);
             return null;
         }
     }
 
-    public static Object readSilent(String path) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
-            return in.readObject();
+    public static <T> T readSilent(String path, Class<T> classType) {
+        if(!new File(path).exists()) {
+            return null;
+        }
+        Gson gson = new Gson();
+        try (FileReader reader = new FileReader(path)) {
+            return gson.fromJson(reader, classType);
         } catch (Exception e) {
             return null;
         }

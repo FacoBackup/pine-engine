@@ -9,7 +9,6 @@ import com.pine.repository.fs.DirectoryEntry;
 import com.pine.repository.fs.FileEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.importer.metadata.AbstractResourceMetadata;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -89,12 +88,10 @@ public class FileMetadataRepository implements Loggable {
         byType.clear();
         for (var path : filesToRead) {
             try {
-                Object data = FSUtil.read(path);
+                var data = FSUtil.read(path, StreamableResourceType.metadataClassOf(path));
                 if (data != null) {
-                    var casted = (AbstractResourceMetadata) data;
-
-                    File file = new File(importerService.getPathToFile(casted.id, casted.getResourceType()));
-                    var fileData = new FileEntry((AbstractResourceMetadata) data, file);
+                    File file = new File(importerService.getPathToFile(data.id, data.getResourceType()));
+                    var fileData = new FileEntry(data, file);
                     byType.putIfAbsent(fileData.metadata.getResourceType(), new ArrayList<>());
                     byType.get(fileData.metadata.getResourceType()).add(fileData);
                     files.put(fileData.getId(), fileData);

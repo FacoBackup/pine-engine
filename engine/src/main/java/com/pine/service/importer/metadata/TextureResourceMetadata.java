@@ -9,12 +9,12 @@ public class TextureResourceMetadata extends AbstractResourceMetadata {
     @InspectableField(label = "Width", disabled = true)
     public final int originalWidth;
 
+    @InspectableField(label = "Height", disabled = true)
+    public final int originalHeight;
+
     @TypePreviewField
     @InspectableField(label = "Preview", disabled = true)
     public final String pathToPreview;
-
-    @InspectableField(label = "Height", disabled = true)
-    public final int originalHeight;
 
     public TextureResourceMetadata(String name, String id, int originalWidth, int originalHeight, String pathToPreview) {
         super(name, id);

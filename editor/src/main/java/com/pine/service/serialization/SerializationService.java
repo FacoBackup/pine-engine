@@ -26,8 +26,6 @@ import static com.pine.service.ProjectService.IDENTIFIER;
 
 @PBean
 public class SerializationService implements Loggable {
-    private static final String FILE_FORMAT = ".dat";
-
     @PInject
     public MessageRepository messageRepository;
 
@@ -58,11 +56,14 @@ public class SerializationService implements Loggable {
         getLogger().info("Beginning project serialization to {}", projectDirectory);
         long start = System.currentTimeMillis();
         new Thread(() -> {
-            RepositoryContainer repositoryContainer = new RepositoryContainer();
-            repositoryContainer.serializables.addAll(serializableRepositories);
-            if (!FSUtil.write(repositoryContainer, getFilePath(projectDirectory))) {
-                getLogger().error("Could not save project");
-            }else if(!silent){
+            boolean success = true;
+            for (SerializableRepository r : serializableRepositories) {
+                if (!FSUtil.write(r, getFilePath(projectDirectory, r))) {
+                    getLogger().error("Could not save project");
+                    success = false;
+                }
+            }
+            if (!silent && success) {
                 messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
             }
             long end = System.currentTimeMillis() - start;
@@ -70,8 +71,8 @@ public class SerializationService implements Loggable {
         }).start();
     }
 
-    private static @NotNull String getFilePath(String projectDirectory) {
-        return projectDirectory + File.separator + DigestUtils.sha1Hex(RepositoryContainer.class.getSimpleName());
+    private static @NotNull String getFilePath(String projectDirectory, SerializableRepository repository) {
+        return projectDirectory + File.separator + DigestUtils.sha1Hex(repository.getClass().getSimpleName());
     }
 
     public void deserialize(String projectDirectory) {
@@ -79,9 +80,11 @@ public class SerializationService implements Loggable {
         long start = System.currentTimeMillis();
         isDeserializationDone = false;
         Thread thread = new Thread(() -> {
-            var data = (RepositoryContainer) FSUtil.readSilent(getFilePath(projectDirectory));
-            if (data != null) {
-                data.serializables.forEach(r -> repositoryMap.get(r.getClass().getSimpleName()).merge(r));
+            for (SerializableRepository r : serializableRepositories) {
+                var data = FSUtil.readSilent(getFilePath(projectDirectory, r), r.getClass());
+                if (data != null) {
+                    r.merge(data);
+                }
             }
             SerializationState.loaded.clear();
             getLogger().warn("Deserialization took {}ms", System.currentTimeMillis() - start);
