@@ -5,7 +5,7 @@ import com.pine.inspection.InspectableField;
 import java.util.Set;
 
 public class DecalComponent extends AbstractComponent {
-    public DecalComponent(Entity entity) {
+    public DecalComponent(String entity) {
         super(entity);
     }
 

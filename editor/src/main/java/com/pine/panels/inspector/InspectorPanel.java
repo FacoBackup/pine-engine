@@ -1,5 +1,6 @@
 package com.pine.panels.inspector;
 
+import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.core.dock.AbstractDockPanel;
@@ -7,6 +8,7 @@ import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.panels.component.FormPanel;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
@@ -27,12 +29,15 @@ public class InspectorPanel extends AbstractDockPanel {
     @PInject
     public EditorRepository editorRepository;
     @PInject
+    public WorldRepository worldRepository;
+    @PInject
     public List<Inspectable> repositories;
 
     private final List<Inspectable> additionalInspectable = new ArrayList<>();
 
     private Inspectable currentInspection;
     private Entity selected;
+    private String selectedId;
     private final List<String> types = new ArrayList<>();
     private FormPanel formPanel;
 
@@ -74,6 +79,7 @@ public class InspectorPanel extends AbstractDockPanel {
                             ComponentType entityComponent = ComponentType.values()[i - 1];
                             requestProcessingService.addRequest(new AddComponentRequest(entityComponent, selected));
                             selected = null;
+                            selectedId = null;
                         }
                     }
                     ImGui.endCombo();
@@ -86,12 +92,18 @@ public class InspectorPanel extends AbstractDockPanel {
     }
 
     private void tick() {
-        if (editorRepository.mainSelection != selected) {
+        if (!Objects.equals(editorRepository.mainSelection, selectedId)) {
             additionalInspectable.clear();
-            selected = editorRepository.mainSelection;
+            selectedId = editorRepository.mainSelection;
+            selected = selectedId != null ? worldRepository.entityMap.get(selectedId) : null;
             additionalInspectable.add(selected);
             if (selected != null) {
-                additionalInspectable.addAll(selected.components.values());
+                for(var comp : worldRepository.components.values()){
+                    AbstractComponent instance = comp.get(selectedId);
+                    if(instance != null) {
+                        additionalInspectable.add(instance);
+                    }
+                }
                 currentInspection = additionalInspectable.getFirst();
             } else {
                 currentInspection = repositories.getFirst();

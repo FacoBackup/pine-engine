@@ -63,14 +63,14 @@ public class RenderingRequestService {
             scene.instances = new ArrayList<>(scene.instances.subList(0, scene.numberOfInstances));
         } else if (scene.instances.size() < scene.numberOfInstances) {
             for (int i = scene.instances.size(); i < scene.numberOfInstances; i++) {
-                scene.instances.add(new TransformationComponent(scene.entity, true));
+                scene.instances.add(new TransformationComponent(scene.getEntityId(), true));
             }
         }
 
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest(mesh, t, new ArrayList<>());
         }
-        scene.renderRequest.entity = scene.entity;
+        scene.renderRequest.entity = scene.getEntityId();
         scene.renderRequest.transformationComponents.clear();
     }
 
@@ -88,7 +88,7 @@ public class RenderingRequestService {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
-            transform.renderRequest.entity = scene.entity;
+            transform.renderRequest.entity = scene.getEntityId();
             prepareMaterial(scene, transform.renderRequest);
 
             transform.renderRequest.mesh = mesh;

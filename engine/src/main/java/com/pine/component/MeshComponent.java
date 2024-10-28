@@ -75,7 +75,7 @@ public class MeshComponent extends AbstractComponent {
 
     public float distanceFromCamera = 0f;
 
-    public MeshComponent(Entity entity) {
+    public MeshComponent(String entity) {
         super(entity);
     }
 

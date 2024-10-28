@@ -17,19 +17,16 @@ public class OutlineGenPass extends AbstractPass {
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
 
-    private UniformDTO model;
     private UniformDTO renderIndex;
-
 
     @Override
     public void onInitialize() {
-        model = addUniformDeclaration("model");
         renderIndex = addUniformDeclaration("renderIndex");
     }
 
     @Override
     protected boolean isRenderable() {
-        return editorRepository.showOutline && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return editorRepository.showOutline && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT && !editorRepository.selected.isEmpty();
     }
 
     @Override
@@ -51,7 +48,7 @@ public class OutlineGenPass extends AbstractPass {
         ssboService.bind(ssboRepository.transformationSSBO);
 
         for (var request : renderingRepository.requests) {
-            if (editorRepository.selected.containsKey(request.entity.id)) {
+            if (editorRepository.selected.containsKey(request.entity)) {
                 shaderService.bindInt(request.renderIndex, renderIndex);
                 meshService.bind(request.mesh);
                 meshService.setInstanceCount(request.transformationComponents.size());
@@ -62,6 +59,6 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     public String getTitle() {
-        return "Outline Gen";
+        return "Outline Generation";
     }
 }

@@ -113,6 +113,8 @@ public class CoreFBORepository implements CoreRepository {
         auxSampler = auxBuffer.getSamplers().getFirst();
         postProcessingSampler = postProcessingBuffer.getSamplers().getFirst();
 
+        all.add(postProcessingBuffer);
+        all.add(gBuffer);
         all.add(auxBuffer);
         all.add(ssgi);
         all.add(ssgiFallback);

@@ -7,7 +7,7 @@ public class EnvironmentProbeComponent extends AbstractComponent {
 //    @InspectableField(label = "Max distance from probe")
 //    public int maxDistanceFromProbe = 50;
 
-    public EnvironmentProbeComponent(Entity entity) {
+    public EnvironmentProbeComponent(String entity) {
         super(entity);
     }
 

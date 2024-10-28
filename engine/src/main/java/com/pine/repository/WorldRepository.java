@@ -7,7 +7,6 @@ import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
-import com.pine.injection.PostCreation;
 
 import java.util.*;
 
@@ -15,39 +14,31 @@ import java.util.*;
 public class WorldRepository implements Mutable, SerializableRepository {
     public static final String ROOT_ID = Entity.class.getCanonicalName();
     public final Entity rootEntity = new Entity(ROOT_ID, "World");
-    public final Map<String, Entity> entityMap = new HashMap<>(){{
+    public final Map<String, Entity> entityMap = new HashMap<>() {{
         put(rootEntity.id(), rootEntity);
     }};
-    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>(){{
+    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>() {{
         put(rootEntity.id(), new LinkedList<>());
     }};
     public final Map<String, String> childParent = new HashMap<>();
-    public final Map<ComponentType, List<AbstractComponent>> components = new HashMap<>();
+    public final Map<ComponentType, Map<String, AbstractComponent>> components = new HashMap<>() {{
+        for (var type : ComponentType.values()) {
+            put(type, new HashMap<>());
+        }
+    }};
     public final Map<String, Boolean> hiddenEntityMap = new HashMap<>();
     public final List<AbstractComponent> withChangedData = new ArrayList<>();
 
     private int changes = 0;
     private int frozenVersion = -1;
 
-    @PostCreation
-    public void onInitialize() {
-        for (var type : ComponentType.values()) {
-            components.put(type, new ArrayList<>());
-        }
-    }
-
     public void registerComponent(AbstractComponent component) {
-        components.get(component.getType()).add(component);
-    }
-
-    public <T extends AbstractComponent> List<T> getComponentBag(ComponentType type) {
-        return (List<T>) components.get(type);
+        components.get(component.getType()).put(component.getEntityId(), component);
     }
 
     public void unregisterComponents(String entity) {
-        var entt = entityMap.get(entity);
-        for (AbstractComponent c : entt.components.values()) {
-            components.get(c.getType()).remove(c);
+        for (var c : components.values()) {
+            c.remove(entity);
         }
     }
 
@@ -72,6 +63,6 @@ public class WorldRepository implements Mutable, SerializableRepository {
     }
 
     public TransformationComponent getTransformationComponent(String id) {
-        return (TransformationComponent) entityMap.get(id).components.get(ComponentType.TRANSFORMATION);
+        return (TransformationComponent) components.get(ComponentType.TRANSFORMATION).get(id);
     }
 }

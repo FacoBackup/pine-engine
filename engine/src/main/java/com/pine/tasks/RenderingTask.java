@@ -1,7 +1,9 @@
 package com.pine.tasks;
 
-import com.pine.component.*;
-import com.pine.component.light.AbstractLightComponent;
+import com.pine.component.AbstractComponent;
+import com.pine.component.ComponentType;
+import com.pine.component.MeshComponent;
+import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -19,7 +21,6 @@ import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -83,12 +84,11 @@ public class RenderingTask extends AbstractTask implements Loggable {
                 }
             }
 
-            var meshes = worldRepository.components.get(ComponentType.MESH);
-            for (int i = 0, meshesSize = meshes.size(); i < meshesSize; i++) {
-                var comp = meshes.get(i);
-                var t = worldRepository.getTransformationComponent(comp.entity.id());
+            var meshes = worldRepository.components.get(ComponentType.MESH).values();
+            for (var mesh : meshes) {
+                var t = worldRepository.getTransformationComponent(mesh.getEntityId());
                 if (t != null) {
-                    updateMeshData((MeshComponent) comp, t);
+                    updateMeshData((MeshComponent) mesh, t);
                 }
             }
 
@@ -102,11 +102,15 @@ public class RenderingTask extends AbstractTask implements Loggable {
     }
 
     private void defineProbes() {
-        var probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE);
+        var probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE).values();
         if (environmentMapGenService.isBaked) {
-            var closest3 = findClosestPoints(probes, 3);
-            for (int i = 0; i < 3; i++) {
-                renderingRepository.environmentMaps[i] = i >= closest3.size() ? null : (EnvironmentMapResourceRef) streamingService.stream(closest3.get(i).entity.id(), StreamableResourceType.ENVIRONMENT_MAP);
+            int i = 0;
+            for (var probe : probes) {
+                if (i == 3) {
+                    break;
+                }
+                renderingRepository.environmentMaps[i] = (EnvironmentMapResourceRef) streamingService.stream(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
+                i++;
             }
         }
     }
@@ -134,11 +138,6 @@ public class RenderingTask extends AbstractTask implements Loggable {
             }
             renderingRepository.voxelChunksFilled = filledWithContent;
         }
-    }
-
-    private List<AbstractComponent> findClosestPoints(List<AbstractComponent> points, int k) {
-        points.sort(Comparator.comparingDouble(t -> transformationService.getDistanceFromCamera(worldRepository.getTransformationComponent(t.entity.id()).translation)));
-        return points.subList(0, Math.min(k, points.size()));
     }
 
     private void updateMeshData(MeshComponent meshComponent, TransformationComponent transformation) {

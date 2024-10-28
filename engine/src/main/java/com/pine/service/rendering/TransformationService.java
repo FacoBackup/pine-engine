@@ -36,13 +36,13 @@ public class TransformationService {
 
     public void updateHierarchy(TransformationComponent st) {
         if (st.isInstanced) {
-            transform(st, worldRepository.getTransformationComponent(st.entity.id));
+            transform(st, worldRepository.getTransformationComponent(st.getEntityId()));
             return;
         }
-        TransformationComponent parentTransform = findParent(st.entity.id());
+        TransformationComponent parentTransform = findParent(st.getEntityId());
         transform(st, parentTransform);
 
-        var children = worldRepository.parentChildren.get(st.entity.id());
+        var children = worldRepository.parentChildren.get(st.getEntityId());
         if (children != null) {
             for (String child : children) {
                 var comp = worldRepository.getTransformationComponent(child);
@@ -51,9 +51,10 @@ public class TransformationService {
                 }
             }
         }
-        var meshC = (MeshComponent) st.entity.components.get(ComponentType.MESH);
-        if (meshC != null && meshC.isInstancedRendering){
-            for(var t : meshC.instances){
+
+        var meshC = (MeshComponent) worldRepository.components.get(ComponentType.MESH).get(st.getEntityId());
+        if (meshC != null && meshC.isInstancedRendering) {
+            for (var t : meshC.instances) {
                 updateHierarchy(t);
             }
         }
@@ -78,8 +79,10 @@ public class TransformationService {
 
         auxMat4.mul(auxMat42);
         st.globalMatrix.set(auxMat4);
-        for (var comp : st.entity.components.values()) {
-            if (comp.getType() != ComponentType.TRANSFORMATION && comp.getType() != ComponentType.MESH) {
+
+        for (var componentBag : worldRepository.components.values()) {
+            var comp = componentBag.get(st.getEntityId());
+            if (comp != null && comp.getType() != ComponentType.TRANSFORMATION && comp.getType() != ComponentType.MESH) {
                 comp.registerChange();
             }
         }

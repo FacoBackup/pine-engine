@@ -1,6 +1,5 @@
 package com.pine.service;
 
-import com.pine.component.Entity;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -8,7 +7,6 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.CoreFBORepository;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.repository.rendering.RenderingRequest;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import org.lwjgl.BufferUtils;
@@ -58,7 +56,7 @@ public class ViewportPickingService implements Loggable {
 
             var transform = findEntity(actualIndex);
             if (transform != null) {
-                selectionService.addSelected(transform.entity);
+                selectionService.addSelected(transform.getEntityId());
                 selectionService.stateRepository.primitiveSelected = transform;
             }
         } else if (!ImGui.isKeyDown(ImGuiKey.LeftCtrl)) {

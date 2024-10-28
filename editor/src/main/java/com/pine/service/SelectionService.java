@@ -1,13 +1,13 @@
 package com.pine.service;
 
 import com.pine.component.Entity;
-import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @PBean
 public class SelectionService {
@@ -17,17 +17,17 @@ public class SelectionService {
     @PInject
     public WorldRepository worldRepository;
 
-    public void addSelected(Entity entity) {
+    public void addSelected(String entity) {
         if (stateRepository.selected.isEmpty() || entity == null) {
             stateRepository.mainSelection = entity;
-            if (stateRepository.mainSelection == worldRepository.rootEntity) {
+            if (Objects.equals(stateRepository.mainSelection, worldRepository.rootEntity.id())) {
                 stateRepository.mainSelection = null;
             } else if (stateRepository.mainSelection != null) {
-                stateRepository.primitiveSelected = getPrimitiveSelected();
+                updatePrimitiveSelected();
             }
         }
         if (entity != null) {
-            stateRepository.selected.put(entity.id(), true);
+            stateRepository.selected.put(entity, true);
         }
     }
 
@@ -39,13 +39,16 @@ public class SelectionService {
 
     public void addAllSelected(Collection<Entity> all) {
         stateRepository.selected.clear();
-        stateRepository.mainSelection = all.stream().findFirst().orElse(null);
-        stateRepository.primitiveSelected = stateRepository.mainSelection != null ? getPrimitiveSelected() : null;
+        var first = all.stream().findFirst().orElse(null);
+        stateRepository.mainSelection = first != null ? first.id() : null;
+        updatePrimitiveSelected();
         all.forEach(a -> stateRepository.selected.put(a.id(), true));
     }
 
-    private TransformationComponent getPrimitiveSelected() {
-        return worldRepository.getTransformationComponent(stateRepository.mainSelection.id());
+    public void updatePrimitiveSelected() {
+        if (stateRepository.mainSelection != null) {
+            stateRepository.primitiveSelected = worldRepository.getTransformationComponent(stateRepository.mainSelection);
+        }
     }
 }
 

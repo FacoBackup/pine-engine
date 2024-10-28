@@ -142,19 +142,23 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private void renderComponents(Entity node) {
         if (!stateRepository.showOnlyEntitiesHierarchy) {
-            for (var component : node.components.values()) {
-                ImGui.tableNextRow();
-                ImGui.tableNextColumn();
-                ImGui.textDisabled(component.getIcon() + component.getTitle());
-                ImGui.tableNextColumn();
-                ImGui.textDisabled("--");
-                ImGui.tableNextColumn();
-                ImGui.textDisabled("--");
-            }
-            if (node.components.containsKey(ComponentType.MESH)) {
-                MeshComponent meshComponent = (MeshComponent) node.components.get(ComponentType.MESH);
-                if (meshComponent.isInstancedRendering) {
-                    renderInstancedComponent(meshComponent);
+            for (var comp : world.components.values()) {
+                var instance = comp.get(node.id());
+                if (instance != null) {
+                    ImGui.tableNextRow();
+                    ImGui.tableNextColumn();
+                    ImGui.textDisabled(instance.getIcon() + instance.getTitle());
+                    ImGui.tableNextColumn();
+                    ImGui.textDisabled("--");
+                    ImGui.tableNextColumn();
+                    ImGui.textDisabled("--");
+
+                    if (instance.getType() == ComponentType.MESH) {
+                        MeshComponent meshComponent = (MeshComponent) instance;
+                        if (meshComponent.isInstancedRendering) {
+                            renderInstancedComponent(meshComponent);
+                        }
+                    }
                 }
             }
         }
@@ -239,7 +243,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             if (!isMultiSelect) {
                 selectionService.clearSelection();
             }
-            selectionService.addSelected(node);
+            selectionService.addSelected(node.id());
         }
     }
 

@@ -19,8 +19,8 @@ public class SystemService implements SyncTask {
             new EnvironmentMapFilteringGenPass(),
             new ShaderDataSyncPass(),
             new GBufferPass(),
-            new AtmospherePass(),
             new GBufferShadingPass(),
+            new AtmospherePass(),
             new PostProcessingPass(),
             new VoxelVisualizerPass(),
             new FrameCompositionPass()

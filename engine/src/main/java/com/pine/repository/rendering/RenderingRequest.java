@@ -1,6 +1,5 @@
 package com.pine.repository.rendering;
 
-import com.pine.component.Entity;
 import com.pine.component.TransformationComponent;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.MeshResourceRef;
@@ -16,7 +15,7 @@ public class RenderingRequest implements Serializable {
     public final TransformationComponent transformationComponent;
     public List<TransformationComponent> transformationComponents;
     public int renderIndex;
-    public Entity entity;
+    public String entity;
 
     public RenderingRequest(MeshResourceRef mesh, TransformationComponent transformationComponent) {
         this(mesh, transformationComponent, Collections.emptyList());

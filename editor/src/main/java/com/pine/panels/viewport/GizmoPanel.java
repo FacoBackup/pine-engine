@@ -6,11 +6,14 @@ import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
+import com.pine.service.SelectionService;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class GizmoPanel extends AbstractView {
     @PInject
@@ -20,9 +23,16 @@ public class GizmoPanel extends AbstractView {
     public CameraRepository cameraRepository;
 
     @PInject
+    public SelectionService selectionService;
+
+    @PInject
     public WorldRepository world;
 
-    private final Matrix4f cacheMatrix4 = new Matrix4f();
+    private final Matrix4f auxMat4 = new Matrix4f();
+    private final Vector3f auxTranslation = new Vector3f();
+    private final Vector3f auxScale = new Vector3f();
+    private final Quaternionf auxRot = new Quaternionf();
+
     private final float[] cacheMatrix = new float[16];
     private final float[] viewMatrixCache = new float[16];
     private final float[] projectionMatrixCache = new float[16];
@@ -41,8 +51,12 @@ public class GizmoPanel extends AbstractView {
         if (stateRepository.primitiveSelected == null) {
             localSelected = null;
             localChangeId = 0;
+            if(stateRepository.mainSelection != null){
+                selectionService.updatePrimitiveSelected();
+            }
             return;
         }
+
         if (stateRepository.primitiveSelected != localSelected || localSelected.getChangeId() != localChangeId) {
             stateRepository.primitiveSelected.globalMatrix.get(cacheMatrix);
             localSelected = stateRepository.primitiveSelected;
@@ -92,10 +106,18 @@ public class GizmoPanel extends AbstractView {
     }
 
     private void decomposeMatrix() {
-        cacheMatrix4.set(cacheMatrix);
-        cacheMatrix4.getTranslation(localSelected.translation);
-        cacheMatrix4.getUnnormalizedRotation(localSelected.rotation);
-        cacheMatrix4.getScale(localSelected.scale);
+        auxMat4.set(cacheMatrix);
+        auxMat4.getTranslation(auxTranslation);
+        auxMat4.getUnnormalizedRotation(auxRot);
+        auxMat4.getScale(auxScale);
+
+        auxTranslation.sub(localSelected.translation);
+        auxScale.sub(localSelected.scale);
+        auxRot.sub(localSelected.rotation);
+
+        localSelected.translation.add(auxTranslation);
+        localSelected.scale.add(auxScale);
+        localSelected.rotation.add(auxRot);
 
         world.withChangedData.add(localSelected);
         localSelected.registerChange();

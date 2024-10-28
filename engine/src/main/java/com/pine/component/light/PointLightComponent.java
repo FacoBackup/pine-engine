@@ -1,7 +1,6 @@
 package com.pine.component.light;
 
 import com.pine.component.ComponentType;
-import com.pine.component.Entity;
 import com.pine.inspection.InspectableField;
 import com.pine.type.LightType;
 
@@ -17,7 +16,7 @@ public class PointLightComponent extends AbstractLightComponent {
     @InspectableField(label = "Shadow ZFar")
     public float zFar = 10000;
 
-    public PointLightComponent(Entity entity) {
+    public PointLightComponent(String entity) {
         super(entity);
     }
 

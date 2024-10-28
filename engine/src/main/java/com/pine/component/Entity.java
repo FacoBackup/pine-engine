@@ -7,27 +7,19 @@ import com.pine.theme.Icons;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class Entity extends Inspectable implements Serializable {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     @InspectableField(label = "Name")
-    public String name = "New Entity";
+    public String name;
 
     @InspectableField(label = "Identifier", disabled = true)
     public final String id;
 
     @InspectableField(label = "Creation date", disabled = true)
     public final String creationDate = FORMATTER.format(new Date());
-
-    /**
-     * Key: Class.simpleName
-     * Value: Component instance
-     */
-    public final Map<ComponentType, AbstractComponent> components = new HashMap<>();
 
     public Entity(String id, String name) {
         this.id = id;
@@ -54,11 +46,6 @@ public class Entity extends Inspectable implements Serializable {
     }
 
     public Entity cloneEntity() {
-        var clone = new Entity(UUID.randomUUID().toString(), name + " (clone)");
-
-        for(var component : components.values()) {
-            clone.components.put(component.getType(), component.cloneComponent(clone));
-        }
-        return clone;
+        return new Entity(UUID.randomUUID().toString(), name + " (clone)");
     }
 }

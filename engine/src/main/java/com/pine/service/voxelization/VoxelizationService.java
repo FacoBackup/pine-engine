@@ -28,10 +28,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.stb.STBImage;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @PBean
 public class VoxelizationService implements Loggable {
@@ -93,7 +90,7 @@ public class VoxelizationService implements Loggable {
                 }
             }
             var grid = new SVOGrid(voxelRepository.chunkSize, voxelRepository.chunkGridSize, voxelRepository.maxDepth);
-            List<AbstractComponent> meshes = worldRepository.components.get(ComponentType.MESH);
+            Collection<AbstractComponent> meshes = worldRepository.components.get(ComponentType.MESH).values();
             getLogger().warn("Voxelizing {}", meshes.size());
             for (AbstractComponent component : meshes) {
                 var meshComponent = (MeshComponent) component;
@@ -101,15 +98,15 @@ public class VoxelizationService implements Loggable {
                     continue;
                 }
 
-                getLogger().warn("Voxelizing entity {}", meshComponent.getEntity().name);
-                Matrix4f globalMatrix = worldRepository.getTransformationComponent(meshComponent.entity.id()).globalMatrix;
+                getLogger().warn("Voxelizing entity {}", meshComponent.getEntityId());
+                Matrix4f globalMatrix = worldRepository.getTransformationComponent(meshComponent.getEntityId()).globalMatrix;
                 var mesh = streamMesh(meshComponent.lod0, globalMatrix, meshComponent);
                 List<SparseVoxelOctree> intersectingChunks = getIntersectingChunks(mesh, grid, meshComponent);
                 if (intersectingChunks.isEmpty()) {
-                    getLogger().warn("No intersections found for {}", meshComponent.entity.name);
+                    getLogger().warn("No intersections found for {}", meshComponent.getEntityId());
                     continue;
                 }
-                getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.entity.name);
+                getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.getEntityId());
 
                 TextureStreamData albedoTexture = streamTexture(mesh, meshComponent);
                 long startLocal = System.currentTimeMillis();

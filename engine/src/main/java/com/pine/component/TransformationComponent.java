@@ -21,11 +21,11 @@ public class TransformationComponent extends AbstractComponent {
     public transient RenderingRequest renderRequest;
     public boolean isCulled = false;
 
-    public TransformationComponent(Entity entity) {
+    public TransformationComponent(String entity) {
         this(entity, false);
     }
 
-    public TransformationComponent(Entity entity, boolean b) {
+    public TransformationComponent(String entity, boolean b) {
         super(entity);
         this.isInstanced = b;
     }

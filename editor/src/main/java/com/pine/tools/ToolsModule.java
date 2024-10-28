@@ -3,7 +3,9 @@ package com.pine.tools;
 import com.pine.injection.EngineExternalModule;
 import com.pine.service.system.AbstractPass;
 import com.pine.service.system.impl.FrameCompositionPass;
+import com.pine.service.system.impl.GBufferShadingPass;
 import com.pine.tools.repository.ToolsResourceRepository;
+import com.pine.tools.system.BackgroundPass;
 import com.pine.tools.system.GridPass;
 import com.pine.tools.system.OutlineGenPass;
 import com.pine.tools.system.OutlinePass;
@@ -17,7 +19,12 @@ public class ToolsModule implements EngineExternalModule {
     public List<AbstractPass> getExternalSystems(List<AbstractPass> systems) {
         ArrayList<AbstractPass> withTools = new ArrayList<>(systems);
         AbstractPass fc = systems.stream().filter(a -> a instanceof FrameCompositionPass).findFirst().orElse(null);
+        AbstractPass gB = systems.stream().filter(a -> a instanceof GBufferShadingPass).findFirst().orElse(null);
         int indexFc = systems.indexOf(fc);
+        int indexGB = systems.indexOf(gB);
+
+        withTools.add(indexGB, new BackgroundPass());
+
         withTools.add(indexFc, new GridPass());
         withTools.add(indexFc, new OutlinePass());
         withTools.add(indexFc, new OutlineGenPass());

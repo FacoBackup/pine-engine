@@ -7,16 +7,16 @@ import com.pine.inspection.Inspectable;
 import java.util.Set;
 
 public abstract class AbstractComponent extends Inspectable implements Mutable, Cloneable, SerializableRepository {
-    public Entity entity;
-    public int changes = 0;
-    public int frozenVersion = -1;
+    private String entityId;
+    private int changes = 0;
+    private int frozenVersion = -1;
 
-    public AbstractComponent(Entity entity) {
-        this.entity = entity;
+    public AbstractComponent(String entityId) {
+        this.entityId = entityId;
     }
 
-    public Entity getEntity() {
-        return entity;
+    final public String getEntityId() {
+        return entityId;
     }
 
     public Set<ComponentType> getDependencies() {
@@ -24,22 +24,22 @@ public abstract class AbstractComponent extends Inspectable implements Mutable, 
     }
 
     @Override
-    public int getChangeId() {
+    final public int getChangeId() {
         return changes;
     }
 
     @Override
-    public void registerChange() {
+    final public void registerChange() {
         changes = (int) (Math.random() * 10000);
     }
 
     @Override
-    public boolean isNotFrozen() {
+    final public boolean isNotFrozen() {
         return frozenVersion != getChangeId();
     }
 
     @Override
-    public void freezeVersion() {
+    final public void freezeVersion() {
         frozenVersion = getChangeId();
     }
 
@@ -58,7 +58,7 @@ public abstract class AbstractComponent extends Inspectable implements Mutable, 
     public AbstractComponent cloneComponent(Entity entity) {
         try {
             var clone = (AbstractComponent) super.clone();
-            clone.entity = entity;
+            clone.entityId = entity.id;
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

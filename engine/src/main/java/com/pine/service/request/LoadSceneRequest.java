@@ -30,9 +30,9 @@ public class LoadSceneRequest extends AbstractRequest {
         Entity entity = new Entity();
         entity.name = localScene.name;
         if (localScene.meshResourceId != null) {
-            MeshComponent meshComponent = new MeshComponent(entity);
+            MeshComponent meshComponent = new MeshComponent(entity.id());
             repository.registerComponent(meshComponent);
-            entity.components.put(ComponentType.MESH, meshComponent);
+            repository.components.get(ComponentType.MESH).put(entity.id(), meshComponent);
             meshComponent.lod0 = localScene.meshResourceId;
             meshComponent.material = localScene.materialResourceId;
         }

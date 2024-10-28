@@ -18,14 +18,14 @@ public class ToolsResourceRepository implements Initializable {
 
     public Shader outlineShader;
     public Shader gridShader;
+    public Shader backgroundShader;
     public Shader outlineGenShader;
-    public Shader mouseOver;
     public FrameBufferObject outlineBuffer;
-    public int mouseOverSampler;
     public int outlineSampler;
 
     @Override
     public void onInitialize() {
+        backgroundShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "tool/BACKGROUND.frag"));
         outlineShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "tool/OUTLINE.frag"));
         outlineGenShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "tool/OUTLINE_GEN.vert", LOCAL_SHADER + "tool/OUTLINE_GEN.frag"));
         gridShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "tool/GRID.vert", LOCAL_SHADER + "tool/GRID.frag"));

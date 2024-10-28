@@ -21,7 +21,7 @@ public class SpriteComponent extends AbstractComponent {
     @InspectableField(label = "Always face camera")
     public boolean alwaysFaceCamera = true;
 
-    public SpriteComponent(Entity entity) {
+    public SpriteComponent(String entity) {
         super(entity);
     }
 
