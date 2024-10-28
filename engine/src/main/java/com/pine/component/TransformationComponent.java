@@ -7,6 +7,8 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class TransformationComponent extends AbstractComponent {
+    public final boolean isInstanced;
+
     @InspectableField(label = "Translation")
     public Vector3f translation = new Vector3f();
     @InspectableField(label = "Scale")
@@ -20,7 +22,12 @@ public class TransformationComponent extends AbstractComponent {
     public boolean isCulled = false;
 
     public TransformationComponent(Entity entity) {
+        this(entity, false);
+    }
+
+    public TransformationComponent(Entity entity, boolean b) {
         super(entity);
+        this.isInstanced = b;
     }
 
     @Override

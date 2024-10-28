@@ -34,7 +34,7 @@ public class RenderingRequestService {
         if (mesh == null) return null;
 
         prepareTransformations(scene, t, mesh);
-        fillInstanceRequest(scene, t);
+        fillInstanceRequest(scene);
         scene.renderRequest.mesh = mesh;
         if (scene.renderRequest.transformationComponents.isEmpty()) {
             return null;
@@ -42,9 +42,8 @@ public class RenderingRequestService {
         return scene.renderRequest;
     }
 
-    private void fillInstanceRequest(MeshComponent scene, TransformationComponent t) {
+    private void fillInstanceRequest(MeshComponent scene) {
         for (var primitive : scene.instances) {
-            transformationService.transform(primitive, t);
             if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
                 primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
             } else {
@@ -64,14 +63,13 @@ public class RenderingRequestService {
             scene.instances = new ArrayList<>(scene.instances.subList(0, scene.numberOfInstances));
         } else if (scene.instances.size() < scene.numberOfInstances) {
             for (int i = scene.instances.size(); i < scene.numberOfInstances; i++) {
-                scene.instances.add(new TransformationComponent(scene.entity));
+                scene.instances.add(new TransformationComponent(scene.entity, true));
             }
         }
 
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest(mesh, t, new ArrayList<>());
         }
-        renderingRepository.newToBeRendered.put(scene.entity.id(), scene.renderRequest);
         scene.renderRequest.entity = scene.entity;
         scene.renderRequest.transformationComponents.clear();
     }
@@ -90,7 +88,6 @@ public class RenderingRequestService {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
-            renderingRepository.newToBeRendered.put(scene.entity.id(), transform.renderRequest);
             transform.renderRequest.entity = scene.entity;
             prepareMaterial(scene, transform.renderRequest);
 

@@ -96,7 +96,7 @@ public class EditorWindow extends AbstractWindow {
 
     @Override
     public void render() {
-        start();
+        startTracking();
         themeService.tick();
         if (serializationRepository.isDeserializationDone()) {
             if (!isInitialized) {
@@ -112,7 +112,7 @@ public class EditorWindow extends AbstractWindow {
             ImGui.text("Loading scene...");
             ImGui.end();
         }
-        end();
+        endTracking();
     }
 
     @Override

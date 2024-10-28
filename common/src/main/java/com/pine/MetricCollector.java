@@ -8,13 +8,13 @@ public abstract class MetricCollector {
     private static final Map<String, Long> metrics = new HashMap<>();
     private long start;
 
-    protected void start() {
+    protected void startTracking() {
         if (shouldCollect) {
             start = System.nanoTime();
         }
     }
 
-    protected void end() {
+    protected void endTracking() {
         if (shouldCollect) {
             metrics.put(getTitle(), System.nanoTime() - start);
         }

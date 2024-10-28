@@ -63,7 +63,7 @@ public class RenderingTask extends AbstractTask implements Loggable {
         if (renderingRepository.infoUpdated) {
             return;
         }
-        start();
+        startTracking();
         try {
             defineVoxelGrid();
 
@@ -98,7 +98,7 @@ public class RenderingTask extends AbstractTask implements Loggable {
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
-        end();
+        endTracking();
     }
 
     private void defineProbes() {

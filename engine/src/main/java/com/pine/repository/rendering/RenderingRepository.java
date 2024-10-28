@@ -15,8 +15,6 @@ import java.util.Map;
 public class RenderingRepository {
     public List<RenderingRequest> requests = new ArrayList<>();
     public List<RenderingRequest> newRequests = new ArrayList<>();
-    public Map<String, RenderingRequest> newToBeRendered = new HashMap<>();
-    public Map<String, RenderingRequest> toBeRendered = new HashMap<>();
 
     public VoxelChunkResourceRef[] voxelChunks = new VoxelChunkResourceRef[4];
     public VoxelChunkResourceRef[] newVoxelChunks = new VoxelChunkResourceRef[4];
@@ -46,11 +44,6 @@ public class RenderingRepository {
         var auxV = voxelChunks;
         voxelChunks = newVoxelChunks;
         newVoxelChunks = auxV;
-
-        var aux2 = toBeRendered;
-        toBeRendered = newToBeRendered;
-        newToBeRendered = aux2;
-        aux2.clear();
 
         worldRepository.withChangedData.clear();
     }

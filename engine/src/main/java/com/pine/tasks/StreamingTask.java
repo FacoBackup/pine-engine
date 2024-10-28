@@ -31,7 +31,7 @@ public class StreamingTask extends AbstractTask implements Loggable {
     }
 
     public void streamAll() {
-        start();
+        startTracking();
         try {
             for (var scheduled : streamingRepository.scheduleToLoad.entrySet()) {
                 stream(scheduled.getKey(), scheduled.getValue());
@@ -39,7 +39,7 @@ public class StreamingTask extends AbstractTask implements Loggable {
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
-        end();
+        endTracking();
     }
 
     private void stream(String id, StreamableResourceType type) {

@@ -108,7 +108,7 @@ public class Engine extends MetricCollector implements Loggable {
             return;
         }
         GL46.glClearColor(clearColor.x, clearColor.y, clearColor.z, 1);
-        start();
+        startTracking();
         for (FrameBufferObject fbo : fboRepository.all) {
             fbo.clear();
         }
@@ -120,7 +120,7 @@ public class Engine extends MetricCollector implements Loggable {
         for (var syncTask : syncTasks) {
             syncTask.sync();
         }
-        end();
+        endTracking();
         MetricCollector.shouldCollect = false;
     }
 

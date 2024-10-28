@@ -2,6 +2,7 @@ package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
 import com.pine.component.ComponentType;
+import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -34,6 +35,10 @@ public class TransformationService {
     private final Matrix4f auxMat42 = new Matrix4f();
 
     public void updateHierarchy(TransformationComponent st) {
+        if (st.isInstanced) {
+            transform(st, worldRepository.getTransformationComponent(st.entity.id));
+            return;
+        }
         TransformationComponent parentTransform = findParent(st.entity.id());
         transform(st, parentTransform);
 
@@ -44,6 +49,12 @@ public class TransformationService {
                 if (comp != null) {
                     updateHierarchy(comp);
                 }
+            }
+        }
+        var meshC = (MeshComponent) st.entity.components.get(ComponentType.MESH);
+        if (meshC != null && meshC.isInstancedRendering){
+            for(var t : meshC.instances){
+                updateHierarchy(t);
             }
         }
     }

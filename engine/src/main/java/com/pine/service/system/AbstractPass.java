@@ -56,7 +56,7 @@ public abstract class AbstractPass extends MetricCollector {
         if (!isRenderable()) {
             return;
         }
-        start();
+        startTracking();
         FrameBufferObject fbo = getTargetFBO();
         shaderService.bind(getShader());
         if (fbo != null) {
@@ -66,7 +66,7 @@ public abstract class AbstractPass extends MetricCollector {
         } else {
             renderInternal();
         }
-        end();
+        endTracking();
     }
 
     protected FrameBufferObject getTargetFBO() {
