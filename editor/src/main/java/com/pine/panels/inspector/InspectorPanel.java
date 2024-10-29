@@ -111,7 +111,7 @@ public class InspectorPanel extends AbstractDockPanel {
         }
 
         if (formPanel.getInspectable() != currentInspection) {
-            formPanel.setInspectable(currentInspection);
+            formPanel.setInspection(currentInspection);
         }
     }
 

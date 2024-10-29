@@ -6,7 +6,7 @@ import com.pine.inspection.Inspectable;
 
 import java.util.Set;
 
-public abstract class AbstractComponent extends Inspectable implements Mutable, Cloneable, SerializableRepository {
+public abstract class AbstractComponent extends Inspectable implements Mutable, Cloneable {
     private String entityId;
     private int changes = 0;
     private int frozenVersion = -1;

@@ -14,7 +14,9 @@ import imgui.flag.*;
 import imgui.type.ImString;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
@@ -29,12 +31,13 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     private Entity onDrag;
     private final ImString search = new ImString();
     private boolean isOnSearch = false;
-    private HierarchyContext context;
-
+    private final Map<String, String> searchMatchWith = new HashMap<>();
+    private final Map<String, Byte> searchMatch = new HashMap<>();
+    private final Map<String, Integer> opened = new HashMap<>();
+    
     @Override
     public void onInitialize() {
         appendChild(header = new HierarchyHeaderPanel(search));
-        context = (HierarchyContext) getContext();
     }
 
     @Override
@@ -70,7 +73,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private boolean renderNode(String entityId) {
         Entity entity = world.entityMap.get(entityId);
-        if ((isOnSearch && context.searchMatch.containsKey(entity.id()) && Objects.equals(context.searchMatchWith.get(entity.id()), search.get()))) {
+        if (entity == null || (isOnSearch && searchMatch.containsKey(entity.id()) && Objects.equals(searchMatchWith.get(entity.id()), search.get()))) {
             return false;
         }
 
@@ -85,10 +88,10 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             renderEntityColumns(entity, false);
         }
         if (open) {
-            context.opened.put(entity.id(), ImGuiTreeNodeFlags.DefaultOpen);
+            opened.put(entity.id(), ImGuiTreeNodeFlags.DefaultOpen);
             renderEntityChildren(entity);
         } else {
-            context.opened.put(entity.id(), ImGuiTreeNodeFlags.None);
+            opened.put(entity.id(), ImGuiTreeNodeFlags.None);
         }
 
         return isSearchMatch;
@@ -103,14 +106,14 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         if (isOnSearch) {
             isSearchMatch = node.getTitle().contains(search.get());
             if (isSearchMatch) {
-                context.searchMatch.put(node.id(), BYTE);
+                searchMatch.put(node.id(), BYTE);
             } else {
-                context.searchMatch.remove(node.id());
+                searchMatch.remove(node.id());
             }
-            context.searchMatchWith.put(node.id(), search.get());
+            searchMatchWith.put(node.id(), search.get());
         } else {
-            context.searchMatch.remove(node.id());
-            context.searchMatchWith.remove(node.id());
+            searchMatch.remove(node.id());
+            searchMatchWith.remove(node.id());
         }
         return isSearchMatch;
     }
@@ -121,10 +124,10 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         if (isOnSearch) {
             if (children != null) {
                 for (var child : children) {
-                    if (context.searchMatch.containsKey(node.id()) || renderNode(child)) {
-                        context.searchMatch.put(node.id(), BYTE);
+                    if (searchMatch.containsKey(node.id()) || renderNode(child)) {
+                        searchMatch.put(node.id(), BYTE);
                     } else {
-                        context.searchMatch.remove(node.id());
+                        searchMatch.remove(node.id());
                     }
                 }
             }
@@ -194,7 +197,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         if (isOnSearch) {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
         }
-        return flags | context.opened.getOrDefault(node.id(), ImGuiTreeNodeFlags.None);
+        return flags | opened.getOrDefault(node.id(), ImGuiTreeNodeFlags.None);
     }
 
     private void renderEntityColumns(Entity node, boolean isPinned) {

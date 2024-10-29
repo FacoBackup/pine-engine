@@ -32,7 +32,6 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader atmosphereShader;
     public Shader terrainShader;
     public Shader brdfShader;
-    public Shader debugVoxelShader;
     public Shader gBufferShading;
     public Shader environmentMap;
     public Shader voxelRaymarchingCompute;
@@ -44,7 +43,6 @@ public class CoreShaderRepository implements CoreRepository {
     @Override
     public void initialize() {
         gBufferShading = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "QUAD.vert", LOCAL_SHADER + "uber/G_BUFFER_SHADING.frag").staticResource());
-        debugVoxelShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.vert", ShaderCreationData.LOCAL_SHADER + "DEBUG_VOXEL.frag"));
         brdfShader = (Shader) resources.addResource(new ShaderCreationData(ShaderCreationData.LOCAL_SHADER + "QUAD.vert", ShaderCreationData.LOCAL_SHADER + "BRDF_GEN.frag"));
         terrainShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "TERRAIN.vert", LOCAL_SHADER + "TERRAIN.frag").staticResource());
         spriteShader = (Shader) resources.addResource(new ShaderCreationData(LOCAL_SHADER + "SPRITE.vert", LOCAL_SHADER + "SPRITE.frag").staticResource());

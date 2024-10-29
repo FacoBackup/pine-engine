@@ -20,7 +20,7 @@ public class FormPanel extends AbstractView {
         this.changeHandler = changeHandler;
     }
 
-    public void setInspectable(Inspectable data) {
+    public void setInspection(Inspectable data) {
         if (this.inspectable == data) {
             return;
         }

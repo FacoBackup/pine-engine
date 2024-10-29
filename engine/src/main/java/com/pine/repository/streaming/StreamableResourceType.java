@@ -60,6 +60,10 @@ public enum StreamableResourceType implements Serializable {
         return null;
     }
 
+    public Class<? extends AbstractResourceMetadata> getMetadataClazz() {
+        return metadataClazz;
+    }
+
     public List<String> getFileExtensions() {
         return fileExtensions;
     }

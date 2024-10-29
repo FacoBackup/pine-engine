@@ -83,6 +83,10 @@ public class ImporterService implements Loggable {
         return engine.getMetadataDirectory() + metadata.id + "." + metadata.getResourceType().name();
     }
 
+    public String getPathToMetadata(String id, StreamableResourceType type) {
+        return engine.getMetadataDirectory() + id + "." + type.name();
+    }
+
     public AbstractImportData readFile(AbstractResourceMetadata metadata) {
         if (!metadata.getResourceType().isReadable()) {
             return null;
@@ -109,7 +113,7 @@ public class ImporterService implements Loggable {
         return String.format("%.2f", fileSize) + sizeUnit;
     }
 
-    public String createNew(StreamableResourceType resourceType) {
+    public AbstractResourceMetadata createNew(StreamableResourceType resourceType) {
         AbstractResourceMetadata created = null;
         for (AbstractImporter i : importersList) {
             if (i.getResourceType() == resourceType) {
@@ -118,7 +122,7 @@ public class ImporterService implements Loggable {
         }
         if(created != null) {
             persistMetadata(created, new ArrayList<>());
-            return created.id;
+            return created;
         }
         return null;
     }

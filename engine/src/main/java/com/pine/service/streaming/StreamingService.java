@@ -37,7 +37,7 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     @PInject
     public Engine engine;
 
-    public static final int MAX_TIMEOUT = 60 * 1000;
+    public static final int MAX_TIMEOUT = 1000;
 
     private long sinceLastCleanup;
 

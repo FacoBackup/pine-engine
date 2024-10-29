@@ -4,9 +4,7 @@ import com.pine.core.dock.AbstractDockPanel;
 import com.pine.core.dock.DockDescription;
 import com.pine.core.panel.AbstractPanelContext;
 import com.pine.panels.console.ConsolePanel;
-import com.pine.panels.files.FilesContext;
-import com.pine.panels.files.FilesPanel;
-import com.pine.panels.hierarchy.HierarchyContext;
+import com.pine.panels.files.ContentBrowser;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.metrics.MetricsPanel;
@@ -19,10 +17,10 @@ import java.util.Arrays;
 
 public enum EditorDock implements DockDescription {
     Viewport("Viewport", Icons.ipublic, 0, 0, ViewportPanel.class, ViewportContext.class),
-    Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class, HierarchyContext.class),
+    Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class, null),
     Inspector("Inspector", Icons.search, InspectorPanel.class, null),
     Console("Console", Icons.terminal, ConsolePanel.class, null),
-    Files("Files", Icons.folder_open, FilesPanel.class, FilesContext.class),
+    Files("Files", Icons.folder_open, ContentBrowser.class, null),
     Resources("Resources", Icons.data_array, ResourcesPanel.class, null),
     Metrics("Metrics", Icons.bar_chart, MetricsPanel.class, null);
 

@@ -18,6 +18,7 @@ import imgui.type.ImInt;
 import java.io.Serial;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @PBean
@@ -53,10 +54,6 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public transient final ImVec4 accent = new ImVec4();
     public int accentU32 = 0;
 
-    // Icon settings
-    public boolean showIcons = true;
-    public float iconScale = 1f;
-
     // Outline settings
     @InspectableField(group = "Outline", label = "Show outline")
     public boolean showOutline = true;
@@ -89,7 +86,6 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public String mainSelection = null;
     public final Map<String, Boolean> selected = new HashMap<>();
     public final LinkedList<String> copied = new LinkedList<>();
-    public final DirectoryEntry root = new DirectoryEntry("Files", null);
 
     @Override
     public String getIcon() {

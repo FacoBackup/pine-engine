@@ -8,28 +8,23 @@ import com.pine.service.importer.ImporterService;
 import java.io.Serializable;
 
 public abstract class AbstractResourceMetadata extends Inspectable implements Serializable {
-
-    @InspectableField(label = "Name")
-    public String name;
-
-    @InspectableField(label = "Identifier", disabled = true)
     public final String id;
+    public final String name;
 
     @InspectableField(label = "Size", disabled = true)
     public String sizeWithUnit;
-
     private float size;
 
     public AbstractResourceMetadata(String name, String id) {
-        this.name = name;
         this.id = id;
+        this.name = name;
     }
 
     public abstract StreamableResourceType getResourceType();
 
     @Override
     public String getTitle() {
-        return name;
+        return getResourceType().getTitle();
     }
 
     @Override

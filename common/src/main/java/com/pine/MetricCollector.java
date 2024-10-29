@@ -15,6 +15,9 @@ public abstract class MetricCollector {
     }
 
     protected void endTracking() {
+        if(!metrics.containsKey(getTitle())){
+            metrics.put(getTitle(), 0L);
+        }
         if (shouldCollect) {
             metrics.put(getTitle(), System.nanoTime() - start);
         }

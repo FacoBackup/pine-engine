@@ -32,16 +32,7 @@ public class SerializationService implements Loggable {
     @PInject
     public List<SerializableRepository> serializableRepositories;
 
-    private final Map<String, SerializableRepository> repositoryMap = new HashMap<>();
-
     private boolean isDeserializationDone = false;
-
-    @PostCreation
-    public void onInitialize() {
-        for (SerializableRepository repository : serializableRepositories) {
-            repositoryMap.put(repository.getClass().getSimpleName(), repository);
-        }
-    }
 
     public void writeProjectMetadata(String projectDirectory) {
         try {
@@ -71,8 +62,8 @@ public class SerializationService implements Loggable {
         }).start();
     }
 
-    private static @NotNull String getFilePath(String projectDirectory, SerializableRepository repository) {
-        return projectDirectory + File.separator + DigestUtils.sha1Hex(repository.getClass().getSimpleName());
+    private String getFilePath(String projectDirectory, SerializableRepository repository) {
+        return projectDirectory + File.separator + DigestUtils.sha1Hex(repository.getClass().getSimpleName()) + ".json";
     }
 
     public void deserialize(String projectDirectory) {
@@ -81,7 +72,7 @@ public class SerializationService implements Loggable {
         isDeserializationDone = false;
         Thread thread = new Thread(() -> {
             for (SerializableRepository r : serializableRepositories) {
-                var data = FSUtil.readSilent(getFilePath(projectDirectory, r), r.getClass());
+                var data = FSUtil.read(getFilePath(projectDirectory, r), r.getClass());
                 if (data != null) {
                     r.merge(data);
                 }

@@ -3,14 +3,19 @@ package com.pine.service;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
-import com.pine.panels.files.FilesContext;
-import com.pine.repository.FileMetadataRepository;
+import com.pine.messaging.MessageRepository;
+import com.pine.messaging.MessageSeverity;
+import com.pine.repository.FilesRepository;
 import com.pine.repository.fs.DirectoryEntry;
 import com.pine.repository.fs.FileEntry;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
+import com.pine.service.importer.metadata.AbstractResourceMetadata;
 
 import java.io.File;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.pine.service.importer.impl.TextureImporter.PREVIEW_EXT;
 
@@ -27,53 +32,71 @@ public class FilesService implements Loggable {
     public ProjectService projectService;
 
     @PInject
-    public FileMetadataRepository fileMetadataRepository;
+    public NativeDialogService nativeDialogService;
 
-    public void deleteSelected(FilesContext context) {
-        for (String id : context.selected.keySet()) {
-            FileEntry file = fileMetadataRepository.getFile(id);
-            if (file != null) {
-                delete(file);
-                context.currentDirectory.files.remove(id);
-            } else {
-                deleteRecursively(context.currentDirectory.directories.get(id));
-                context.currentDirectory.directories.remove(id);
-            }
-        }
-        fileMetadataRepository.refresh();
+    @PInject
+    public FilesRepository filesRepository;
+
+    @PInject
+    public MessageRepository messageRepository;
+
+    public void deleteSelected(Collection<String> items) {
+        deleteRecursively(items);
         projectService.saveSilently();
     }
 
-    private void deleteRecursively(DirectoryEntry directoryEntry) {
-        if(directoryEntry == null){
-            return;
-        }
-        for (var file : directoryEntry.files) {
-            delete(fileMetadataRepository.getFile(file));
-        }
-        for (var dir : directoryEntry.directories.values()) {
-            deleteRecursively(dir);
+    private void deleteRecursively(Collection<String> items) {
+        for (String id : items) {
+            var parentId = filesRepository.childParent.get(id);
+            filesRepository.parentChildren.get(parentId).remove(id);
+            filesRepository.childParent.remove(id);
+            var entry = filesRepository.entry.get(id);
+            if (entry.isDirectory()) {
+                var children = filesRepository.parentChildren.get(id);
+                deleteRecursively(children);
+            } else {
+                var file = (FileEntry) entry;
+                new File(importerService.getPathToMetadata(id, file.getType())).delete();
+                new File(importerService.getPathToFile(id, file.getType())).delete();
+                new File(importerService.getPathToFile(id, file.getType()) + PREVIEW_EXT).delete();
+                filesRepository.byType.get(file.type).remove(id);
+
+                streamingRepository.discardedResources.put(file.getId(), file.getType());
+                streamingRepository.loadedResources.remove(file.getId());
+                streamingRepository.toLoadResources.remove(file.getId());
+                streamingRepository.scheduleToLoad.remove(file.getId());
+            }
+            filesRepository.parentChildren.remove(id);
+            filesRepository.entry.remove(id);
         }
     }
 
-    private void delete(FileEntry file) {
-        try {
-            var filePath = file.path;
-            var metadataPath = importerService.getPathToMetadata(file.metadata);
-            var previewPath = filePath + PREVIEW_EXT;
-
-            new File(metadataPath).delete();
-            new File(filePath).delete();
-
-            getLogger().warn("Deleted file {}", file.metadata.name);
-
-            streamingRepository.discardedResources.put(file.getId(), file.metadata.getResourceType());
-            streamingRepository.loadedResources.remove(file.getId());
-            streamingRepository.toLoadResources.remove(file.getId());
-            streamingRepository.scheduleToLoad.remove(file.getId());
-            new File(previewPath).delete();
-        } catch (Exception e) {
-            getLogger().error("Error while deleting file {}", file.getId());
+    public void importFile(String currentDirectory) {
+        List<String> paths = nativeDialogService.selectFile();
+        if (paths.isEmpty()) {
+            return;
         }
+        importerService.importFiles(paths, response -> {
+            filesRepository.isImporting = true;
+            if (response.isEmpty()) {
+                messageRepository.pushMessage("Could not import files: " + paths, MessageSeverity.ERROR);
+            }
+
+            for (var r : response) {
+                createEntry(currentDirectory, r);
+            }
+
+            messageRepository.pushMessage(paths.size() + " files imported", MessageSeverity.SUCCESS);
+            projectService.saveSilently();
+            filesRepository.isImporting = false;
+        });
+    }
+
+    public void createEntry(String currentDirectory, AbstractResourceMetadata r) {
+        var entry = new FileEntry(new File(importerService.getPathToFile(r.id, r.getResourceType())), r.getResourceType(), r.id, r.name);
+        filesRepository.parentChildren.get(currentDirectory).add(entry.id);
+        filesRepository.entry.put(entry.id, entry);
+        filesRepository.childParent.put(entry.id, currentDirectory);
+        filesRepository.byType.get(entry.type).add(entry.id);
     }
 }

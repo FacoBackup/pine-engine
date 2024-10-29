@@ -9,7 +9,10 @@ import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.data.SceneImportData;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 public class LoadSceneRequest extends AbstractRequest {
     private final SceneImportData scene;
@@ -22,27 +25,26 @@ public class LoadSceneRequest extends AbstractRequest {
 
     @Override
     public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
-        traverse(root, scene, repository);
+        traverse(root, scene, repository, streamingRepository);
         return new Message("Scene loaded successfully", MessageSeverity.SUCCESS);
     }
 
-    private void traverse(Entity parent, SceneImportData localScene, WorldRepository repository) {
-        Entity entity = new Entity();
+    private void traverse(Entity parent, SceneImportData localScene, WorldRepository repository, StreamingRepository streamingRepository) {
+        var add = new AddEntityRequest(localScene.meshResourceId != null ? List.of(ComponentType.MESH) : Collections.emptyList());
+        add.run(repository, streamingRepository);
+        Entity entity = add.getResponse();
         entity.name = localScene.name;
         if (localScene.meshResourceId != null) {
-            MeshComponent meshComponent = new MeshComponent(entity.id());
-            repository.registerComponent(meshComponent);
-            repository.components.get(ComponentType.MESH).put(entity.id(), meshComponent);
-            meshComponent.lod0 = localScene.meshResourceId;
-            meshComponent.material = localScene.materialResourceId;
+            var comp = (MeshComponent) repository.components.get(ComponentType.MESH).get(entity.id());
+            comp.lod0 = localScene.meshResourceId;
+            comp.material = localScene.materialResourceId;
         }
 
-        repository.childParent.put(entity.id(), parent.id());
-        repository.parentChildren.putIfAbsent(parent.id(), new LinkedList<>());
-        repository.parentChildren.get(parent.id()).add(entity.id());
+        var hierarchy = new HierarchyRequest(parent, entity);
+        hierarchy.run(repository, streamingRepository);
 
         for (var childScene : localScene.children) {
-            traverse(entity, childScene, repository);
+            traverse(entity, childScene, repository, streamingRepository);
         }
     }
 }

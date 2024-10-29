@@ -4,15 +4,23 @@ import java.io.Serializable;
 import java.util.*;
 
 public class DirectoryEntry implements IEntry, Serializable {
-    public final String id = UUID.randomUUID().toString();
+    public final String id;
     public String name;
-    public final DirectoryEntry parent;
-    public final Map<String, DirectoryEntry> directories = new HashMap<>();
     public Set<String> files = new HashSet<>();
 
-    public DirectoryEntry(String name, DirectoryEntry parent) {
+    public DirectoryEntry(String name) {
         this.name = name;
-        this.parent = parent;
+        id = UUID.randomUUID().toString();
+    }
+
+    public DirectoryEntry(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
+
+    @Override
+    public boolean isDirectory() {
+        return true;
     }
 
     @Override
