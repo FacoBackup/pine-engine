@@ -6,16 +6,14 @@ import com.pine.messaging.Loggable;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.FilesRepository;
-import com.pine.repository.fs.DirectoryEntry;
-import com.pine.repository.fs.FileEntry;
-import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.FSEntry;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.metadata.AbstractResourceMetadata;
 
 import java.io.File;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
 
 import static com.pine.service.importer.impl.TextureImporter.PREVIEW_EXT;
 
@@ -55,7 +53,7 @@ public class FilesService implements Loggable {
                 var children = filesRepository.parentChildren.get(id);
                 deleteRecursively(children);
             } else {
-                var file = (FileEntry) entry;
+                var file = (FSEntry) entry;
                 new File(importerService.getPathToMetadata(id, file.getType())).delete();
                 new File(importerService.getPathToFile(id, file.getType())).delete();
                 new File(importerService.getPathToFile(id, file.getType()) + PREVIEW_EXT).delete();
@@ -93,7 +91,7 @@ public class FilesService implements Loggable {
     }
 
     public void createEntry(String currentDirectory, AbstractResourceMetadata r) {
-        var entry = new FileEntry(new File(importerService.getPathToFile(r.id, r.getResourceType())), r.getResourceType(), r.id, r.name);
+        var entry = new FSEntry(new File(importerService.getPathToFile(r.id, r.getResourceType())), r.getResourceType(), r.id, r.name);
         filesRepository.parentChildren.get(currentDirectory).add(entry.id);
         filesRepository.entry.put(entry.id, entry);
         filesRepository.childParent.put(entry.id, currentDirectory);

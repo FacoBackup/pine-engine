@@ -13,8 +13,4 @@ public interface View extends Renderable {
     List<View> getChildren();
 
     <T extends View> T appendChild(T child);
-
-    AbstractPanelContext getContext();
-
-    void setContext(AbstractPanelContext internalContext);
 }

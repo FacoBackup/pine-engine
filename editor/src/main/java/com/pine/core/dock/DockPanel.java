@@ -29,16 +29,14 @@ public class DockPanel extends AbstractView {
     @PInject
     public DockService dockService;
 
+    @PInject
+    public DockRepository dockRepository;
+
     private AbstractView headerView;
 
     @Override
     public void render() {
         ImGuiViewport viewport = ImGui.getMainViewport();
-        DockGroup group = dockService.getCurrentDockGroup();
-        if (group == null) {
-            return;
-        }
-
         renderHeader(viewport);
 
         dockService.updateForRemoval(this);
@@ -50,7 +48,7 @@ public class DockPanel extends AbstractView {
 
         endMainWindowSetup();
 
-        if (!group.isInitialized) {
+        if (!dockRepository.isInitialized) {
             dockService.buildViews(dockMainId, this);
         }
 

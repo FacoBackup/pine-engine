@@ -1,15 +1,14 @@
-package com.pine.repository.fs;
+package com.pine.repository;
 
 
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.importer.metadata.AbstractResourceMetadata;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FileEntry implements IEntry {
+public class FSEntry {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     public final String id;
@@ -17,21 +16,29 @@ public class FileEntry implements IEntry {
     public final StreamableResourceType type;
     public final String sizeText;
     public String creationDateString;
+    public final boolean isDirectory;
 
-    public FileEntry(File file, StreamableResourceType type, String id, String name) {
+    public FSEntry(File file, StreamableResourceType type, String id, String name) {
         creationDateString = FORMATTER.format(new Date(file.lastModified()));
         this.id = id;
         this.name = name;
         this.type = type;
         sizeText = ImporterService.getSizeWithUnit(file.length());
+        isDirectory = false;
     }
 
-    @Override
+    public FSEntry(String name, String id){
+        this.id = id;
+        this.name = name;
+        this.type = null;
+        sizeText = null;
+        isDirectory = true;
+    }
+
     public boolean isDirectory() {
-        return false;
+        return isDirectory;
     }
 
-    @Override
     public String getId() {
         return id;
     }

@@ -13,7 +13,6 @@ public class AbstractView extends MetricCollector implements View {
     protected final String id;
     protected final String imguiId;
     protected final List<View> children = new ArrayList<>();
-    private AbstractPanelContext internalContext;
 
     @PInject
     public PInjector injector;
@@ -21,16 +20,6 @@ public class AbstractView extends MetricCollector implements View {
     public AbstractView() {
         this.id = UUID.randomUUID().toString().replaceAll("-", "");
         this.imguiId = "##" + id;
-    }
-
-    @Override
-    public AbstractPanelContext getContext() {
-        return internalContext;
-    }
-
-    @Override
-    public void setContext(AbstractPanelContext internalContext) {
-        this.internalContext = internalContext;
     }
 
     @Override
@@ -42,7 +31,6 @@ public class AbstractView extends MetricCollector implements View {
     public <T extends View> T appendChild(T child) {
         injector.inject(child);
         children.add(child);
-        child.setContext(this.getContext());
         child.onInitialize();
         return child;
     }

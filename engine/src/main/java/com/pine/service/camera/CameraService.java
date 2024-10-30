@@ -6,10 +6,9 @@ import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.CoreUBORepository;
-import com.pine.tasks.SyncTask;
 
 @PBean
-public class CameraSyncService implements SyncTask {
+public class CameraService {
     private static final double LOG_2 = Math.log(2);
 
     @PInject
@@ -30,11 +29,10 @@ public class CameraSyncService implements SyncTask {
     private AbstractCameraService cameraService;
     private Camera camera;
 
-    @Override
-    public void sync() {
-        camera = repository.currentCamera;
+    public void update() {
+        camera = repository.cameras.get(repository.currentCamera);
         if (camera == null) {
-            return;
+            camera = repository.cameras.get(CameraRepository.DEFAULT_CAMERA);
         }
 
         if (camera.orbitalMode) {
@@ -53,7 +51,7 @@ public class CameraSyncService implements SyncTask {
     private void updateAspectRatio() {
         float prevAspect = camera.aspectRatio;
         camera.aspectRatio = runtimeRepository.viewportW / runtimeRepository.viewportH;
-        if(prevAspect != camera.aspectRatio) {
+        if (prevAspect != camera.aspectRatio) {
             camera.registerChange();
         }
     }

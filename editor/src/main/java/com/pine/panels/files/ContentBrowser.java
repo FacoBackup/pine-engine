@@ -5,19 +5,14 @@ import com.pine.injection.PInject;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.FilesRepository;
-import com.pine.repository.fs.DirectoryEntry;
-import com.pine.repository.fs.FileEntry;
+import com.pine.repository.FSEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.FilesService;
-import com.pine.service.NativeDialogService;
-import com.pine.service.ProjectService;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.importer.metadata.AbstractResourceMetadata;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
@@ -37,7 +32,7 @@ public class ContentBrowser extends AbstractDockPanel {
     private boolean isFirstRender;
 
     private String currentDirectory = FilesRepository.ROOT_DIRECTORY_ID;
-    private FileEntry inspection;
+    private FSEntry inspection;
     private final Map<String, Boolean> selected = new HashMap<>();
     private final Map<String, Boolean> toCut = new HashMap<>();
 
@@ -50,11 +45,11 @@ public class ContentBrowser extends AbstractDockPanel {
 
     private void updateDirectoryPath() {
         StringBuilder path = new StringBuilder();
-        DirectoryEntry parent = (DirectoryEntry) filesRepository.entry.get(currentDirectory);
+        FSEntry parent =  filesRepository.entry.get(currentDirectory);
         while (parent != null) {
             path.insert(0, parent.name + "/");
             String parentId = filesRepository.childParent.get(parent.id);
-            parent = parentId == null ? null : (DirectoryEntry) filesRepository.entry.get(parentId);
+            parent = parentId == null ? null :  filesRepository.entry.get(parentId);
         }
         searchPath = path.toString();
     }
@@ -95,7 +90,7 @@ public class ContentBrowser extends AbstractDockPanel {
     private void renderHeader() {
         if (ImGui.button(Icons.create_new_folder + "##mkdir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
             String id = UUID.randomUUID().toString();
-            var d = new DirectoryEntry("New Directory (" + id.substring(0, 4) + ")", id);
+            var d = new FSEntry("New Directory (" + id.substring(0, 4) + ")", id);
             filesRepository.childParent.put(id, currentDirectory);
             filesRepository.parentChildren.get(id).add(id);
             filesRepository.parentChildren.put(id, new ArrayList<>());

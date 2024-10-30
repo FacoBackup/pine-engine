@@ -13,6 +13,7 @@ import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.camera.CameraService;
 import com.pine.service.environment.EnvironmentMapGenService;
 import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.RenderingRequestService;
@@ -57,10 +58,15 @@ public class RenderingTask extends AbstractTask implements Loggable {
     @PInject
     public EnvironmentMapGenService environmentMapGenService;
 
+    @PInject
+    public CameraService cameraService;
+
     private int renderIndex = 0;
 
     @Override
     protected void tickInternal() {
+        cameraService.update();
+
         if (renderingRepository.infoUpdated) {
             return;
         }

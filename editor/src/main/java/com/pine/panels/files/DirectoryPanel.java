@@ -7,9 +7,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.FilesRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.fs.DirectoryEntry;
-import com.pine.repository.fs.FileEntry;
-import com.pine.repository.fs.IEntry;
+import com.pine.repository.FSEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.FilesService;
 import com.pine.service.importer.ImporterService;
@@ -23,7 +21,9 @@ import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class DirectoryPanel extends AbstractView {
     private static final ImVec4 DIRECTORY_COLOR = new ImVec4(
@@ -53,7 +53,7 @@ public class DirectoryPanel extends AbstractView {
     public String currentDirectory;
     public Map<String, Boolean> selected;
     public Map<String, Boolean> toCut;
-    public FileEntry inspection;
+    public FSEntry inspection;
 
     @Override
     public void render() {
@@ -70,11 +70,11 @@ public class DirectoryPanel extends AbstractView {
             List<String> children = filesRepository.parentChildren.get(currentDirectory);
             if (children != null) {
                 for (var child : children) {
-                    IEntry fEntry = filesRepository.entry.get(child);
+                    FSEntry fEntry = filesRepository.entry.get(child);
                     if (fEntry.isDirectory()) {
-                        renderDirectory((DirectoryEntry) fEntry);
+                        renderDirectory(fEntry);
                     } else {
-                        renderFile((FileEntry) fEntry);
+                        renderFile(fEntry);
                     }
                 }
             }
@@ -82,7 +82,7 @@ public class DirectoryPanel extends AbstractView {
         }
     }
 
-    private void renderDirectory(DirectoryEntry root) {
+    private void renderDirectory(FSEntry root) {
         ImGui.tableNextRow();
         if (selected.containsKey(root.getId())) {
             ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, editorRepository.accentU32);
@@ -105,7 +105,7 @@ public class DirectoryPanel extends AbstractView {
         }
     }
 
-    private void renderFile(FileEntry root) {
+    private void renderFile(FSEntry root) {
         StreamableResourceType resourceType = root.getType();
         ImGui.tableNextRow();
         if (selected.containsKey(root.getId())) {
@@ -127,13 +127,13 @@ public class DirectoryPanel extends AbstractView {
         }
     }
 
-    private void textColumn(String Directory, IEntry root) {
+    private void textColumn(String Directory, FSEntry root) {
         ImGui.tableNextColumn();
         ImGui.text(Directory);
         onClick(root);
     }
 
-    private void textDisabledColumn(String label, IEntry entry) {
+    private void textDisabledColumn(String label, FSEntry entry) {
         ImGui.tableNextColumn();
         ImGui.textDisabled(label);
         onClick(entry);
@@ -200,7 +200,7 @@ public class DirectoryPanel extends AbstractView {
         filesService.deleteSelected(selected.keySet());
     }
 
-    protected void onClick(IEntry root) {
+    protected void onClick(FSEntry root) {
         if (ImGui.isItemHovered() && ImGui.isItemClicked()) {
             if (!ImGui.isKeyDown(ImGuiKey.LeftCtrl)) {
                 selected.clear();
@@ -209,7 +209,7 @@ public class DirectoryPanel extends AbstractView {
             if (root.isDirectory()) {
                 inspection = null;
             } else {
-                inspection = (FileEntry) root;
+                inspection = root;
             }
         }
         if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {
@@ -217,15 +217,15 @@ public class DirectoryPanel extends AbstractView {
         }
     }
 
-    protected void openResource(IEntry root) {
+    protected void openResource(FSEntry root) {
         if (root == null) {
             return;
         }
         if (root.isDirectory()) {
-            currentDirectory = ((DirectoryEntry) root).id;
+            currentDirectory = root.id;
             selected.clear();
         } else {
-            switch (((FileEntry) root).getType()) {
+            switch (root.getType()) {
                 case SCENE -> {
                     var scene = (SceneImportData) sceneService.stream(importerService.getPathToFile(root.getId(), StreamableResourceType.SCENE), Collections.emptyMap(), Collections.emptyMap());
                     requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, scene));

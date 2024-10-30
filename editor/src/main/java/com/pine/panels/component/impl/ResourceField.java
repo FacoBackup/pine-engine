@@ -5,7 +5,7 @@ import com.pine.inspection.FieldDTO;
 import com.pine.inspection.ResourceTypeField;
 import com.pine.panels.component.AbstractFormField;
 import com.pine.repository.FilesRepository;
-import com.pine.repository.fs.FileEntry;
+import com.pine.repository.FSEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.theme.Icons;
@@ -13,7 +13,6 @@ import imgui.ImGui;
 import imgui.type.ImInt;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -30,7 +29,7 @@ public class ResourceField extends AbstractFormField {
     private final ImInt selected = new ImInt(-1);
     private String[] itemsArr = new String[0];
     private int previousSize = -1;
-    private final List<FileEntry> allByType = new ArrayList<>();
+    private final List<FSEntry> allByType = new ArrayList<>();
 
     public ResourceField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
@@ -47,7 +46,7 @@ public class ResourceField extends AbstractFormField {
         if (byType.size() != allByType.size()) {
             allByType.clear();
             for (var f : byType) {
-                allByType.add((FileEntry) filesRepository.entry.get(f));
+                allByType.add((FSEntry) filesRepository.entry.get(f));
             }
             if (previousSize != allByType.size()) {
                 previousSize = allByType.size();

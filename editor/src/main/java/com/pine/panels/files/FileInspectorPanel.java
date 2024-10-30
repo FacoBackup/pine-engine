@@ -5,7 +5,7 @@ import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
 import com.pine.panels.component.FormPanel;
-import com.pine.repository.fs.FileEntry;
+import com.pine.repository.FSEntry;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
@@ -27,10 +27,10 @@ public class FileInspectorPanel extends AbstractView {
     @PInject
     public StreamingRepository streamingRepository;
 
-    private FileEntry inspection;
+    private FSEntry inspection;
     private final ImString inspectionName = new ImString();
 
-    public void setInspection(FileEntry inspection) {
+    public void setInspection(FSEntry inspection) {
         if (this.inspection != inspection) {
             if (inspection == null) {
                 dataForm.setInspection(null);

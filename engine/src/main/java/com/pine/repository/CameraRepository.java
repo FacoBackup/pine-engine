@@ -9,8 +9,13 @@ import com.pine.service.camera.Frustum;
 import com.pine.theme.Icons;
 import org.joml.Matrix4f;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @PBean
 public class CameraRepository extends Inspectable implements SerializableRepository {
+    public static final String DEFAULT_CAMERA = Camera.class.getSimpleName();
+
     @InspectableField(group = "Controls", label = "Camera rotation sensitivity")
     public float sensitivity = 1;
 
@@ -94,7 +99,11 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     public final Frustum frustum = new Frustum();
     public float lastMouseX;
     public float lastMouseY;
-    public Camera currentCamera = new Camera();
+    public String currentCamera;
+    public Map<String, Camera> cameras = new HashMap<>() {{
+        put(DEFAULT_CAMERA, new Camera());
+    }};
+
     public float deltaX;
     public float deltaY;
 
@@ -103,15 +112,11 @@ public class CameraRepository extends Inspectable implements SerializableReposit
      *
      * @param camera
      */
-    public void setCurrentCamera(Camera camera) {
-        if (camera != null && camera != currentCamera) {
+    public void setCurrentCamera(String camera) {
+        if (camera != null && !camera.equals(currentCamera) && cameras.containsKey(camera)) {
             currentCamera = camera;
-            camera.registerChange();
+            cameras.get(camera).registerChange();
         }
-    }
-
-    public Camera getCurrentCamera() {
-        return currentCamera;
     }
 
     @Override

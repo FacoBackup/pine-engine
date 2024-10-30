@@ -8,16 +8,16 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public final class DockDTO implements Loggable, Serializable {
+    public final String id = UUID.randomUUID().toString();
     private final ImInt nodeId = new ImInt(0);
     private final ImInt selectedOption = new ImInt(0);
     private final String internalId;
-    private AbstractPanelContext context;
     private int splitDir;
     private float sizeX;
     private float sizeY;
     private float sizeRatioForNodeAtDir;
-    private DockDTO outAtOppositeDir;
-    private DockDTO origin;
+    private transient DockDTO outAtOppositeDir;
+    private transient DockDTO origin;
     private DockDescription description;
     private DockPosition direction;
 
@@ -101,18 +101,5 @@ public final class DockDTO implements Loggable, Serializable {
 
     public void setDescription(DockDescription description) {
         this.description = description;
-        try {
-            if (description.getContext() != null) {
-                context = description.getContext().getConstructor().newInstance();
-            } else {
-                context = null;
-            }
-        } catch (Exception ex) {
-            getLogger().error(ex.getMessage(), ex);
-        }
-    }
-
-    public AbstractPanelContext getContext() {
-        return context;
     }
 }

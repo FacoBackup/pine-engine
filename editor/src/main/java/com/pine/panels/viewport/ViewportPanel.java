@@ -8,6 +8,7 @@ import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
+import com.pine.service.camera.Camera;
 import com.pine.service.camera.CameraFirstPersonService;
 import com.pine.service.camera.CameraThirdPersonService;
 import com.pine.service.resource.ResourceService;
@@ -25,7 +26,7 @@ import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 
 import static com.pine.core.dock.DockPanel.OPEN;
-import static com.pine.core.dock.DockWrapperPanel.FRAME_SIZE;
+import static com.pine.core.dock.DockSpacePanel.FRAME_SIZE;
 
 public class ViewportPanel extends AbstractEntityViewPanel {
     private static final int CAMERA_FLAGS = ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
@@ -62,32 +63,39 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     public static final ImVec2 INV_X = new ImVec2(1, 0);
     public static final ImVec2 INV_Y = new ImVec2(0, 1);
     private GizmoPanel gizmo;
-    private ViewportContext context;
     private ImGuiIO io;
     private boolean isFirstMovement;
+    private Camera camera;
 
     @Override
     public void onInitialize() {
-
         this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
-        context = (ViewportContext) getContext();
         io = ImGui.getIO();
     }
 
     @Override
     public void render() {
+        updateCamera();
         hotKeys();
-
         tick();
-        ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
+
+        renderFrame();
 
         gizmo.render();
+        renderCameraPosition();
+    }
 
+    private void renderFrame() {
+        engine.render();
+        ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
+    }
+
+    private void renderCameraPosition() {
         ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 25);
         ImGui.setNextWindowSize(size.x - 16, 16);
         if (ImGui.begin(imguiId + "cameraPos", OPEN, CAMERA_FLAGS)) {
-            Vector3f positionCamera = cameraRepository.currentCamera.position;
+            Vector3f positionCamera = camera.position;
             ImGui.textColored(RED, "X: " + positionCamera.x);
             ImGui.sameLine();
             ImGui.textColored(GREEN, "Y: " + positionCamera.y);
@@ -97,30 +105,27 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         }
     }
 
-    private void tick() {
-        cameraRepository.setCurrentCamera(context.camera);
-
-        updateCamera();
-        engine.setTargetFBO(fbo);
-        engine.render();
-
-        sizeVec.x = size.x;
-        sizeVec.y = size.y - FRAME_SIZE;
-    }
-
     private void updateCamera() {
+        var cameraId = editorRepository.viewportCamera.get(this.dock.id);
+        camera = cameraRepository.cameras.get(cameraId);
+        if (camera == null) {
+            cameraRepository.cameras.put(cameraId, camera = new Camera());
+            editorRepository.viewportCamera.put(cameraId, cameraId);
+        }
+        cameraRepository.setCurrentCamera(cameraId);
+
         boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
 
         AbstractCameraService cameraService;
-        if (context.camera.orbitalMode) {
+        if (camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
             if (focused) {
                 if (io.getMouseWheel() != 0 && ImGui.isWindowHovered()) {
-                    cameraThirdPersonService.zoom(context.camera, io.getMouseWheel());
+                    cameraThirdPersonService.zoom(camera, io.getMouseWheel());
                 }
                 if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
                     cameraThirdPersonService.isChangingCenter = true;
-                    cameraThirdPersonService.changeCenter(context.camera, isFirstMovement);
+                    cameraThirdPersonService.changeCenter(camera, isFirstMovement);
                 } else {
                     cameraThirdPersonService.isChangingCenter = false;
                 }
@@ -128,12 +133,19 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         } else {
             cameraService = cameraFirstPersonService;
         }
-        if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && context.camera.orbitalMode))) {
-            cameraService.handleInput(context.camera, isFirstMovement);
+        if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && camera.orbitalMode))) {
+            cameraService.handleInput(camera, isFirstMovement);
             isFirstMovement = false;
         } else {
             isFirstMovement = true;
         }
+    }
+
+    private void tick() {
+        engine.setTargetFBO(fbo);
+
+        sizeVec.x = size.x;
+        sizeVec.y = size.y - FRAME_SIZE;
         repo.fasterPressed = ImGui.isKeyDown(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyDown(ImGuiKey.W);
         repo.backwardPressed = ImGui.isKeyDown(ImGuiKey.S);
@@ -161,5 +173,11 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         if (ImGui.isWindowHovered() && !ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
             viewportPickingService.pick();
         }
+    }
+
+    @Override
+    public void onRemove() {
+        cameraRepository.cameras.remove(dock.id);
+        editorRepository.viewportCamera.remove(dock.id);
     }
 }

@@ -10,12 +10,19 @@ public abstract class AbstractDockPanel extends AbstractView implements Serializ
     protected boolean isWindowFocused;
     protected ImVec2 position;
     protected Vector2f size;
+    protected DockDTO dock;
 
     public void setSize(Vector2f size) {
         this.size = size;
     }
 
+    public void setDock(DockDTO dock) {
+        this.dock = dock;
+    }
+
     public void setPosition(ImVec2 position) {
         this.position = position;
     }
+
+    public void onRemove(){}
 }

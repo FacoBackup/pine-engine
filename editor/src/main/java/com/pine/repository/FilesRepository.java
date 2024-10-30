@@ -2,8 +2,6 @@ package com.pine.repository;
 
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
-import com.pine.repository.fs.DirectoryEntry;
-import com.pine.repository.fs.IEntry;
 import com.pine.repository.streaming.StreamableResourceType;
 
 import java.util.ArrayList;
@@ -15,8 +13,8 @@ import java.util.Map;
 public class FilesRepository implements SerializableRepository {
     public static final String ROOT_DIRECTORY_ID = "ROOT";
 
-    public final Map<String, IEntry> entry = new HashMap<>() {{
-        var newD = new DirectoryEntry("Files", ROOT_DIRECTORY_ID);
+    public final Map<String, FSEntry> entry = new HashMap<>() {{
+        var newD = new FSEntry("Files", ROOT_DIRECTORY_ID);
         put(ROOT_DIRECTORY_ID, newD);
     }};
     public final Map<String, List<String>> parentChildren = new HashMap<>(){{

@@ -1,7 +1,6 @@
 package com.pine.component;
 
 import com.pine.Mutable;
-import com.pine.SerializableRepository;
 import com.pine.inspection.Inspectable;
 
 import java.util.Set;
