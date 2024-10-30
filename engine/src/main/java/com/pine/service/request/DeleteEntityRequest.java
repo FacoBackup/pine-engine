@@ -1,10 +1,7 @@
 package com.pine.service.request;
 
 import com.pine.messaging.Loggable;
-import com.pine.messaging.Message;
-import com.pine.messaging.MessageSeverity;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.streaming.StreamingRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +16,7 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     }
 
     @Override
-    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
+    public void run() {
         for (String entityId : entities) {
             if (!Objects.equals(entityId, repository.rootEntity.id())) {
                 String parent = repository.childParent.get(entityId);
@@ -33,7 +30,7 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
                 repository.parentChildren.remove(entityId);
             }
         }
-        return new Message(entities.size() + " entities deleted", MessageSeverity.SUCCESS);
+        getLogger().warn("Deleted {} entities", entities.size());
     }
 
     private void removeComponentsHierarchically(String entity, WorldRepository repository) {

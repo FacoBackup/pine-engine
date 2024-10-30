@@ -1,44 +1,32 @@
 package com.pine.tasks;
 
-import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.VoxelRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.camera.CameraService;
 import com.pine.service.environment.EnvironmentMapGenService;
-import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 
-import java.util.List;
 
-
-/**
- * Collects all visible renderable elements into a list
- */
 @PBean
-public class RenderingTask extends AbstractTask implements Loggable {
+public class RenderingTask extends AbstractTask {
 
     @PInject
     public CameraRepository camera;
 
     @PInject
     public RenderingRepository renderingRepository;
-
-    @PInject
-    public LightService lightService;
 
     @PInject
     public WorldRepository worldRepository;
@@ -58,22 +46,16 @@ public class RenderingTask extends AbstractTask implements Loggable {
     @PInject
     public EnvironmentMapGenService environmentMapGenService;
 
-    @PInject
-    public CameraService cameraService;
-
     private int renderIndex = 0;
 
     @Override
     protected void tickInternal() {
-        cameraService.update();
-
         if (renderingRepository.infoUpdated) {
             return;
         }
         startTracking();
         try {
             defineVoxelGrid();
-
             defineProbes();
 
             renderIndex = 0;
@@ -82,14 +64,6 @@ public class RenderingTask extends AbstractTask implements Loggable {
             renderingRepository.pendingTransformationsInternal = 0;
             renderingRepository.newRequests.clear();
 
-            List<AbstractComponent> withChangedData = worldRepository.withChangedData;
-            for (int i = 0, withChangedDataSize = withChangedData.size(); i < withChangedDataSize; i++) {
-                AbstractComponent c = withChangedData.get(i);
-                if (c instanceof TransformationComponent) {
-                    transformationService.updateHierarchy((TransformationComponent) c);
-                }
-            }
-
             var meshes = worldRepository.components.get(ComponentType.MESH).values();
             for (var mesh : meshes) {
                 var t = worldRepository.getTransformationComponent(mesh.getEntityId());
@@ -97,8 +71,6 @@ public class RenderingTask extends AbstractTask implements Loggable {
                     updateMeshData((MeshComponent) mesh, t);
                 }
             }
-
-            lightService.packageLights();
 
             renderingRepository.infoUpdated = true;
         } catch (Exception e) {

@@ -3,7 +3,6 @@ package com.pine.core.dock;
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 import com.pine.injection.PostCreation;
-import com.pine.window.EditorDock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,11 +19,11 @@ public class DockRepository implements SerializableRepository {
 
     @PostCreation
     public void onInitialize(){
-        center = new DockDTO(EditorDock.Viewport);
-        DockDTO rightUp = new DockDTO(EditorDock.Hierarchy);
-        DockDTO rightDown = new DockDTO(EditorDock.Inspector);
-        DockDTO downLeft = new DockDTO(EditorDock.Console);
-        DockDTO downRight = new DockDTO(EditorDock.Files);
+        center = new DockDTO(DockSpace.Viewport);
+        DockDTO rightUp = new DockDTO(DockSpace.Hierarchy);
+        DockDTO rightDown = new DockDTO(DockSpace.Inspector);
+        DockDTO downLeft = new DockDTO(DockSpace.Console);
+        DockDTO downRight = new DockDTO(DockSpace.Files);
 
         center.setSizeRatioForNodeAtDir(0.17f);
         rightUp.setSizeRatioForNodeAtDir(0.4f);

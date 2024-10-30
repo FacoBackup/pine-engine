@@ -1,7 +1,6 @@
 package com.pine.core.view;
 
 import com.pine.MetricCollector;
-import com.pine.core.panel.AbstractPanelContext;
 import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
 

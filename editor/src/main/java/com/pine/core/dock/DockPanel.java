@@ -29,9 +29,6 @@ public class DockPanel extends AbstractView {
     @PInject
     public DockService dockService;
 
-    @PInject
-    public DockRepository dockRepository;
-
     private AbstractView headerView;
 
     @Override
@@ -48,9 +45,7 @@ public class DockPanel extends AbstractView {
 
         endMainWindowSetup();
 
-        if (!dockRepository.isInitialized) {
-            dockService.buildViews(dockMainId, this);
-        }
+        dockService.buildViews(dockMainId, this);
 
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0.0f);
         ImGui.dockSpace(windowId, CENTER, ImGuiDockNodeFlags.PassthruCentralNode);

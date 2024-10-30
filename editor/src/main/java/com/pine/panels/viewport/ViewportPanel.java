@@ -65,7 +65,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     private GizmoPanel gizmo;
     private ImGuiIO io;
     private boolean isFirstMovement;
-    private Camera camera;
 
     @Override
     public void onInitialize() {
@@ -95,7 +94,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 25);
         ImGui.setNextWindowSize(size.x - 16, 16);
         if (ImGui.begin(imguiId + "cameraPos", OPEN, CAMERA_FLAGS)) {
-            Vector3f positionCamera = camera.position;
+            Vector3f positionCamera = cameraRepository.currentCamera.position;
             ImGui.textColored(RED, "X: " + positionCamera.x);
             ImGui.sameLine();
             ImGui.textColored(GREEN, "Y: " + positionCamera.y);
@@ -106,16 +105,16 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     }
 
     private void updateCamera() {
-        var cameraId = editorRepository.viewportCamera.get(this.dock.id);
-        camera = cameraRepository.cameras.get(cameraId);
+        var camera = editorRepository.viewportCamera.get(this.dock.id);
         if (camera == null) {
-            cameraRepository.cameras.put(cameraId, camera = new Camera());
-            editorRepository.viewportCamera.put(cameraId, cameraId);
+            editorRepository.viewportCamera.put(this.dock.id, camera = new Camera());
+            camera.pitch = (float) -(Math.PI/4);
+            camera.yaw = (float) (Math.PI/4);
+            camera.orbitalMode = true;
         }
-        cameraRepository.setCurrentCamera(cameraId);
+        cameraRepository.setCurrentCamera(camera);
 
         boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
-
         AbstractCameraService cameraService;
         if (camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
@@ -177,7 +176,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
     @Override
     public void onRemove() {
-        cameraRepository.cameras.remove(dock.id);
         editorRepository.viewportCamera.remove(dock.id);
     }
 }

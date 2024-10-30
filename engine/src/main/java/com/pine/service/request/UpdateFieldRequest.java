@@ -4,10 +4,7 @@ import com.pine.Mutable;
 import com.pine.component.AbstractComponent;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
-import com.pine.messaging.Message;
-import com.pine.messaging.MessageSeverity;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.streaming.StreamingRepository;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -23,14 +20,12 @@ public class UpdateFieldRequest extends AbstractRequest {
     }
 
     @Override
-    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
+    public void run() {
         try {
             process(fieldDTO, newValue, repository);
         } catch (Exception e) {
-            getLogger().error(e.getMessage(), e);
-            return new Message("Could not update field " + fieldDTO.getField().getName(), MessageSeverity.ERROR);
+            getLogger().error("Error while updating field", e);
         }
-        return null;
     }
 
     public static void process(FieldDTO fieldDTO, Object newValue, WorldRepository repository) throws IllegalAccessException {

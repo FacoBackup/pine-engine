@@ -22,7 +22,7 @@ import java.util.List;
 
 @PBean
 public class Engine extends MetricCollector implements Loggable {
-    public static final int MAX_ENTITIES = 100000;
+    public static final int MAX_ENTITIES = 10_000;
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
 

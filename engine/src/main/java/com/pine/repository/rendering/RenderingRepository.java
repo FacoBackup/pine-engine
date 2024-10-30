@@ -34,7 +34,11 @@ public class RenderingRepository {
     public WorldRepository worldRepository;
 
     public void sync() {
-        // TODO - Fix concurrent modification
+        if(!infoUpdated){
+            return;
+        }
+
+        infoUpdated = false;
         pendingTransformations = pendingTransformationsInternal;
         var aux = requests;
         requests = newRequests;
@@ -44,8 +48,6 @@ public class RenderingRepository {
         var auxV = voxelChunks;
         voxelChunks = newVoxelChunks;
         newVoxelChunks = auxV;
-
-        worldRepository.withChangedData.clear();
     }
 
     public int getTotalTriangleCount() {

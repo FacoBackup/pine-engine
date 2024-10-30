@@ -8,13 +8,9 @@ import com.pine.theme.Icons;
 import com.pine.type.LightType;
 import org.joml.Vector2f;
 
-import java.io.Serial;
 import java.util.Set;
 
 public abstract class AbstractLightComponent extends AbstractComponent {
-    @Serial
-    private static final long serialVersionUID = -2399813591625799979L;
-
     @InspectableField(label = "Screen Space Shadows")
     public boolean sss = false;
     @InspectableField(label = "Inner cutoff distance", min = 0)

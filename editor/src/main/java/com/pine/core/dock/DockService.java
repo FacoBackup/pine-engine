@@ -17,6 +17,9 @@ public class DockService {
     public DockRepository dockRepository;
 
     public void buildViews(ImInt dockMainId, DockPanel panel) {
+        if (dockRepository.isInitialized || dockRepository.center == null) {
+            return;
+        }
         panel.getChildren().clear();
         imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
         imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), NO_TAB_BAR_FLAG);
@@ -110,7 +113,7 @@ public class DockService {
             throw new RuntimeException(e);
         }
     }
- 
+
     public void prepareForRemoval(DockDTO dock, DockSpacePanel dockSpacePanel) {
         dockRepository.dockToRemove = dock;
         dockRepository.dockPanelToRemove = dockSpacePanel;

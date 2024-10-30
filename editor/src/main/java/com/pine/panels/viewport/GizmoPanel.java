@@ -7,6 +7,7 @@ import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
+import com.pine.service.rendering.RequestProcessingService;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
@@ -27,6 +28,9 @@ public class GizmoPanel extends AbstractView {
 
     @PInject
     public WorldRepository world;
+
+    @PInject
+    public RequestProcessingService requestProcessingService;
 
     private final Matrix4f auxMat4 = new Matrix4f();
     private final Vector3f auxTranslation = new Vector3f();
@@ -119,7 +123,6 @@ public class GizmoPanel extends AbstractView {
         localSelected.scale.add(auxScale);
         localSelected.rotation.add(auxRot);
 
-        world.withChangedData.add(localSelected);
         localSelected.registerChange();
         localChangeId =  localSelected.getChangeId();
     }

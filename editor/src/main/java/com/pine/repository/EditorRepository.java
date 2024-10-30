@@ -6,6 +6,7 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
+import com.pine.service.camera.Camera;
 import com.pine.theme.Icons;
 import com.pine.tools.types.ExecutionEnvironment;
 import imgui.ImVec4;
@@ -14,16 +15,12 @@ import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 
-import java.io.Serial;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 @PBean
 public class EditorRepository extends Inspectable implements SerializableRepository {
-    @Serial
-    private static final long serialVersionUID = -5292170530653725873L;
-
 
     @InspectableField(group = "Editor", label = "Background color")
     public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
@@ -84,7 +81,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public String mainSelection = null;
     public final Map<String, Boolean> selected = new HashMap<>();
     public final LinkedList<String> copied = new LinkedList<>();
-    public final Map<String, String> viewportCamera = new HashMap<>();
+    public final Map<String, Camera> viewportCamera = new HashMap<>();
 
     @Override
     public String getIcon() {

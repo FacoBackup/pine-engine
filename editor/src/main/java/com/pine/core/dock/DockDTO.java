@@ -1,6 +1,5 @@
 package com.pine.core.dock;
 
-import com.pine.core.panel.AbstractPanelContext;
 import com.pine.messaging.Loggable;
 import imgui.type.ImInt;
 
@@ -18,10 +17,10 @@ public final class DockDTO implements Loggable, Serializable {
     private float sizeRatioForNodeAtDir;
     private transient DockDTO outAtOppositeDir;
     private transient DockDTO origin;
-    private DockDescription description;
+    private DockSpace description;
     private DockPosition direction;
 
-    public DockDTO(DockDescription description) {
+    public DockDTO(DockSpace description) {
         setDescription(description);
         selectedOption.set(description.getOptionIndex());
         internalId = "##" + UUID.randomUUID().toString().replace("-", "");
@@ -35,7 +34,7 @@ public final class DockDTO implements Loggable, Serializable {
         return direction;
     }
 
-    public DockDescription getDescription() {
+    public DockSpace getDescription() {
         return description;
     }
 
@@ -99,7 +98,7 @@ public final class DockDTO implements Loggable, Serializable {
         return selectedOption;
     }
 
-    public void setDescription(DockDescription description) {
+    public void setDescription(DockSpace description) {
         this.description = description;
     }
 }

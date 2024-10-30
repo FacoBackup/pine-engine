@@ -3,10 +3,7 @@ package com.pine.service.request;
 import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
-import com.pine.messaging.Message;
-import com.pine.messaging.MessageSeverity;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.streaming.StreamingRepository;
 
 import java.util.List;
 import java.util.Set;
@@ -41,15 +38,14 @@ public class AddComponentRequest extends AbstractRequest {
     }
 
     @Override
-    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
+    public void run() {
         if (repository.components.get(type).containsKey(entity.id())) {
-            return new Message("Entity already has component of type " + type.getTitle(), MessageSeverity.WARN);
+            getLogger().warn("Component {} already exists on entity {}", type.getTitle(), entity.id());
         }
         try {
             AddComponentRequest.add(List.of(type), entity, repository);
         } catch (Exception e) {
-            return new Message("Could not create", MessageSeverity.ERROR);
+            getLogger().error("Error while adding component {}", type.getTitle(), e);
         }
-        return new Message("Component added to entity", MessageSeverity.SUCCESS);
     }
 }

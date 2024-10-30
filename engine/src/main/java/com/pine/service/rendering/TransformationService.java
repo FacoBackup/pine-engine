@@ -4,18 +4,20 @@ import com.pine.EngineUtils;
 import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
+import com.pine.component.light.AbstractLightComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.tasks.AbstractTask;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 
 @PBean
-public class TransformationService {
+public class TransformationService extends AbstractTask {
     @PInject
     public CameraRepository cameraRepository;
 
@@ -28,49 +30,67 @@ public class TransformationService {
     @PInject
     public WorldRepository worldRepository;
 
+    @PInject
+    public LightService lightService;
+
     private final Vector3f distanceAux = new Vector3f();
     private final Vector3f auxCubeMax = new Vector3f();
     private final Vector3f auxCubeMin = new Vector3f();
     private final Matrix4f auxMat4 = new Matrix4f();
     private final Matrix4f auxMat42 = new Matrix4f();
+    private boolean isLightModified = false;
 
-    public void updateHierarchy(TransformationComponent st) {
-        if (st.isInstanced) {
-            transform(st, worldRepository.getTransformationComponent(st.getEntityId()));
-            return;
+    @Override
+    protected void tickInternal() {
+        startTracking();
+        try{
+            isLightModified = false;
+            traverse(WorldRepository.ROOT_ID, false);
+
+            worldRepository.components.get(ComponentType.MESH);
+            if (isLightModified) {
+                lightService.packageLights();
+            }
+        }catch (Exception e){
+            getLogger().error(e.getMessage(), e);
         }
-        TransformationComponent parentTransform = findParent(st.getEntityId());
-        transform(st, parentTransform);
+        endTracking();
+    }
 
-        var children = worldRepository.parentChildren.get(st.getEntityId());
-        if (children != null) {
-            for (String child : children) {
-                var comp = worldRepository.getTransformationComponent(child);
-                if (comp != null) {
-                    updateHierarchy(comp);
-                }
+    public void traverse(String root, boolean parentHasChanged) {
+        TransformationComponent st = (TransformationComponent) worldRepository.components.get(ComponentType.TRANSFORMATION).get(root);
+        if (st != null && (st.isNotFrozen() || parentHasChanged)) {
+            TransformationComponent parentTransform = findParent(st.getEntityId());
+            transform(st, parentTransform);
+            st.freezeVersion();
+            parentHasChanged = true;
+        }
+
+        var mesh = (MeshComponent) worldRepository.components.get(ComponentType.MESH).get(root);
+        if (mesh != null) {
+            if (mesh.isInstancedRendering) {
+                mesh.instances.forEach(t -> {
+                    transform(t, st);
+                });
             }
         }
 
-        var meshC = (MeshComponent) worldRepository.components.get(ComponentType.MESH).get(st.getEntityId());
-        if (meshC != null && meshC.isInstancedRendering) {
-            for (var t : meshC.instances) {
-                updateHierarchy(t);
+        var children = worldRepository.parentChildren.get(root);
+        if (children != null) {
+            for (var child : children) {
+                traverse(child, parentHasChanged);
             }
         }
     }
 
-    public void transform(TransformationComponent st, TransformationComponent parentTransform) {
+
+    private void transform(TransformationComponent st, TransformationComponent parentTransform) {
         if (parentTransform != null) {
             auxMat4.set(parentTransform.globalMatrix);
-            transformInternal(st);
-        } else if (st.isNotFrozen()) {
+        } else {
             auxMat4.identity();
-            transformInternal(st);
         }
-    }
 
-    private void transformInternal(TransformationComponent st) {
         auxMat42.identity();
         auxMat42
                 .translate(st.translation)
@@ -79,20 +99,23 @@ public class TransformationService {
 
         auxMat4.mul(auxMat42);
         st.globalMatrix.set(auxMat4);
+        st.freezeVersion();
 
-        for (var componentBag : worldRepository.components.values()) {
-            var comp = componentBag.get(st.getEntityId());
-            if (comp != null && comp.getType() != ComponentType.TRANSFORMATION && comp.getType() != ComponentType.MESH) {
-                comp.registerChange();
+        if (!isLightModified) {
+            for (var componentBag : worldRepository.components.values()) {
+                var comp = componentBag.get(st.getEntityId());
+                if (comp instanceof AbstractLightComponent) {
+                    isLightModified = true;
+                    break;
+                }
             }
         }
     }
 
     private TransformationComponent findParent(String id) {
-        String current = id;
-        while (current != null && !current.equals(worldRepository.rootEntity.id())) {
-            current = worldRepository.childParent.get(current);
-            var t = worldRepository.getTransformationComponent(current);
+        while (id != null && !id.equals(WorldRepository.ROOT_ID)) {
+            id = worldRepository.childParent.get(id);
+            var t = worldRepository.getTransformationComponent(id);
             if (t != null) {
                 return t;
             }
@@ -123,6 +146,12 @@ public class TransformationService {
         auxCubeMax.y = translation.y + boundingBoxSize.y;
         auxCubeMax.z = translation.x + boundingBoxSize.z;
 
+        // TODO - FIX
         return !cameraRepository.frustum.isCubeInFrustum(auxCubeMin, auxCubeMax);
+    }
+
+    @Override
+    public String getTitle() {
+        return "Transformation";
     }
 }

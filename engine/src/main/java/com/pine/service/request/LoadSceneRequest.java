@@ -3,10 +3,6 @@ package com.pine.service.request;
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
-import com.pine.messaging.Message;
-import com.pine.messaging.MessageSeverity;
-import com.pine.repository.WorldRepository;
-import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.data.SceneImportData;
 
 import java.util.Collections;
@@ -22,14 +18,17 @@ public class LoadSceneRequest extends AbstractRequest {
     }
 
     @Override
-    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
-        traverse(root, scene, repository, streamingRepository);
-        return new Message("Scene loaded successfully", MessageSeverity.SUCCESS);
+    public void run() {
+        getLogger().warn("Loading scene {}", scene.id);
+        traverse(root, scene);
     }
 
-    private void traverse(Entity parent, SceneImportData localScene, WorldRepository repository, StreamingRepository streamingRepository) {
+    private void traverse(Entity parent, SceneImportData localScene) {
         var add = new AddEntityRequest(localScene.meshResourceId != null ? List.of(ComponentType.MESH) : Collections.emptyList());
-        add.run(repository, streamingRepository);
+        add.setup(repository, streamingRepository);
+        add.run();
+
+
         Entity entity = add.getResponse();
         entity.name = localScene.name;
         if (localScene.meshResourceId != null) {
@@ -39,10 +38,11 @@ public class LoadSceneRequest extends AbstractRequest {
         }
 
         var hierarchy = new HierarchyRequest(parent, entity);
-        hierarchy.run(repository, streamingRepository);
+        hierarchy.setup(repository, streamingRepository);
+        hierarchy.run();
 
         for (var childScene : localScene.children) {
-            traverse(entity, childScene, repository, streamingRepository);
+            traverse(entity, childScene);
         }
     }
 }

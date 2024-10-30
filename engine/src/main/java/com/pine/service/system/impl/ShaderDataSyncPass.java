@@ -7,13 +7,9 @@ public class ShaderDataSyncPass extends AbstractPass implements Loggable {
     @Override
     protected void renderInternal() {
         updateUBOs();
-
-        if (renderingRepository.infoUpdated) {
-            renderingRepository.infoUpdated = false;
-            renderingRepository.sync();
-
-            updateSSBOs();
-        }
+        // TODO - Find a more optimized way to update the buffer
+        updateSSBOs();
+        renderingRepository.sync();
     }
 
     private void updateSSBOs() {

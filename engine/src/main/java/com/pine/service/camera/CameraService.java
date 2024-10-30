@@ -6,9 +6,10 @@ import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.CoreUBORepository;
+import com.pine.tasks.SyncTask;
 
 @PBean
-public class CameraService {
+public class CameraService implements SyncTask {
     private static final double LOG_2 = Math.log(2);
 
     @PInject
@@ -29,12 +30,9 @@ public class CameraService {
     private AbstractCameraService cameraService;
     private Camera camera;
 
-    public void update() {
-        camera = repository.cameras.get(repository.currentCamera);
-        if (camera == null) {
-            camera = repository.cameras.get(CameraRepository.DEFAULT_CAMERA);
-        }
-
+    @Override
+    public void sync() {
+        camera = repository.currentCamera;
         if (camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
         } else {

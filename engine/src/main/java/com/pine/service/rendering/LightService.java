@@ -28,7 +28,6 @@ public class LightService {
     public WorldRepository worldRepository;
     private int offset = 0;
     private int count = 0;
-    private boolean isFirstRun = true;
     private final Matrix4f auxMat4 = new Matrix4f();
     private final Matrix4f aux2Mat4 = new Matrix4f();
 
@@ -55,27 +54,24 @@ public class LightService {
         for (var l : spotLights) {
             packageSpotLight((SpotLightComponent) l, b);
         }
-        isFirstRun = false;
         renderingRepository.lightCount = count;
     }
 
     private void packageSpotLight(SpotLightComponent light, FloatBuffer b) {
-        if (light.isNotFrozen() || isFirstRun) {
-            var transform = worldRepository.getTransformationComponent(light.getEntityId());
-            int internalOffset = fillCommon(b, offset, light);
+        var transform = worldRepository.getTransformationComponent(light.getEntityId());
+        int internalOffset = fillCommon(b, offset, light);
 
-            auxMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
+        auxMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
 
-            aux2Mat4.identity();
-            aux2Mat4.rotate(transform.rotation);
+        aux2Mat4.identity();
+        aux2Mat4.rotate(transform.rotation);
 
-            auxMat4.mul(aux2Mat4);
+        auxMat4.mul(aux2Mat4);
 
-            b.put(internalOffset, auxMat4.m20());
-            b.put(internalOffset + 1, auxMat4.m21());
-            b.put(internalOffset + 2, auxMat4.m22());
-            b.put(internalOffset + 3, (float) Math.cos(Math.toRadians(light.radius)));
-        }
+        b.put(internalOffset, auxMat4.m20());
+        b.put(internalOffset + 1, auxMat4.m21());
+        b.put(internalOffset + 2, auxMat4.m22());
+        b.put(internalOffset + 3, (float) Math.cos(Math.toRadians(light.radius)));
         light.freezeVersion();
         offset += light.type.getDataDisplacement();
         count++;
@@ -84,7 +80,7 @@ public class LightService {
     private void packageSphereLight(SphereLightComponent l, FloatBuffer b) {
         int internalOffset = fillCommon(b, offset, l);
         b.put(internalOffset, l.areaRadius);
-        l.freezeVersion();
+
         offset += l.type.getDataDisplacement();
         count++;
     }
@@ -95,30 +91,28 @@ public class LightService {
         b.put(internalOffset + 1, l.shadowMap ? 1 : 0);
         b.put(internalOffset + 2, l.shadowAttenuationMinDistance);
         b.put(internalOffset + 3, l.shadowBias);
-        l.freezeVersion();
+
         offset += l.type.getDataDisplacement();
         count++;
     }
 
     private void packageDirectionalLight(DirectionalLightComponent l, FloatBuffer b) {
-        if (l.isNotFrozen() || isFirstRun) {
-            var transform = worldRepository.getTransformationComponent(l.getEntityId());
-            int internalOffset = fillCommon(b, offset, l);
+        var transform = worldRepository.getTransformationComponent(l.getEntityId());
+        int internalOffset = fillCommon(b, offset, l);
 
-            b.put(internalOffset, l.atlasFace.x);
-            b.put(internalOffset + 1, l.atlasFace.y);
-            b.put(internalOffset + 2, l.shadowMap ? 0 : 1);
-            b.put(internalOffset + 3, l.shadowBias);
-            b.put(internalOffset + 4, l.shadowAttenuationMinDistance);
+        b.put(internalOffset, l.atlasFace.x);
+        b.put(internalOffset + 1, l.atlasFace.y);
+        b.put(internalOffset + 2, l.shadowMap ? 0 : 1);
+        b.put(internalOffset + 3, l.shadowBias);
+        b.put(internalOffset + 4, l.shadowAttenuationMinDistance);
 
-            if (l.shadowMap) {
-                var view = auxMat4.lookAt(transform.translation, new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
-                var proj = aux2Mat4.ortho(-l.size, l.size, -l.size, l.size, l.zNear, l.zFar);
-                proj.mul(view);
-                EngineUtils.copyWithOffset(b, proj, 16); // SECOND MATRIX
-            }
+        if (l.shadowMap) {
+            var view = auxMat4.lookAt(transform.translation, new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+            var proj = aux2Mat4.ortho(-l.size, l.size, -l.size, l.size, l.zNear, l.zFar);
+            proj.mul(view);
+            EngineUtils.copyWithOffset(b, proj, 16); // SECOND MATRIX
         }
-        l.freezeVersion();
+
         offset += l.type.getDataDisplacement();
         count++;
     }

@@ -2,10 +2,7 @@ package com.pine.service.request;
 
 import com.pine.component.Entity;
 import com.pine.messaging.Loggable;
-import com.pine.messaging.Message;
-import com.pine.messaging.MessageSeverity;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.streaming.StreamingRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +21,7 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
     }
 
     @Override
-    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
+    public void run() {
         for (String entityId : entities) {
             var entity = repository.entityMap.get(entityId);
             if (entity != repository.rootEntity) {
@@ -41,7 +38,7 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
                 }
             }
         }
-        return new Message(entities.size() + " entities copied", MessageSeverity.SUCCESS);
+        getLogger().warn("{} entities copied", entities.size());
     }
 
     private static void cloneComponents(WorldRepository repository, String entityId, Entity cloned) {
