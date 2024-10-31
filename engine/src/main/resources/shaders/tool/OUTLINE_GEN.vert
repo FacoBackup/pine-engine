@@ -8,7 +8,7 @@ uniform int renderIndex;
 flat out int rIndex;
 
 void main() {
-    rIndex = renderIndex;
+    rIndex = renderIndex + 1;
     mat4 model = modelMatrices[renderIndex + gl_InstanceID];
     gl_Position = viewProjection * model * vec4(position, 1);
 }

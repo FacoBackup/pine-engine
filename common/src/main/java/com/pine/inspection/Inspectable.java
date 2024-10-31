@@ -7,9 +7,12 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class Inspectable {
-    private transient final List<FieldDTO> fieldsAnnotated = new ArrayList<>();
+    private transient List<FieldDTO> fieldsAnnotated = new ArrayList<>();
 
     final public List<FieldDTO> getFieldsAnnotated() {
+        if(fieldsAnnotated == null){
+            fieldsAnnotated = new ArrayList<>();
+        }
         if (fieldsAnnotated.isEmpty()) {
             for (var field : getClass().getFields()) {
                 InspectableField inspectableField = field.getAnnotation(InspectableField.class);

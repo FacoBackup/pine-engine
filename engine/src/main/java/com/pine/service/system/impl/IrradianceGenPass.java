@@ -51,7 +51,6 @@ public class IrradianceGenPass extends AbstractPass {
                 env.irradiance = CubeMapGenerator.generateTexture(RES);
                 shaderService.bindSamplerCubeDirect(env, 0);
                 GL46.glDisable(GL11.GL_CULL_FACE);
-                GL46.glClearColor(0, 0, 0, 1);
 
                 GL46.glViewport(0, 0, RES, RES);
                 bindBuffers();

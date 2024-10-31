@@ -1,7 +1,6 @@
 package com.pine.component.light;
 
 import com.pine.component.ComponentType;
-import com.pine.component.Entity;
 import com.pine.inspection.InspectableField;
 import com.pine.type.LightType;
 import org.joml.Vector2f;
@@ -23,7 +22,7 @@ public class DirectionalLightComponent extends AbstractLightComponent {
     public float size = 35;
     public Vector2f atlasFace = new Vector2f();
 
-    public DirectionalLightComponent(Entity entity) {
+    public DirectionalLightComponent(String entity) {
         super(entity);
     }
 

@@ -1,6 +1,5 @@
 package com.pine.panels.component;
 
-import com.pine.component.Transformation;
 import com.pine.core.view.AbstractView;
 import com.pine.inspection.FieldDTO;
 import com.pine.inspection.Inspectable;
@@ -21,7 +20,7 @@ public class FormPanel extends AbstractView {
         this.changeHandler = changeHandler;
     }
 
-    public void setInspectable(Inspectable data) {
+    public void setInspection(Inspectable data) {
         if (this.inspectable == data) {
             return;
         }
@@ -40,11 +39,6 @@ public class FormPanel extends AbstractView {
             AccordionPanel group = groups.get(field.getGroup());
             group.title = field.getGroup();
             switch (field.getType()) {
-                case CUSTOM:
-                    if (Transformation.class.isAssignableFrom(field.getField().getType())) {
-                        group.appendChild(new TransformationField(field, changeHandler));
-                    }
-                    break;
                 case STRING:
                     if (field.getField().isAnnotationPresent(ResourceTypeField.class)) {
                         group.appendChild(new ResourceField(field, changeHandler));

@@ -1,15 +1,14 @@
 package com.pine.service.resource.fbo;
 
 import com.pine.EngineUtils;
-import com.pine.service.resource.AbstractResource;
-import com.pine.service.resource.LocalResourceType;
+import com.pine.service.resource.IResource;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FrameBufferObject extends AbstractResource {
+public class FrameBufferObject implements IResource {
     public final int width;
     public final int height;
     private final int FBO;
@@ -22,8 +21,7 @@ public class FrameBufferObject extends AbstractResource {
     private int mainSampler;
     private int mainSamplerPrecision;
 
-    public FrameBufferObject(int width, int height, String id) {
-        super(id);
+    public FrameBufferObject(int width, int height) {
         this.width = width;
         this.height = height;
         this.resolution[0] = width;
@@ -85,26 +83,27 @@ public class FrameBufferObject extends AbstractResource {
         );
     }
 
-    public void depthTest() {
+    public FrameBufferObject depthTest() {
         use();
         this.RBO = GL46.glGenRenderbuffers();
         GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, this.RBO);
         GL46.glRenderbufferStorage(GL46.GL_RENDERBUFFER, GL46.GL_DEPTH_COMPONENT24, this.width, this.height);
         GL46.glFramebufferRenderbuffer(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_ATTACHMENT, GL46.GL_RENDERBUFFER, this.RBO);
         clearFlag = GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT;
-
-    }
-
-    public FrameBufferObject sampler() {
-        sampler(this.width, this.height, 0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
         return this;
     }
 
-    public void sampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
-        sampler(this.width, this.height, attachment, precision, format, type, linear, repeat);
+    public FrameBufferObject addSampler() {
+        addSampler(this.width, this.height, 0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
+        return this;
     }
 
-    public void sampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    public FrameBufferObject addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+        addSampler(this.width, this.height, attachment, precision, format, type, linear, repeat);
+        return this;
+    }
+
+    public FrameBufferObject addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         use();
         int texture = GL46.glGenTextures();
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, texture);
@@ -124,6 +123,7 @@ public class FrameBufferObject extends AbstractResource {
         attachments.add(GL46.GL_COLOR_ATTACHMENT0 + attachment);
         GL46.glDrawBuffers(attachments.stream().mapToInt(i -> i).toArray());
 
+        return this;
     }
 
     public void use() {
@@ -138,11 +138,6 @@ public class FrameBufferObject extends AbstractResource {
 
     public void stop() {
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, GL46.GL_NONE);
-    }
-
-    @Override
-    public LocalResourceType getResourceType() {
-        return LocalResourceType.FBO;
     }
 
     public int getMainSampler() {

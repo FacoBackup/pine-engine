@@ -1,19 +1,15 @@
 package com.pine.service.system.impl;
 
-import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
-import com.pine.repository.TerrainSettingsRepository;
 import com.pine.service.meshlet.MeshletInfo;
 import com.pine.service.meshlet.MeshletUtil;
 import com.pine.service.meshlet.Meshlets;
 import com.pine.service.meshlet.TerrainGenerationUtil;
-import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.resource.ssbo.SSBOCreationData;
 import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
-import com.pine.service.streaming.StreamingService;
 import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -22,14 +18,6 @@ public class MeshletPass extends AbstractPass implements Loggable {
     private static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
     private static final int LOCAL_SIZE_X = 8;
     private static final int LOCAL_SIZE_Y = 8;
-
-    @PInject
-    public TerrainSettingsRepository terrainSettingsRepository;
-    @PInject
-    public StreamingService streamingService;
-
-    @PInject
-    public ResourceService resources;
 
     ShaderStorageBufferObject infoBuffer;
     ShaderStorageBufferObject indexBuffer;
@@ -61,10 +49,10 @@ public class MeshletPass extends AbstractPass implements Loggable {
         }
 
 
-        infoBuffer = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(infoBufferData));
-        indexBuffer = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(meshlets.meshletVertices));
-        triangleBuffer = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(meshlets.meshletTriangles.asIntBuffer()));
-        vertexBuffer = (ShaderStorageBufferObject) resources.addResource(new SSBOCreationData(meshlets.vertices));
+        infoBuffer = new ShaderStorageBufferObject(new SSBOCreationData(infoBufferData));
+        indexBuffer = new ShaderStorageBufferObject(new SSBOCreationData(meshlets.meshletVertices));
+        triangleBuffer = new ShaderStorageBufferObject(new SSBOCreationData(meshlets.meshletTriangles.asIntBuffer()));
+        vertexBuffer = new ShaderStorageBufferObject(new SSBOCreationData(meshlets.vertices));
 
         MemoryUtil.memFree(meshlets.meshletTriangles);
         MemoryUtil.memFree(meshlets.meshletVertices);

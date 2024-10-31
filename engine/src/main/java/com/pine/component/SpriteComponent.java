@@ -5,6 +5,8 @@ import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.ref.TextureResourceRef;
 
+import java.util.Set;
+
 
 public class SpriteComponent extends AbstractComponent {
     @ResourceTypeField(type = StreamableResourceType.TEXTURE)
@@ -19,8 +21,13 @@ public class SpriteComponent extends AbstractComponent {
     @InspectableField(label = "Always face camera")
     public boolean alwaysFaceCamera = true;
 
-    public SpriteComponent(Entity entity) {
+    public SpriteComponent(String entity) {
         super(entity);
+    }
+
+    @Override
+    public Set<ComponentType> getDependencies() {
+        return Set.of(ComponentType.TRANSFORMATION);
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.io.Serializable;
 import static com.pine.core.dock.DockPanel.OPEN;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
-public final class DockWrapperPanel extends AbstractView implements Loggable, Serializable {
+public final class DockSpacePanel extends AbstractView implements Loggable, Serializable {
     private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.MenuBar;
     private static final ImVec2 DEFAULT = new ImVec2(-1, -1);
     private static final ImVec2 MAX_SIZE = new ImVec2(Float.MAX_VALUE, Float.MAX_VALUE);
@@ -33,7 +33,7 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
     private boolean sizeInitialized = false;
     private int stylePushCount;
 
-    private final DockWrapperPanel mainWindow;
+    private final DockSpacePanel mainWindow;
     private final DockDTO dock;
     private AbstractDockPanel view;
     private final ImVec2 headerPadding = new ImVec2(0, 3);
@@ -44,9 +44,12 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
     @PInject
     public MessageRepository messageRepository;
 
+    @PInject
+    public DockRepository dockRepository;
+
     private boolean isNotCenter;
 
-    public DockWrapperPanel(DockWrapperPanel mainWindow, DockDTO dock) {
+    public DockSpacePanel(DockSpacePanel mainWindow, DockDTO dock) {
         this.mainWindow = mainWindow;
         this.dock = dock;
         padding.set(dock.getDescription().getPaddingX(), dock.getDescription().getPaddingY());
@@ -64,8 +67,8 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
             children.clear();
             view = dock.getDescription().getView().getConstructor().newInstance();
             view.setSize(size);
+            view.setDock(dock);
             view.setPosition(position);
-            setContext(dock.getContext());
             appendChild(view);
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
@@ -103,6 +106,10 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
         stylePushCount = 0;
     }
 
+    public AbstractDockPanel getView() {
+        return view;
+    }
+
     private void renderHeader() {
         headerPadding.x = ImGui.getStyle().getFramePaddingX();
 
@@ -126,13 +133,12 @@ public final class DockWrapperPanel extends AbstractView implements Loggable, Se
                         dto.setSplitDir(isDownDirection ? ImGuiDir.Down : ImGuiDir.Right);
                         dto.setSizeRatioForNodeAtDir(.5f);
                         dto.setOutAtOppositeDir(dock);
-                        DockGroup group = dockService.getCurrentDockGroup();
                         switch (dock.getPosition()) {
-                            case LEFT -> group.left.add(group.left.indexOf(dock) + 1, dto);
-                            case RIGHT -> group.right.add(group.right.indexOf(dock) + 1, dto);
-                            case BOTTOM -> group.bottom.add(group.bottom.indexOf(dock) + 1, dto);
+                            case LEFT -> dockRepository.left.add(dockRepository.left.indexOf(dock) + 1, dto);
+                            case RIGHT -> dockRepository.right.add(dockRepository.right.indexOf(dock) + 1, dto);
+                            case BOTTOM -> dockRepository.bottom.add(dockRepository.bottom.indexOf(dock) + 1, dto);
                         }
-                        group.isInitialized = false;
+                        dockRepository.isInitialized = false;
                         messageRepository.pushMessage("Dock space created", MessageSeverity.SUCCESS);
                     } catch (Exception e) {
                         getLogger().error(e.getMessage(), e);

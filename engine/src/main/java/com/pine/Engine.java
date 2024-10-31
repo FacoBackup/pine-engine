@@ -3,11 +3,11 @@ package com.pine;
 import com.pine.injection.EngineExternalModule;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.inspection.Color;
 import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.*;
 import com.pine.service.module.EngineModulesService;
+import com.pine.service.resource.IResource;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.tasks.AbstractTask;
@@ -22,11 +22,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @PBean
-public class Engine extends MetricCollector implements Loggable {
-    public static final int MAX_ENTITIES = 100000;
+public class Engine extends MetricCollector implements IResource {
+    public static final int MAX_ENTITIES = 10_000;
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
-    public Color clearColor = new Color(0, 0, 0);
 
     @PInject
     public EngineModulesService modules;
@@ -72,6 +71,12 @@ public class Engine extends MetricCollector implements Loggable {
         tasks.forEach(AbstractTask::start);
 
         this.targetDirectory = targetDirectory;
+        createDirectories();
+
+        ready = true;
+    }
+
+    private void createDirectories() {
         try {
             Path path = Paths.get(getResourceDirectory());
             if (!Files.exists(path)) {
@@ -85,8 +90,6 @@ public class Engine extends MetricCollector implements Loggable {
         } catch (Exception ex) {
             getLogger().error(ex.getMessage(), ex);
         }
-
-        ready = true;
     }
 
     private static void setupGL() {
@@ -103,8 +106,7 @@ public class Engine extends MetricCollector implements Loggable {
         if (!ready) {
             return;
         }
-        GL46.glClearColor(clearColor.x, clearColor.y, clearColor.z, 1);
-        start();
+        startTracking();
         for (FrameBufferObject fbo : fboRepository.all) {
             fbo.clear();
         }
@@ -116,7 +118,7 @@ public class Engine extends MetricCollector implements Loggable {
         for (var syncTask : syncTasks) {
             syncTask.sync();
         }
-        end();
+        endTracking();
         MetricCollector.shouldCollect = false;
     }
 
@@ -140,4 +142,14 @@ public class Engine extends MetricCollector implements Loggable {
     public String getTitle() {
         return "Engine total";
     }
+
+    @Override
+    public void dispose() {
+        shaderRepository.dispose();
+        ssboRepository.dispose();
+        uboRepository.dispose();
+        fboRepository.dispose();
+        primitiveRepository.dispose();
+    }
+
 }

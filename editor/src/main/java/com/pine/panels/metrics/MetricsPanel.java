@@ -32,12 +32,20 @@ public class MetricsPanel extends AbstractDockPanel {
                 ImGui.tableNextColumn();
                 ImGui.text(entry.getKey());
                 ImGui.tableNextColumn();
+                String cost;
+
+                if(entry.getValue() >= 1_000_000){
+                    cost = (entry.getValue() / 1_000_000)+ "ms";
+                }else{
+                     cost = entry.getValue() + "ns";
+                }
+
                 if (entry.getValue() >= HIGH_COST) {
-                    ImGui.textColored(HIGH_COST_COLORED, entry.getValue() + "ns");
+                    ImGui.textColored(HIGH_COST_COLORED, cost);
                 } else if (entry.getValue() >= MEDIUM_COST) {
-                    ImGui.textColored(MEDIUM_COST_COLORED, entry.getValue() + "ns");
+                    ImGui.textColored(MEDIUM_COST_COLORED, cost);
                 } else {
-                    ImGui.text(entry.getValue() + "ns");
+                    ImGui.text(cost);
                 }
             }
             ImGui.endTable();

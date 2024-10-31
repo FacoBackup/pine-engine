@@ -34,11 +34,6 @@ public class DockPanel extends AbstractView {
     @Override
     public void render() {
         ImGuiViewport viewport = ImGui.getMainViewport();
-        DockGroup group = dockService.getCurrentDockGroup();
-        if (group == null) {
-            return;
-        }
-
         renderHeader(viewport);
 
         dockService.updateForRemoval(this);
@@ -50,9 +45,7 @@ public class DockPanel extends AbstractView {
 
         endMainWindowSetup();
 
-        if (!group.isInitialized) {
-            dockService.buildViews(dockMainId, this);
-        }
+        dockService.buildViews(dockMainId, this);
 
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0.0f);
         ImGui.dockSpace(windowId, CENTER, ImGuiDockNodeFlags.PassthruCentralNode);

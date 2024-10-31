@@ -27,10 +27,14 @@ const vec3 POS[8] = vec3[8](NNN, PNN, NPN, PPN, NNP, PNP, NPP, PPP);
 float rand(vec2 co) {
     return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
-vec3 randomColor(float seed) {
-    float r = rand(vec2(seed));
-    float g = rand(vec2(seed + r));
-    return vec3(r, g, rand(vec2(seed + g)));
+vec3 randomColor(uint seed) {
+    float hash = fract(sin(float(seed) * 12.9898) * 43758.5453);
+
+    float r = fract(hash * 13.756);
+    float g = fract(hash * 15.734);
+    float b = fract(hash * 17.652);
+
+    return vec3(r, g, b);
 }
 
 vec3 createRay() {
@@ -85,7 +89,7 @@ vec3 unpackColor(int compressedColor) {
     // Scale back up
     r = r * 2;
     b = b * 2;
-    return vec3(r/255f, g/255f, b/255f);
+    return vec3(r/255., g/255., b/255.);
 }
 
 uint countSetBitsBefore(inout uint mask, inout uint childIndex) {
@@ -151,14 +155,14 @@ bool showRayTestCount
             if (entryDist < minDistance) {
                 if (isLeafGroup) {
                     if (randomColors){
-                        finalColor.rgb = randomColor(float(index) + countSetBitsBefore(childMask, i));
+                        finalColor.rgb = randomColor(index + countSetBitsBefore(childMask, i));
                     } else {
                         finalColor.rgb = unpackColor(int(childGroupIndex));
                     }
                     finalColor.a = 1;
                     minDistance = entryDist;
                 } else {
-                    stack[stackPos++] = Stack(childGroupIndex + countSetBitsBefore(childMask, i), newCenter, scale * 0.5f);
+                    stack[stackPos++] = Stack(childGroupIndex + countSetBitsBefore(childMask, i), newCenter, scale * 0.5);
                 }
             }
         }

@@ -1,8 +1,7 @@
 package com.pine.service.environment;
 
-import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
-import com.pine.component.Transformation;
+import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.AtmosphereSettingsRepository;
@@ -93,9 +92,8 @@ public class EnvironmentMapGenPass implements Initializable {
         shaderService.bind(shaderRepository.environmentMap);
         shaderService.bindMat4(viewProjection, this.viewProjection);
 
-        for (var comp : worldRepository.components.get(ComponentType.MESH)) {
-            var meshComp = (MeshComponent) comp;
-            if (meshComp.lod0 != null) {
+        for (var meshComp : worldRepository.bagMeshComponent.values()) {
+            if (meshComp.lod0 != null && meshComp.contributeToProbes) {
                 var mesh = (MeshResourceRef) streamingService.streamSync(meshComp.lod0, StreamableResourceType.MESH);
                 var material = (MaterialResourceRef) streamingService.streamSync(meshComp.material, StreamableResourceType.MATERIAL);
                 if (mesh != null) {
@@ -109,12 +107,12 @@ public class EnvironmentMapGenPass implements Initializable {
     private void draw(MeshResourceRef mesh, MeshComponent meshComp) {
         meshService.bind(mesh);
         if (meshComp.isInstancedRendering) {
-            for (Transformation i : meshComp.instances) {
+            for (TransformationComponent i : meshComp.instances) {
                 shaderService.bindMat4(i.globalMatrix, model);
                 meshService.draw();
             }
         } else {
-            shaderService.bindMat4(meshComp.entity.transformation.globalMatrix, model);
+            shaderService.bindMat4(worldRepository.bagTransformationComponent.get(meshComp.getEntityId()).globalMatrix, model);
             meshService.draw();
         }
     }

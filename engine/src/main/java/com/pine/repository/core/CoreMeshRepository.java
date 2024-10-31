@@ -4,16 +4,12 @@ import com.pine.Engine;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.service.importer.data.MeshImportData;
-import com.pine.service.resource.ResourceService;
 import com.pine.service.streaming.ref.MeshResourceRef;
 
 @PBean
 public class CoreMeshRepository implements CoreRepository {
     @PInject
     public Engine engine;
-
-    @PInject
-    public ResourceService resources;
 
     public MeshResourceRef planeMesh;
     public MeshResourceRef quadMesh;
@@ -47,5 +43,12 @@ public class CoreMeshRepository implements CoreRepository {
                 null,
                 null
         ));
+    }
+
+    @Override
+    public void dispose() {
+        quadMesh.dispose();
+        planeMesh.dispose();
+        cubeMesh.dispose();
     }
 }

@@ -42,11 +42,6 @@ public class PostProcessingPass extends AbstractQuadPassPass {
     }
 
     @Override
-    protected boolean shouldClearFBO() {
-        return true;
-    }
-
-    @Override
     protected Shader getShader() {
         return shaderRepository.postProcessing;
     }

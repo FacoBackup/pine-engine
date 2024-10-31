@@ -1,6 +1,8 @@
 package com.pine.repository.rendering;
 
 import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.repository.WorldRepository;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 
@@ -12,8 +14,6 @@ import java.util.Map;
 @PBean
 public class RenderingRepository {
     public List<RenderingRequest> requests = new ArrayList<>();
-    public final Map<String, RenderingRequest> newToBeRendered = new HashMap<>();
-    public final Map<String, RenderingRequest> toBeRendered = new HashMap<>();
     public List<RenderingRequest> newRequests = new ArrayList<>();
 
     public VoxelChunkResourceRef[] voxelChunks = new VoxelChunkResourceRef[4];
@@ -30,7 +30,15 @@ public class RenderingRepository {
     public final Map<String, Boolean> auxAddedToBufferEntities = new HashMap<>();
     public int voxelChunksFilled;
 
-    public void switchRequests() {
+    @PInject
+    public WorldRepository worldRepository;
+
+    public void sync() {
+        if(!infoUpdated){
+            return;
+        }
+
+        infoUpdated = false;
         pendingTransformations = pendingTransformationsInternal;
         var aux = requests;
         requests = newRequests;
@@ -40,19 +48,15 @@ public class RenderingRepository {
         var auxV = voxelChunks;
         voxelChunks = newVoxelChunks;
         newVoxelChunks = auxV;
-
-        toBeRendered.clear();
-        toBeRendered.putAll(newToBeRendered);
-        newToBeRendered.clear();
     }
 
     public int getTotalTriangleCount() {
         int total = 0;
         for (RenderingRequest request : requests) {
-            if (request.transformations.isEmpty()) {
+            if (request.transformationComponents.isEmpty()) {
                 total += request.mesh.triangleCount;
             } else {
-                total += request.mesh.triangleCount * request.transformations.size();
+                total += request.mesh.triangleCount * request.transformationComponents.size();
             }
         }
         return total;

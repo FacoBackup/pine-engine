@@ -108,7 +108,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
 
     @Override
     public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources){
-        return (StreamData) FSUtil.read(pathToFile);
+        return (StreamData) FSUtil.readBinary(pathToFile);
     }
 
     public int getTotalTriangleCount() {

@@ -50,14 +50,14 @@ vec3 computeLightContribution(vec4 baseContribution, LightSharedInfo info, vec3 
         return vec3(0.);
     }
 
-    float distanceFromFrag = length(info.translation - worldSpacePosition);
+    float distanceFromFrag =  length(info.translation - worldSpacePosition);
     float intensity = 1.;
     if (distanceFromFrag > info.cutoff) {
         intensity = clamp(mix(1., 0., (distanceFromFrag - info.cutoff) / (info.outerCutoff - info.cutoff)), 0., 1.);
     }
     vec2 att = 1./info.lightAttenuation;
     float attFactor = intensity / (1. + (att.x * distanceFromFrag) + (att.y * pow(distanceFromFrag, 2.)));
-    if (attFactor == 0.){
+    if (attFactor <= 0.){
         return vec3(0.);
     }
     return computeBRDF(baseContribution.rgb, baseContribution.a, info.color) * attFactor;

@@ -74,7 +74,7 @@ public class WindowService implements Disposable, Loggable {
             while (!GLFW.glfwWindowShouldClose(handle) && !shouldStop) {
 
                 try {
-                    if(!isMinimized){
+                    if (!isMinimized) {
                         startFrame();
                         window.render();
                         ImGui.popStyleColor(3);
@@ -121,6 +121,7 @@ public class WindowService implements Disposable, Loggable {
         GL.createCapabilities();
         GLFW.glfwSwapInterval(GLFW.GLFW_FALSE);
 
+        GL46.glClearColor(0, 0, 0, 1);
         clearBuffer();
         renderBuffer();
         initGlfwEvents();
@@ -211,7 +212,6 @@ public class WindowService implements Disposable, Loggable {
     }
 
     private void clearBuffer() {
-        GL46.glClearColor(settingsRepository.backgroundColor.x, settingsRepository.backgroundColor.y, settingsRepository.backgroundColor.z, 1);
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }
 

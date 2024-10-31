@@ -1,7 +1,6 @@
 package com.pine.component.light;
 
 import com.pine.component.ComponentType;
-import com.pine.component.Entity;
 import com.pine.inspection.InspectableField;
 import com.pine.type.LightType;
 
@@ -10,7 +9,7 @@ public class SpotLightComponent extends AbstractLightComponent {
     @InspectableField(label = "Impact radius")
     public float radius = 45;
 
-    public SpotLightComponent(Entity entity) {
+    public SpotLightComponent(String entity) {
         super(entity);
     }
 

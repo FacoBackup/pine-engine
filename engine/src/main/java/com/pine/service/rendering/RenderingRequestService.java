@@ -1,7 +1,7 @@
 package com.pine.service.rendering;
 
 import com.pine.component.MeshComponent;
-import com.pine.component.Transformation;
+import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EngineSettingsRepository;
@@ -29,24 +29,23 @@ public class RenderingRequestService {
     @PInject
     public RenderingRepository renderingRepository;
 
-    public RenderingRequest prepareInstanced(MeshComponent scene, Transformation t) {
+    public RenderingRequest prepareInstanced(MeshComponent scene, TransformationComponent t) {
         MeshResourceRef mesh = selectLOD(scene);
         if (mesh == null) return null;
 
         prepareTransformations(scene, t, mesh);
-        fillInstanceRequest(scene, t);
+        fillInstanceRequest(scene);
         scene.renderRequest.mesh = mesh;
-        if (scene.renderRequest.transformations.isEmpty()) {
+        if (scene.renderRequest.transformationComponents.isEmpty()) {
             return null;
         }
         return scene.renderRequest;
     }
 
-    private void fillInstanceRequest(MeshComponent scene, Transformation t) {
+    private void fillInstanceRequest(MeshComponent scene) {
         for (var primitive : scene.instances) {
-            transformationService.updateMatrix(primitive, t);
             if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
-                primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+                primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
             } else {
                 primitive.isCulled = false;
             }
@@ -54,35 +53,34 @@ public class RenderingRequestService {
                 continue;
             }
             transformationService.extractTransformations(primitive);
-            scene.renderRequest.transformations.add(primitive);
+            scene.renderRequest.transformationComponents.add(primitive);
         }
         prepareMaterial(scene, scene.renderRequest);
     }
 
-    private void prepareTransformations(MeshComponent scene, Transformation t, MeshResourceRef mesh) {
+    private void prepareTransformations(MeshComponent scene, TransformationComponent t, MeshResourceRef mesh) {
         if (scene.instances.size() > scene.numberOfInstances) {
             scene.instances = new ArrayList<>(scene.instances.subList(0, scene.numberOfInstances));
         } else if (scene.instances.size() < scene.numberOfInstances) {
             for (int i = scene.instances.size(); i < scene.numberOfInstances; i++) {
-                scene.instances.add(new Transformation(scene.entity, true));
+                scene.instances.add(new TransformationComponent(scene.getEntityId(), true));
             }
         }
 
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest(mesh, t, new ArrayList<>());
         }
-        renderingRepository.newToBeRendered.put(scene.entity.id(), scene.renderRequest);
-        scene.renderRequest.entity = scene.entity;
-        scene.renderRequest.transformations.clear();
+        scene.renderRequest.entity = scene.getEntityId();
+        scene.renderRequest.transformationComponents.clear();
     }
 
 
-    public RenderingRequest prepareNormal(MeshComponent scene, Transformation transform) {
+    public RenderingRequest prepareNormal(MeshComponent scene, TransformationComponent transform) {
         MeshResourceRef mesh = selectLOD(scene);
         if (mesh == null) return null;
 
         if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
-            transform.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+            transform.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
         } else {
             transform.isCulled = false;
         }
@@ -90,13 +88,12 @@ public class RenderingRequestService {
             if (transform.renderRequest == null) {
                 transform.renderRequest = new RenderingRequest(mesh, transform);
             }
-            renderingRepository.newToBeRendered.put(scene.entity.id(), transform.renderRequest);
-            transform.renderRequest.entity = scene.entity;
+            transform.renderRequest.entity = scene.getEntityId();
             prepareMaterial(scene, transform.renderRequest);
 
             transform.renderRequest.mesh = mesh;
-            if (!transform.renderRequest.transformations.isEmpty()) {
-                transform.renderRequest.transformations.clear();
+            if (!transform.renderRequest.transformationComponents.isEmpty()) {
+                transform.renderRequest.transformationComponents.clear();
             }
             transformationService.extractTransformations(transform);
             return transform.renderRequest;

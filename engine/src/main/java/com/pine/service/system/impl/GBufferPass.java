@@ -66,14 +66,33 @@ public class GBufferPass extends AbstractPass {
     }
 
     @Override
-    protected boolean shouldClearFBO() {
-        GL46.glClearColor(0, 0, 0, 1);
-        return true;
+    protected void renderInternal() {
+        prepareCall();
+        bindEnvironmentMaps();
+
+        List<RenderingRequest> requests = renderingRepository.requests;
+        int instancedOffset = 0;
+        for (int i = 0; i < requests.size(); i++) {
+            var request = requests.get(i);
+            request.renderIndex = (i + instancedOffset);
+            shaderService.bindInt(request.renderIndex, transformationIndex);
+            if (request.material != null) {
+                bindMaterial(request);
+            } else {
+                shaderService.bindBoolean(true, fallbackMaterial);
+            }
+            meshService.bind(request.mesh);
+            meshService.setInstanceCount(request.transformationComponents.size());
+            meshService.draw();
+            if (!request.transformationComponents.isEmpty()) {
+                instancedOffset += request.transformationComponents.size() - 1;
+            }
+        }
     }
 
-    @Override
-    protected void renderInternal() {
+    private void prepareCall() {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
+        GL46.glDisable(GL11.GL_BLEND);
         if (settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
             GL46.glDisable(GL11.GL_CULL_FACE);
@@ -85,7 +104,9 @@ public class GBufferPass extends AbstractPass {
 
         shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
         shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels);
+    }
 
+    private void bindEnvironmentMaps() {
         boolean isFirst = true;
         int samplerOffset = 0;
         for (int i = 0; i < renderingRepository.environmentMaps.length; i++) {
@@ -104,26 +125,6 @@ public class GBufferPass extends AbstractPass {
                 isFirst = false;
             }
         }
-
-        List<RenderingRequest> requests = renderingRepository.requests;
-        int instancedOffset = 0;
-        for (int i = 0; i < requests.size(); i++) {
-            var request = requests.get(i);
-            request.renderIndex = (i + instancedOffset);
-            shaderService.bindInt(request.renderIndex, transformationIndex);
-            if (request.material != null) {
-                bindMaterial(request);
-            } else {
-                shaderService.bindBoolean(true, fallbackMaterial);
-            }
-            meshService.bind(request.mesh);
-            meshService.setInstanceCount(request.transformations.size());
-            meshService.draw();
-            if (!request.transformations.isEmpty()) {
-                instancedOffset += request.transformations.size() - 1;
-            }
-        }
-        GL46.glClearColor(engine.clearColor.x, engine.clearColor.y, engine.clearColor.z, 1);
     }
 
     private void bindMaterial(RenderingRequest request) {

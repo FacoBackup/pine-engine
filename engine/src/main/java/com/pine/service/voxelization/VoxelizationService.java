@@ -1,8 +1,6 @@
 package com.pine.service.voxelization;
 
 import com.pine.FSUtil;
-import com.pine.component.AbstractComponent;
-import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -93,23 +91,22 @@ public class VoxelizationService implements Loggable {
                 }
             }
             var grid = new SVOGrid(voxelRepository.chunkSize, voxelRepository.chunkGridSize, voxelRepository.maxDepth);
-            List<AbstractComponent> meshes = worldRepository.components.get(ComponentType.MESH);
-            getLogger().warn("Voxelizing {}", meshes.size());
-            for (AbstractComponent component : meshes) {
-                var meshComponent = (MeshComponent) component;
+
+            getLogger().warn("Voxelizing {}", worldRepository.bagMeshComponent.size());
+            for (MeshComponent meshComponent : worldRepository.bagMeshComponent.values()) {
                 if (meshComponent.lod0 == null) {
                     continue;
                 }
 
-                getLogger().warn("Voxelizing entity {}", meshComponent.getEntity().name);
-                Matrix4f globalMatrix = meshComponent.getEntity().transformation.globalMatrix;
+                getLogger().warn("Voxelizing entity {}", meshComponent.getEntityId());
+                Matrix4f globalMatrix = worldRepository.bagTransformationComponent.get(meshComponent.getEntityId()).globalMatrix;
                 var mesh = streamMesh(meshComponent.lod0, globalMatrix, meshComponent);
                 List<SparseVoxelOctree> intersectingChunks = getIntersectingChunks(mesh, grid, meshComponent);
                 if (intersectingChunks.isEmpty()) {
-                    getLogger().warn("No intersections found for {}", meshComponent.entity.name);
+                    getLogger().warn("No intersections found for {}", meshComponent.getEntityId());
                     continue;
                 }
-                getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.entity.name);
+                getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.getEntityId());
 
                 TextureStreamData albedoTexture = streamTexture(mesh, meshComponent);
                 long startLocal = System.currentTimeMillis();
@@ -174,7 +171,7 @@ public class VoxelizationService implements Loggable {
                 }
 
                 String pathToFile = importerService.getPathToFile(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
-                if (!FSUtil.write(voxels, pathToFile)) {
+                if (!FSUtil.writeBinary(voxels, pathToFile)) {
                     getLogger().error("Could not write chunk to disk");
                     toRemove.add(chunk);
                 }

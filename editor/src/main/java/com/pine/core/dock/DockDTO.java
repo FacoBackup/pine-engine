@@ -1,6 +1,5 @@
 package com.pine.core.dock;
 
-import com.pine.core.panel.AbstractPanelContext;
 import com.pine.messaging.Loggable;
 import imgui.type.ImInt;
 
@@ -8,20 +7,20 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public final class DockDTO implements Loggable, Serializable {
+    public final String id = UUID.randomUUID().toString();
     private final ImInt nodeId = new ImInt(0);
     private final ImInt selectedOption = new ImInt(0);
     private final String internalId;
-    private AbstractPanelContext context;
     private int splitDir;
     private float sizeX;
     private float sizeY;
     private float sizeRatioForNodeAtDir;
-    private DockDTO outAtOppositeDir;
-    private DockDTO origin;
-    private DockDescription description;
+    private transient DockDTO outAtOppositeDir;
+    private transient DockDTO origin;
+    private DockSpace description;
     private DockPosition direction;
 
-    public DockDTO(DockDescription description) {
+    public DockDTO(DockSpace description) {
         setDescription(description);
         selectedOption.set(description.getOptionIndex());
         internalId = "##" + UUID.randomUUID().toString().replace("-", "");
@@ -35,7 +34,7 @@ public final class DockDTO implements Loggable, Serializable {
         return direction;
     }
 
-    public DockDescription getDescription() {
+    public DockSpace getDescription() {
         return description;
     }
 
@@ -99,20 +98,7 @@ public final class DockDTO implements Loggable, Serializable {
         return selectedOption;
     }
 
-    public void setDescription(DockDescription description) {
+    public void setDescription(DockSpace description) {
         this.description = description;
-        try {
-            if (description.getContext() != null) {
-                context = description.getContext().getConstructor().newInstance();
-            } else {
-                context = null;
-            }
-        } catch (Exception ex) {
-            getLogger().error(ex.getMessage(), ex);
-        }
-    }
-
-    public AbstractPanelContext getContext() {
-        return context;
     }
 }

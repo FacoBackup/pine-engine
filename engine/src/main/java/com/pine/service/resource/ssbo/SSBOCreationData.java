@@ -1,11 +1,8 @@
 package com.pine.service.resource.ssbo;
 
-import com.pine.service.resource.LocalResourceType;
-import com.pine.service.resource.ResourceCreationData;
-
 import java.nio.Buffer;
 
-public final class SSBOCreationData extends ResourceCreationData {
+public final class SSBOCreationData  {
     private final int bindingPoint;
     private Buffer data;
     private long expectedSize;
@@ -27,11 +24,6 @@ public final class SSBOCreationData extends ResourceCreationData {
 
     public int getBindingPoint() {
         return bindingPoint;
-    }
-
-    @Override
-    public LocalResourceType getResourceType() {
-        return LocalResourceType.SSBO;
     }
 
     public long getExpectedSize() {

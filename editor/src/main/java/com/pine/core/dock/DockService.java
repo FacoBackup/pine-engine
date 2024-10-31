@@ -16,52 +16,29 @@ public class DockService {
     @PInject
     public DockRepository dockRepository;
 
-    public void setDockGroupTemplate(DockGroup template) {
-        dockRepository.template = template;
-    }
-
-    public List<DockGroup> getDockGroups() {
-        return dockRepository.getDockGroups();
-    }
-
-    public void switchDockGroups(DockGroup targetGroup, ImInt dockMainId) {
-        imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
-        dockRepository.currentDockGroup = targetGroup;
-        targetGroup.isInitialized = false;
-    }
-
-    public void createDockGroup() {
-        if (dockRepository.template != null) {
-            DockGroup dockGroup = dockRepository.template.generateNew();
-            dockGroup.setTitle(dockGroup.getTitle() + " " + dockRepository.getDockGroups().size());
-            dockRepository.addDockGroup(dockGroup);
-            if (dockRepository.currentDockGroup == null) {
-                dockRepository.currentDockGroup = dockGroup;
-            }
-        }
-    }
-
     public void buildViews(ImInt dockMainId, DockPanel panel) {
+        if (dockRepository.isInitialized || dockRepository.center == null) {
+            return;
+        }
         panel.getChildren().clear();
-        DockGroup group = dockRepository.currentDockGroup;
         imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
         imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), NO_TAB_BAR_FLAG);
         imgui.internal.ImGui.dockBuilderSetNodeSize(dockMainId.get(), ImGui.getMainViewport().getSize());
 
-        group.center.setDirection(DockPosition.CENTER);
-        group.center.setOrigin(null);
-        group.center.setOutAtOppositeDir(null);
-        group.center.setSplitDir(ImGuiDir.Right);
+        dockRepository.center.setDirection(DockPosition.CENTER);
+        dockRepository.center.setOrigin(null);
+        dockRepository.center.setOutAtOppositeDir(null);
+        dockRepository.center.setSplitDir(ImGuiDir.Right);
 
-        createDockSpace(group.center, dockMainId);
+        createDockSpace(dockRepository.center, dockMainId);
 
-        addWindow(group.center, panel);
-        List<DockDTO> left = group.left;
+        addWindow(dockRepository.center, panel);
+        List<DockDTO> left = dockRepository.left;
         for (int i = 0; i < left.size(); i++) {
             DockDTO dockSpace = left.get(i);
             if (i == 0) {
-                dockSpace.setOrigin(group.center);
-                dockSpace.setOutAtOppositeDir(group.center);
+                dockSpace.setOrigin(dockRepository.center);
+                dockSpace.setOutAtOppositeDir(dockRepository.center);
             } else {
                 DockDTO previous = left.get(i - 1);
                 dockSpace.setOrigin(previous);
@@ -73,12 +50,12 @@ public class DockService {
             addWindow(dockSpace, panel);
         }
 
-        List<DockDTO> right = group.right;
+        List<DockDTO> right = dockRepository.right;
         for (int i = 0; i < right.size(); i++) {
             DockDTO dockSpace = right.get(i);
             if (i == 0) {
-                dockSpace.setOrigin(group.center);
-                dockSpace.setOutAtOppositeDir(group.center);
+                dockSpace.setOrigin(dockRepository.center);
+                dockSpace.setOutAtOppositeDir(dockRepository.center);
             } else {
                 DockDTO previous = right.get(i - 1);
                 dockSpace.setOrigin(previous);
@@ -90,7 +67,7 @@ public class DockService {
             addWindow(dockSpace, panel);
         }
 
-        List<DockDTO> bottom = group.bottom;
+        List<DockDTO> bottom = dockRepository.bottom;
         for (int i = 0, bottomSize = bottom.size(); i < bottomSize; i++) {
             DockDTO dockSpace = bottom.get(i);
             if (i == 0) {
@@ -108,9 +85,9 @@ public class DockService {
             addWindow(dockSpace, panel);
         }
 
-        imgui.internal.ImGui.dockBuilderDockWindow(group.center.getInternalId(), dockMainId.get());
+        imgui.internal.ImGui.dockBuilderDockWindow(dockRepository.center.getInternalId(), dockMainId.get());
         imgui.internal.ImGui.dockBuilderFinish(dockMainId.get());
-        group.isInitialized = true;
+        dockRepository.isInitialized = true;
     }
 
     private void createDockSpace(DockDTO dockSpace, ImInt dockMainId) {
@@ -131,42 +108,35 @@ public class DockService {
     private void addWindow(DockDTO d, DockPanel panel) {
         try {
             imgui.internal.ImGui.dockBuilderDockWindow(d.getInternalId(), d.getNodeId().get());
-            panel.appendChild(new DockWrapperPanel((DockWrapperPanel) panel.getChildren().stream().findFirst().orElse(null), d));
+            panel.appendChild(new DockSpacePanel((DockSpacePanel) panel.getChildren().stream().findFirst().orElse(null), d));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public DockGroup getCurrentDockGroup() {
-        return dockRepository.currentDockGroup;
-    }
-
-    public void prepareForRemoval(DockDTO dock, DockWrapperPanel dockWrapperPanel) {
+    public void prepareForRemoval(DockDTO dock, DockSpacePanel dockSpacePanel) {
         dockRepository.dockToRemove = dock;
-        dockRepository.dockPanelToRemove = dockWrapperPanel;
+        dockRepository.dockPanelToRemove = dockSpacePanel;
     }
 
     public void updateForRemoval(DockPanel panel) {
         if (dockRepository.dockPanelToRemove != null) {
             switch (dockRepository.dockToRemove.getPosition()) {
                 case LEFT: {
-                    getCurrentDockGroup().left.remove(dockRepository.dockToRemove);
+                    dockRepository.left.remove(dockRepository.dockToRemove);
                 }
                 case RIGHT: {
-                    getCurrentDockGroup().right.remove(dockRepository.dockToRemove);
+                    dockRepository.right.remove(dockRepository.dockToRemove);
                 }
                 case BOTTOM: {
-                    getCurrentDockGroup().bottom.remove(dockRepository.dockToRemove);
+                    dockRepository.bottom.remove(dockRepository.dockToRemove);
                 }
             }
-            getCurrentDockGroup().isInitialized = false;
+            dockRepository.isInitialized = false;
+            dockRepository.dockPanelToRemove.getView().onRemove();
             panel.getChildren().remove(dockRepository.dockPanelToRemove);
             dockRepository.dockToRemove = null;
             dockRepository.dockPanelToRemove = null;
         }
-    }
-
-    public void setCurrentDockGroup(DockGroup last) {
-        dockRepository.currentDockGroup = last;
     }
 }

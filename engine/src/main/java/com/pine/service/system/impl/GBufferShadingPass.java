@@ -42,7 +42,6 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
 
     @Override
     protected void bindUniforms() {
-
         ssboService.bind(ssboRepository.lightMetadataSSBO);
 
         shaderService.bindFloat(settingsRepository.ssrFalloff, SSRFalloff);
@@ -62,7 +61,7 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
         shaderService.bindSampler2dDirect(fboRepository.gBufferMaterialSampler, 3);
         shaderService.bindSampler2dDirect(fboRepository.brdfSampler, 4);
         shaderService.bindSampler2dDirect(fboRepository.ssaoBlurredSampler, 5);
-        shaderService.bindSampler2dDirect(fboRepository.ssgiSampler, 6);
+//        shaderService.bindSampler2dDirect(fboRepository.ssgiSampler, 6);
         shaderService.bindSampler2dDirect(fboRepository.postProcessingSampler, 7);
         shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 8);
         shaderService.bindSampler2dDirect(fboRepository.gBufferIndirectSampler, 9);

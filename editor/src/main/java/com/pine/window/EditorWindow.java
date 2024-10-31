@@ -3,15 +3,12 @@ package com.pine.window;
 import com.pine.Engine;
 import com.pine.core.AbstractWindow;
 import com.pine.core.WindowService;
-import com.pine.core.dock.DockDTO;
-import com.pine.core.dock.DockGroup;
 import com.pine.core.dock.DockService;
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.panels.ToasterPanel;
 import com.pine.panels.header.EditorHeaderPanel;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.FileMetadataRepository;
 import com.pine.service.ProjectService;
 import com.pine.service.ThemeService;
 import com.pine.service.serialization.SerializationService;
@@ -19,7 +16,6 @@ import com.pine.tools.ToolsModule;
 import imgui.ImGui;
 import imgui.ImVec4;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.pine.core.dock.DockPanel.FLAGS;
@@ -48,35 +44,13 @@ public class EditorWindow extends AbstractWindow {
     @PInject
     public SerializationService serializationRepository;
 
-    @PInject
-    public FileMetadataRepository fileMetadataRepository;
-
     private boolean isInitialized = false;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
         projectService.loadProject();
-
         appendChild(new ToasterPanel());
-        try {
-            DockDTO dockCenter = new DockDTO(EditorDock.Viewport);
-            DockDTO rightUp = new DockDTO(EditorDock.Hierarchy);
-            DockDTO rightDown = new DockDTO(EditorDock.Inspector);
-            DockDTO downLeft = new DockDTO(EditorDock.Console);
-            DockDTO downRight = new DockDTO(EditorDock.Files);
-
-            dockCenter.setSizeRatioForNodeAtDir(0.17f);
-            rightUp.setSizeRatioForNodeAtDir(0.4f);
-            rightDown.setSizeRatioForNodeAtDir(0.6f);
-            downLeft.setSizeRatioForNodeAtDir(0.22f);
-            downRight.setSizeRatioForNodeAtDir(0.5f);
-
-            dockService.setDockGroupTemplate(new DockGroup("Viewport", dockCenter, List.of(downLeft, downRight), Collections.emptyList(), List.of(rightUp, rightDown)));
-            dockService.createDockGroup();
-        } catch (Exception e) {
-            getLogger().error(e.getMessage(), e);
-        }
     }
 
     @Override
@@ -96,13 +70,12 @@ public class EditorWindow extends AbstractWindow {
 
     @Override
     public void render() {
-        start();
+        startTracking();
         themeService.tick();
         if (serializationRepository.isDeserializationDone()) {
             if (!isInitialized) {
                 windowService.maximize();
                 engine.start(windowService.getDisplayW(), windowService.getDisplayH(), List.of(new ToolsModule()), projectService.getProjectDirectory());
-                fileMetadataRepository.refresh();
                 isInitialized = true;
             }
             super.render();
@@ -112,7 +85,7 @@ public class EditorWindow extends AbstractWindow {
             ImGui.text("Loading scene...");
             ImGui.end();
         }
-        end();
+        endTracking();
     }
 
     @Override

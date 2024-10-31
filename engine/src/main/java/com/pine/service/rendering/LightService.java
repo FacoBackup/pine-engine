@@ -1,7 +1,6 @@
 package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
-import com.pine.component.ComponentType;
 import com.pine.component.light.*;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -13,7 +12,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
-import java.util.List;
 
 @PBean
 public class LightService {
@@ -25,93 +23,95 @@ public class LightService {
     public CoreSSBORepository ssboRepository;
     @PInject
     public WorldRepository worldRepository;
-
-    private boolean isFirstRun = true;
+    private int offset = 0;
+    private int count = 0;
+    private final Matrix4f auxMat4 = new Matrix4f();
+    private final Matrix4f aux2Mat4 = new Matrix4f();
 
     public void packageLights() {
-        int offset = 0;
-        int count = 0;
-        final Matrix4f cacheMat4 = new Matrix4f();
-        final Matrix4f cacheMat42 = new Matrix4f();
+        offset = 0;
+        count = 0;
         FloatBuffer b = ssboRepository.lightSSBOState;
-
-        List<DirectionalLightComponent> directionalLights = worldRepository.getComponentBag(ComponentType.DIRECTIONAL_LIGHT);
-        for (DirectionalLightComponent light : directionalLights) {
-            if (light.isNotFrozen() || isFirstRun) {
-                var transform = light.entity.transformation;
-                int internalOffset = fillCommon(b, offset, light);
-
-                b.put(internalOffset, light.atlasFace.x);
-                b.put(internalOffset + 1, light.atlasFace.y);
-                b.put(internalOffset + 2, light.shadowMap ? 0 : 1);
-                b.put(internalOffset + 3, light.shadowBias);
-                b.put(internalOffset + 4, light.shadowAttenuationMinDistance);
-
-                if (light.shadowMap) {
-                    var view = cacheMat4.lookAt(transform.translation, new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
-                    var proj = cacheMat42.ortho(-light.size, light.size, -light.size, light.size, light.zNear, light.zFar);
-                    proj.mul(view);
-                    EngineUtils.copyWithOffset(b, proj, 16); // SECOND MATRIX
-                }
-            }
-            light.freezeVersion();
-            offset += light.type.getDataDisplacement();
-            count++;
+        for (var l : worldRepository.bagDirectionalLightComponent.values()) {
+            packageDirectionalLight(l, b);
         }
 
-        List<PointLightComponent> pointLights = worldRepository.getComponentBag(ComponentType.POINT_LIGHT);
-        for (PointLightComponent light : pointLights) {
-            if (light.isNotFrozen() || isFirstRun) {
-                int internalOffset = fillCommon(b, offset, light);
-                b.put(internalOffset, light.zFar);
-                b.put(internalOffset + 1, light.shadowMap ? 1 : 0);
-                b.put(internalOffset + 2, light.shadowAttenuationMinDistance);
-                b.put(internalOffset + 3, light.shadowBias);
-
-            }
-            light.freezeVersion();
-            offset += light.type.getDataDisplacement();
-            count++;
+        for (var l : worldRepository.bagPointLightComponent.values()) {
+            packagePointLight(l, b);
         }
 
-
-        List<SphereLightComponent> sphereLights = worldRepository.getComponentBag(ComponentType.SPHERE_LIGHT);
-        for (SphereLightComponent light : sphereLights) {
-            if (light.isNotFrozen() || isFirstRun) {
-                int internalOffset = fillCommon(b, offset, light);
-                b.put(internalOffset, light.areaRadius);
-            }
-            light.freezeVersion();
-            offset += light.type.getDataDisplacement();
-            count++;
+        for (var l : worldRepository.bagSphereLightComponent.values()) {
+            packageSphereLight(l, b);
         }
 
-        List<SpotLightComponent> spotLights = worldRepository.getComponentBag(ComponentType.SPOT_LIGHT);
-        for (SpotLightComponent light : spotLights) {
-            if (light.isNotFrozen() || isFirstRun) {
-                var transform = light.entity.transformation;
-                int internalOffset = fillCommon(b, offset, light);
-
-                cacheMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
-                cacheMat4.identity();
-                cacheMat42.rotate(transform.rotation);
-                cacheMat4.mul(cacheMat42);
-
-                b.put(internalOffset, cacheMat4.m20());
-                b.put(internalOffset + 1, cacheMat4.m21());
-                b.put(internalOffset + 2, cacheMat4.m22());
-                b.put(internalOffset + 3, (float) Math.cos(Math.toRadians(light.radius)));
-            }
-            light.freezeVersion();
-            offset += light.type.getDataDisplacement();
-            count++;
+        for (var l : worldRepository.bagSpotLightComponent.values()) {
+            packageSpotLight(l, b);
         }
-        isFirstRun = false;
         renderingRepository.lightCount = count;
     }
 
+    private void packageSpotLight(SpotLightComponent light, FloatBuffer b) {
+        var transform = worldRepository.bagTransformationComponent.get(light.getEntityId());
+        int internalOffset = fillCommon(b, offset, light);
+
+        auxMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
+
+        aux2Mat4.identity();
+        aux2Mat4.rotate(transform.rotation);
+
+        auxMat4.mul(aux2Mat4);
+
+        b.put(internalOffset, auxMat4.m20());
+        b.put(internalOffset + 1, auxMat4.m21());
+        b.put(internalOffset + 2, auxMat4.m22());
+        b.put(internalOffset + 3, (float) Math.cos(Math.toRadians(light.radius)));
+        light.freezeVersion();
+        offset += light.type.getDataDisplacement();
+        count++;
+    }
+
+    private void packageSphereLight(SphereLightComponent l, FloatBuffer b) {
+        int internalOffset = fillCommon(b, offset, l);
+        b.put(internalOffset, l.areaRadius);
+
+        offset += l.type.getDataDisplacement();
+        count++;
+    }
+
+    private void packagePointLight(PointLightComponent l, FloatBuffer b) {
+        int internalOffset = fillCommon(b, offset, l);
+        b.put(internalOffset, l.zFar);
+        b.put(internalOffset + 1, l.shadowMap ? 1 : 0);
+        b.put(internalOffset + 2, l.shadowAttenuationMinDistance);
+        b.put(internalOffset + 3, l.shadowBias);
+
+        offset += l.type.getDataDisplacement();
+        count++;
+    }
+
+    private void packageDirectionalLight(DirectionalLightComponent l, FloatBuffer b) {
+        var transform = worldRepository.bagTransformationComponent.get(l.getEntityId());
+        int internalOffset = fillCommon(b, offset, l);
+
+        b.put(internalOffset, l.atlasFace.x);
+        b.put(internalOffset + 1, l.atlasFace.y);
+        b.put(internalOffset + 2, l.shadowMap ? 0 : 1);
+        b.put(internalOffset + 3, l.shadowBias);
+        b.put(internalOffset + 4, l.shadowAttenuationMinDistance);
+
+        if (l.shadowMap) {
+            var view = auxMat4.lookAt(transform.translation, new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+            var proj = aux2Mat4.ortho(-l.size, l.size, -l.size, l.size, l.zNear, l.zFar);
+            proj.mul(view);
+            EngineUtils.copyWithOffset(b, proj, 16); // SECOND MATRIX
+        }
+
+        offset += l.type.getDataDisplacement();
+        count++;
+    }
+
     private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent light) {
-        var transform = light.entity.transformation;
+        var transform = worldRepository.bagTransformationComponent.get(light.getEntityId());
 
         lightSSBOState.put(offset, light.type.getTypeId());
         lightSSBOState.put(offset + 1, light.color.x * light.intensity);

@@ -1,14 +1,19 @@
 package com.pine.component;
 
-import com.pine.inspection.InspectableField;
+import java.util.Set;
 
 
 public class EnvironmentProbeComponent extends AbstractComponent {
-    @InspectableField(label = "Max distance from probe")
-    public int maxDistanceFromProbe = 50;
+//    @InspectableField(label = "Max distance from probe")
+//    public int maxDistanceFromProbe = 50;
 
-    public EnvironmentProbeComponent(Entity entity) {
+    public EnvironmentProbeComponent(String entity) {
         super(entity);
+    }
+
+    @Override
+    public Set<ComponentType> getDependencies() {
+        return Set.of(ComponentType.TRANSFORMATION);
     }
 
     @Override

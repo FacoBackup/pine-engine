@@ -1,27 +1,31 @@
 package com.pine.service.resource.shader;
 
 import com.pine.GLSLVersion;
-import com.pine.service.resource.AbstractResource;
-import com.pine.service.resource.LocalResourceType;
+import com.pine.service.resource.IResource;
 import org.lwjgl.opengl.GL46;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Shader extends AbstractResource {
+public class Shader implements IResource {
     private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;
 
-    public Shader(String id, ShaderCreationData dto) {
-        super(id);
+    public Shader(String vertex, String fragment) {
         try {
             program = GL46.glCreateProgram();
-            if (dto.getCompute() != null) {
-                prepareShadersCompute(GLSLVersion.getVersion() + "\n" + dto.getCompute());
-            } else {
-                prepareShadersDefault(GLSLVersion.getVersion() + "\n" + dto.vertex(), GLSLVersion.getVersion() + "\n" + dto.fragment());
-            }
+            prepareShadersDefault(GLSLVersion.getVersion() + "\n" + vertex, GLSLVersion.getVersion() + "\n" + fragment);
+        } catch (Exception ex) {
+            getLogger().error("Error while creating shader", ex);
+            valid = false;
+        }
+    }
+
+    public Shader(String compute) {
+        try {
+            program = GL46.glCreateProgram();
+            prepareShadersCompute(GLSLVersion.getVersion() + "\n" + compute);
         } catch (Exception ex) {
             getLogger().error("Error while creating shader", ex);
             valid = false;
@@ -58,11 +62,6 @@ public class Shader extends AbstractResource {
 
     public Map<String, UniformDTO> getUniforms() {
         return uniforms;
-    }
-
-    @Override
-    public LocalResourceType getResourceType() {
-        return LocalResourceType.SHADER;
     }
 
     @Override

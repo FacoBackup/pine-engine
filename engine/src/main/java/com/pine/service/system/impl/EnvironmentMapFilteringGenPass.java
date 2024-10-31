@@ -41,7 +41,6 @@ public class EnvironmentMapFilteringGenPass extends AbstractPass {
 
                 shaderService.bindSamplerCubeDirect(env.texture, 0);
                 GL46.glDisable(GL11.GL_CULL_FACE);
-                GL46.glClearColor(0, 0, 0, 1);
 
                 GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, captureFBO);
 

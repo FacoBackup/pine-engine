@@ -5,25 +5,21 @@ import com.pine.inspection.InspectableField;
 import com.pine.theme.Icons;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 public class Entity extends Inspectable implements Serializable {
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+
     @InspectableField(label = "Name")
-    public String name = "New Entity";
+    public String name;
 
-    @InspectableField(label = "Transformation")
-    public Transformation transformation = new Transformation(this, false);
+    @InspectableField(label = "Identifier", disabled = true)
+    public final String id;
 
-    /**
-     * Key: Class.simpleName
-     * Value: Component instance
-     */
-    public final Map<ComponentType, AbstractComponent> components = new HashMap<>();
-    private final String id;
-    public final long creationDate = System.currentTimeMillis();
-    public boolean visible = true;
+    @InspectableField(label = "Creation date", disabled = true)
+    public final String creationDate = FORMATTER.format(new Date());
 
     public Entity(String id, String name) {
         this.id = id;
@@ -49,13 +45,7 @@ public class Entity extends Inspectable implements Serializable {
         return Icons.inventory_2;
     }
 
-    public Entity clone() {
-        var clone = new Entity(UUID.randomUUID().toString(), name + " (clone)");
-        clone.transformation = transformation.clone(clone, false);
-        transformation.parent.children.add(clone.transformation);
-        for(var component : components.values()) {
-            clone.components.put(component.getType(), component.clone(clone));
-        }
-        return clone;
+    public Entity cloneEntity() {
+        return new Entity(UUID.randomUUID().toString(), name + " (clone)");
     }
 }

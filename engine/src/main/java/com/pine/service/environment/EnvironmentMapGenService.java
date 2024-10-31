@@ -1,8 +1,6 @@
 package com.pine.service.environment;
 
 import com.pine.Engine;
-import com.pine.component.AbstractComponent;
-import com.pine.component.ComponentType;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -15,8 +13,6 @@ import com.pine.service.resource.ShaderService;
 import com.pine.service.streaming.impl.CubeMapFace;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
-
-import java.util.List;
 
 import static com.pine.service.environment.CubeMapWriteUtil.saveCubeMapToDisk;
 
@@ -50,16 +46,15 @@ public class EnvironmentMapGenService implements Loggable {
         // TODO - DELETE PREVIOUSLY GENERATED PROBES
         // TODO - KEEP TRACK OF GENERATED PROBES
 
-        List<AbstractComponent> probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE);
-        for (var probe : probes) {
-            capture(probe.entity.id(), probe.entity.transformation.translation);
-            var probeOld = streamingRepository.loadedResources.get(probe.entity.id());
+        for (var probe : worldRepository.bagEnvironmentProbeComponent.values()) {
+            capture(probe.getEntityId(), worldRepository.bagTransformationComponent.get(probe.getEntityId()).translation);
+            var probeOld = streamingRepository.loadedResources.get(probe.getEntityId());
             if (probeOld != null) {
                 probeOld.dispose();
             }
-            streamingRepository.scheduleToLoad.remove(probe.entity.id());
-            streamingRepository.toLoadResources.remove(probe.entity.id());
-            streamingRepository.discardedResources.remove(probe.entity.id());
+            streamingRepository.scheduleToLoad.remove(probe.getEntityId());
+            streamingRepository.toLoadResources.remove(probe.getEntityId());
+            streamingRepository.discardedResources.remove(probe.getEntityId());
         }
         isBaked = true;
     }
@@ -79,7 +74,6 @@ public class EnvironmentMapGenService implements Loggable {
 
     private void generate(Vector3f cameraPosition, int framebufferId, int baseResolution, int cubeMapTextureId, String resourceId) {
         GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, framebufferId);
-        GL46.glClearColor(0, 0, 0, 1);
         for (int i = 0; i < CubeMapFace.values().length; i++) {
             GL46.glViewport(0, 0, baseResolution, baseResolution);
             GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, CubeMapFace.values()[i].getGlFace(), cubeMapTextureId, 0);

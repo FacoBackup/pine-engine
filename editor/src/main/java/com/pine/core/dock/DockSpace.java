@@ -1,12 +1,8 @@
-package com.pine.window;
+package com.pine.core.dock;
 
-import com.pine.core.dock.AbstractDockPanel;
-import com.pine.core.dock.DockDescription;
 import com.pine.core.panel.AbstractPanelContext;
 import com.pine.panels.console.ConsolePanel;
-import com.pine.panels.files.FilesContext;
-import com.pine.panels.files.FilesPanel;
-import com.pine.panels.hierarchy.HierarchyContext;
+import com.pine.panels.files.ContentBrowser;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.metrics.MetricsPanel;
@@ -17,12 +13,12 @@ import com.pine.theme.Icons;
 
 import java.util.Arrays;
 
-public enum EditorDock implements DockDescription {
+public enum DockSpace {
     Viewport("Viewport", Icons.ipublic, 0, 0, ViewportPanel.class, ViewportContext.class),
-    Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class, HierarchyContext.class),
+    Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class, null),
     Inspector("Inspector", Icons.search, InspectorPanel.class, null),
     Console("Console", Icons.terminal, ConsolePanel.class, null),
-    Files("Files", Icons.folder_open, FilesPanel.class, FilesContext.class),
+    Files("Files", Icons.folder_open, ContentBrowser.class, null),
     Resources("Resources", Icons.data_array, ResourcesPanel.class, null),
     Metrics("Metrics", Icons.bar_chart, MetricsPanel.class, null);
 
@@ -35,11 +31,11 @@ public enum EditorDock implements DockDescription {
     private static final String[] labels = new String[values().length];
     private Integer optionIndex = null;
 
-    EditorDock(String title, String codePoint, Class<? extends AbstractDockPanel> view, Class<? extends AbstractPanelContext> context) {
+    DockSpace(String title, String codePoint, Class<? extends AbstractDockPanel> view, Class<? extends AbstractPanelContext> context) {
         this(title, codePoint, -1, -1, view, context);
     }
 
-    EditorDock(String title, String codePoint, float paddingX, float paddingY, Class<? extends AbstractDockPanel> view, Class<? extends AbstractPanelContext> context) {
+    DockSpace(String title, String codePoint, float paddingX, float paddingY, Class<? extends AbstractDockPanel> view, Class<? extends AbstractPanelContext> context) {
         this.title = title;
         this.codePoint = codePoint;
         this.paddingX = paddingX;
@@ -48,35 +44,29 @@ public enum EditorDock implements DockDescription {
         this.view = view;
     }
 
-    @Override
     public float getPaddingX() {
         return paddingX;
     }
 
-    @Override
     public float getPaddingY() {
         return paddingY;
     }
 
-    @Override
     public String getIcon() {
         return codePoint;
     }
 
-    @Override
     public String getTitle() {
         return title;
     }
 
-    @Override
     public Class<? extends AbstractDockPanel> getView() {
         return view;
     }
 
-    @Override
     public String[] getOptions() {
         if (labels[0] == null) {
-            EditorDock[] values = values();
+            DockSpace[] values = values();
             for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
                 var value = values[i];
                 labels[i] = value.codePoint + " " + value.title;
@@ -85,12 +75,10 @@ public enum EditorDock implements DockDescription {
         return labels;
     }
 
-    @Override
-    public DockDescription getSelectedOption(int index) {
+    public DockSpace getSelectedOption(int index) {
         return values()[index];
     }
 
-    @Override
     public int getOptionIndex() {
         if (optionIndex == null) {
             optionIndex = Arrays.asList(values()).indexOf(this);
@@ -98,12 +86,10 @@ public enum EditorDock implements DockDescription {
         return optionIndex;
     }
 
-    @Override
-    public DockDescription getDefault() {
-        return EditorDock.Files;
+    public DockSpace getDefault() {
+        return DockSpace.Files;
     }
 
-    @Override
     public Class<? extends AbstractPanelContext> getContext() {
         return context;
     }

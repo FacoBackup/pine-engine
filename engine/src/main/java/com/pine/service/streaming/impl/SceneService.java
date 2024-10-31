@@ -20,7 +20,7 @@ public class SceneService extends AbstractStreamableService<SceneResourceRef> {
 
     @Override
     public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
-        return (SceneImportData) FSUtil.read(pathToFile);
+        return (SceneImportData) FSUtil.readBinary(pathToFile);
     }
 
     @Override

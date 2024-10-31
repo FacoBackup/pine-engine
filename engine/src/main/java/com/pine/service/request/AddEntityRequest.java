@@ -2,17 +2,13 @@ package com.pine.service.request;
 
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
-import com.pine.messaging.Loggable;
-import com.pine.messaging.Message;
-import com.pine.messaging.MessageSeverity;
-import com.pine.repository.WorldRepository;
-import com.pine.repository.streaming.StreamingRepository;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 
-public class AddEntityRequest extends AbstractRequest implements Loggable {
+public class AddEntityRequest extends AbstractRequest {
     private final List<ComponentType> components;
     private Entity entity;
 
@@ -29,17 +25,19 @@ public class AddEntityRequest extends AbstractRequest implements Loggable {
     }
 
     @Override
-    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
+    public void run() {
         entity = new Entity();
         repository.entityMap.put(entity.id(), entity);
-        entity.transformation.parent = repository.rootEntity.transformation;
-        repository.rootEntity.transformation.children.add(entity.transformation);
+
+        repository.parentChildren.putIfAbsent(repository.rootEntity.id(), new LinkedList<>());
+        repository.parentChildren.get(repository.rootEntity.id()).add(entity.id());
+        repository.childParent.put(entity.id(), repository.rootEntity.id());
+
         try {
             AddComponentRequest.add(components, entity, repository);
-            return new Message("Entity created successfully", MessageSeverity.SUCCESS);
+            getLogger().warn("Entity created successfully");
         } catch (Exception e) {
             getLogger().error("Error while adding component", e);
-            return new Message("Error while adding component", MessageSeverity.ERROR);
         }
     }
 }

@@ -110,10 +110,6 @@ public class CameraRepository extends Inspectable implements SerializableReposit
         }
     }
 
-    public Camera getCurrentCamera() {
-        return currentCamera;
-    }
-
     @Override
     public String getTitle() {
         return "Camera & lenses";

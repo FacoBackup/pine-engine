@@ -1,9 +1,6 @@
 package com.pine.panels.hierarchy;
 
-import com.pine.component.ComponentType;
-import com.pine.component.Entity;
-import com.pine.component.MeshComponent;
-import com.pine.component.Transformation;
+import com.pine.component.*;
 import com.pine.panels.AbstractEntityViewPanel;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
@@ -14,7 +11,9 @@ import imgui.flag.*;
 import imgui.type.ImString;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
@@ -29,12 +28,13 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     private Entity onDrag;
     private final ImString search = new ImString();
     private boolean isOnSearch = false;
-    private HierarchyContext context;
+    private final Map<String, String> searchMatchWith = new HashMap<>();
+    private final Map<String, Byte> searchMatch = new HashMap<>();
+    private final Map<String, Integer> opened = new HashMap<>();
 
     @Override
     public void onInitialize() {
         appendChild(header = new HierarchyHeaderPanel(search));
-        context = (HierarchyContext) getContext();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             for (String pinned : stateRepository.pinnedEntities.keySet()) {
                 renderNodePinned(world.entityMap.get(pinned));
             }
-            renderNode(world.rootEntity);
+            renderNode(world.rootEntity.id());
             ImGui.endTable();
         }
     }
@@ -68,26 +68,27 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         renderEntityColumns(node, true);
     }
 
-    private boolean renderNode(Entity node) {
-        if ((isOnSearch && context.searchMatch.containsKey(node.id()) && Objects.equals(context.searchMatchWith.get(node.id()), search.get()))) {
+    private boolean renderNode(String entityId) {
+        Entity entity = world.entityMap.get(entityId);
+        if (entity == null || (isOnSearch && searchMatch.containsKey(entity.id()) && Objects.equals(searchMatchWith.get(entity.id()), search.get()))) {
             return false;
         }
 
-        boolean isSearchMatch = matchSearch(node);
+        boolean isSearchMatch = matchSearch(entity);
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
-        int flags = getFlags(node);
-        boolean open = ImGui.treeNodeEx(getNodeLabel(node, true), flags);
+        int flags = getFlags(entity);
+        boolean open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
 
-        if (node != world.rootEntity) {
-            handleDragDrop(node);
-            renderEntityColumns(node, false);
+        if (entity != world.rootEntity) {
+            handleDragDrop(entity);
+            renderEntityColumns(entity, false);
         }
         if (open) {
-            context.opened.put(node.id(), ImGuiTreeNodeFlags.DefaultOpen);
-            renderEntityChildren(node);
+            opened.put(entity.id(), ImGuiTreeNodeFlags.DefaultOpen);
+            renderEntityChildren(entity);
         } else {
-            context.opened.put(node.id(), ImGuiTreeNodeFlags.None);
+            opened.put(entity.id(), ImGuiTreeNodeFlags.None);
         }
 
         return isSearchMatch;
@@ -102,31 +103,37 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         if (isOnSearch) {
             isSearchMatch = node.getTitle().contains(search.get());
             if (isSearchMatch) {
-                context.searchMatch.put(node.id(), BYTE);
+                searchMatch.put(node.id(), BYTE);
             } else {
-                context.searchMatch.remove(node.id());
+                searchMatch.remove(node.id());
             }
-            context.searchMatchWith.put(node.id(), search.get());
+            searchMatchWith.put(node.id(), search.get());
         } else {
-            context.searchMatch.remove(node.id());
-            context.searchMatchWith.remove(node.id());
+            searchMatch.remove(node.id());
+            searchMatchWith.remove(node.id());
         }
         return isSearchMatch;
     }
 
     private void renderEntityChildren(Entity node) {
+        var children = world.parentChildren.get(node.id());
+
         if (isOnSearch) {
-            for (var child : node.transformation.children) {
-                if (context.searchMatch.containsKey(node.id()) || renderNode(child.entity)) {
-                    context.searchMatch.put(node.id(), BYTE);
-                } else {
-                    context.searchMatch.remove(node.id());
+            if (children != null) {
+                for (var child : children) {
+                    if (searchMatch.containsKey(node.id()) || renderNode(child)) {
+                        searchMatch.put(node.id(), BYTE);
+                    } else {
+                        searchMatch.remove(node.id());
+                    }
                 }
             }
         } else {
             renderComponents(node);
-            for (var child : node.transformation.children) {
-                renderNode(child.entity);
+            if (children != null) {
+                for (var child : children) {
+                    renderNode(child);
+                }
             }
         }
 
@@ -135,28 +142,30 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private void renderComponents(Entity node) {
         if (!stateRepository.showOnlyEntitiesHierarchy) {
-            for (var component : node.components.values()) {
-                ImGui.tableNextRow();
-                ImGui.tableNextColumn();
-                ImGui.textDisabled(component.getIcon() + component.getTitle());
-                ImGui.tableNextColumn();
-                ImGui.textDisabled("--");
-                ImGui.tableNextColumn();
-                ImGui.textDisabled("--");
-            }
-            if (node.components.containsKey(ComponentType.MESH)) {
-                MeshComponent meshComponent = (MeshComponent) node.components.get(ComponentType.MESH);
-                if (meshComponent.isInstancedRendering) {
-                    renderInstancedComponent(node, meshComponent);
-                }
+            world.runByComponent(this::addComponent, node.id());
+        }
+    }
+
+    private void addComponent(AbstractComponent component) {
+        ImGui.tableNextRow();
+        ImGui.tableNextColumn();
+        ImGui.textDisabled(component.getIcon() + component.getTitle());
+        ImGui.tableNextColumn();
+        ImGui.textDisabled("--");
+        ImGui.tableNextColumn();
+        ImGui.textDisabled("--");
+        if (component.getType() == ComponentType.MESH) {
+            var meshComponent = (MeshComponent) component;
+            if (meshComponent.isInstancedRendering) {
+                renderInstancedComponent(meshComponent);
             }
         }
     }
 
-    private void renderInstancedComponent(Entity node, MeshComponent instanced) {
-        List<Transformation> primitives = instanced.instances;
+    private void renderInstancedComponent(MeshComponent instanced) {
+        List<TransformationComponent> primitives = instanced.instances;
         for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
-            Transformation p = primitives.get(i);
+            TransformationComponent p = primitives.get(i);
             ImGui.tableNextRow();
             ImGui.tableNextColumn();
             String title = Icons.content_copy + " Instance - " + i;
@@ -183,7 +192,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         if (isOnSearch) {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
         }
-        return flags | context.opened.getOrDefault(node.id(), ImGuiTreeNodeFlags.None);
+        return flags | opened.getOrDefault(node.id(), ImGuiTreeNodeFlags.None);
     }
 
     private void renderEntityColumns(Entity node, boolean isPinned) {
@@ -193,8 +202,10 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
-        if (ImGui.button((node.visible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "##vpinned" : "##v") + node.id() + imguiId, 20, 15)) {
-            changeVisibilityRecursively(node, !node.visible);
+
+        boolean isVisible = !world.hiddenEntityMap.containsKey(node.id());
+        if (ImGui.button((isVisible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "##vpinned" : "##v") + node.id() + imguiId, 20, 15)) {
+            changeVisibilityRecursively(node.id(), !isVisible);
         }
         ImGui.tableNextColumn();
         boolean isNodePinned = stateRepository.pinnedEntities.containsKey(node.id());
@@ -209,10 +220,18 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         ImGui.popStyleVar(2);
     }
 
-    private void changeVisibilityRecursively(Entity node, boolean newValue) {
-        node.visible = newValue;
-        for(var child : node.transformation.children) {
-            changeVisibilityRecursively(child.entity, newValue);
+    private void changeVisibilityRecursively(String node, boolean isVisible) {
+        if (isVisible) {
+            world.hiddenEntityMap.remove(node);
+        } else {
+            world.hiddenEntityMap.put(node, true);
+        }
+        var children = world.parentChildren.get(node);
+
+        if (children != null) {
+            for (var child : children) {
+                changeVisibilityRecursively(child, isVisible);
+            }
         }
     }
 
@@ -222,7 +241,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             if (!isMultiSelect) {
                 selectionService.clearSelection();
             }
-            selectionService.addSelected(node);
+            selectionService.addSelected(node.id());
         }
     }
 

@@ -3,11 +3,10 @@ package com.pine.service.request;
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.component.MeshComponent;
-import com.pine.messaging.Message;
-import com.pine.messaging.MessageSeverity;
-import com.pine.repository.WorldRepository;
-import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.data.SceneImportData;
+
+import java.util.Collections;
+import java.util.List;
 
 public class LoadSceneRequest extends AbstractRequest {
     private final SceneImportData scene;
@@ -19,25 +18,31 @@ public class LoadSceneRequest extends AbstractRequest {
     }
 
     @Override
-    public Message run(WorldRepository repository, StreamingRepository streamingRepository) {
-        traverse(root, scene, repository);
-        return new Message("Scene loaded successfully", MessageSeverity.SUCCESS);
+    public void run() {
+        getLogger().warn("Loading scene {}", scene.id);
+        traverse(root, scene);
     }
 
-    private void traverse(Entity parent, SceneImportData localScene, WorldRepository repository) {
-        Entity newEntity = new Entity();
-        newEntity.name = localScene.name;
+    private void traverse(Entity parent, SceneImportData localScene) {
+        var add = new AddEntityRequest(localScene.meshResourceId != null ? List.of(ComponentType.MESH) : Collections.emptyList());
+        add.setup(repository, streamingRepository);
+        add.run();
+
+
+        Entity entity = add.getResponse();
+        entity.name = localScene.name;
         if (localScene.meshResourceId != null) {
-            MeshComponent meshComponent = new MeshComponent(newEntity);
-            repository.registerComponent(meshComponent);
-            newEntity.components.put(ComponentType.MESH, meshComponent);
-            meshComponent.lod0 = localScene.meshResourceId;
-            meshComponent.material = localScene.materialResourceId;
+            var comp = (MeshComponent) repository.bagMeshComponent.get(entity.id());
+            comp.lod0 = localScene.meshResourceId;
+            comp.material = localScene.materialResourceId;
         }
-        newEntity.transformation.parent = parent.transformation;
-        parent.transformation.children.add(newEntity.transformation);
+
+        var hierarchy = new HierarchyRequest(parent, entity);
+        hierarchy.setup(repository, streamingRepository);
+        hierarchy.run();
+
         for (var childScene : localScene.children) {
-            traverse(newEntity, childScene, repository);
+            traverse(entity, childScene);
         }
     }
 }

@@ -21,7 +21,6 @@ public class Camera implements Mutable, Serializable {
     public float fov = (float) Math.toRadians(60);
     public float aspectRatio = 1;
     public float orthographicProjectionSize = 50;
-
     public int changes = 0;
     public int frozenVersion = -1;
 

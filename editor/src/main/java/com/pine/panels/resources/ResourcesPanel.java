@@ -1,6 +1,5 @@
 package com.pine.panels.resources;
 
-import com.pine.component.ComponentType;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;
@@ -53,7 +52,7 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
 
-            render("Renderable entities", worldRepository.components.get(ComponentType.MESH).size());
+            render("Renderable entities", worldRepository.bagMeshComponent.size());
 
             ImGui.endTable();
         }

@@ -10,7 +10,7 @@ import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
 
 
-public class OutlinePass extends AbstractQuadPassPass {
+public class BackgroundPass extends AbstractQuadPassPass {
     @PInject
     public EditorRepository editorRepository;
 
@@ -18,38 +18,35 @@ public class OutlinePass extends AbstractQuadPassPass {
     public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO color;
-    private UniformDTO width;
 
     @Override
     public void onInitialize() {
         color = addUniformDeclaration("color");
-        width = addUniformDeclaration("width");
     }
 
     @Override
     protected boolean isRenderable() {
-        return editorRepository.showOutline && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT && !editorRepository.selected.isEmpty();
+        return editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.postProcessingBuffer;
+        return fboRepository.auxBuffer;
     }
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.outlineShader;
+        return toolsResourceRepository.backgroundShader;
     }
 
     @Override
     protected void bindUniforms() {
-        shaderService.bindSampler2dDirect(toolsResourceRepository.outlineSampler, 0);
-        shaderService.bindFloat(editorRepository.outlineWidth, width);
-        shaderService.bindVec3(editorRepository.outlineColor, color);
+        shaderService.bindVec3(editorRepository.backgroundColor, color);
+        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 0);
     }
 
     @Override
     public String getTitle() {
-        return "Outline";
+        return "Background";
     }
 }

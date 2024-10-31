@@ -1,5 +1,7 @@
 package com.pine.repository.core;
 
-public interface CoreRepository {
+import com.pine.injection.Disposable;
+
+public interface CoreRepository extends Disposable {
     void initialize();
 }

@@ -74,21 +74,24 @@ public class ImporterService implements Loggable {
 
     private void persistMetadata(AbstractResourceMetadata metadata, List<AbstractResourceMetadata> response) {
         metadata.setSize(new File(getPathToFile(metadata.id, metadata.getResourceType())).length());
-        if (FSUtil.write(metadata, getPathToMetadata(metadata.id))) {
+        if (FSUtil.writeBinary(metadata, getPathToMetadata(metadata))) {
             response.add(metadata);
         }
     }
 
-    public String getPathToMetadata(String id) {
-        return engine.getMetadataDirectory() + id + ".dat";
+    public String getPathToMetadata(AbstractResourceMetadata metadata) {
+        return engine.getMetadataDirectory() + metadata.id + "." + metadata.getResourceType().name();
+    }
+
+    public String getPathToMetadata(String id, StreamableResourceType type) {
+        return engine.getMetadataDirectory() + id + "." + type.name();
     }
 
     public AbstractImportData readFile(AbstractResourceMetadata metadata) {
         if (!metadata.getResourceType().isReadable()) {
             return null;
         }
-        String path = getPathToFile(metadata.id, metadata.getResourceType());
-        return (AbstractImportData) FSUtil.read(path);
+        return (AbstractImportData) FSUtil.readBinary(getPathToFile(metadata.id, metadata.getResourceType()));
     }
 
     public String getPathToFile(String id, StreamableResourceType type) {
@@ -109,7 +112,7 @@ public class ImporterService implements Loggable {
         return String.format("%.2f", fileSize) + sizeUnit;
     }
 
-    public String createNew(StreamableResourceType resourceType) {
+    public AbstractResourceMetadata createNew(StreamableResourceType resourceType) {
         AbstractResourceMetadata created = null;
         for (AbstractImporter i : importersList) {
             if (i.getResourceType() == resourceType) {
@@ -118,7 +121,7 @@ public class ImporterService implements Loggable {
         }
         if(created != null) {
             persistMetadata(created, new ArrayList<>());
-            return created.id;
+            return created;
         }
         return null;
     }

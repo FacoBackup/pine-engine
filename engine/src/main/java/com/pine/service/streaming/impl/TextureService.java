@@ -52,8 +52,7 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
 
     public int getTotalTextureCount() {
         int total = 0;
-        for (int i = 0; i < repository.loadedResources.size(); i++) {
-            var resourceRef = repository.loadedResources.get(i);
+        for (AbstractResourceRef<?> resourceRef : repository.loadedResources.values()) {
             if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.TEXTURE) {
                 total++;
             }
