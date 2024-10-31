@@ -45,7 +45,7 @@ public class RenderingRequestService {
     private void fillInstanceRequest(MeshComponent scene) {
         for (var primitive : scene.instances) {
             if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
-                primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+                primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
             } else {
                 primitive.isCulled = false;
             }
@@ -80,7 +80,7 @@ public class RenderingRequestService {
         if (mesh == null) return null;
 
         if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
-            transform.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.boundingBoxSize);
+            transform.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
         } else {
             transform.isCulled = false;
         }

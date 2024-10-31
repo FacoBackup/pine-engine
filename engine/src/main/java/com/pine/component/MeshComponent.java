@@ -69,8 +69,8 @@ public class MeshComponent extends AbstractComponent {
     public boolean isCullingEnabled = true;
     @InspectableField(group = "Culling", label = "Max distance from camera", min = 1)
     public int maxDistanceFromCamera = 200;
-    @InspectableField(group = "Culling", label = "Bounding box size")
-    public final Vector3f boundingBoxSize = new Vector3f(1);
+    @InspectableField(group = "Culling", label = "Sphere radius")
+    public final float cullingSphereRadius = 1;
 
 
     public float distanceFromCamera = 0f;

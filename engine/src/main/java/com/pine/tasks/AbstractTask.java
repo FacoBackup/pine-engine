@@ -9,20 +9,32 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTask extends MetricCollector implements Loggable, Disposable {
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private boolean started;
+    private final Thread thread = new Thread(this::runInternal);
 
-    protected int getTickIntervalMilliseconds() {
+    protected long getInterval(){
         return 16;
     }
 
+    private void runInternal() {
+        while (true) {
+            tickInternal();
+            try {
+                Thread.sleep(getInterval());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+    }
+
     final public void start() {
-        if(started){
+        if (started) {
             getLogger().error("Thread already started");
             return;
         }
         started = true;
-        scheduler.scheduleAtFixedRate(this::tickInternal, 0, getTickIntervalMilliseconds(), TimeUnit.MILLISECONDS);
+        thread.start();
     }
 
     /**
@@ -32,6 +44,6 @@ public abstract class AbstractTask extends MetricCollector implements Loggable, 
 
     @Override
     public void dispose() {
-        scheduler.shutdown();
+        thread.interrupt();
     }
 }

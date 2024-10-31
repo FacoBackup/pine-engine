@@ -58,7 +58,7 @@ public class CameraService implements SyncTask {
         updateProjection();
         updateView();
         repository.viewProjectionMatrix.set(repository.projectionMatrix).mul(repository.viewMatrix);
-        repository.frustum.extractPlanes(repository.viewProjectionMatrix);
+        repository.frustum.extractFrustumPlanes(repository.viewProjectionMatrix);
     }
 
     private void updateView() {

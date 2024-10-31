@@ -32,8 +32,6 @@ public class TransformationService extends AbstractTask {
     public LightService lightService;
 
     private final Vector3f distanceAux = new Vector3f();
-    private final Vector3f auxCubeMax = new Vector3f();
-    private final Vector3f auxCubeMin = new Vector3f();
     private final Matrix4f auxMat4 = new Matrix4f();
     private final Matrix4f auxMat42 = new Matrix4f();
     private boolean isLightModified = false;
@@ -127,21 +125,11 @@ public class TransformationService extends AbstractTask {
         return distanceAux.sub(translation).length();
     }
 
-    public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, Vector3f boundingBoxSize) {
+    public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, float cullingSphereRadius) {
         if (getDistanceFromCamera(translation) > maxDistanceFromCamera) {
             return true;
         }
-
-        auxCubeMin.x = translation.x - boundingBoxSize.x;
-        auxCubeMin.y = translation.y - boundingBoxSize.y;
-        auxCubeMin.z = translation.x - boundingBoxSize.z;
-
-        auxCubeMax.x = translation.x + boundingBoxSize.x;
-        auxCubeMax.y = translation.y + boundingBoxSize.y;
-        auxCubeMax.z = translation.x + boundingBoxSize.z;
-
-        // TODO - FIX
-        return !cameraRepository.frustum.isCubeInFrustum(auxCubeMin, auxCubeMax);
+        return !cameraRepository.frustum.isSphereInsideFrustum(translation, cullingSphereRadius);
     }
 
     @Override
