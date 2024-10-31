@@ -1,6 +1,5 @@
 package com.pine.panels.resources;
 
-import com.pine.component.ComponentType;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.WorldRepository;

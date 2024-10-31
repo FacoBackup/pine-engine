@@ -6,7 +6,6 @@ import com.pine.injection.PInject;
 import com.pine.repository.core.CoreUBORepository;
 import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
-import com.pine.service.resource.shader.ShaderCreationData;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
@@ -22,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @PBean
-public class ShaderService extends AbstractResourceService<Shader, ShaderCreationData> {
+public class ShaderService extends AbstractResourceService<Shader> {
     private int currentSamplerIndex = 0;
     private Shader currentShader;
 
@@ -41,7 +40,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
     FloatBuffer bufferMat4 = MemoryUtil.memAllocFloat(16);
 
     @Override
-    protected void bindInternal(Shader instance) {
+    public void bind(Shader instance) {
         if (currentShader == instance) {
             currentSamplerIndex = 0;
             return;
@@ -57,26 +56,6 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
         GL46.glUseProgram(GL46.GL_NONE);
     }
 
-    @Override
-    protected IResource addInternal(ShaderCreationData data) {
-        if (data.isLocalResource()) {
-            if (data.getCompute() == null) {
-                String vertex = processShader(data.vertex());
-                String frag = processShader(data.fragment());
-                return create(getId(), new ShaderCreationData(vertex, frag));
-            } else {
-                String compute = processShader(data.getCompute());
-                return create(getId(), new ShaderCreationData(compute));
-            }
-        }
-        return create(getId(), data);
-    }
-
-    private Shader create(String id, ShaderCreationData data) {
-        var instance = new Shader(id, data);
-        return bindWithUBO(data.vertex() + "\n" + data.fragment(), instance);
-    }
-
     @Nullable
     public Shader bindWithUBO(String code, Shader instance) {
         if (instance.isValid()) {
@@ -88,7 +67,7 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
     }
 
     public String processShader(String file) {
-        String input = new String(FSUtil.loadResource(file));
+        String input = new String(FSUtil.loadResource("shaders/" + file));
         return processIncludes(input);
     }
 
@@ -99,8 +78,8 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
 
         final var resultBuilder = new StringBuilder();
         while (matcher.find()) {
-            String fileName = ShaderCreationData.LOCAL_SHADER + matcher.group(0).replaceAll("#include \"(./|../)", "").replaceAll("\"", "");
-            String replacement = new String(FSUtil.loadResource(fileName));
+            String fileName = matcher.group(0).replaceAll("#include \"(./|../)", "").replaceAll("\"", "");
+            String replacement = new String(FSUtil.loadResource("shaders/" + fileName));
             matcher.appendReplacement(resultBuilder, replacement);
         }
         matcher.appendTail(resultBuilder);
@@ -115,16 +94,6 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
     public void dispatch(ComputeRuntimeData data) {
         GL46.glDispatchCompute(data.groupX, data.groupY, data.groupZ);
         GL46.glMemoryBarrier(data.memoryBarrier);
-    }
-
-    @Override
-    protected void removeInternal(Shader shader) {
-        GL46.glDeleteProgram(shader.getProgram());
-    }
-
-    @Override
-    public LocalResourceType getResourceType() {
-        return LocalResourceType.SHADER;
     }
 
     public void bindProgram(Shader shader) {
@@ -225,5 +194,18 @@ public class ShaderService extends AbstractResourceService<Shader, ShaderCreatio
     public void bindSampler2dDirect(int sampler, int bindingPoint) {
         GL46.glActiveTexture(GL46.GL_TEXTURE0 + bindingPoint);
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, sampler);
+    }
+
+    public Shader create(String compute) {
+        compute = processShader(compute);
+        var instance = new Shader(compute);
+        return bindWithUBO(compute, instance);
+    }
+
+    public Shader create(String vertex, String fragment) {
+        vertex = processShader(vertex);
+        fragment = processShader(fragment);
+        var instance = new Shader(vertex, fragment);
+        return bindWithUBO(vertex + "\n" + fragment, instance);
     }
 }

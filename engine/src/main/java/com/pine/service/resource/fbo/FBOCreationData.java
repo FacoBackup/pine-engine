@@ -1,13 +1,11 @@
 package com.pine.service.resource.fbo;
 
-import com.pine.service.resource.LocalResourceType;
-import com.pine.service.resource.ResourceCreationData;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FBOCreationData extends ResourceCreationData {
+public class FBOCreationData  {
 
     private final List<FBOTextureData> colors = new ArrayList<>();
     private boolean depthTexture;
@@ -58,11 +56,6 @@ public class FBOCreationData extends ResourceCreationData {
     public FBOCreationData addSampler() {
         addSampler(0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false);
         return this;
-    }
-
-    @Override
-    public LocalResourceType getResourceType() {
-        return LocalResourceType.FBO;
     }
 
     public boolean isDepthTest() {

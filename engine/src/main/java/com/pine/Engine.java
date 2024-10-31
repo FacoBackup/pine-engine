@@ -7,6 +7,7 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.*;
 import com.pine.service.module.EngineModulesService;
+import com.pine.service.resource.IResource;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.system.SystemService;
 import com.pine.tasks.AbstractTask;
@@ -21,7 +22,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @PBean
-public class Engine extends MetricCollector implements Loggable {
+public class Engine extends MetricCollector implements IResource {
     public static final int MAX_ENTITIES = 10_000;
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
@@ -141,4 +142,14 @@ public class Engine extends MetricCollector implements Loggable {
     public String getTitle() {
         return "Engine total";
     }
+
+    @Override
+    public void dispose() {
+        shaderRepository.dispose();
+        ssboRepository.dispose();
+        uboRepository.dispose();
+        fboRepository.dispose();
+        primitiveRepository.dispose();
+    }
+
 }

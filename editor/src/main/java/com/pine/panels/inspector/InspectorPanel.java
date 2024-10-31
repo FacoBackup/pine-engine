@@ -85,6 +85,9 @@ public class InspectorPanel extends AbstractDockPanel {
                     ImGui.endCombo();
                 }
             }
+            if (formPanel.getInspectable() != currentInspection) {
+                formPanel.setInspection(currentInspection);
+            }
             super.render();
         }
         ImGui.endChild();
@@ -105,9 +108,6 @@ public class InspectorPanel extends AbstractDockPanel {
                 } else {
                     currentInspection = repositories.getFirst();
                 }
-            }
-            if (formPanel.getInspectable() != currentInspection) {
-                formPanel.setInspection(currentInspection);
             }
         }
     }

@@ -1,12 +1,10 @@
 package com.pine.service.request;
 
-import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
 import com.pine.repository.WorldRepository;
 
 import java.util.List;
-import java.util.Set;
 
 public class AddComponentRequest extends AbstractRequest {
     private final ComponentType type;

@@ -1,10 +1,8 @@
 package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
-import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
-import com.pine.component.light.AbstractLightComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;

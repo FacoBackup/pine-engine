@@ -1,7 +1,6 @@
 package com.pine.service.request;
 
 import com.pine.Mutable;
-import com.pine.component.AbstractComponent;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.repository.WorldRepository;

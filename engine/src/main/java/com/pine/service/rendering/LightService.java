@@ -1,8 +1,6 @@
 package com.pine.service.rendering;
 
 import com.pine.EngineUtils;
-import com.pine.component.AbstractComponent;
-import com.pine.component.ComponentType;
 import com.pine.component.light.*;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -14,7 +12,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
-import java.util.Collection;
 
 @PBean
 public class LightService {

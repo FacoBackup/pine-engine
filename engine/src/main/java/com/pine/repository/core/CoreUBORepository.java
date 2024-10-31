@@ -3,7 +3,6 @@ package com.pine.repository.core;
 import com.pine.Engine;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.service.resource.ResourceService;
 import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
@@ -17,9 +16,6 @@ import java.nio.FloatBuffer;
 public class CoreUBORepository implements CoreRepository {
     @PInject
     public Engine engine;
-    @PInject
-    public ResourceService resources;
-
 
     public UniformBufferObject cameraViewUBO;
 
@@ -27,7 +23,7 @@ public class CoreUBORepository implements CoreRepository {
 
     @Override
     public void initialize() {
-        cameraViewUBO = (UniformBufferObject) resources.addResource(new UBOCreationData(
+        cameraViewUBO = new UniformBufferObject(new UBOCreationData(
                 UBODeclaration.CAMERA_VIEW.getBlockName(),
                 new UBOData("viewProjection", GLSLType.MAT_4),
                 new UBOData("viewMatrix", GLSLType.MAT_4),
@@ -37,7 +33,11 @@ public class CoreUBORepository implements CoreRepository {
                 new UBOData("invProjectionMatrix", GLSLType.MAT_4),
                 new UBOData("bufferResolution", GLSLType.VEC_2),
                 new UBOData("logDepthFC", GLSLType.FLOAT)
-        ).staticResource());
+        ));
+    }
 
+    @Override
+    public void dispose() {
+        cameraViewUBO.dispose();
     }
 }

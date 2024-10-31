@@ -1,6 +1,5 @@
 package com.pine.tasks;
 
-import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;

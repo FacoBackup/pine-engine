@@ -11,8 +11,6 @@ import com.pine.service.camera.AbstractCameraService;
 import com.pine.service.camera.Camera;
 import com.pine.service.camera.CameraFirstPersonService;
 import com.pine.service.camera.CameraThirdPersonService;
-import com.pine.service.resource.ResourceService;
-import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -49,9 +47,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     public CameraRepository cameraRepository;
 
     @PInject
-    public ResourceService resourceService;
-
-    @PInject
     public CameraThirdPersonService cameraThirdPersonService;
 
     @PInject
@@ -68,7 +63,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
     @Override
     public void onInitialize() {
-        this.fbo = (FrameBufferObject) resourceService.addResource(new FBOCreationData(false, false).addSampler());
+        this.fbo = new FrameBufferObject(engine.runtimeRepository.getDisplayW(), engine.runtimeRepository.getDisplayH()).addSampler();
         appendChild(gizmo = new GizmoPanel(position, sizeVec));
         io = ImGui.getIO();
     }
@@ -108,8 +103,8 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         var camera = editorRepository.viewportCamera.get(this.dock.id);
         if (camera == null) {
             editorRepository.viewportCamera.put(this.dock.id, camera = new Camera());
-            camera.pitch = (float) -(Math.PI/4);
-            camera.yaw = (float) (Math.PI/4);
+            camera.pitch = (float) -(Math.PI / 4);
+            camera.yaw = (float) (Math.PI / 4);
             camera.orbitalMode = true;
         }
         cameraRepository.setCurrentCamera(camera);

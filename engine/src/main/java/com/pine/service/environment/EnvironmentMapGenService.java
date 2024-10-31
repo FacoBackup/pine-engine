@@ -1,9 +1,6 @@
 package com.pine.service.environment;
 
 import com.pine.Engine;
-import com.pine.component.AbstractComponent;
-import com.pine.component.ComponentType;
-import com.pine.component.EnvironmentProbeComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -16,8 +13,6 @@ import com.pine.service.resource.ShaderService;
 import com.pine.service.streaming.impl.CubeMapFace;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
-
-import java.util.Collection;
 
 import static com.pine.service.environment.CubeMapWriteUtil.saveCubeMapToDisk;
 
