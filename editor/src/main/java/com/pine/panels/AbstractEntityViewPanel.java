@@ -54,7 +54,7 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
 
         if (!stateRepository.copied.isEmpty() && ctrlDown && ImGui.isKeyPressed(ImGuiKey.V)) {
             messageRepository.pushMessage("Pasting "  + stateRepository.copied.size() + " entities", MessageSeverity.WARN);
-            var request = new CopyEntitiesRequest(stateRepository.copied);
+            var request = new CopyEntitiesRequest(stateRepository.copied, selectionService.stateRepository.mainSelection);
             requestProcessingService.addRequest(request);
             selectionService.clearSelection();
             selectionService.addAllSelected(request.getAllCloned());
