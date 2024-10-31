@@ -3,6 +3,7 @@ package com.pine.service.environment;
 import com.pine.Engine;
 import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
+import com.pine.component.EnvironmentProbeComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -50,9 +51,8 @@ public class EnvironmentMapGenService implements Loggable {
         // TODO - DELETE PREVIOUSLY GENERATED PROBES
         // TODO - KEEP TRACK OF GENERATED PROBES
 
-        Collection<AbstractComponent> probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE).values();
-        for (var probe : probes) {
-            capture(probe.getEntityId(), worldRepository.getTransformationComponent(probe.getEntityId()).translation);
+        for (var probe : worldRepository.bagEnvironmentProbeComponent.values()) {
+            capture(probe.getEntityId(), worldRepository.bagTransformationComponent.get(probe.getEntityId()).translation);
             var probeOld = streamingRepository.loadedResources.get(probe.getEntityId());
             if (probeOld != null) {
                 probeOld.dispose();

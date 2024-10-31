@@ -234,7 +234,7 @@ public class DirectoryPanel extends AbstractView {
                     var request = new AddEntityRequest(List.of(ComponentType.MESH));
                     requestProcessingService.addRequest(request);
 
-                    MeshComponent meshComponent = (MeshComponent) worldRepository.components.get(ComponentType.MESH).get(request.getResponse().id());
+                    MeshComponent meshComponent = worldRepository.bagMeshComponent.get(request.getResponse().id());
                     meshComponent.lod0 = root.getId();
                 }
             }

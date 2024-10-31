@@ -56,9 +56,6 @@ public class UpdateFieldRequest extends AbstractRequest {
             }
             default -> fieldDTO.getField().set(fieldDTO.getInstance(), newValue);
         }
-        if(fieldDTO.getInstance() instanceof AbstractComponent && repository != null){
-            repository.withChangedData.add((AbstractComponent) fieldDTO.getInstance());
-        }
         if(fieldDTO.getInstance() instanceof Mutable){
             ((Mutable) fieldDTO.getInstance()).registerChange();
         }

@@ -47,7 +47,7 @@ public class SelectionService {
 
     public void updatePrimitiveSelected() {
         if (stateRepository.mainSelection != null) {
-            stateRepository.primitiveSelected = worldRepository.getTransformationComponent(stateRepository.mainSelection);
+            stateRepository.primitiveSelected = worldRepository.bagTransformationComponent.get(stateRepository.mainSelection);
         }
     }
 }

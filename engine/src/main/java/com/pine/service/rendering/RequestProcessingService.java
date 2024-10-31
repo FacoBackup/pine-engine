@@ -31,7 +31,6 @@ public class RequestProcessingService implements Loggable {
         try{
             request.setup(worldRepository, streamingRepository);
             request.run();
-            worldRepository.registerChange();
         }catch (Exception e){
             getLogger().error(e.getMessage(), e);
         }

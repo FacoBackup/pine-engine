@@ -29,9 +29,9 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
                     var cloned = entity.cloneEntity();
                     repository.entityMap.put(cloned.id(), cloned);
 
-                    linkHierarchy(repository, entityId, cloned);
+                    linkHierarchy(entityId, cloned);
 
-                    cloneComponents(repository, entityId, cloned);
+                    cloneComponents(entityId, cloned);
                     allCloned.add(cloned);
                 } catch (Exception e) {
                     getLogger().error("Could not copy entity {}", entityId);
@@ -41,16 +41,13 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
         getLogger().warn("{} entities copied", entities.size());
     }
 
-    private static void cloneComponents(WorldRepository repository, String entityId, Entity cloned) {
-        for (var comp : repository.components.values()) {
-            var instance = comp.get(entityId);
-            if (instance != null) {
-                comp.put(cloned.id(), instance.cloneComponent(cloned));
-            }
-        }
+    private  void cloneComponents(String entityId, Entity cloned) {
+        repository.runByComponent((abstractComponent -> {
+            repository.registerComponent(abstractComponent.cloneComponent(cloned));
+        }), entityId);
     }
 
-    private static void linkHierarchy(WorldRepository repository, String entityId, Entity cloned) {
+    private  void linkHierarchy(String entityId, Entity cloned) {
         String parent = repository.childParent.get(entityId);
         repository.parentChildren.get(parent).add(cloned.id());
         repository.childParent.put(cloned.id(), parent);

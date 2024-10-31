@@ -28,7 +28,7 @@ public abstract class AbstractImporter implements Loggable {
     public abstract AbstractResourceMetadata persist(AbstractImportData data);
 
     public File persistInternal(AbstractImportData data) {
-        if (FSUtil.write(data, getPathToFile(data))) {
+        if (FSUtil.writeBinary(data, getPathToFile(data))) {
             return new File(getPathToFile(data));
         }
         return null;

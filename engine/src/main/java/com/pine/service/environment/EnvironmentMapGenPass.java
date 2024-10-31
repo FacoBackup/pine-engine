@@ -93,8 +93,7 @@ public class EnvironmentMapGenPass implements Initializable {
         shaderService.bind(shaderRepository.environmentMap);
         shaderService.bindMat4(viewProjection, this.viewProjection);
 
-        for (var comp : worldRepository.components.get(ComponentType.MESH).values()) {
-            var meshComp = (MeshComponent) comp;
+        for (var meshComp : worldRepository.bagMeshComponent.values()) {
             if (meshComp.lod0 != null && meshComp.contributeToProbes) {
                 var mesh = (MeshResourceRef) streamingService.streamSync(meshComp.lod0, StreamableResourceType.MESH);
                 var material = (MaterialResourceRef) streamingService.streamSync(meshComp.material, StreamableResourceType.MATERIAL);
@@ -114,7 +113,7 @@ public class EnvironmentMapGenPass implements Initializable {
                 meshService.draw();
             }
         } else {
-            shaderService.bindMat4(worldRepository.getTransformationComponent(meshComp.getEntityId()).globalMatrix, model);
+            shaderService.bindMat4(worldRepository.bagTransformationComponent.get(meshComp.getEntityId()).globalMatrix, model);
             meshService.draw();
         }
     }

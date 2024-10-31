@@ -32,7 +32,7 @@ public class LoadSceneRequest extends AbstractRequest {
         Entity entity = add.getResponse();
         entity.name = localScene.name;
         if (localScene.meshResourceId != null) {
-            var comp = (MeshComponent) repository.components.get(ComponentType.MESH).get(entity.id());
+            var comp = (MeshComponent) repository.bagMeshComponent.get(entity.id());
             comp.lod0 = localScene.meshResourceId;
             comp.material = localScene.materialResourceId;
         }

@@ -53,7 +53,7 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
 
-            render("Renderable entities", worldRepository.components.get(ComponentType.MESH).size());
+            render("Renderable entities", worldRepository.bagMeshComponent.size());
 
             ImGui.endTable();
         }

@@ -45,7 +45,7 @@ public class SerializationService implements Loggable {
         new Thread(() -> {
             boolean success = true;
             for (SerializableRepository r : serializableRepositories) {
-                if (!FSUtil.write(r, getFilePath(projectDirectory, r))) {
+                if (!FSUtil.writeJson(r, getFilePath(projectDirectory, r))) {
                     getLogger().error("Could not save project");
                     success = false;
                 }
@@ -68,7 +68,7 @@ public class SerializationService implements Loggable {
         isDeserializationDone = false;
         Thread thread = new Thread(() -> {
             for (SerializableRepository r : serializableRepositories) {
-                var data = FSUtil.read(getFilePath(projectDirectory, r), r.getClass());
+                var data = FSUtil.readJsonSilent(getFilePath(projectDirectory, r), r.getClass());
                 if (data != null) {
                     r.merge(data);
                 }

@@ -37,7 +37,7 @@ public class FileInspectorPanel extends AbstractView {
                 currentMetadata = null;
                 return;
             }
-            currentMetadata = FSUtil.read(importerService.getPathToMetadata(inspection.id, inspection.getType()), inspection.getType().getMetadataClazz());
+            currentMetadata = (AbstractResourceMetadata) FSUtil.readBinary(importerService.getPathToMetadata(inspection.id, inspection.getType()));
             if (currentMetadata != null) {
                 if (currentMetadata.getResourceType().isMutable()) {
                     dataForm.setInspection(importerService.readFile(currentMetadata));
@@ -70,7 +70,7 @@ public class FileInspectorPanel extends AbstractView {
     private void onChange(FieldDTO dto, Object object, String path, boolean dispose) {
         try {
             UpdateFieldRequest.process(dto, object, null);
-            FSUtil.write(dto.getInstance(), path);
+            FSUtil.writeBinary(dto.getInstance(), path);
             if (dispose) {
                 streamingRepository.discardedResources.remove(currentMetadata.id);
                 AbstractResourceRef<?> ref = streamingRepository.loadedResources.get(currentMetadata.id);

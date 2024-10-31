@@ -1,9 +1,6 @@
 package com.pine.panels.hierarchy;
 
-import com.pine.component.ComponentType;
-import com.pine.component.Entity;
-import com.pine.component.MeshComponent;
-import com.pine.component.TransformationComponent;
+import com.pine.component.*;
 import com.pine.panels.AbstractEntityViewPanel;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
@@ -34,7 +31,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     private final Map<String, String> searchMatchWith = new HashMap<>();
     private final Map<String, Byte> searchMatch = new HashMap<>();
     private final Map<String, Integer> opened = new HashMap<>();
-    
+
     @Override
     public void onInitialize() {
         appendChild(header = new HierarchyHeaderPanel(search));
@@ -145,24 +142,22 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private void renderComponents(Entity node) {
         if (!stateRepository.showOnlyEntitiesHierarchy) {
-            for (var comp : world.components.values()) {
-                var instance = comp.get(node.id());
-                if (instance != null) {
-                    ImGui.tableNextRow();
-                    ImGui.tableNextColumn();
-                    ImGui.textDisabled(instance.getIcon() + instance.getTitle());
-                    ImGui.tableNextColumn();
-                    ImGui.textDisabled("--");
-                    ImGui.tableNextColumn();
-                    ImGui.textDisabled("--");
+            world.runByComponent(this::addComponent, node.id());
+        }
+    }
 
-                    if (instance.getType() == ComponentType.MESH) {
-                        MeshComponent meshComponent = (MeshComponent) instance;
-                        if (meshComponent.isInstancedRendering) {
-                            renderInstancedComponent(meshComponent);
-                        }
-                    }
-                }
+    private void addComponent(AbstractComponent component) {
+        ImGui.tableNextRow();
+        ImGui.tableNextColumn();
+        ImGui.textDisabled(component.getIcon() + component.getTitle());
+        ImGui.tableNextColumn();
+        ImGui.textDisabled("--");
+        ImGui.tableNextColumn();
+        ImGui.textDisabled("--");
+        if (component.getType() == ComponentType.MESH) {
+            var meshComponent = (MeshComponent) component;
+            if (meshComponent.isInstancedRendering) {
+                renderInstancedComponent(meshComponent);
             }
         }
     }

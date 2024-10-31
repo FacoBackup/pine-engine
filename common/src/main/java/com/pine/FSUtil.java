@@ -33,7 +33,28 @@ public class FSUtil {
         return fileName.substring(0, lastIndexOfDot);
     }
 
-    public static boolean write(Object obj, String path) {
+    public static boolean writeBinary(Object obj, String path) {
+        try {
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(path))) {
+                out.writeObject(obj);
+            }
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("Could not write file {}", path, e);
+            return false;
+        }
+    }
+
+    public static Object readBinary(String path) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(path))) {
+            return in.readObject();
+        } catch (Exception e) {
+            LOGGER.error("Could not read file {}", path, e);
+            return null;
+        }
+    }
+
+    public static boolean writeJson(Object obj, String path) {
         Gson gson = new Gson();
         try (FileWriter writer = new FileWriter(path)) {
             gson.toJson(obj, writer);
@@ -44,7 +65,7 @@ public class FSUtil {
         }
     }
 
-    public static <T> T read(String path, Class<T> classType) {
+    public static <T> T readJson(String path, Class<T> classType) {
         if(!new File(path).exists()) {
             return null;
         }
@@ -57,7 +78,7 @@ public class FSUtil {
         }
     }
 
-    public static <T> T readSilent(String path, Class<T> classType) {
+    public static <T> T readJsonSilent(String path, Class<T> classType) {
         if(!new File(path).exists()) {
             return null;
         }

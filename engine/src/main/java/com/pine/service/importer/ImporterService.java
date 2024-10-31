@@ -74,7 +74,7 @@ public class ImporterService implements Loggable {
 
     private void persistMetadata(AbstractResourceMetadata metadata, List<AbstractResourceMetadata> response) {
         metadata.setSize(new File(getPathToFile(metadata.id, metadata.getResourceType())).length());
-        if (FSUtil.write(metadata, getPathToMetadata(metadata))) {
+        if (FSUtil.writeBinary(metadata, getPathToMetadata(metadata))) {
             response.add(metadata);
         }
     }
@@ -92,7 +92,7 @@ public class ImporterService implements Loggable {
             return null;
         }
         String path = getPathToFile(metadata.id, metadata.getResourceType());
-        return FSUtil.read(path, StreamableResourceType.dataClassOf(path));
+        return FSUtil.readJson(path, StreamableResourceType.dataClassOf(path));
     }
 
     public String getPathToFile(String id, StreamableResourceType type) {

@@ -106,6 +106,10 @@ public final class DockSpacePanel extends AbstractView implements Loggable, Seri
         stylePushCount = 0;
     }
 
+    public AbstractDockPanel getView() {
+        return view;
+    }
+
     private void renderHeader() {
         headerPadding.x = ImGui.getStyle().getFramePaddingX();
 

@@ -133,6 +133,7 @@ public class DockService {
                 }
             }
             dockRepository.isInitialized = false;
+            dockRepository.dockPanelToRemove.getView().onRemove();
             panel.getChildren().remove(dockRepository.dockPanelToRemove);
             dockRepository.dockToRemove = null;
             dockRepository.dockPanelToRemove = null;

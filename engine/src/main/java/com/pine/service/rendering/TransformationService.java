@@ -43,22 +43,20 @@ public class TransformationService extends AbstractTask {
     @Override
     protected void tickInternal() {
         startTracking();
-        try{
+        try {
             isLightModified = false;
             traverse(WorldRepository.ROOT_ID, false);
-
-            worldRepository.components.get(ComponentType.MESH);
             if (isLightModified) {
                 lightService.packageLights();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
         endTracking();
     }
 
     public void traverse(String root, boolean parentHasChanged) {
-        TransformationComponent st = (TransformationComponent) worldRepository.components.get(ComponentType.TRANSFORMATION).get(root);
+        TransformationComponent st = worldRepository.bagTransformationComponent.get(root);
         if (st != null && (st.isNotFrozen() || parentHasChanged)) {
             TransformationComponent parentTransform = findParent(st.getEntityId());
             transform(st, parentTransform);
@@ -66,7 +64,7 @@ public class TransformationService extends AbstractTask {
             parentHasChanged = true;
         }
 
-        var mesh = (MeshComponent) worldRepository.components.get(ComponentType.MESH).get(root);
+        var mesh = (MeshComponent) worldRepository.bagMeshComponent.get(root);
         if (mesh != null) {
             if (mesh.isInstancedRendering) {
                 mesh.instances.forEach(t -> {
@@ -101,21 +99,19 @@ public class TransformationService extends AbstractTask {
         st.globalMatrix.set(auxMat4);
         st.freezeVersion();
 
-        if (!isLightModified) {
-            for (var componentBag : worldRepository.components.values()) {
-                var comp = componentBag.get(st.getEntityId());
-                if (comp instanceof AbstractLightComponent) {
-                    isLightModified = true;
-                    break;
-                }
-            }
+        if (!isLightModified && (
+                worldRepository.bagDirectionalLightComponent.containsKey(st.getEntityId()) ||
+                        worldRepository.bagPointLightComponent.containsKey(st.getEntityId()) ||
+                        worldRepository.bagSphereLightComponent.containsKey(st.getEntityId()) ||
+                        worldRepository.bagSpotLightComponent.containsKey(st.getEntityId()))) {
+            isLightModified = true;
         }
     }
 
     private TransformationComponent findParent(String id) {
         while (id != null && !id.equals(WorldRepository.ROOT_ID)) {
             id = worldRepository.childParent.get(id);
-            var t = worldRepository.getTransformationComponent(id);
+            var t = worldRepository.bagTransformationComponent.get(id);
             if (t != null) {
                 return t;
             }

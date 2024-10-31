@@ -33,6 +33,8 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     private static final ImVec4 RED = new ImVec4(1, 0, 0, 1);
     private static final ImVec4 GREEN = new ImVec4(0, 1, 0, 1);
     private static final ImVec4 BLUE = new ImVec4(0, .5f, 1, 1);
+    public static final ImVec2 INV_X = new ImVec2(1, 0);
+    public static final ImVec2 INV_Y = new ImVec2(0, 1);
 
     @PInject
     public Engine engine;
@@ -60,8 +62,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
-    public static final ImVec2 INV_X = new ImVec2(1, 0);
-    public static final ImVec2 INV_Y = new ImVec2(0, 1);
     private GizmoPanel gizmo;
     private ImGuiIO io;
     private boolean isFirstMovement;
@@ -177,5 +177,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     @Override
     public void onRemove() {
         editorRepository.viewportCamera.remove(dock.id);
+        fbo.dispose();
     }
 }

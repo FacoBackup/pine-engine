@@ -64,11 +64,10 @@ public class RenderingTask extends AbstractTask {
             renderingRepository.pendingTransformationsInternal = 0;
             renderingRepository.newRequests.clear();
 
-            var meshes = worldRepository.components.get(ComponentType.MESH).values();
-            for (var mesh : meshes) {
-                var t = worldRepository.getTransformationComponent(mesh.getEntityId());
+            for (var mesh : worldRepository.bagMeshComponent.values()) {
+                var t = worldRepository.bagTransformationComponent.get(mesh.getEntityId());
                 if (t != null) {
-                    updateMeshData((MeshComponent) mesh, t);
+                    updateMeshData(mesh, t);
                 }
             }
 
@@ -80,7 +79,7 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void defineProbes() {
-        var probes = worldRepository.components.get(ComponentType.ENVIRONMENT_PROBE).values();
+        var probes = worldRepository.bagEnvironmentProbeComponent.values();
         if (environmentMapGenService.isBaked) {
             int i = 0;
             for (var probe : probes) {

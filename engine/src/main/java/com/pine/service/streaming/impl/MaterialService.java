@@ -43,7 +43,7 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
 
     @Override
     public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
-        var importData = FSUtil.read(pathToFile, MaterialImportData.class);
+        var importData = (MaterialImportData) FSUtil.readBinary(pathToFile);
         if (importData == null) {
             return null;
         }

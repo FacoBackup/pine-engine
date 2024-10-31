@@ -89,7 +89,7 @@ vec3 unpackColor(int compressedColor) {
     // Scale back up
     r = r * 2;
     b = b * 2;
-    return vec3(r/255f, g/255f, b/255f);
+    return vec3(r/255., g/255., b/255.);
 }
 
 uint countSetBitsBefore(inout uint mask, inout uint childIndex) {
@@ -162,7 +162,7 @@ bool showRayTestCount
                     finalColor.a = 1;
                     minDistance = entryDist;
                 } else {
-                    stack[stackPos++] = Stack(childGroupIndex + countSetBitsBefore(childMask, i), newCenter, scale * 0.5f);
+                    stack[stackPos++] = Stack(childGroupIndex + countSetBitsBefore(childMask, i), newCenter, scale * 0.5);
                 }
             }
         }

@@ -2,16 +2,18 @@ package com.pine.repository;
 
 import com.pine.Mutable;
 import com.pine.SerializableRepository;
-import com.pine.component.AbstractComponent;
-import com.pine.component.ComponentType;
-import com.pine.component.Entity;
-import com.pine.component.TransformationComponent;
+import com.pine.component.*;
+import com.pine.component.light.DirectionalLightComponent;
+import com.pine.component.light.PointLightComponent;
+import com.pine.component.light.SphereLightComponent;
+import com.pine.component.light.SpotLightComponent;
 import com.pine.injection.PBean;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 @PBean
-public class WorldRepository implements Mutable, SerializableRepository {
+public class WorldRepository implements SerializableRepository {
     public static final String ROOT_ID = Entity.class.getCanonicalName();
     public final Entity rootEntity = new Entity(ROOT_ID, "World");
     public final Map<String, Entity> entityMap = new HashMap<>() {{
@@ -21,48 +23,98 @@ public class WorldRepository implements Mutable, SerializableRepository {
         put(rootEntity.id(), new LinkedList<>());
     }};
     public final Map<String, String> childParent = new HashMap<>();
-    public final Map<ComponentType, Map<String, AbstractComponent>> components = new HashMap<>() {{
-        for (var type : ComponentType.values()) {
-            put(type, new HashMap<>());
-        }
-    }};
-    public final Map<String, Boolean> hiddenEntityMap = new HashMap<>();
-    public final List<AbstractComponent> withChangedData = new ArrayList<>();
 
-    private int changes = 0;
-    private int frozenVersion = -1;
+    public final Map<String, DirectionalLightComponent> bagDirectionalLightComponent = new HashMap<>();
+    public final Map<String, PointLightComponent> bagPointLightComponent = new HashMap<>();
+    public final Map<String, SphereLightComponent> bagSphereLightComponent = new HashMap<>();
+    public final Map<String, SpotLightComponent> bagSpotLightComponent = new HashMap<>();
+    public final Map<String, DecalComponent> bagDecalComponent = new HashMap<>();
+    public final Map<String, EnvironmentProbeComponent> bagEnvironmentProbeComponent = new HashMap<>();
+    public final Map<String, MeshComponent> bagMeshComponent = new HashMap<>();
+    public final Map<String, SpriteComponent> bagSpriteComponent = new HashMap<>();
+    public final Map<String, TransformationComponent> bagTransformationComponent = new HashMap<>();
+
+    public final Map<String, Boolean> hiddenEntityMap = new HashMap<>();
 
     public void registerComponent(AbstractComponent component) {
-        components.get(component.getType()).put(component.getEntityId(), component);
+        switch (component.getType()) {
+            case DIRECTIONAL_LIGHT ->
+                    bagDirectionalLightComponent.put(component.getEntityId(), (DirectionalLightComponent) component);
+            case POINT_LIGHT -> bagPointLightComponent.put(component.getEntityId(), (PointLightComponent) component);
+            case SPHERE_LIGHT -> bagSphereLightComponent.put(component.getEntityId(), (SphereLightComponent) component);
+            case SPOT_LIGHT -> bagSpotLightComponent.put(component.getEntityId(), (SpotLightComponent) component);
+            case DECAL -> bagDecalComponent.put(component.getEntityId(), (DecalComponent) component);
+            case ENVIRONMENT_PROBE ->
+                    bagEnvironmentProbeComponent.put(component.getEntityId(), (EnvironmentProbeComponent) component);
+            case MESH -> bagMeshComponent.put(component.getEntityId(), (MeshComponent) component);
+            case SPRITE -> bagSpriteComponent.put(component.getEntityId(), (SpriteComponent) component);
+            case TRANSFORMATION ->
+                    bagTransformationComponent.put(component.getEntityId(), (TransformationComponent) component);
+        }
     }
 
     public void unregisterComponents(String entity) {
-        for (var c : components.values()) {
-            c.remove(entity);
+        bagDirectionalLightComponent.remove(entity);
+        bagPointLightComponent.remove(entity);
+        bagSphereLightComponent.remove(entity);
+        bagSpotLightComponent.remove(entity);
+        bagDecalComponent.remove(entity);
+        bagEnvironmentProbeComponent.remove(entity);
+        bagMeshComponent.remove(entity);
+        bagSpriteComponent.remove(entity);
+        bagTransformationComponent.remove(entity);
+    }
+
+    public void runByComponent(Consumer<AbstractComponent> consumer, String entityId) {
+        AbstractComponent bag = bagDirectionalLightComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagPointLightComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagSphereLightComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagSpotLightComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagDecalComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagEnvironmentProbeComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagMeshComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagSpriteComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagTransformationComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
         }
     }
 
-    @Override
-    public int getChangeId() {
-        return changes;
-    }
-
-    @Override
-    public void registerChange() {
-        changes = (int) (Math.random() * 10000);
-    }
-
-    @Override
-    public boolean isNotFrozen() {
-        return frozenVersion != getChangeId();
-    }
-
-    @Override
-    public void freezeVersion() {
-        frozenVersion = getChangeId();
-    }
-
-    public TransformationComponent getTransformationComponent(String id) {
-        return (TransformationComponent) components.get(ComponentType.TRANSFORMATION).get(id);
+    public Map<String, ? extends AbstractComponent> getBagByType(ComponentType type) {
+        return switch (type) {
+            case DIRECTIONAL_LIGHT -> bagDirectionalLightComponent;
+            case POINT_LIGHT -> bagPointLightComponent;
+            case SPHERE_LIGHT -> bagSphereLightComponent;
+            case SPOT_LIGHT -> bagSpotLightComponent;
+            case DECAL -> bagDecalComponent;
+            case ENVIRONMENT_PROBE -> bagEnvironmentProbeComponent;
+            case MESH -> bagMeshComponent;
+            case SPRITE -> bagSpriteComponent;
+            case TRANSFORMATION -> bagTransformationComponent;
+        };
     }
 }

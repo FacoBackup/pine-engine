@@ -35,30 +35,26 @@ public class LightService {
         offset = 0;
         count = 0;
         FloatBuffer b = ssboRepository.lightSSBOState;
-        Collection<AbstractComponent> directionalLights = worldRepository.components.get(ComponentType.DIRECTIONAL_LIGHT).values();
-        for (var l : directionalLights) {
-            packageDirectionalLight((DirectionalLightComponent) l, b);
+        for (var l : worldRepository.bagDirectionalLightComponent.values()) {
+            packageDirectionalLight(l, b);
         }
 
-        Collection<AbstractComponent> pointLights = worldRepository.components.get(ComponentType.POINT_LIGHT).values();
-        for (var l : pointLights) {
-            packagePointLight((PointLightComponent) l, b);
+        for (var l : worldRepository.bagPointLightComponent.values()) {
+            packagePointLight(l, b);
         }
 
-        Collection<AbstractComponent> sphereLights = worldRepository.components.get(ComponentType.SPHERE_LIGHT).values();
-        for (var l : sphereLights) {
-            packageSphereLight((SphereLightComponent) l, b);
+        for (var l : worldRepository.bagSphereLightComponent.values()) {
+            packageSphereLight(l, b);
         }
 
-        Collection<AbstractComponent> spotLights = worldRepository.components.get(ComponentType.SPOT_LIGHT).values();
-        for (var l : spotLights) {
-            packageSpotLight((SpotLightComponent) l, b);
+        for (var l : worldRepository.bagSpotLightComponent.values()) {
+            packageSpotLight(l, b);
         }
         renderingRepository.lightCount = count;
     }
 
     private void packageSpotLight(SpotLightComponent light, FloatBuffer b) {
-        var transform = worldRepository.getTransformationComponent(light.getEntityId());
+        var transform = worldRepository.bagTransformationComponent.get(light.getEntityId());
         int internalOffset = fillCommon(b, offset, light);
 
         auxMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
@@ -97,7 +93,7 @@ public class LightService {
     }
 
     private void packageDirectionalLight(DirectionalLightComponent l, FloatBuffer b) {
-        var transform = worldRepository.getTransformationComponent(l.getEntityId());
+        var transform = worldRepository.bagTransformationComponent.get(l.getEntityId());
         int internalOffset = fillCommon(b, offset, l);
 
         b.put(internalOffset, l.atlasFace.x);
@@ -118,7 +114,7 @@ public class LightService {
     }
 
     private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent light) {
-        var transform = worldRepository.getTransformationComponent(light.getEntityId());
+        var transform = worldRepository.bagTransformationComponent.get(light.getEntityId());
 
         lightSSBOState.put(offset, light.type.getTypeId());
         lightSSBOState.put(offset + 1, light.color.x * light.intensity);
