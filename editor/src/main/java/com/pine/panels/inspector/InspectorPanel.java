@@ -101,13 +101,10 @@ public class InspectorPanel extends AbstractDockPanel {
             selected = selectedId != null ? worldRepository.entityMap.get(selectedId) : null;
             additionalInspection.add(selected);
             if (selected != null) {
-                AbstractComponent bag = worldRepository.bagDirectionalLightComponent.get(selectedId);
-                if (bag != null) {
-                    worldRepository.runByComponent(this::addComponent, selectedId);
-                    currentInspection = additionalInspection.getFirst();
-                } else {
-                    currentInspection = repositories.getFirst();
-                }
+                worldRepository.runByComponent(this::addComponent, selectedId);
+                currentInspection = additionalInspection.getFirst();
+            }else{
+                currentInspection = repositories.getFirst();
             }
         }
     }

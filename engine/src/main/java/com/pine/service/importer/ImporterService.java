@@ -91,8 +91,7 @@ public class ImporterService implements Loggable {
         if (!metadata.getResourceType().isReadable()) {
             return null;
         }
-        String path = getPathToFile(metadata.id, metadata.getResourceType());
-        return FSUtil.readJson(path, StreamableResourceType.dataClassOf(path));
+        return (AbstractImportData) FSUtil.readBinary(getPathToFile(metadata.id, metadata.getResourceType()));
     }
 
     public String getPathToFile(String id, StreamableResourceType type) {
