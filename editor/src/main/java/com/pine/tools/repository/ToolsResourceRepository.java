@@ -19,6 +19,7 @@ public class ToolsResourceRepository implements Initializable {
     public Shader outlineShader;
     public Shader gridShader;
     public Shader backgroundShader;
+    public Shader paintGizmoCompute;
     public Shader outlineGenShader;
     public FrameBufferObject outlineBuffer;
     public int outlineSampler;
@@ -29,6 +30,7 @@ public class ToolsResourceRepository implements Initializable {
         outlineShader = shaderService.create("QUAD.vert", "tool/OUTLINE.frag");
         outlineGenShader = shaderService.create("tool/OUTLINE_GEN.vert", "tool/OUTLINE_GEN.frag");
         gridShader = shaderService.create("tool/GRID.vert", "tool/GRID.frag");
+        paintGizmoCompute = shaderService.create("compute/PAINT_GIZMO_COMPUTE.glsl");
 
         outlineBuffer = new FrameBufferObject(repository.getDisplayW(), repository.getDisplayH()).addSampler(0, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false);
         outlineSampler = outlineBuffer.getSamplers().getFirst();
