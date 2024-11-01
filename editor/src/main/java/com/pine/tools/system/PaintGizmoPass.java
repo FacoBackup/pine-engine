@@ -12,12 +12,13 @@ import com.pine.tools.types.ExecutionEnvironment;
 import org.joml.Vector2f;
 import org.joml.Vector3i;
 import org.joml.Vector4f;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 public class PaintGizmoPass extends AbstractPass {
     private static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
-    private static final int LOCAL_SIZE_X = 1;
-    private static final int LOCAL_SIZE_Y = 1;
+    private static final int LOCAL_SIZE_X = 4;
+    private static final int LOCAL_SIZE_Y = 4;
 
     @PInject
     public EditorRepository engineConfig;
@@ -50,6 +51,7 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
+        GL46.glEnable(GL11.GL_BLEND);
         FrameBufferObject fbo = fboRepository.postProcessingBuffer;
         fbo.bindForCompute();
 
@@ -78,6 +80,6 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     public String getTitle() {
-        return "Paint gizmo pass";
+        return "Paint gizmo";
     }
 }

@@ -1,14 +1,15 @@
-layout (local_size_x = 1, local_size_y = 1) in;
+layout (local_size_x = 4, local_size_y = 4) in;
 
 layout (binding = 0) uniform writeonly image2D outputImage;
-layout (binding = 1) uniform sampler2D gBufferDepth;
+layout (binding = 1) uniform sampler2D sceneDepth;
 layout (binding = 2) uniform sampler2D gBufferNormal;
 
 uniform vec2 xy;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
+const vec3 UP_VEC = vec3(0.0, 1.0, 0.0);// Default dome "up" direction
 
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../util/SCENE_DEPTH_UTILS.glsl"
 
 vec3 createRay() {
     vec2 pxNDS = (gl_GlobalInvocationID.xy/bufferResolution) * 2. - 1.;
@@ -20,15 +21,32 @@ vec3 createRay() {
     return normalize(dirWorld);
 }
 
-float domeSDF(vec3 pos, vec3 domeCenter, float domeRadius) {
+float domeSDF(vec3 pos, vec3 domeCenter, float domeRadius, vec3 dir) {
+    pos -= domeCenter;
+    // Compute the rotation matrix
+    vec3 axis = cross(UP_VEC, dir);// Axis to rotate around
+    float angle = acos(dot(UP_VEC, dir));// Angle between up and direction
+
+    // Use Rodrigues' rotation formula components
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    mat3 rotationMatrix = mat3(
+        cosA + axis.x * axis.x * (1.0 - cosA), axis.x * axis.y * (1.0 - cosA) - axis.z * sinA, axis.x * axis.z * (1.0 - cosA) + axis.y * sinA,
+        axis.y * axis.x * (1.0 - cosA) + axis.z * sinA, cosA + axis.y * axis.y * (1.0 - cosA), axis.y * axis.z * (1.0 - cosA) - axis.x * sinA,
+        axis.z * axis.x * (1.0 - cosA) - axis.y * sinA, axis.z * axis.y * (1.0 - cosA) + axis.x * sinA, cosA + axis.z * axis.z * (1.0 - cosA)
+    );
+
+    // Rotate the position
+    pos = rotationMatrix * pos;
+
     const float t = 0.01;
     const float h = 0;
     vec2 q = vec2(length(pos.xz), -pos.y);
     float w = sqrt(domeRadius * domeRadius);
-    return ((h * q.x < w * q.y) ? length(q - vec2(w, h)) : abs(length(q) -domeRadius)) - t;
+    return ((h * q.x < w * q.y) ? length(q - vec2(w, h)) : abs(length(q) - domeRadius)) - t;
 }
 
-vec4 renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius) {
+bool renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius, vec3 normal) {
     const int maxSteps = 100;
     const float minDist = 0.001;
     const float maxDist = 100.0;
@@ -36,30 +54,34 @@ vec4 renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius) 
     float t = 0.0;
     for (int i = 0; i < maxSteps; i++) {
         vec3 p = rayOrigin + t * rayDir;
-        float d = domeSDF(p, domeCenter, domeRadius);
+        float d = domeSDF(p,  domeCenter, domeRadius, normal);
         if (d < minDist) {
-            return vec4(1.0, 0.5, 0.3, 1.0);// Color when hitting dome
+            return true;
         }
         if (t > maxDist) break;
         t += d;
     }
-    return vec4(0.0);// Background color
+    return false;
 }
 
 void main() {
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
 
-    vec2 aspect = viewportSize / bufferResolution;
-    vec2 fragCoord = gl_GlobalInvocationID.xy * aspect;
-    float dist = length(fragCoord - xy - viewportOrigin);
+    vec2 textureCoord = (xy + viewportOrigin) / viewportSize;
+    float depthData = getLogDepth(textureCoord);
+    if (depthData == 1.){
+        return;
+    }else{
 
-    if (dist < 10){
-        //    vec4 outColor = renderDome(rayOrigin, rayDirection, vec3(10, 5, 0), 10);
+    }
 
-        vec2 textureCoord = (xy + viewportOrigin) / viewportSize;
+    vec3 normal = normalize(texture(gBufferNormal, textureCoord).rgb);
+    vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
+    vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
-        vec3 color = texture(gBufferNormal, textureCoord).rgb;
-        imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), vec4(color, 1));
+
+    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, 1, normal)){
+        imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), vec4(1, 0, 1, .5));
     }
 }
