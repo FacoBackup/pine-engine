@@ -30,7 +30,7 @@ public class MeshletPass extends AbstractPass implements Loggable {
     @Override
     public void onInitialize() {
         int size = 50;
-        var data = TerrainGenerationUtil.computeMesh(size, size * .5f, size * .5f * .5f);
+        var data = TerrainGenerationUtil.computeMesh(size);
         Meshlets meshlets = MeshletUtil.genMeshlets(data);
 
         var infoBufferData = MemoryUtil.memAllocInt(4 * meshlets.meshletInfos.size());

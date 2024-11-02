@@ -3,6 +3,7 @@ package com.pine.service.streaming.impl;
 import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.repository.ClockRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -22,6 +23,9 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
 
     @PInject
     public StreamingRepository repository;
+
+    @PInject
+    public ClockRepository clockRepository;
 
     public void setRenderingMode(RenderingMode renderingMode) {
         this.renderingMode = renderingMode;
@@ -66,11 +70,12 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
             GL46.glDrawElementsInstanced(mode, currentResource.vertexCount, GL46.GL_UNSIGNED_INT, 0, instanceCount);
             return;
         }
-        GL46.glDrawElements(mode, currentResource.vertexCount, GL46.GL_UNSIGNED_INT, 0);
+        GL46.glDrawElements(mode, currentResource.indicesCount, GL46.GL_UNSIGNED_INT, 0);
     }
 
     @Override
     protected void bindInternal() {
+        currentResource.lastUse = clockRepository.totalTime;
         GL46.glBindVertexArray(currentResource.VAO);
         GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, currentResource.indexVBO);
         currentResource.vertexVBO.enable();

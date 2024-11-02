@@ -12,8 +12,7 @@ import org.lwjgl.opengl.GL46;
 
 import java.util.List;
 
-public class GBufferPass extends AbstractPass {
-    private static final int MAX_CUBE_MAPS = 3;
+public class GBufferPass extends AbstractGBufferPass {
     private UniformDTO transformationIndex;
     private UniformDTO debugShadingMode;
     private UniformDTO parallaxHeightScale;
@@ -56,19 +55,23 @@ public class GBufferPass extends AbstractPass {
     }
 
     @Override
+    protected UniformDTO probeFilteringLevels() {
+        return probeFilteringLevels;
+    }
+
+    @Override
+    protected UniformDTO debugShadingMode() {
+        return debugShadingMode;
+    }
+
+    @Override
     protected Shader getShader() {
         return shaderRepository.gBufferShader;
     }
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
-        return fboRepository.gBuffer;
-    }
-
-    @Override
     protected void renderInternal() {
         prepareCall();
-        bindEnvironmentMaps();
 
         List<RenderingRequest> requests = renderingRepository.requests;
         int instancedOffset = 0;
@@ -86,43 +89,6 @@ public class GBufferPass extends AbstractPass {
             meshService.draw();
             if (!request.transformationComponents.isEmpty()) {
                 instancedOffset += request.transformationComponents.size() - 1;
-            }
-        }
-    }
-
-    private void prepareCall() {
-        GL46.glEnable(GL11.GL_DEPTH_TEST);
-        GL46.glDisable(GL11.GL_BLEND);
-        if (settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
-            meshService.setRenderingMode(RenderingMode.WIREFRAME);
-            GL46.glDisable(GL11.GL_CULL_FACE);
-        } else {
-            GL46.glEnable(GL11.GL_CULL_FACE);
-            meshService.setRenderingMode(RenderingMode.TRIANGLES);
-        }
-        ssboService.bind(ssboRepository.transformationSSBO);
-
-        shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
-        shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels);
-    }
-
-    private void bindEnvironmentMaps() {
-        boolean isFirst = true;
-        int samplerOffset = 0;
-        for (int i = 0; i < renderingRepository.environmentMaps.length; i++) {
-            var current = renderingRepository.environmentMaps[i];
-            if (current != null && samplerOffset < MAX_CUBE_MAPS) {
-                if (isFirst) {
-                    shaderService.bindSamplerCubeDirectTriLinear(current.texture, samplerOffset);
-                    samplerOffset++;
-                    shaderService.bindSamplerCubeDirect(current.irradiance, samplerOffset);
-                    samplerOffset++;
-                } else {
-                    shaderService.bindSamplerCubeDirectTriLinear(current.hasIrradianceGenerated ? current.irradiance : current.texture, samplerOffset);
-                    samplerOffset++;
-                }
-                current.lastUse = clockRepository.totalTime;
-                isFirst = false;
             }
         }
     }

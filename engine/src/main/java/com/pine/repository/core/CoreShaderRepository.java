@@ -9,6 +9,7 @@ import com.pine.service.resource.shader.Shader;
 public class CoreShaderRepository implements CoreRepository {
     public Shader spriteShader;
     public Shader gBufferShader;
+    public Shader gBufferTerrainShader;
     public Shader toScreenShader;
     public Shader downscaleShader;
     public Shader bilateralBlurShader;
@@ -27,7 +28,6 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader gaussianShader;
     public Shader upSamplingShader;
     public Shader atmosphereShader;
-    public Shader terrainShader;
     public Shader brdfShader;
     public Shader gBufferShading;
     public Shader environmentMap;
@@ -41,9 +41,9 @@ public class CoreShaderRepository implements CoreRepository {
     public void initialize() {
         gBufferShading = shaderService.create("QUAD.vert", "uber/G_BUFFER_SHADING.frag");
         brdfShader = shaderService.create("QUAD.vert", "BRDF_GEN.frag");
-        terrainShader = shaderService.create("TERRAIN.vert", "TERRAIN.frag");
         spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
         gBufferShader = shaderService.create("uber/G_BUFFER.vert", "uber/G_BUFFER.frag");
+        gBufferTerrainShader = shaderService.create("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag");
         toScreenShader = shaderService.create("QUAD.vert", "TO_SCREEN.frag");
         downscaleShader = shaderService.create("QUAD.vert", "BILINEAR_DOWNSCALE.glsl");
         bilateralBlurShader = shaderService.create("QUAD.vert", "BILATERAL_BLUR.glsl");
@@ -69,9 +69,9 @@ public class CoreShaderRepository implements CoreRepository {
 
     @Override
     public void dispose() {
+        gBufferTerrainShader.dispose();
         gBufferShading.dispose();
         brdfShader.dispose();
-        terrainShader.dispose();
         spriteShader.dispose();
         gBufferShader.dispose();
         toScreenShader.dispose();

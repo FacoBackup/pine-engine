@@ -103,35 +103,29 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
         useAlbedoRoughnessMetallicAO.zero();
         if (request.albedo != null) {
             shaderService.bindSampler2dDirect(request.albedo, request.albedoLocation);
-            request.albedo.lastUse = request.lastUse;
             useAlbedoRoughnessMetallicAO.x = 1;
         }
         if (request.roughness != null) {
             shaderService.bindSampler2dDirect(request.roughness, request.roughnessLocation);
-            request.roughness.lastUse = request.lastUse;
             useAlbedoRoughnessMetallicAO.y = 1;
         }
         if (request.metallic != null) {
             shaderService.bindSampler2dDirect(request.metallic, request.metallicLocation);
-            request.metallic.lastUse = request.lastUse;
             useAlbedoRoughnessMetallicAO.z = 1;
         }
         if (request.ao != null) {
             shaderService.bindSampler2dDirect(request.ao, request.aoLocation);
-            request.ao.lastUse = request.lastUse;
             useAlbedoRoughnessMetallicAO.w = 1;
         }
         if (request.normal != null) {
             shaderService.bindSampler2dDirect(request.normal, request.normalLocation);
             shaderService.bindBoolean(true, request.useNormalTexture);
-            request.normal.lastUse = request.lastUse;
         } else {
             shaderService.bindBoolean(false, request.useNormalTexture);
         }
 
         if (request.heightMap != null) {
             shaderService.bindSampler2dDirect(request.heightMap, request.heightMapLocation);
-            request.heightMap.lastUse = request.lastUse;
         }
         roughnessMetallic.x = request.roughnessVal;
         roughnessMetallic.y = request.metallicVal;

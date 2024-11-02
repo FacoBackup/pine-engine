@@ -75,15 +75,12 @@ public class ResourceField extends AbstractFormField {
         refresh();
 
         if (type == StreamableResourceType.TEXTURE) {
-            if (ImGui.beginChild(imguiId)) {
-                ImGui.text(dto.getLabel());
-                if (previewField == null) {
-                    previewField = appendChild(new PreviewField(dto, changerHandler));
-                }
-                previewField.render();
-                renderOptions();
+            ImGui.text(dto.getLabel());
+            if (previewField == null) {
+                previewField = appendChild(new PreviewField(dto, changerHandler));
             }
-            ImGui.endChild();
+            previewField.render();
+            renderOptions();
         } else {
             ImGui.text(dto.getLabel());
             renderOptions();

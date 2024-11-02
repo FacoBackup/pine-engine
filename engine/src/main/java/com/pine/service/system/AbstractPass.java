@@ -13,12 +13,17 @@ import com.pine.service.resource.UBOService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.impl.MaterialService;
 import com.pine.service.streaming.impl.MeshService;
 
 public abstract class AbstractPass extends MetricCollector {
     @PInject
     public Engine engine;
+    @PInject
+    public TerrainRepository terrainRepository;
+    @PInject
+    public StreamingService streamingService;
     @PInject
     public EngineSettingsRepository settingsRepository;
     @PInject
