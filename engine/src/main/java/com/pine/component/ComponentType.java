@@ -1,6 +1,5 @@
 package com.pine.component;
 
-import com.pine.component.light.DirectionalLightComponent;
 import com.pine.component.light.PointLightComponent;
 import com.pine.component.light.SphereLightComponent;
 import com.pine.component.light.SpotLightComponent;
@@ -10,7 +9,6 @@ import com.pine.type.LightType;
 import java.io.Serializable;
 
 public enum ComponentType implements Serializable {
-    DIRECTIONAL_LIGHT(LightType.DIRECTIONAL.getTitle(), Icons.wb_sunny, DirectionalLightComponent.class),
     POINT_LIGHT(LightType.POINT.getTitle(), Icons.lightbulb, PointLightComponent.class),
     SPHERE_LIGHT(LightType.SPHERE.getTitle(), Icons.circle, SphereLightComponent.class),
     SPOT_LIGHT(LightType.SPOT.getTitle(), Icons.highlight, SpotLightComponent.class),

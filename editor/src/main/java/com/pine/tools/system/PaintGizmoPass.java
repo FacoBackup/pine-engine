@@ -2,6 +2,7 @@ package com.pine.tools.system;
 
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.GizmoType;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
@@ -15,8 +16,9 @@ import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
+import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
+
 public class PaintGizmoPass extends AbstractPass {
-    private static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
     private static final int LOCAL_SIZE_X = 4;
     private static final int LOCAL_SIZE_Y = 4;
 
@@ -46,7 +48,7 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return engineConfig.showGrid && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT;
+        return engineConfig.gizmoType == GizmoType.PAINT && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override

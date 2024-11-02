@@ -16,8 +16,6 @@ public class PostProcessingPass extends AbstractQuadPassPass {
     private UniformDTO samplesDOF;
     private UniformDTO vignetteEnabled;
     private UniformDTO vignetteStrength;
-    private UniformDTO sceneColor;
-    private UniformDTO bloomColor;
 
     @Override
     public void onInitialize() {
@@ -32,8 +30,6 @@ public class PostProcessingPass extends AbstractQuadPassPass {
         samplesDOF = addUniformDeclaration("samplesDOF");
         vignetteEnabled = addUniformDeclaration("vignetteEnabled");
         vignetteStrength = addUniformDeclaration("vignetteStrength");
-        bloomColor = addUniformDeclaration("bloomColor");
-        sceneColor = addUniformDeclaration("sceneColor");
     }
 
     @Override
@@ -61,7 +57,7 @@ public class PostProcessingPass extends AbstractQuadPassPass {
         shaderService.bindFloat(cameraRepository.vignetteStrength, vignetteStrength);
 
 //        shaderService.bindSampler2d(, bloomColor);
-        shaderService.bindSampler2d(fboRepository.auxSampler, sceneColor);
+        shaderService.bindSampler2dDirect(fboRepository.auxSampler, 1);
 
     }
 

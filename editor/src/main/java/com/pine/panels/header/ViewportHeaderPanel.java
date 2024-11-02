@@ -2,14 +2,7 @@ package com.pine.panels.header;
 
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.messaging.MessageRepository;
-import com.pine.messaging.MessageSeverity;
-import com.pine.repository.CameraRepository;
-import com.pine.repository.DebugShadingModel;
-import com.pine.repository.EditorRepository;
-import com.pine.repository.EngineSettingsRepository;
-import com.pine.service.environment.EnvironmentMapGenService;
-import com.pine.service.voxelization.VoxelizationService;
+import com.pine.repository.*;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -26,7 +19,6 @@ public class ViewportHeaderPanel extends AbstractView {
     private static final String[] SNAP_ROTATE_OPTIONS = new String[]{"5", "10", "15", "30", "45"};
     private static final String[] SNAP_TRANSLATE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
     private static final String[] SNAP_SCALE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
-    private static final String[] GIZMO_MODE_OPTIONS = new String[]{Icons.language + " World", Icons.place + " Local"};
     private static final String[] SHADING_MODE_OPTIONS = DebugShadingModel.getLabels();
     private static final ImVec2 MEDIUM_SPACING = new ImVec2(5, 0);
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
@@ -122,26 +114,28 @@ public class ViewportHeaderPanel extends AbstractView {
     }
 
     private void gizmoMode() {
-        if (editorRepository.gizmoOperation != Operation.SCALE) {
-            ImGui.setNextItemWidth(85);
-            if (ImGui.combo("##gizmoMode", editorRepository.gizmoModeOption, GIZMO_MODE_OPTIONS)) {
-                editorRepository.gizmoMode = editorRepository.gizmoModeOption.get() == 1f ? Mode.LOCAL : Mode.WORLD;
-            }
-            largeSpacing();
+        ImGui.setNextItemWidth(85);
+        if (ImGui.button(editorRepository.gizmoMode == Mode.WORLD ? Icons.language + "World" : Icons.place + "Local")) {
+            editorRepository.gizmoMode = editorRepository.gizmoMode == Mode.LOCAL ? Mode.WORLD : Mode.LOCAL;
         }
+        largeSpacing();
     }
 
     private void gizmoSelection() {
-        if (renderOption(Icons.control_camera + " Translate", editorRepository.gizmoOperation == Operation.TRANSLATE, false)) {
-            editorRepository.gizmoOperation = Operation.TRANSLATE;
+        if (renderOption(Icons.control_camera + " Translate", editorRepository.gizmoType == GizmoType.TRANSLATE, false)) {
+            editorRepository.gizmoType = GizmoType.TRANSLATE;
         }
         ImGui.sameLine();
-        if (renderOption(Icons.crop_rotate + " Rotate", editorRepository.gizmoOperation == Operation.ROTATE, false)) {
-            editorRepository.gizmoOperation = Operation.ROTATE;
+        if (renderOption(Icons.crop_rotate + " Rotate", editorRepository.gizmoType == GizmoType.ROTATE, false)) {
+            editorRepository.gizmoType = GizmoType.ROTATE;
         }
         ImGui.sameLine();
-        if (renderOption(Icons.expand + " Scale", editorRepository.gizmoOperation == Operation.SCALE, false)) {
-            editorRepository.gizmoOperation = Operation.SCALE;
+        if (renderOption(Icons.expand + " Scale", editorRepository.gizmoType == GizmoType.SCALE, false)) {
+            editorRepository.gizmoType = GizmoType.SCALE;
+        }
+        ImGui.sameLine();
+        if (renderOption(Icons.format_paint + " Paint", editorRepository.gizmoType == GizmoType.PAINT, false)) {
+            editorRepository.gizmoType = GizmoType.PAINT;
         }
     }
 

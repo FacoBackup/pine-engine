@@ -13,7 +13,7 @@ import static com.pine.Engine.MAX_LIGHTS;
 
 @PBean
 public class CoreSSBORepository implements CoreRepository {
-    public static final int MAX_INFO_PER_LIGHT = 32;
+    public static final int MAX_INFO_PER_LIGHT = 16;
     private static final int ENTITY_BUFFER_SIZE = 16 * MAX_ENTITIES;
     private static final int LIGHT_BUFFER_SIZE = MAX_LIGHTS * MAX_INFO_PER_LIGHT;
 

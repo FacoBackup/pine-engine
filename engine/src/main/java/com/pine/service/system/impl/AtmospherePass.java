@@ -9,9 +9,6 @@ import org.joml.Matrix4f;
 
 public class AtmospherePass extends AbstractQuadPassPass {
 
-    @PInject
-    public AtmosphereSettingsRepository atmosphere;
-
     private UniformDTO invSkyProjectionMatrix;
     private UniformDTO renderStatic;
     private UniformDTO invViewStatic;
@@ -75,6 +72,7 @@ public class AtmospherePass extends AbstractQuadPassPass {
         shaderService.bindFloat(atmosphere.threshold, threshold);
         shaderService.bindInt(atmosphere.maxSamples, samples);
         shaderService.bindBoolean(false, renderStatic);
+        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 0);
     }
 
     @Override

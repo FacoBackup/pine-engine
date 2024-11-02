@@ -19,8 +19,8 @@ uniform float samplesDOF;
 uniform bool vignetteEnabled;
 uniform float vignetteStrength;
 
-uniform sampler2D bloomColor;
-uniform sampler2D sceneColor;
+layout(binding = 0)uniform sampler2D bloomColor;
+layout(binding = 1)uniform sampler2D sceneColor;
 
 out vec4 fragColor;
 

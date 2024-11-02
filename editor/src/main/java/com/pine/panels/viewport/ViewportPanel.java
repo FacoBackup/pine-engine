@@ -5,6 +5,7 @@ import com.pine.injection.PInject;
 import com.pine.panels.AbstractEntityViewPanel;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.GizmoType;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
@@ -158,11 +159,11 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     @Override
     protected void hotKeysInternal() {
         if (ImGui.isKeyPressed(ImGuiKey.T))
-            editorRepository.gizmoOperation = Operation.TRANSLATE;
+            editorRepository.gizmoType = GizmoType.TRANSLATE;
         if (ImGui.isKeyPressed(ImGuiKey.R))
-            editorRepository.gizmoOperation = Operation.ROTATE;
+            editorRepository.gizmoType = GizmoType.ROTATE;
         if (ImGui.isKeyPressed(ImGuiKey.Y))
-            editorRepository.gizmoOperation = Operation.SCALE;
+            editorRepository.gizmoType = GizmoType.SCALE;
 
         if (ImGui.isWindowHovered() && !ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
             viewportPickingService.pick();

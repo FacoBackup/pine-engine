@@ -2,7 +2,6 @@ package com.pine.repository;
 
 import com.pine.SerializableRepository;
 import com.pine.component.*;
-import com.pine.component.light.DirectionalLightComponent;
 import com.pine.component.light.PointLightComponent;
 import com.pine.component.light.SphereLightComponent;
 import com.pine.component.light.SpotLightComponent;
@@ -25,7 +24,6 @@ public class WorldRepository implements SerializableRepository {
     }};
     public final Map<String, String> childParent = new HashMap<>();
 
-    public final Map<String, DirectionalLightComponent> bagDirectionalLightComponent = new HashMap<>();
     public final Map<String, PointLightComponent> bagPointLightComponent = new HashMap<>();
     public final Map<String, SphereLightComponent> bagSphereLightComponent = new HashMap<>();
     public final Map<String, SpotLightComponent> bagSpotLightComponent = new HashMap<>();
@@ -39,8 +37,6 @@ public class WorldRepository implements SerializableRepository {
 
     public void registerComponent(AbstractComponent component) {
         switch (component.getType()) {
-            case DIRECTIONAL_LIGHT ->
-                    bagDirectionalLightComponent.put(component.getEntityId(), (DirectionalLightComponent) component);
             case POINT_LIGHT -> bagPointLightComponent.put(component.getEntityId(), (PointLightComponent) component);
             case SPHERE_LIGHT -> bagSphereLightComponent.put(component.getEntityId(), (SphereLightComponent) component);
             case SPOT_LIGHT -> bagSpotLightComponent.put(component.getEntityId(), (SpotLightComponent) component);
@@ -55,7 +51,6 @@ public class WorldRepository implements SerializableRepository {
     }
 
     public void unregisterComponents(String entity) {
-        bagDirectionalLightComponent.remove(entity);
         bagPointLightComponent.remove(entity);
         bagSphereLightComponent.remove(entity);
         bagSpotLightComponent.remove(entity);
@@ -67,11 +62,7 @@ public class WorldRepository implements SerializableRepository {
     }
 
     public void runByComponent(Consumer<AbstractComponent> consumer, String entityId) {
-        AbstractComponent bag = bagDirectionalLightComponent.get(entityId);
-        if (bag != null) {
-            consumer.accept(bag);
-        }
-        bag = bagPointLightComponent.get(entityId);
+        AbstractComponent   bag = bagPointLightComponent.get(entityId);
         if (bag != null) {
             consumer.accept(bag);
         }
@@ -107,7 +98,6 @@ public class WorldRepository implements SerializableRepository {
 
     public Map<String, ? extends AbstractComponent> getBagByType(ComponentType type) {
         return switch (type) {
-            case DIRECTIONAL_LIGHT -> bagDirectionalLightComponent;
             case POINT_LIGHT -> bagPointLightComponent;
             case SPHERE_LIGHT -> bagSphereLightComponent;
             case SPOT_LIGHT -> bagSpotLightComponent;

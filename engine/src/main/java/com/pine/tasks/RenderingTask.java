@@ -11,6 +11,7 @@ import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.environment.EnvironmentMapGenService;
+import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
@@ -45,6 +46,9 @@ public class RenderingTask extends AbstractTask {
     @PInject
     public EnvironmentMapGenService environmentMapGenService;
 
+    @PInject
+    public LightService lightService;
+
     private int renderIndex = 0;
 
     @Override
@@ -56,7 +60,7 @@ public class RenderingTask extends AbstractTask {
         try {
             defineVoxelGrid();
             defineProbes();
-
+            lightService.packageLights();
             renderIndex = 0;
             renderingRepository.offset = 0;
             renderingRepository.auxAddedToBufferEntities.clear();

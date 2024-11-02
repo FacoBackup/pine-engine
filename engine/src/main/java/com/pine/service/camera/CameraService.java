@@ -64,8 +64,6 @@ public class CameraService implements SyncTask {
     private void updateView() {
         cameraService.createViewMatrix(camera);
         repository.viewMatrix.invert(repository.invViewMatrix);
-        repository.staticViewMatrix.set(repository.viewMatrix);
-        repository.staticViewMatrix.m30(0).m31(0).m32(0);
     }
 
     private void updateProjection() {

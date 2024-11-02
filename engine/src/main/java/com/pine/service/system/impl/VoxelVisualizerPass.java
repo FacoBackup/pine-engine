@@ -9,8 +9,9 @@ import org.joml.Vector3i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
+import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
+
 public class VoxelVisualizerPass extends AbstractPass {
-    private static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
     private static final int LOCAL_SIZE_X = 8;
     private static final int LOCAL_SIZE_Y = 8;
     private static final int BUFFER_BINDING_POINT = 12;

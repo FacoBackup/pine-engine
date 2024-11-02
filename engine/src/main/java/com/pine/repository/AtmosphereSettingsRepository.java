@@ -29,12 +29,12 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
     @InspectableField(label = "Max samples", max = 20, min = 1, isDirectChange = false, isAngle = false)
     public int maxSamples = 10;
     @InspectableField(label = "Mie height")
-    public float mieHeight = 1000;
+    public int mieHeight = 1000;
     @InspectableField(label = "Rayleigh Height")
-    public float rayleighHeight = 8000;
-    @InspectableField(label = "Atmosphere Radius")
+    public int rayleighHeight = 8000;
+    @InspectableField(label = "Atmosphere Radius", min = 1)
     public float atmosphereRadius = 1;
-    @InspectableField(label = "Planet Radius")
+    @InspectableField(label = "Planet Radius", max = 1, min = 0)
     public float planetRadius = 1;
     @InspectableField(label = "Intensity", max = 20, min = 1, isDirectChange = false, isAngle = false)
     public float intensity = 10;
@@ -46,6 +46,9 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
     public final Vector3f betaMie = new Vector3f(1);
     @InspectableField(label = "Threshold", max = 10, min = -1, isDirectChange = false, isAngle = false)
     public float threshold = -.1f;
+
+    @InspectableField(label = "Screen space shadows")
+    public boolean screenSpaceShadows = false;
 
     @Override
     public String getTitle() {
