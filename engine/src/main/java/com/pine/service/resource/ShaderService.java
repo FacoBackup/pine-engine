@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 @PBean
 public class ShaderService extends AbstractResourceService<Shader> {
+    public static final ComputeRuntimeData COMPUTE_RUNTIME_DATA = new ComputeRuntimeData();
+
     private int currentSamplerIndex = 0;
     private Shader currentShader;
 

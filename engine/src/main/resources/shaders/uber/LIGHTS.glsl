@@ -1,27 +1,20 @@
 #include "../uber/SHADOWS.glsl"
 
-#define DIRECTIONAL 1
 #define SPOT 2
 #define POINT 3
 #define SPHERE 4
 #define DISK 5
 #define PLANE 6
 
-#define COMMON_LIGHT_INFO_OFFSET 12
-#define DIRECTIONAL_SPACE 32
-#define SPOT_SPACE 15
-#define POINT_SPACE 15
-#define SPHERE_SPACE 13
-#define DISK_SPACE 12
-#define PLANE_SPACE 12
+#define SPOT_SPACE 13
+#define POINT_SPACE 13
+#define SPHERE_SPACE 11
 
 
 struct LightSharedInfo{
-    mat4 viewProjection;
     vec3 translation;
     vec3 lightDirection;
     vec3 color;
-    vec2 lightAttenuation;
     vec2 atlasFace;
     float outerCutoff;
     float cutoff;
@@ -35,7 +28,7 @@ struct LightSharedInfo{
     float zFar;
 };
 
-LightSharedInfo unifiedLightSharedInfo = LightSharedInfo(mat4(0.), vec3(0.), vec3(0.), vec3(0.), vec2(0.), vec2(0.), 0., 0., 0., 0., 0., 0., false, false, 0, 0.);
+LightSharedInfo unifiedLightSharedInfo = LightSharedInfo(vec3(0.), vec3(0.), vec3(0.), vec2(0.), 0., 0., 0., 0., 0., 0., false, false, 0, 0.);
 
 vec4 precomputeContribution(vec3 lightPosition) {
     vec3 L = normalize(lightPosition - worldSpacePosition);
@@ -55,30 +48,12 @@ vec3 computeLightContribution(vec4 baseContribution, LightSharedInfo info, vec3 
     if (distanceFromFrag > info.cutoff) {
         intensity = clamp(mix(1., 0., (distanceFromFrag - info.cutoff) / (info.outerCutoff - info.cutoff)), 0., 1.);
     }
-    vec2 att = 1./info.lightAttenuation;
-    float attFactor = intensity / (1. + (att.x * distanceFromFrag) + (att.y * pow(distanceFromFrag, 2.)));
-    if (attFactor <= 0.){
-        return vec3(0.);
+
+    if(intensity < .01){
+        return vec3(0);
     }
-    return computeBRDF(baseContribution.rgb, baseContribution.a, info.color) * attFactor;
+    return computeBRDF(baseContribution.rgb, baseContribution.a, info.color) * intensity ;
 }
-
-vec3 computeDirectionalLight(LightSharedInfo info){
-    vec4 baseContribution = precomputeContribution(info.translation);
-    if (baseContribution.a == 0.) return vec3(0.);
-
-    float shadows = 1.;
-    //    if (info.shadowMap){
-    //        vec4 lightSpacePosition  = info.viewProjection * vec4(worldSpacePosition, 1.0);
-    //        shadows = directionalLightShadows(distanceFromCamera, info.shadowAttenuationMinDistance, info.shadowBias, lightSpacePosition, info.atlasFace, shadowAtlas, shadowMapsQuantity, shadowMapResolution, pcfSamples);
-    //    }
-    if (shadows == 0.) {
-        return vec3(0.);
-    }
-
-    return computeLightContribution(baseContribution, info, info.translation);
-}
-
 
 vec3 computeSpotLights (LightSharedInfo info) {
     vec3 offset = info.translation - worldSpacePosition;
@@ -135,69 +110,13 @@ vec3 processLight(inout int attributeOffset) {
     attributeOffset++;
     unifiedLightSharedInfo.outerCutoff = lightMetadata[attributeOffset];
     attributeOffset++;
-    unifiedLightSharedInfo.lightAttenuation.x = lightMetadata[attributeOffset];
-    attributeOffset++;
-    unifiedLightSharedInfo.lightAttenuation.y = lightMetadata[attributeOffset];
-    attributeOffset++;
     unifiedLightSharedInfo.screenSpaceShadows = lightMetadata[attributeOffset] == 1.? true : false;
     attributeOffset++;
     unifiedLightSharedInfo.cutoff = lightMetadata[attributeOffset];
     attributeOffset++;
 
     switch (type){
-        case DIRECTIONAL: {
-            float array[16];
-
-            unifiedLightSharedInfo.atlasFace.x = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.atlasFace.y = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.shadowMap = lightMetadata[attributeOffset] == 1.;
-            attributeOffset++;
-            unifiedLightSharedInfo.shadowBias = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.shadowAttenuationMinDistance = lightMetadata[attributeOffset];
-            attributeOffset++;
-
-            unifiedLightSharedInfo.viewProjection[0][0] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[0][1] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[0][2] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[0][3] = lightMetadata[attributeOffset];
-            attributeOffset++;
-
-            unifiedLightSharedInfo.viewProjection[1][0] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[1][1] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[1][2] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[1][3] = lightMetadata[attributeOffset];
-            attributeOffset++;
-
-            unifiedLightSharedInfo.viewProjection[2][0] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[2][1] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[2][2] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[2][3] = lightMetadata[attributeOffset];
-            attributeOffset++;
-
-            unifiedLightSharedInfo.viewProjection[3][0] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[3][1] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[3][2] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            unifiedLightSharedInfo.viewProjection[3][3] = lightMetadata[attributeOffset];
-            attributeOffset++;
-            return computeDirectionalLight(unifiedLightSharedInfo);
-        }
         case POINT: {
-
             unifiedLightSharedInfo.zFar = lightMetadata[attributeOffset];
             attributeOffset++;
             unifiedLightSharedInfo.shadowMap = lightMetadata[attributeOffset] == 1.;
@@ -230,7 +149,9 @@ vec3 processLight(inout int attributeOffset) {
     return vec3(0);
 }
 
-vec3 pbLightComputation(int lightCount, sampler2D gBufferIndirect) {
+#include "../uber/SUN_CONTRIBUTION.glsl"
+
+vec3 pbLightComputation(int lightCount, bool sun, float elapsedDayTime, bool screenSpaceShadows) {
     VrN = reflect(-V, N);
     albedoOverPI = albedo / PI;
     vec3 indirectIllumination = vec3(0.0);
@@ -245,6 +166,10 @@ vec3 pbLightComputation(int lightCount, sampler2D gBufferIndirect) {
         directIllumination += processLight(attributeOffset);
     }
 
-    return vec3(directIllumination) + sampleIndirectLight(gBufferIndirect);
+    vec3 baseColor = vec3(directIllumination);
+    if(sun){
+        baseColor += computeDirectionalLight(elapsedDayTime, screenSpaceShadows);
+    }
+    return baseColor;
 }
 

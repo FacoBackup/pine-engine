@@ -88,7 +88,6 @@ public class CameraRepository extends Inspectable implements SerializableReposit
     public final Matrix4f invViewMatrix = new Matrix4f();
     public final Matrix4f invProjectionMatrix = new Matrix4f();
     public final Matrix4f viewProjectionMatrix = new Matrix4f();
-    public final Matrix4f staticViewMatrix = new Matrix4f();
     public final Matrix4f skyboxProjectionMatrix = new Matrix4f();
     public final Matrix4f invSkyboxProjectionMatrix = new Matrix4f();
     public final Frustum frustum = new Frustum();

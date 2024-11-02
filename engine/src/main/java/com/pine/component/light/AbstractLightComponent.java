@@ -21,8 +21,6 @@ public abstract class AbstractLightComponent extends AbstractComponent {
     public final Color color = new Color(1, 1, 1);
     @InspectableField(label = "Intensity", min = 0)
     public float intensity = 1;
-    @InspectableField(label = "Attenuation")
-    public final Vector2f attenuation = new Vector2f(1);
 
 
     public final LightType type = getLightType();

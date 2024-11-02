@@ -28,23 +28,14 @@ public class TransformationService extends AbstractTask {
     @PInject
     public WorldRepository worldRepository;
 
-    @PInject
-    public LightService lightService;
-
     private final Vector3f distanceAux = new Vector3f();
     private final Matrix4f auxMat4 = new Matrix4f();
     private final Matrix4f auxMat42 = new Matrix4f();
-    private boolean isLightModified = false;
-
     @Override
     protected void tickInternal() {
         startTracking();
         try {
-            isLightModified = false;
             traverse(WorldRepository.ROOT_ID, false);
-            if (isLightModified) {
-                lightService.packageLights();
-            }
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
@@ -95,13 +86,6 @@ public class TransformationService extends AbstractTask {
         st.globalMatrix.set(auxMat4);
         st.freezeVersion();
 
-        if (!isLightModified && (
-                worldRepository.bagDirectionalLightComponent.containsKey(st.getEntityId()) ||
-                        worldRepository.bagPointLightComponent.containsKey(st.getEntityId()) ||
-                        worldRepository.bagSphereLightComponent.containsKey(st.getEntityId()) ||
-                        worldRepository.bagSpotLightComponent.containsKey(st.getEntityId()))) {
-            isLightModified = true;
-        }
     }
 
     private TransformationComponent findParent(String id) {

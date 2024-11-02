@@ -15,6 +15,9 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
     private UniformDTO maxStepsSSR;
     private UniformDTO maxStepsSSS;
     private UniformDTO lightCount;
+    private UniformDTO sunEnabled;
+    private UniformDTO elapsedDayTime;
+    private UniformDTO screenSpaceShadows;
 
     @Override
     protected FrameBufferObject getTargetFBO() {
@@ -33,6 +36,9 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
         maxStepsSSR = addUniformDeclaration("maxStepsSSR");
         maxStepsSSS = addUniformDeclaration("maxStepsSSS");
         lightCount = addUniformDeclaration("lightCount");
+        sunEnabled = addUniformDeclaration("sunEnabled");
+        elapsedDayTime = addUniformDeclaration("elapsedDayTime");
+        screenSpaceShadows = addUniformDeclaration("screenSpaceShadows");
     }
 
     @Override
@@ -54,6 +60,10 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
         shaderService.bindInt(settingsRepository.ssrMaxSteps, maxStepsSSR);
         shaderService.bindInt(settingsRepository.sssMaxSteps, maxStepsSSS);
         shaderService.bindInt(renderingRepository.lightCount, lightCount);
+
+        shaderService.bindBoolean(atmosphere.enabled, sunEnabled);
+        shaderService.bindFloat(atmosphere.elapsedTime, elapsedDayTime);
+        shaderService.bindBoolean(atmosphere.screenSpaceShadows, screenSpaceShadows);
 
         shaderService.bindSampler2dDirect(fboRepository.gBufferAlbedoSampler, 0);
         shaderService.bindSampler2dDirect(fboRepository.gBufferNormalSampler, 1);

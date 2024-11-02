@@ -3,7 +3,6 @@ package com.pine.type;
 import com.pine.inspection.SelectableEnum;
 
 public enum LightType implements SelectableEnum {
-    DIRECTIONAL("Directional light", 1, 32),
     SPOT("Spot light", 2, 15),
     POINT("Point light", 3, 15),
     SPHERE("Spherical area light", 4, 13);

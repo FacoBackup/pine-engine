@@ -32,10 +32,6 @@ public class LightService {
         offset = 0;
         count = 0;
         FloatBuffer b = ssboRepository.lightSSBOState;
-        for (var l : worldRepository.bagDirectionalLightComponent.values()) {
-            packageDirectionalLight(l, b);
-        }
-
         for (var l : worldRepository.bagPointLightComponent.values()) {
             packagePointLight(l, b);
         }
@@ -89,44 +85,31 @@ public class LightService {
         count++;
     }
 
-    private void packageDirectionalLight(DirectionalLightComponent l, FloatBuffer b) {
-        var transform = worldRepository.bagTransformationComponent.get(l.getEntityId());
-        int internalOffset = fillCommon(b, offset, l);
-
-        b.put(internalOffset, l.atlasFace.x);
-        b.put(internalOffset + 1, l.atlasFace.y);
-        b.put(internalOffset + 2, l.shadowMap ? 0 : 1);
-        b.put(internalOffset + 3, l.shadowBias);
-        b.put(internalOffset + 4, l.shadowAttenuationMinDistance);
-
-        if (l.shadowMap) {
-            var view = auxMat4.lookAt(transform.translation, new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
-            var proj = aux2Mat4.ortho(-l.size, l.size, -l.size, l.size, l.zNear, l.zFar);
-            proj.mul(view);
-            EngineUtils.copyWithOffset(b, proj, 16); // SECOND MATRIX
-        }
-
-        offset += l.type.getDataDisplacement();
-        count++;
-    }
-
     private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent light) {
         var transform = worldRepository.bagTransformationComponent.get(light.getEntityId());
 
         lightSSBOState.put(offset, light.type.getTypeId());
-        lightSSBOState.put(offset + 1, light.color.x * light.intensity);
-        lightSSBOState.put(offset + 2, light.color.y * light.intensity);
-        lightSSBOState.put(offset + 3, light.color.z * light.intensity);
-        lightSSBOState.put(offset + 4, transform.translation.x);
-        lightSSBOState.put(offset + 5, transform.translation.y);
-        lightSSBOState.put(offset + 6, transform.translation.z);
-        lightSSBOState.put(offset + 7, light.outerCutoff);
-        lightSSBOState.put(offset + 8, light.attenuation.x);
-        lightSSBOState.put(offset + 9, light.attenuation.y);
-        lightSSBOState.put(offset + 10, light.sss ? 1 : 0);
-        lightSSBOState.put(offset + 11, light.innerCutoff);
+        offset++;
+        lightSSBOState.put(offset, light.color.x * light.intensity);
+        offset++;
+        lightSSBOState.put(offset, light.color.y * light.intensity);
+        offset++;
+        lightSSBOState.put(offset, light.color.z * light.intensity);
+        offset++;
+        lightSSBOState.put(offset, transform.translation.x);
+        offset++;
+        lightSSBOState.put(offset, transform.translation.y);
+        offset++;
+        lightSSBOState.put(offset, transform.translation.z);
+        offset++;
+        lightSSBOState.put(offset, light.outerCutoff);
+        offset++;
+        lightSSBOState.put(offset, light.sss ? 1 : 0);
+        offset++;
+        lightSSBOState.put(offset, light.innerCutoff);
+        offset++;
 
-        return offset + 12;
+        return offset;
     }
 
 }

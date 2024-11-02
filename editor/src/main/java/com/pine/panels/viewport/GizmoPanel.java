@@ -5,6 +5,7 @@ import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.GizmoType;
 import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
 import com.pine.service.rendering.RequestProcessingService;
@@ -52,6 +53,10 @@ public class GizmoPanel extends AbstractView {
 
     @Override
     public void render() {
+        if(!stateRepository.gizmoType.isImGuizmo()){
+            return;
+        }
+
         if (stateRepository.primitiveSelected == null) {
             localSelected = null;
             localChangeId = 0;
@@ -67,6 +72,7 @@ public class GizmoPanel extends AbstractView {
             getLogger().warn("Updating gizmo {} {}", stateRepository.primitiveSelected != localSelected, localSelected.getChangeId() != localChangeId);
             localChangeId = localSelected.getChangeId();
         }
+
         recomposeMatrix();
         float[] snap = getSnapValues();
         ImGuizmo.setOrthographic(cameraRepository.currentCamera.isOrthographic);
@@ -75,7 +81,7 @@ public class GizmoPanel extends AbstractView {
         ImGuizmo.manipulate(
                 viewMatrixCache,
                 projectionMatrixCache,
-                stateRepository.gizmoOperation,
+                stateRepository.gizmoType.type,
                 stateRepository.gizmoMode,
                 cacheMatrix,
                 null,
@@ -86,20 +92,20 @@ public class GizmoPanel extends AbstractView {
     }
 
     private float @Nullable [] getSnapValues() {
-        return switch (stateRepository.gizmoOperation) {
-            case Operation.TRANSLATE -> {
+        return switch (stateRepository.gizmoType) {
+            case TRANSLATE -> {
                 if (stateRepository.gizmoUseSnapTranslate) {
                     yield stateRepository.gizmoSnapTranslate;
                 }
                 yield null;
             }
-            case Operation.ROTATE -> {
+            case ROTATE -> {
                 if (stateRepository.gizmoUseSnapRotate) {
                     yield stateRepository.gizmoSnapRotate.getData();
                 }
                 yield null;
             }
-            case Operation.SCALE -> {
+            case SCALE -> {
                 if (stateRepository.gizmoUseSnapScale) {
                     yield stateRepository.gizmoSnapScale.getData();
                 }

@@ -8,6 +8,8 @@
 #include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
 
 in vec2 texCoords;
+layout(binding = 0) uniform sampler2D gBufferDepthSampler;
+
 uniform mat4 invSkyProjectionMatrix;
 uniform int type;
 uniform float elapsedTime;
@@ -34,7 +36,6 @@ float atmosphereRadius1 = atmosphereRadius;
 float planetRadius1 = planetRadius;
 
 float G = 0.76;
-
 
 float raySphereIntersect(vec3 rayOrigin, vec3 rayDirection, vec3 sphereCenter, float sphereRadius) {
     float a = dot(rayDirection, rayDirection);
@@ -113,7 +114,6 @@ vec3 getSkyColor(vec3 pa, vec3 pb) {
     mieColor = intensity * phaseM * mieColor;
 
     return rayleighColor + mieColor;
-
 }
 
 vec3 createRay(mat4 invView) {
@@ -127,6 +127,11 @@ vec3 createRay(mat4 invView) {
 }
 
 void main() {
+    if(!renderStatic){
+        if(texture(gBufferDepthSampler, texCoords).r != 0){
+            discard;
+        }
+    }
     rayleighBeta1.x *= 263157.;
     rayleighBeta1.y *= 74074.;
     rayleighBeta1.z *= 30211.;

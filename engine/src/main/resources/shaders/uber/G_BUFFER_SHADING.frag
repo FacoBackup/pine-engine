@@ -43,6 +43,10 @@ uniform int maxStepsSSR;
 uniform int maxStepsSSS;
 uniform int lightCount;
 
+uniform bool sunEnabled;
+uniform float elapsedDayTime;
+uniform bool useScreenSpaceShadows;
+
 // MATERIAL SETTINGS
 float anisotropicRotation;
 float anisotropy;
@@ -120,17 +124,17 @@ void main() {
     );
 
     albedo = texture(gBufferAlbedoSampler, quadUV).rgb;
-    N = texture(gBufferNormalSampler, quadUV).rgb;
+    N = normalize(texture(gBufferNormalSampler, quadUV).rgb);
     vec3 valueRMAOSampler = texture(gBufferRMAOSampler, quadUV).rgb;
     naturalAO = valueRMAOSampler.b;
     roughness = valueRMAOSampler.r;
     metallic = valueRMAOSampler.g;
     viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
     worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
-    V = placement.xyz - worldSpacePosition;
+    V = normalize(placement.xyz - worldSpacePosition);
     distanceFromCamera = length(V);
 
-    color = vec4(pbLightComputation(lightCount, gBufferIndirect), 1.);
+    color = vec4(pbLightComputation(lightCount, sunEnabled, elapsedDayTime, useScreenSpaceShadows) + sampleIndirectLight(gBufferIndirect), 1.);
 }
 
 

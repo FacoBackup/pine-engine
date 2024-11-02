@@ -58,7 +58,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public Color outlineColor = new Color(1f, 0.5f, 0f);
 
     public ExecutionEnvironment environment = ExecutionEnvironment.DEVELOPMENT;
-    public int gizmoOperation = Operation.TRANSLATE;
+    public GizmoType gizmoType = GizmoType.TRANSLATE;
     public int gizmoMode = Mode.WORLD;
 
     public float[] gizmoSnapTranslate = new float[3];
@@ -72,7 +72,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public boolean gizmoUseSnapTranslate;
     public boolean gizmoUseSnapRotate;
     public boolean gizmoUseSnapScale;
-    public final ImInt gizmoModeOption = new ImInt(0);
+
     public final ImInt shadingModelOption = new ImInt(DebugShadingModel.LIT.getIndex());
     public boolean showOnlyEntitiesHierarchy = false;
 
