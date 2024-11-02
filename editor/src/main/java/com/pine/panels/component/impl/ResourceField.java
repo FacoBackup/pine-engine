@@ -19,6 +19,8 @@ import java.util.function.BiConsumer;
 
 public class ResourceField extends AbstractFormField {
 
+    private PreviewField previewField;
+
     @PInject
     public StreamingRepository repository;
 
@@ -46,7 +48,7 @@ public class ResourceField extends AbstractFormField {
         if (byType.size() != allByType.size()) {
             allByType.clear();
             for (var f : byType) {
-                allByType.add((FSEntry) filesRepository.entry.get(f));
+                allByType.add(filesRepository.entry.get(f));
             }
             if (previousSize != allByType.size()) {
                 previousSize = allByType.size();
@@ -71,7 +73,24 @@ public class ResourceField extends AbstractFormField {
     @Override
     public void render() {
         refresh();
-        ImGui.text(dto.getLabel());
+
+        if (type == StreamableResourceType.TEXTURE) {
+            if (ImGui.beginChild(imguiId)) {
+                ImGui.text(dto.getLabel());
+                if (previewField == null) {
+                    previewField = appendChild(new PreviewField(dto, changerHandler));
+                }
+                previewField.render();
+                renderOptions();
+            }
+            ImGui.endChild();
+        } else {
+            ImGui.text(dto.getLabel());
+            renderOptions();
+        }
+    }
+
+    private void renderOptions() {
         if (ImGui.combo(imguiId, selected, itemsArr)) {
             changerHandler.accept(dto, allByType.get(selected.get()).getId());
         }

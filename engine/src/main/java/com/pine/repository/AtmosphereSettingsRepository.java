@@ -2,14 +2,26 @@ package com.pine.repository;
 
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
+import com.pine.injection.PInject;
+import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
+import com.pine.service.environment.EnvironmentMapGenService;
 import com.pine.theme.Icons;
 import com.pine.type.AtmosphereType;
 import org.joml.Vector3f;
 
 @PBean
 public class AtmosphereSettingsRepository extends Inspectable implements SerializableRepository {
+
+    @PInject
+    public transient EnvironmentMapGenService environmentMapGenService;
+
+    @ExecutableField(label = "Bake environment maps", icon = Icons.panorama_photosphere)
+    public void process() {
+        environmentMapGenService.bake();
+    }
+
     @InspectableField(label = "Is enabled")
     public boolean enabled = false;
     @InspectableField(label = "Time of day")

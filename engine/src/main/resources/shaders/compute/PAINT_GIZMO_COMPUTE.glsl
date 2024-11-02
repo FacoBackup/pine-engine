@@ -21,20 +21,8 @@ vec3 createRay() {
     return normalize(dirWorld);
 }
 
-float domeSDF(vec3 pos, vec3 domeCenter, float domeRadius, vec3 dir) {
+float domeSDF(vec3 pos, vec3 domeCenter, float domeRadius, mat3 rotationMatrix) {
     pos -= domeCenter;
-    // Compute the rotation matrix
-    vec3 axis = cross(UP_VEC, dir);// Axis to rotate around
-    float angle = acos(dot(UP_VEC, dir));// Angle between up and direction
-
-    // Use Rodrigues' rotation formula components
-    float cosA = cos(angle);
-    float sinA = sin(angle);
-    mat3 rotationMatrix = mat3(
-        cosA + axis.x * axis.x * (1.0 - cosA), axis.x * axis.y * (1.0 - cosA) - axis.z * sinA, axis.x * axis.z * (1.0 - cosA) + axis.y * sinA,
-        axis.y * axis.x * (1.0 - cosA) + axis.z * sinA, cosA + axis.y * axis.y * (1.0 - cosA), axis.y * axis.z * (1.0 - cosA) - axis.x * sinA,
-        axis.z * axis.x * (1.0 - cosA) - axis.y * sinA, axis.z * axis.y * (1.0 - cosA) + axis.x * sinA, cosA + axis.z * axis.z * (1.0 - cosA)
-    );
 
     // Rotate the position
     pos = rotationMatrix * pos;
@@ -46,7 +34,7 @@ float domeSDF(vec3 pos, vec3 domeCenter, float domeRadius, vec3 dir) {
     return ((h * q.x < w * q.y) ? length(q - vec2(w, h)) : abs(length(q) - domeRadius)) - t;
 }
 
-bool renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius, vec3 normal) {
+bool renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius, mat3 rotationMatrix) {
     const int maxSteps = 100;
     const float minDist = 0.001;
     const float maxDist = 100.0;
@@ -54,7 +42,7 @@ bool renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius, 
     float t = 0.0;
     for (int i = 0; i < maxSteps; i++) {
         vec3 p = rayOrigin + t * rayDir;
-        float d = domeSDF(p,  domeCenter, domeRadius, normal);
+        float d = domeSDF(p,  domeCenter, domeRadius, rotationMatrix);
         if (d < minDist) {
             return true;
         }
@@ -72,16 +60,26 @@ void main() {
     float depthData = getLogDepth(textureCoord);
     if (depthData == 1.){
         return;
-    }else{
-
     }
 
     vec3 normal = normalize(texture(gBufferNormal, textureCoord).rgb);
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
+    vec3 axis = cross(UP_VEC, normal);// Axis to rotate around
+    float angle = acos(dot(UP_VEC, normal));// Angle between up and direction
 
-    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, 1, normal)){
+    // Use Rodrigues' rotation formula components
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    mat3 rotationMatrix = mat3(
+        cosA + axis.x * axis.x * (1.0 - cosA), axis.x * axis.y * (1.0 - cosA) - axis.z * sinA, axis.x * axis.z * (1.0 - cosA) + axis.y * sinA,
+        axis.y * axis.x * (1.0 - cosA) + axis.z * sinA, cosA + axis.y * axis.y * (1.0 - cosA), axis.y * axis.z * (1.0 - cosA) - axis.x * sinA,
+        axis.z * axis.x * (1.0 - cosA) - axis.y * sinA, axis.z * axis.y * (1.0 - cosA) + axis.x * sinA, cosA + axis.z * axis.z * (1.0 - cosA)
+    );
+
+
+    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, 1, rotationMatrix)){
         imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), vec4(1, 0, 1, .5));
     }
 }
