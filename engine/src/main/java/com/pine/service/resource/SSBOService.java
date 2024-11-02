@@ -29,6 +29,5 @@ public class SSBOService extends AbstractResourceService<ShaderStorageBufferObje
     public void updateBuffer(ShaderStorageBufferObject ssbo, IntBuffer data, int offset) {
         bind(ssbo);
         GL46.glBufferSubData(GL46.GL_SHADER_STORAGE_BUFFER, offset, data);
-        unbind();
     }
 }

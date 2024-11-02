@@ -7,6 +7,7 @@ import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static com.pine.Engine.MAX_ENTITIES;
 import static com.pine.Engine.MAX_LIGHTS;
@@ -20,22 +21,21 @@ public class CoreSSBORepository implements CoreRepository {
 
     public final FloatBuffer lightSSBOState = MemoryUtil.memAllocFloat(LIGHT_BUFFER_SIZE);
     public final FloatBuffer transformationSSBOState = MemoryUtil.memAllocFloat(ENTITY_BUFFER_SIZE);
+    public final IntBuffer instancingMetadata = MemoryUtil.memAllocInt(3);
 
     public ShaderStorageBufferObject lightMetadataSSBO;
     public ShaderStorageBufferObject transformationSSBO;
     public ShaderStorageBufferObject instancingMetadataSSBO;
     public ShaderStorageBufferObject instancingTransformationSSBO;
 
+
     @Override
     public void initialize() {
         instancingTransformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
-                10,
+                13,
                 (long) MAX_INSTANCING * GLSLType.MAT_4.getSize()
         ));
-        instancingMetadataSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
-                10,
-                (long) MAX_INSTANCING * GLSLType.FLOAT.getSize()
-        ));
+        instancingMetadataSSBO = new ShaderStorageBufferObject(new SSBOCreationData(instancingMetadata));
 
         transformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
                 10,

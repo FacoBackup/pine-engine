@@ -14,7 +14,8 @@ mat3 getRotationFromNormal(inout vec3 normal){
     );
 }
 
-vec3 getNormalFromHeightMap(inout float height, sampler2D heightMap, inout vec2 uv, inout float normalOffset){
+vec3 getNormalFromHeightMap(inout float height, sampler2D heightMap, inout vec2 uv){
+    const float normalOffset = .005;
 
     // Offset texture coordinates to sample neighboring points
     float heightL = texture(heightMap, uv + vec2(-normalOffset, 0.0)).r;

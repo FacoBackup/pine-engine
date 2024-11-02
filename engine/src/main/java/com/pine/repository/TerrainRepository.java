@@ -34,6 +34,9 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @InspectableField(label = "Height map")
     public String heightMapTexture;
 
+    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
+    @InspectableField(label = "Instance mask map")
+    public String instanceMaskMap;
 
     @InspectableField(label = "Height Scale", min = 1)
     public float heightScale = 1;

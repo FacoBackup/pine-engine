@@ -17,7 +17,6 @@ smooth out vec3 worldSpacePosition;
 
 
 void main() {
-    float normalOffset = .005;
 
     cameraPlacement = placement.xyz;
     renderingIndex = 1;
@@ -27,7 +26,7 @@ void main() {
     initialUV = vec2(position.x / planeSize + 0.5, position.z / planeSize + 0.5);
 
     float height = texture(heightMap, initialUV).r;
-    normalVec = getNormalFromHeightMap(height, heightMap, initialUV, normalOffset);
+    normalVec = getNormalFromHeightMap(height, heightMap, initialUV);
 
     worldSpacePosition = position;
     worldSpacePosition.y = height * heightScale;
