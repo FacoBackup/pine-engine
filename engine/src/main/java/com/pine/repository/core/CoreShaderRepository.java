@@ -10,6 +10,8 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader spriteShader;
     public Shader gBufferShader;
     public Shader gBufferTerrainShader;
+    public Shader gBufferInstanceShader;
+    public Shader instanceCullingShader;
     public Shader toScreenShader;
     public Shader downscaleShader;
     public Shader bilateralBlurShader;
@@ -44,6 +46,8 @@ public class CoreShaderRepository implements CoreRepository {
         spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
         gBufferShader = shaderService.create("uber/G_BUFFER.vert", "uber/G_BUFFER.frag");
         gBufferTerrainShader = shaderService.create("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag");
+        gBufferInstanceShader = shaderService.create("uber/G_BUFFER_INSTANCING.vert", "uber/G_BUFFER.frag");
+        instanceCullingShader = shaderService.create("compute/TERRAIN_INSTANCING_MASK.glsl");
         toScreenShader = shaderService.create("QUAD.vert", "TO_SCREEN.frag");
         downscaleShader = shaderService.create("QUAD.vert", "BILINEAR_DOWNSCALE.glsl");
         bilateralBlurShader = shaderService.create("QUAD.vert", "BILATERAL_BLUR.glsl");
@@ -70,6 +74,7 @@ public class CoreShaderRepository implements CoreRepository {
     @Override
     public void dispose() {
         gBufferTerrainShader.dispose();
+        instanceCullingShader.dispose();
         gBufferShading.dispose();
         brdfShader.dispose();
         spriteShader.dispose();

@@ -133,8 +133,8 @@ void main() {
     worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
     V = normalize(placement.xyz - worldSpacePosition);
     distanceFromCamera = length(V);
-
-    color = vec4(pbLightComputation(lightCount, sunEnabled, elapsedDayTime, useScreenSpaceShadows) + sampleIndirectLight(gBufferIndirect), 1.);
+    vec3 lightContribution = pbLightComputation(lightCount, sunEnabled, elapsedDayTime, useScreenSpaceShadows);
+    color = vec4(lightContribution + sampleIndirectLight(gBufferIndirect), 1.);
 }
 
 

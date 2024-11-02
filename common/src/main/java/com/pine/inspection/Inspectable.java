@@ -1,16 +1,20 @@
 package com.pine.inspection;
 
+import com.pine.Mutable;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Inspectable {
+public abstract class Inspectable implements Mutable {
     private transient List<FieldDTO> fieldsAnnotated = new ArrayList<>();
     private transient List<MethodDTO> methodsAnnotated = new ArrayList<>();
     private transient boolean isCollectedFields = false;
     private transient boolean isCollectedMethods = false;
+    private int changes = 0;
+    private int frozenVersion = -1;
 
     final public List<FieldDTO> getFieldsAnnotated() {
         if (fieldsAnnotated == null) {
@@ -67,5 +71,25 @@ public abstract class Inspectable {
             return Collections.emptyList();
         }
         return new ArrayList<>(Arrays.asList(((Class<SelectableEnum>) field.getType()).getEnumConstants()));
+    }
+
+    @Override
+    final public int getChangeId() {
+        return changes;
+    }
+
+    @Override
+    final public void registerChange() {
+        changes = (int) (Math.random() * 10000);
+    }
+
+    @Override
+    final public boolean isNotFrozen() {
+        return frozenVersion != getChangeId();
+    }
+
+    @Override
+    final public void freezeVersion() {
+        frozenVersion = getChangeId();
     }
 }

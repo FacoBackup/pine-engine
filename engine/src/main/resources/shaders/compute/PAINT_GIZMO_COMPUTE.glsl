@@ -10,6 +10,7 @@ uniform vec2 viewportSize;
 const vec3 UP_VEC = vec3(0.0, 1.0, 0.0);// Default dome "up" direction
 
 #include "../util/SCENE_DEPTH_UTILS.glsl"
+#include "../util/UTIL.glsl"
 
 vec3 createRay() {
     vec2 pxNDS = (gl_GlobalInvocationID.xy/bufferResolution) * 2. - 1.;
@@ -66,20 +67,7 @@ void main() {
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
-    vec3 axis = cross(UP_VEC, normal);// Axis to rotate around
-    float angle = acos(dot(UP_VEC, normal));// Angle between up and direction
-
-    // Use Rodrigues' rotation formula components
-    float cosA = cos(angle);
-    float sinA = sin(angle);
-    mat3 rotationMatrix = mat3(
-        cosA + axis.x * axis.x * (1.0 - cosA), axis.x * axis.y * (1.0 - cosA) - axis.z * sinA, axis.x * axis.z * (1.0 - cosA) + axis.y * sinA,
-        axis.y * axis.x * (1.0 - cosA) + axis.z * sinA, cosA + axis.y * axis.y * (1.0 - cosA), axis.y * axis.z * (1.0 - cosA) - axis.x * sinA,
-        axis.z * axis.x * (1.0 - cosA) - axis.y * sinA, axis.z * axis.y * (1.0 - cosA) + axis.x * sinA, cosA + axis.z * axis.z * (1.0 - cosA)
-    );
-
-
-    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, 1, rotationMatrix)){
+    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, 1, getRotationFromNormal(normal))){
         imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), vec4(1, 0, 1, .5));
     }
 }

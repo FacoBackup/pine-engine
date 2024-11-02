@@ -34,7 +34,6 @@ public abstract class AbstractGBufferPass extends AbstractPass {
             GL46.glEnable(GL11.GL_CULL_FACE);
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
-        ssboService.bind(ssboRepository.transformationSSBO);
 
         shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode());
         shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels());

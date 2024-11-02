@@ -1,22 +1,12 @@
 package com.pine.service.system.impl;
 
-import com.pine.repository.DebugShadingModel;
-import com.pine.repository.rendering.RenderingMode;
-import com.pine.repository.rendering.RenderingRequest;
-import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.service.system.AbstractPass;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL46;
 
-import java.util.List;
-
-public class TerrainPass extends AbstractGBufferPass {
+public class TerrainGBufferPass extends AbstractGBufferPass {
     private UniformDTO debugShadingMode;
     private MeshResourceRef mesh;
     private UniformDTO probeFilteringLevels;
@@ -24,6 +14,7 @@ public class TerrainPass extends AbstractGBufferPass {
     private UniformDTO planeSize;
     private UniformDTO heightMapU;
     private UniformDTO heightScale;
+    private UniformDTO fallbackMaterial;
 
     @Override
     public void onInitialize() {
@@ -32,6 +23,7 @@ public class TerrainPass extends AbstractGBufferPass {
         planeSize = addUniformDeclaration("planeSize");
         heightMapU = addUniformDeclaration("heightMap");
         heightScale = addUniformDeclaration("heightScale");
+        fallbackMaterial = addUniformDeclaration("fallbackMaterial");
     }
 
     @Override
@@ -63,6 +55,7 @@ public class TerrainPass extends AbstractGBufferPass {
         shaderService.bindSampler2d(heightMap, heightMapU);
         shaderService.bindInt(heightMap.width, planeSize);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
+        shaderService.bindBoolean(true, fallbackMaterial);
 
         meshService.bind(mesh);
         meshService.setInstanceCount(0);
