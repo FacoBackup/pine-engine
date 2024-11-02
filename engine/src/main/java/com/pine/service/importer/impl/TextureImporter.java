@@ -63,7 +63,7 @@ public class TextureImporter extends AbstractImporter {
 
             ImageIO.write(resizedImage, "png", new File(getPathToFile(data) + PREVIEW_EXT));
 
-            return new TextureResourceMetadata(data.name, data.id, originalWidth, originalHeight, getPathToFile(data) + PREVIEW_EXT);
+            return new TextureResourceMetadata(data.name, data.id, originalWidth, originalHeight);
         } catch (Exception e) {
             getLogger().error("Error while writing texture {}", data.id, e);
         }

@@ -4,6 +4,8 @@ import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
 import com.pine.panels.component.AbstractFormField;
 import com.pine.repository.ClockRepository;
+import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.importer.ImporterService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
@@ -13,6 +15,7 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 
 import static com.pine.panels.viewport.ViewportPanel.INV_Y;
+import static com.pine.service.importer.impl.TextureImporter.PREVIEW_EXT;
 
 public class PreviewField extends AbstractFormField {
     private static final ImVec2 INV_X_L = new ImVec2(-1, 0);
@@ -26,6 +29,9 @@ public class PreviewField extends AbstractFormField {
     @PInject
     public StreamingService streamingService;
 
+    @PInject
+    public ImporterService importerService;
+
     public PreviewField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
     }
@@ -34,7 +40,10 @@ public class PreviewField extends AbstractFormField {
     public void render() {
         if (dto.getValue() != null && !Objects.equals(value, dto.getValue())) {
             value = (String) dto.getValue();
-            textureRef = streamingService.streamTextureSync(value);
+            textureRef = streamingService.streamTextureSync(importerService.getPathToFile(value, StreamableResourceType.TEXTURE) + PREVIEW_EXT);
+        }else if(dto.getValue() == null){
+            value = null;
+            textureRef = null;
         }
 
         if (textureRef != null) {

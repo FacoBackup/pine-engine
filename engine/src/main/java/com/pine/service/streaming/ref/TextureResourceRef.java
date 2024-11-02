@@ -9,6 +9,8 @@ import org.lwjgl.stb.STBImage;
 
 public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int texture;
+    public int width;
+    public int height;
 
     public TextureResourceRef(String id) {
         super(id);
@@ -34,6 +36,9 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
         GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
         STBImage.stbi_image_free(data.imageBuffer);
+
+        this.width = data.width;
+        this.height = data.height;
     }
 
     @Override

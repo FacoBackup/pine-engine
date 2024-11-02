@@ -89,4 +89,8 @@ public class FSUtil {
             return null;
         }
     }
+
+    public static void delete(String pathToFile) {
+        new File(pathToFile).delete();
+    }
 }

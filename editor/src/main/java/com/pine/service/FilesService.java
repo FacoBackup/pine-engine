@@ -1,5 +1,6 @@
 package com.pine.service;
 
+import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -53,16 +54,15 @@ public class FilesService implements Loggable {
                 var children = filesRepository.parentChildren.get(id);
                 deleteRecursively(children);
             } else {
-                var file = (FSEntry) entry;
-                new File(importerService.getPathToMetadata(id, file.getType())).delete();
-                new File(importerService.getPathToFile(id, file.getType())).delete();
-                new File(importerService.getPathToFile(id, file.getType()) + PREVIEW_EXT).delete();
-                filesRepository.byType.get(file.type).remove(id);
+                FSUtil.delete(importerService.getPathToMetadata(id, entry.getType()));
+                FSUtil.delete(importerService.getPathToFile(id, entry.getType()));
+                FSUtil.delete(importerService.getPathToFile(id, entry.getType()) + PREVIEW_EXT);
+                filesRepository.byType.get(entry.type).remove(id);
 
-                streamingRepository.discardedResources.put(file.getId(), file.getType());
-                streamingRepository.loadedResources.remove(file.getId());
-                streamingRepository.toLoadResources.remove(file.getId());
-                streamingRepository.scheduleToLoad.remove(file.getId());
+                streamingRepository.discardedResources.put(entry.getId(), entry.getType());
+                streamingRepository.loadedResources.remove(entry.getId());
+                streamingRepository.toLoadResources.remove(entry.getId());
+                streamingRepository.scheduleToLoad.remove(entry.getId());
             }
             filesRepository.parentChildren.remove(id);
             filesRepository.entry.remove(id);

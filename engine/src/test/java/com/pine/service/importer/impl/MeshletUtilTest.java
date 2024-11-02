@@ -9,7 +9,7 @@ class MeshletUtilTest {
     @Test
     public void generateMeshlets(){
         int size = 200;
-        var data = TerrainGenerationUtil.computeMesh(size, size * .5f, size * .5f * .5f);
+        var data = TerrainGenerationUtil.computeMesh(size);
 
         var result = MeshletUtil.genMeshlets(data);
         Assertions.assertEquals(839, result.meshletInfos.size());

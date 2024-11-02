@@ -1,10 +1,7 @@
 package com.pine.panels.component;
 
 import com.pine.core.view.AbstractView;
-import com.pine.inspection.FieldDTO;
-import com.pine.inspection.Inspectable;
-import com.pine.inspection.ResourceTypeField;
-import com.pine.inspection.TypePreviewField;
+import com.pine.inspection.*;
 import com.pine.panels.component.impl.*;
 import imgui.ImGui;
 
@@ -31,6 +28,23 @@ public class FormPanel extends AbstractView {
             return;
         }
         Map<String, AccordionPanel> groups = new HashMap<>();
+        processMethods(data, groups);
+        processFields(data, groups);
+    }
+
+    private void processMethods(Inspectable data, Map<String, AccordionPanel> groups) {
+        for (MethodDTO methodDTO : data.getMethodsAnnotated()) {
+            if (!groups.containsKey(methodDTO.getGroup())) {
+                groups.put(methodDTO.getGroup(), appendChild(new AccordionPanel()));
+            }
+
+            AccordionPanel group = groups.get(methodDTO.getGroup());
+            group.title = methodDTO.getGroup();
+            group.appendChild(new ExecutableFunctionField(methodDTO));
+        }
+    }
+
+    private void processFields(Inspectable data, Map<String, AccordionPanel> groups) {
         for (FieldDTO field : data.getFieldsAnnotated()) {
             if (!groups.containsKey(field.getGroup())) {
                 groups.put(field.getGroup(), appendChild(new AccordionPanel()));

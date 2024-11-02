@@ -18,6 +18,7 @@ public class MeshResourceRef extends AbstractResourceRef<MeshImportData> {
     public transient VertexBuffer vertexVBO;
     public transient VertexBuffer uvVBO;
     public transient VertexBuffer normalVBO;
+    public int indicesCount;
 
     public MeshResourceRef(String id) {
         super(id);
@@ -27,6 +28,7 @@ public class MeshResourceRef extends AbstractResourceRef<MeshImportData> {
     protected void loadInternal(MeshImportData dto) {
         this.triangleCount = dto.indices.length / 3;
         this.vertexCount = dto.vertices.length;
+        indicesCount = dto.indices.length;
 
         FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(dto.vertices.length);
         vertexBuffer.put(dto.vertices).flip();

@@ -40,30 +40,8 @@ public class ViewportHeaderPanel extends AbstractView {
     @PInject
     public CameraRepository cameraRepository;
 
-    @PInject
-    public VoxelizationService voxelizationService;
-
-    @PInject
-    public EnvironmentMapGenService environmentMapGenService;
-
-    @PInject
-    public MessageRepository messageRepository;
-
     @Override
     public void render() {
-        if (ImGui.button(Icons.apps + "Bake voxelized scene##vp")) {
-            if(!voxelizationService.bake()){
-                messageRepository.pushMessage("Already voxelizing scene", MessageSeverity.WARN);
-            }
-        }
-
-        ImGui.sameLine();
-        if (ImGui.button(Icons.panorama_photosphere + "Bake environment maps##env")) {
-            environmentMapGenService.bake();
-        }
-
-        largeSpacing();
-
         gizmoMode();
 
         gizmoSelection();

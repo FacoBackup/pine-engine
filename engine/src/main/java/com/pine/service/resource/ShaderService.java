@@ -3,6 +3,7 @@ package com.pine.service.resource;
 import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.repository.ClockRepository;
 import com.pine.repository.core.CoreUBORepository;
 import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
@@ -27,6 +28,9 @@ public class ShaderService extends AbstractResourceService<Shader> {
 
     @PInject
     public UBOService uboService;
+
+    @PInject
+    public ClockRepository clockRepository;
 
     @PInject
     public CoreUBORepository uboRepository;
@@ -163,6 +167,7 @@ public class ShaderService extends AbstractResourceService<Shader> {
 
     public void bindSampler2d(TextureResourceRef sampler, UniformDTO uniform) {
         bindSampler2d(sampler.texture, uniform);
+        sampler.lastUse = clockRepository.totalTime;
     }
 
     public void bindSampler2d(int sampler, UniformDTO uniform) {
@@ -189,6 +194,7 @@ public class ShaderService extends AbstractResourceService<Shader> {
 
     public void bindSampler2dDirect(TextureResourceRef sampler, int bindingPoint) {
         bindSampler2dDirect(sampler.texture, bindingPoint);
+        sampler.lastUse = clockRepository.totalTime;
     }
 
     public void bindSampler2dDirect(int sampler, int bindingPoint) {
