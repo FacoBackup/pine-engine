@@ -4,7 +4,6 @@ layout (location = 0) in vec3 position;
 
 uniform int planeSize;
 uniform float heightScale;
-uniform float normalOffset;
 
 uniform sampler2D heightMap;
 
@@ -16,6 +15,7 @@ smooth out vec3 normalVec;
 smooth out vec3 worldSpacePosition;
 
 
+const float normalOffset = .005;
 
 void main() {
     cameraPlacement = placement.xyz;
@@ -26,13 +26,13 @@ void main() {
     initialUV = vec2(position.x / planeSize + 0.5, position.z / planeSize + 0.5);
 
     // Sample the height map at the current position
-    float height = texture(heightMap, initialUV).r * heightScale;
+    float height = texture(heightMap, initialUV).r ;
 
     // Offset texture coordinates to sample neighboring points
-    float heightL = texture(heightMap, initialUV + vec2(-normalOffset, 0.0)).r * heightScale;
-    float heightR = texture(heightMap, initialUV + vec2(normalOffset, 0.0)).r * heightScale;
-    float heightD = texture(heightMap, initialUV + vec2(0.0, -normalOffset)).r * heightScale;
-    float heightU = texture(heightMap, initialUV + vec2(0.0, normalOffset)).r * heightScale;
+    float heightL = texture(heightMap, initialUV + vec2(-normalOffset, 0.0)).r;
+    float heightR = texture(heightMap, initialUV + vec2(normalOffset, 0.0)).r;
+    float heightD = texture(heightMap, initialUV + vec2(0.0, -normalOffset)).r;
+    float heightU = texture(heightMap, initialUV + vec2(0.0, normalOffset)).r;
 
     // Compute tangent vectors
     // Compute tangent vectors with height affecting the Y axis
@@ -43,6 +43,6 @@ void main() {
     normalVec = normalize(cross(dz, dx));
 
     worldSpacePosition = position;
-    worldSpacePosition.y = height;
+    worldSpacePosition.y = height * heightScale;
     gl_Position = viewProjection * vec4(worldSpacePosition, 1);
 }

@@ -56,7 +56,6 @@ public class TerrainService implements Loggable {
             var texture = (TextureStreamData) textureService.stream(importerService.getPathToFile(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE), Collections.emptyMap(), Collections.emptyMap());
             STBImage.stbi_image_free(texture.imageBuffer);
 
-            terrainRepository.planeScale = texture.width;
             var mesh = TerrainGenerationUtil.computeMesh(texture.width);
             meshImporter.persist(mesh);
 

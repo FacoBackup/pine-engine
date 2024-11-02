@@ -34,14 +34,9 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @InspectableField(label = "Height map")
     public String heightMapTexture;
 
-    @InspectableField(label = "Normal Offset", min = 0)
-    public float normalOffset = .01f;
 
     @InspectableField(label = "Height Scale", min = 1)
     public float heightScale = 1;
-
-    @InspectableField(label = "Plane Scale", min = 1)
-    public int planeScale = 1;
 
     @InspectableField(label = "Casts shadows")
     public boolean castsShadows = true;

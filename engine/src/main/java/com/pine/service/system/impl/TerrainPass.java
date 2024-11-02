@@ -24,7 +24,6 @@ public class TerrainPass extends AbstractGBufferPass {
     private UniformDTO planeSize;
     private UniformDTO heightMapU;
     private UniformDTO heightScale;
-    private UniformDTO normalOffset;
 
     @Override
     public void onInitialize() {
@@ -33,7 +32,6 @@ public class TerrainPass extends AbstractGBufferPass {
         planeSize = addUniformDeclaration("planeSize");
         heightMapU = addUniformDeclaration("heightMap");
         heightScale = addUniformDeclaration("heightScale");
-        normalOffset = addUniformDeclaration("normalOffset");
     }
 
     @Override
@@ -63,9 +61,8 @@ public class TerrainPass extends AbstractGBufferPass {
         prepareCall();
 
         shaderService.bindSampler2d(heightMap, heightMapU);
-        shaderService.bindInt(terrainRepository.planeScale, planeSize);
+        shaderService.bindInt(heightMap.width, planeSize);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
-        shaderService.bindFloat(terrainRepository.normalOffset, normalOffset);
 
         meshService.bind(mesh);
         meshService.setInstanceCount(0);
