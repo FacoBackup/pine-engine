@@ -3,16 +3,16 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.injection.PInject;
 import com.pine.panels.AbstractEntityViewPanel;
-import com.pine.repository.CameraRepository;
-import com.pine.repository.EditorRepository;
-import com.pine.repository.GizmoType;
-import com.pine.repository.RuntimeRepository;
+import com.pine.repository.*;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
 import com.pine.service.camera.Camera;
 import com.pine.service.camera.CameraFirstPersonService;
 import com.pine.service.camera.CameraThirdPersonService;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
@@ -56,6 +56,12 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     @PInject
     public ViewportPickingService viewportPickingService;
 
+    @PInject
+    public StreamingService streamingService;
+
+    @PInject
+    public TerrainRepository terrainRepository;
+
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     private GizmoPanel gizmo;
@@ -71,6 +77,15 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
     @Override
     public void render() {
+        var targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
+        if(targetTexture != null){
+            ImGui.setNextWindowSize(150, 150);
+            if(ImGui.begin("image##v")){
+                ImGui.image(targetTexture.texture, ImGui.getWindowSize(), INV_Y, INV_X);
+            }
+            ImGui.end();
+        }
+
         updateCamera();
         hotKeys();
         tick();
@@ -118,7 +133,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
                 if (io.getMouseWheel() != 0 && ImGui.isWindowHovered()) {
                     cameraThirdPersonService.zoom(camera, io.getMouseWheel());
                 }
-                if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
+                if (io.getMouseDown(ImGuiMouseButton.Right)) {
                     cameraThirdPersonService.isChangingCenter = true;
                     cameraThirdPersonService.changeCenter(camera, isFirstMovement);
                 } else {
@@ -128,7 +143,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         } else {
             cameraService = cameraFirstPersonService;
         }
-        if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && camera.orbitalMode))) {
+        if (focused && ((ImGui.isMouseDown(ImGuiMouseButton.Right) && !camera.orbitalMode) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && camera.orbitalMode))) {
             cameraService.handleInput(camera, isFirstMovement);
             isFirstMovement = false;
         } else {

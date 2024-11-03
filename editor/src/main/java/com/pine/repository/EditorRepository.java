@@ -83,6 +83,13 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public final LinkedList<String> copied = new LinkedList<>();
     public final Map<String, Camera> viewportCamera = new HashMap<>();
 
+    public BrushMode brushMode = BrushMode.ADD;
+    public float brushRadius = 1;
+    public float brushDensity = .5f;
+    public PaintingType paintingType = PaintingType.TERRAIN;
+    public final Map<String, Boolean> selectedFoliage = new HashMap<>();
+    public transient Integer targetTexture;
+
     @Override
     public String getIcon() {
         return Icons.settings;

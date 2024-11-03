@@ -94,7 +94,7 @@ public class FrameBufferObject implements IResource {
     }
 
     public FrameBufferObject addSampler() {
-        addSampler(this.width, this.height, 0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
+        addSampler(this.width, this.height, 0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false);
         return this;
     }
 
@@ -103,16 +103,15 @@ public class FrameBufferObject implements IResource {
         return this;
     }
 
-    public FrameBufferObject addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    private FrameBufferObject addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         use();
-        int texture = GL46.glGenTextures();
-        GL46.glBindTexture(GL46.GL_TEXTURE_2D, texture);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, repeat ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, repeat ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        int texture = getTexture(w, h, precision, format, type, linear, repeat);
+        registerTexture(attachment, precision, texture);
+        return this;
+    }
 
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, precision, w, h, 0, format, type, (FloatBuffer) null);
+    public void registerTexture(int attachment, int precision, int texture) {
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, texture);
         GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0 + attachment, GL46.GL_TEXTURE_2D, texture, 0);
 
         samplers.add(texture);
@@ -122,8 +121,18 @@ public class FrameBufferObject implements IResource {
         }
         attachments.add(GL46.GL_COLOR_ATTACHMENT0 + attachment);
         GL46.glDrawBuffers(attachments.stream().mapToInt(i -> i).toArray());
+    }
 
-        return this;
+    private static int getTexture(int w, int h, int precision, int format, int type, boolean linear, boolean repeat) {
+        int texture = GL46.glGenTextures();
+        GL46.glBindTexture(GL46.GL_TEXTURE_2D, texture);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, linear ? GL46.GL_LINEAR : GL46.GL_NEAREST);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, repeat ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, repeat ? GL46.GL_REPEAT : GL46.GL_CLAMP_TO_EDGE);
+
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, precision, w, h, 0, format, type, (FloatBuffer) null);
+        return texture;
     }
 
     public void use() {
@@ -160,5 +169,9 @@ public class FrameBufferObject implements IResource {
 
     public void bindForCompute() {
         GL46.glBindImageTexture(0, mainSampler, 0, false, 0, GL46.GL_WRITE_ONLY, mainSamplerPrecision);
+    }
+
+    public void bindForCompute(int unit) {
+        GL46.glBindImageTexture(unit, mainSampler, 0, false, 0, GL46.GL_WRITE_ONLY, mainSamplerPrecision);
     }
 }

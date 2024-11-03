@@ -1,10 +1,13 @@
 layout (local_size_x = 4, local_size_y = 4) in;
 
-layout (binding = 0) uniform writeonly image2D outputImage;
-layout (binding = 1) uniform sampler2D sceneDepth;
-layout (binding = 2) uniform sampler2D gBufferNormal;
+layout (rgba8, binding = 0) uniform image2D outputImage;
+layout (rgba8, binding = 1) uniform image2D targetImage;
+layout (binding = 2) uniform sampler2D sceneDepth;
+layout (binding = 3) uniform sampler2D gBufferNormal;
 
-uniform vec2 xy;
+uniform vec3 xyDown;
+uniform vec2 targetImageSize;
+uniform vec2 radiusDensity;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
 const vec3 UP_VEC = vec3(0.0, 1.0, 0.0);// Default dome "up" direction
@@ -43,7 +46,7 @@ bool renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius, 
     float t = 0.0;
     for (int i = 0; i < maxSteps; i++) {
         vec3 p = rayOrigin + t * rayDir;
-        float d = domeSDF(p,  domeCenter, domeRadius, rotationMatrix);
+        float d = domeSDF(p, domeCenter, domeRadius, rotationMatrix);
         if (d < minDist) {
             return true;
         }
@@ -57,8 +60,9 @@ void main() {
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
 
-    vec2 textureCoord = (xy + viewportOrigin) / viewportSize;
-    float depthData = getLogDepth(textureCoord);
+    vec2 textureCoord = (xyDown.xy + viewportOrigin) / viewportSize;
+    vec4 depthIdUVData = texture(sceneDepth, textureCoord);
+    float depthData = getLogDepthFromSampler(depthIdUVData);
     if (depthData == 1.){
         return;
     }
@@ -67,7 +71,20 @@ void main() {
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
-    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, 1, getRotationFromNormal(normal))){
-        imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), vec4(1, 0, 1, .5));
+    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, radiusDensity.x, getRotationFromNormal(normal))){
+        vec4 srcColor = vec4(1, .5, .5, radiusDensity.y);
+        ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
+        vec4 dstColor = vec4(imageLoad(outputImage, pixelPos).rgb, 1);
+
+        vec3 blendedRGB = srcColor.rgb * srcColor.a + dstColor.rgb * (1.0 - srcColor.a);
+        float blendedAlpha = srcColor.a + dstColor.a * (1.0 - srcColor.a);
+        vec4 outColor = vec4(blendedRGB, blendedAlpha);
+
+        imageStore(outputImage, pixelPos, outColor);
+
+        if(xyDown.b == 1.){
+            ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
+            imageStore(targetImage, uvScaled, vec4(1, 0, 0, 1));
+        }
     }
 }

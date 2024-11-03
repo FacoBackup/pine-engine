@@ -2,6 +2,7 @@ package com.pine.service.streaming.ref;
 
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.streaming.data.TextureStreamData;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL46C;
@@ -11,6 +12,8 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int texture;
     public int width;
     public int height;
+    public boolean isFramebuffer;
+    public FrameBufferObject frameBuffer;
 
     public TextureResourceRef(String id) {
         super(id);
@@ -43,6 +46,18 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
 
     @Override
     protected void disposeInternal() {
-        GL46.glDeleteTextures(texture);
+        if (frameBuffer != null) {
+            frameBuffer.dispose();
+        }else{
+            GL46.glDeleteTextures(texture);
+        }
+    }
+
+    public void genFramebuffer() {
+        if(!isLoaded()){
+            return;
+        }
+        frameBuffer = new FrameBufferObject(width, height);
+        frameBuffer.registerTexture(0, GL46.GL_RGBA8, texture);
     }
 }
