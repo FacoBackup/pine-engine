@@ -1,7 +1,8 @@
 layout (local_size_x = 1, local_size_y = 1) in;
 
-uniform sampler2D instancingMask;
-uniform sampler2D heightMap;
+layout(binding = 0) uniform sampler2D instancingMask;
+layout(binding = 1) uniform sampler2D heightMap;
+layout (binding = 2, offset = 0) uniform atomic_uint globalIndex;
 
 layout(std430, binding = 3) buffer MetadataBuffer {
     int metadata[];
@@ -37,17 +38,18 @@ mat4 createTransformationMatrix(mat3 rotation, vec3 translation) {
 
 void main() {
     vec2 size = textureSize(instancingMask, 0);
-    vec2 texCoords = vec2(gl_GlobalInvocationID.xy)/size;
+    vec2 texCoords = vec2(gl_GlobalInvocationID.xy / size);
     vec3 worldSpaceCoord = heightMapToWorldSpace(texCoords, size.x);
     // TODO - FRUSTUM CULLING BASED ON WORLD COORD
 
-    if (length(texture(instancingMask, texCoords).rgb) > 0){
+    if (texture(instancingMask, texCoords).r > 0){
         float localHeight = texture(heightMap, texCoords).r;
         worldSpaceCoord.y = localHeight * heightScale;
 
         vec3 normalVec = normalize(getNormalFromHeightMap(localHeight, heightMap, texCoords));
         mat3 rotation = getRotationFromNormal(normalVec);
-        transformations[metadata[0]] = createTransformationMatrix(rotation, worldSpaceCoord);
+        uint index = atomicCounterIncrement(globalIndex);
+        transformations[index] = createTransformationMatrix(rotation, worldSpaceCoord);
         atomicAdd(metadata[0], 1);
     }
 }

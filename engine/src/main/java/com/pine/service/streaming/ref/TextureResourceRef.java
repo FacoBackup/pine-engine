@@ -12,7 +12,6 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int texture;
     public int width;
     public int height;
-    public boolean isFramebuffer;
     public FrameBufferObject frameBuffer;
 
     public TextureResourceRef(String id) {
@@ -34,7 +33,7 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
 
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA16, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
 
         GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
         GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
@@ -58,6 +57,6 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
             return;
         }
         frameBuffer = new FrameBufferObject(width, height);
-        frameBuffer.registerTexture(0, GL46.GL_RGBA8, texture);
+        frameBuffer.registerTexture(0, GL46.GL_RGBA16, texture);
     }
 }

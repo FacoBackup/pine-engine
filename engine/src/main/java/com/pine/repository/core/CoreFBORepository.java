@@ -13,6 +13,7 @@ import java.util.List;
 
 @PBean
 public class CoreFBORepository implements CoreRepository {
+    public static final int[] ZERO = new int[]{0};
     @PInject
     public Engine engine;
     @PInject
@@ -31,6 +32,7 @@ public class CoreFBORepository implements CoreRepository {
     public final List<FrameBufferObject> all = new ArrayList<>();
     public FrameBufferObject brdfFBO;
 
+    public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
     public int gBufferNormalSampler;
     public int gBufferRMAOSampler;
@@ -45,6 +47,11 @@ public class CoreFBORepository implements CoreRepository {
 
     @Override
     public void initialize() {
+        atomicCounterBuffer = GL46.glGenBuffers();
+        GL46.glBindBuffer(GL46.GL_ATOMIC_COUNTER_BUFFER, atomicCounterBuffer);
+        GL46.glBufferData(GL46.GL_ATOMIC_COUNTER_BUFFER, Integer.BYTES, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, atomicCounterBuffer);
+
 
         final int displayW = runtimeRepository.getDisplayW();
         final int displayH = runtimeRepository.getDisplayH();

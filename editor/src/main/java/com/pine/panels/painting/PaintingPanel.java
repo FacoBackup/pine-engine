@@ -80,7 +80,7 @@ public class PaintingPanel extends AbstractDockPanel {
         brushDensity[0] = editorRepository.brushDensity;
         brushRadius[0] = editorRepository.brushRadius;
 
-        if (ImGui.dragFloat("Brush radius", brushRadius, .1f, .1f, .1f)) {
+        if (ImGui.dragFloat("Brush radius", brushRadius, .1f, 0)) {
             editorRepository.brushRadius = brushRadius[0];
         }
         if (ImGui.dragFloat("Brush density", brushDensity, .001f, 0, 1)) {

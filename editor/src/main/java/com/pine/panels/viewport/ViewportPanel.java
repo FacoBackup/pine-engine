@@ -56,11 +56,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     @PInject
     public ViewportPickingService viewportPickingService;
 
-    @PInject
-    public StreamingService streamingService;
-
-    @PInject
-    public TerrainRepository terrainRepository;
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
@@ -77,15 +72,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
     @Override
     public void render() {
-        var targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
-        if(targetTexture != null){
-            ImGui.setNextWindowSize(150, 150);
-            if(ImGui.begin("image##v")){
-                ImGui.image(targetTexture.texture, ImGui.getWindowSize(), INV_Y, INV_X);
-            }
-            ImGui.end();
-        }
-
         updateCamera();
         hotKeys();
         tick();
@@ -111,8 +97,8 @@ public class ViewportPanel extends AbstractEntityViewPanel {
             ImGui.textColored(GREEN, "Y: " + positionCamera.y);
             ImGui.sameLine();
             ImGui.textColored(BLUE, "Z: " + positionCamera.z);
-            ImGui.end();
         }
+        ImGui.end();
     }
 
     private void updateCamera() {
@@ -163,7 +149,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         repo.rightPressed = ImGui.isKeyDown(ImGuiKey.D);
         repo.upPressed = ImGui.isKeyDown(ImGuiKey.Space);
         repo.downPressed = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
-        repo.mousePressed = ImGui.isMouseDown(ImGuiMouseButton.Left);
+        repo.mousePressed = ImGui.isWindowFocused() && ImGui.isWindowHovered() && ImGui.isMouseDown(ImGuiMouseButton.Left);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = sizeVec.y;

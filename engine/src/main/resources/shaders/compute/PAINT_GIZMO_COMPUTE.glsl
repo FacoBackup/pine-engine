@@ -7,7 +7,7 @@ layout (binding = 3) uniform sampler2D gBufferNormal;
 
 uniform vec3 xyDown;
 uniform vec2 targetImageSize;
-uniform vec2 radiusDensity;
+uniform vec3 radiusDensityMode;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
 const vec3 UP_VEC = vec3(0.0, 1.0, 0.0);// Default dome "up" direction
@@ -25,8 +25,23 @@ vec3 createRay() {
     return normalize(dirWorld);
 }
 
-void main() {
+float hash(float seed) {
+    return fract(sin(seed * 0.1) * 43758.5453);
+}
 
+// Function to return true or false based on the density value
+bool randomBoolean(float density) {
+    // Create a unique seed based on the global invocation ID
+    float uniqueSeed = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * 10000.0; // Modify as needed for uniqueness
+    float randValue = hash(uniqueSeed); // Generate random value
+
+    // Scale the random value to match the density
+    float scaledValue = pow(randValue, 1.0 / (1.0 - density)); // Exponential scaling
+
+    return scaledValue < density; // Return true if the scaled value is less than density
+}
+
+void main() {
     // RECONSTRUCT POSITION BASED ON MOUSE POSITION
     vec2 textureCoord = (xyDown.xy + viewportOrigin) / viewportSize;
     float depthData = getLogDepth(textureCoord);
@@ -51,14 +66,14 @@ void main() {
 
     // COMPARE THE DISTANCE BETWEEN THE PIXEL WORLD POSITION AND THE MOUSE WORLD POSITION
     float distToCenter = length(worldSpacePosition - worldSpacePositionMouse);
-    if (distToCenter > radiusDensity.r) {
+    if (distToCenter > radiusDensityMode.r) {
         return;
     }
 
     vec3 rayOrigin = placement.xyz;
     vec3 rayDirection = createRay();
     vec3 normal = texture(gBufferNormal, textureCoord).rgb;
-    vec4 srcColor = vec4(1, .5, .5, radiusDensity.y);
+    vec4 srcColor = vec4(1, .5, .5, radiusDensityMode.y);
     ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
     vec4 dstColor = vec4(imageLoad(outputImage, pixelPos).rgb, 1);
 
@@ -68,7 +83,9 @@ void main() {
 
     imageStore(outputImage, pixelPos, outColor);
     if (xyDown.b == 1.){
-        ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
-        imageStore(targetImage, uvScaled, vec4(1, 0, 0, 1));
+        if(radiusDensityMode.y == 1 || randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
+            ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
+            imageStore(targetImage, uvScaled, radiusDensityMode.b == 0 ? vec4(0) : vec4(1, 0, 0, 1));
+        }
     }
 }

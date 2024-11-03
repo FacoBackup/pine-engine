@@ -18,15 +18,11 @@ public class InstanceCullingPass extends AbstractPass {
     private TextureResourceRef instanceMaskMap;
     private UniformDTO planeSize;
     private UniformDTO heightScale;
-    private UniformDTO instancingMaskUniform;
-    private UniformDTO heightMapUniform;
 
     @Override
     public void onInitialize() {
         planeSize = addUniformDeclaration("planeSize");
         heightScale = addUniformDeclaration("heightScale");
-        instancingMaskUniform = addUniformDeclaration("instancingMask");
-        heightMapUniform = addUniformDeclaration("heightMap");
     }
 
     @Override
@@ -43,26 +39,31 @@ public class InstanceCullingPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
-        ssboRepository.instancingMetadataSSBO.setBindingPoint(3);
-        ssboRepository.instancingTransformationSSBO.setBindingPoint(4);
-
         ssboRepository.instancingMetadata.put(0, 0);
         ssboService.updateBuffer(ssboRepository.instancingMetadataSSBO, ssboRepository.instancingMetadata, 0);
+
+        ssboRepository.instancingMetadataSSBO.setBindingPoint(3);
+        ssboRepository.instancingTransformationSSBO.setBindingPoint(4);
 
         ssboService.bind(ssboRepository.instancingMetadataSSBO);
         ssboService.bind(ssboRepository.instancingTransformationSSBO);
 
+        GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 2, fboRepository.atomicCounterBuffer);
+        GL46.glBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, CoreFBORepository.ZERO);
+
         COMPUTE_RUNTIME_DATA.groupX = (instanceMaskMap.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (instanceMaskMap.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
-        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT;
 
-        shaderService.bindSampler2d(instanceMaskMap, instancingMaskUniform);
-        shaderService.bindSampler2d(heightMap, heightMapUniform);
+        shaderService.bindSampler2dDirect(instanceMaskMap, 0);
+        shaderService.bindSampler2dDirect(heightMap, 1);
         shaderService.bindInt(heightMap.width, planeSize);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
         shaderService.dispatch(COMPUTE_RUNTIME_DATA);
+        shaderService.unbind();
+        ssboService.unbind();
     }
 
     @Override

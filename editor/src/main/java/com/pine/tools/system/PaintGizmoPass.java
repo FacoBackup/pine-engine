@@ -1,6 +1,7 @@
 package com.pine.tools.system;
 
 import com.pine.injection.PInject;
+import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.GizmoType;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -33,7 +34,7 @@ public class PaintGizmoPass extends AbstractPass {
     private UniformDTO viewportOrigin;
     private UniformDTO radiusDensityUniform;
     private final Vector3f xyDown = new Vector3f();
-    private final Vector2f radiusDensity = new Vector2f();
+    private final Vector3f radiusDensityMode = new Vector3f();
     private final Vector2f viewportO = new Vector2f();
     private final Vector2f viewport = new Vector2f();
     private final Vector2f targetImageSize = new Vector2f();
@@ -43,7 +44,7 @@ public class PaintGizmoPass extends AbstractPass {
     public void onInitialize() {
         targetImageSizeUniform = addUniformDeclaration("targetImageSize");
         xyDownUniform = addUniformDeclaration("xyDown");
-        radiusDensityUniform = addUniformDeclaration("radiusDensity");
+        radiusDensityUniform = addUniformDeclaration("radiusDensityMode");
         viewportOrigin = addUniformDeclaration("viewportOrigin");
         viewportSize = addUniformDeclaration("viewportSize");
     }
@@ -83,8 +84,9 @@ public class PaintGizmoPass extends AbstractPass {
 
         targetTexture.frameBuffer.bindForCompute(1);
 
-        radiusDensity.x = editorRepository.brushRadius;
-        radiusDensity.y = editorRepository.brushDensity;
+        radiusDensityMode.x = editorRepository.brushRadius;
+        radiusDensityMode.y = editorRepository.brushDensity;
+        radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : 0;
 
         xyDown.x = runtimeRepository.mouseX;
         xyDown.y = runtimeRepository.viewportH - runtimeRepository.mouseY;
@@ -99,7 +101,7 @@ public class PaintGizmoPass extends AbstractPass {
         targetImageSize.x = targetTexture.width;
         targetImageSize.y = targetTexture.height;
 
-        shaderService.bindVec2(radiusDensity, radiusDensityUniform);
+        shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
         shaderService.bindVec3(xyDown, xyDownUniform);
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(targetImageSize, targetImageSizeUniform);
