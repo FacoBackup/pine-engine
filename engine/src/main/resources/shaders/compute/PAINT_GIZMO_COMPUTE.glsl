@@ -25,66 +25,50 @@ vec3 createRay() {
     return normalize(dirWorld);
 }
 
-float domeSDF(vec3 pos, vec3 domeCenter, float domeRadius, mat3 rotationMatrix) {
-    pos -= domeCenter;
-
-    // Rotate the position
-    pos = rotationMatrix * pos;
-
-    const float t = 0.01;
-    const float h = 0;
-    vec2 q = vec2(length(pos.xz), -pos.y);
-    float w = sqrt(domeRadius * domeRadius);
-    return ((h * q.x < w * q.y) ? length(q - vec2(w, h)) : abs(length(q) - domeRadius)) - t;
-}
-
-bool renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius, mat3 rotationMatrix) {
-    const int maxSteps = 100;
-    const float minDist = 0.001;
-    const float maxDist = 100.0;
-
-    float t = 0.0;
-    for (int i = 0; i < maxSteps; i++) {
-        vec3 p = rayOrigin + t * rayDir;
-        float d = domeSDF(p, domeCenter, domeRadius, rotationMatrix);
-        if (d < minDist) {
-            return true;
-        }
-        if (t > maxDist) break;
-        t += d;
-    }
-    return false;
-}
-
 void main() {
-    vec3 rayOrigin = placement.xyz;
-    vec3 rayDirection = createRay();
 
+    // RECONSTRUCT POSITION BASED ON MOUSE POSITION
     vec2 textureCoord = (xyDown.xy + viewportOrigin) / viewportSize;
-    vec4 depthIdUVData = texture(sceneDepth, textureCoord);
-    float depthData = getLogDepthFromSampler(depthIdUVData);
+    float depthData = getLogDepth(textureCoord);
     if (depthData == 1.){
         return;
     }
+    vec3 viewSpacePositionMouse = viewSpacePositionFromDepth(depthData, textureCoord);
+    vec3 worldSpacePositionMouse = vec3(invViewMatrix * vec4(viewSpacePositionMouse, 1.));
 
-    vec3 normal = normalize(texture(gBufferNormal, textureCoord).rgb);
+
+    // RECONSTRUCT POSITION BASED ON FRAGMENT POSITION
+    textureCoord = vec2(gl_GlobalInvocationID.xy / bufferResolution);
+    vec4 depthIdUVData = texture(sceneDepth, textureCoord);
+    depthData = getLogDepthFromSampler(depthIdUVData);
+    if (depthData == 1.){
+        return;
+    }
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
-    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, radiusDensity.x, getRotationFromNormal(normal))){
-        vec4 srcColor = vec4(1, .5, .5, radiusDensity.y);
-        ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
-        vec4 dstColor = vec4(imageLoad(outputImage, pixelPos).rgb, 1);
+    worldSpacePositionMouse.y = worldSpacePosition.y = 0;
 
-        vec3 blendedRGB = srcColor.rgb * srcColor.a + dstColor.rgb * (1.0 - srcColor.a);
-        float blendedAlpha = srcColor.a + dstColor.a * (1.0 - srcColor.a);
-        vec4 outColor = vec4(blendedRGB, blendedAlpha);
+    // COMPARE THE DISTANCE BETWEEN THE PIXEL WORLD POSITION AND THE MOUSE WORLD POSITION
+    float distToCenter = length(worldSpacePosition - worldSpacePositionMouse);
+    if (distToCenter > radiusDensity.r) {
+        return;
+    }
 
-        imageStore(outputImage, pixelPos, outColor);
+    vec3 rayOrigin = placement.xyz;
+    vec3 rayDirection = createRay();
+    vec3 normal = texture(gBufferNormal, textureCoord).rgb;
+    vec4 srcColor = vec4(1, .5, .5, radiusDensity.y);
+    ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
+    vec4 dstColor = vec4(imageLoad(outputImage, pixelPos).rgb, 1);
 
-        if(xyDown.b == 1.){
-            ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
-            imageStore(targetImage, uvScaled, vec4(1, 0, 0, 1));
-        }
+    vec3 blendedRGB = srcColor.rgb * srcColor.a + dstColor.rgb * (1.0 - srcColor.a);
+    float blendedAlpha = srcColor.a + dstColor.a * (1.0 - srcColor.a);
+    vec4 outColor = vec4(blendedRGB, blendedAlpha);
+
+    imageStore(outputImage, pixelPos, outColor);
+    if (xyDown.b == 1.){
+        ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
+        imageStore(targetImage, uvScaled, vec4(1, 0, 0, 1));
     }
 }
