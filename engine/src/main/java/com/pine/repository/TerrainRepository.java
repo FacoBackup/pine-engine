@@ -47,7 +47,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @InspectableField(label = "Casts shadows")
     public boolean castsShadows = true;
 
-    public final Map<String, FoliageInstance> selectedFoliage = new HashMap<>();
+    public final Map<String, FoliageInstance> foliage = new HashMap<>();
 
 
     @Override

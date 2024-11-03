@@ -46,7 +46,7 @@ public class CoreShaderRepository implements CoreRepository {
         spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
         gBufferShader = shaderService.create("uber/G_BUFFER.vert", "uber/G_BUFFER.frag");
         gBufferTerrainShader = shaderService.create("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag");
-        gBufferInstanceShader = shaderService.create("uber/G_BUFFER_INSTANCING.vert", "uber/G_BUFFER.frag");
+        gBufferInstanceShader = shaderService.create("uber/G_BUFFER_FOLIAGE.vert", "uber/G_BUFFER.frag");
         foliageCullingShader = shaderService.create("compute/FOLIAGE_CULLING_COMPUTE.glsl");
         toScreenShader = shaderService.create("QUAD.vert", "TO_SCREEN.frag");
         downscaleShader = shaderService.create("QUAD.vert", "BILINEAR_DOWNSCALE.glsl");

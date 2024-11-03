@@ -21,23 +21,18 @@ public class CoreSSBORepository implements CoreRepository {
 
     public final FloatBuffer lightSSBOState = MemoryUtil.memAllocFloat(LIGHT_BUFFER_SIZE);
     public final FloatBuffer transformationSSBOState = MemoryUtil.memAllocFloat(ENTITY_BUFFER_SIZE);
-    public final IntBuffer instancingMetadata = MemoryUtil.memAllocInt(3);
 
     public ShaderStorageBufferObject lightMetadataSSBO;
     public ShaderStorageBufferObject transformationSSBO;
-    public ShaderStorageBufferObject instancingMetadataSSBO;
-    public ShaderStorageBufferObject instancingTransformationSSBO;
+    public ShaderStorageBufferObject foliageTransformationSSBO;
 
 
     @Override
     public void initialize() {
-        instancingTransformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
+        foliageTransformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
                 13,
                 (long) MAX_INSTANCING * GLSLType.FLOAT.getSize() * 16
         ));
-
-        instancingMetadata.put(0, 0);
-        instancingMetadataSSBO = new ShaderStorageBufferObject(new SSBOCreationData(instancingMetadata));
 
         transformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
                 10,

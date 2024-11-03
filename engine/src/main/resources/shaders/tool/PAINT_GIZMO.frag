@@ -1,46 +1,38 @@
-layout (local_size_x = 4, local_size_y = 4) in;
+in vec2 texCoords;
 
-layout (rgba8, binding = 0) uniform image2D outputImage;
-layout (rgba8, binding = 1) writeonly uniform image2D targetImage;
-layout (binding = 2) uniform sampler2D sceneDepth;
+layout (binding = 0) uniform sampler2D sceneDepth;
 
-uniform vec3 xyMouse;
-uniform vec3 colorForPainting;
-uniform vec2 targetImageSize;
-uniform vec3 radiusDensityMode;
+uniform bool hasSelection;
+uniform vec3 color;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
+uniform vec3 radiusDensityMode;
+uniform vec3 xyMouse;
+
 
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 #include "../util/UTIL.glsl"
 
-float hash(float seed) {
-    return fract(sin(seed * 0.1) * 43758.5453);
-}
-bool randomBoolean(float density) {
-    float uniqueSeed = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * 10000.0;
-    float randValue = hash(uniqueSeed);
-    float scaledValue = pow(randValue, 1.0 / (1.0 - density));
-    return scaledValue < density;
-}
 
-void main() {
+out vec4 finalColor;
+
+void main(){
     // RECONSTRUCT POSITION BASED ON MOUSE POSITION
     vec2 textureCoord = (xyMouse.xy + viewportOrigin) / viewportSize;
     float depthData = getLogDepth(textureCoord);
     if (depthData == 1.){
-        return;
+        discard;
     }
     vec3 viewSpacePositionMouse = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePositionMouse = vec3(invViewMatrix * vec4(viewSpacePositionMouse, 1.));
 
 
     // RECONSTRUCT POSITION BASED ON FRAGMENT POSITION
-    textureCoord = vec2(gl_GlobalInvocationID.xy / bufferResolution);
+    textureCoord = texCoords;
     vec4 depthIdUVData = texture(sceneDepth, textureCoord);
     depthData = getLogDepthFromSampler(depthIdUVData);
     if (depthData == 1.){
-        return;
+        discard;
     }
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
@@ -50,11 +42,8 @@ void main() {
     // COMPARE THE DISTANCE BETWEEN THE PIXEL WORLD POSITION AND THE MOUSE WORLD POSITION
     float distToCenter = length(worldSpacePosition - worldSpacePositionMouse);
     if (distToCenter > radiusDensityMode.r) {
-        return;
+        discard;
     }
 
-    if (radiusDensityMode.y == 1 || randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
-        ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
-        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(0, 0, 0, 1) : vec4(colorForPainting, 1));
-    }
+    finalColor = vec4(hasSelection ? vec3(0,.75, .1) : vec3(.75, .15, .15), radiusDensityMode.y);
 }

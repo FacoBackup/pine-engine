@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL46;
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class PaintGizmoPass extends AbstractPass {
+    private static final Vector3f EMPTY = new Vector3f(-1);
     private static final int LOCAL_SIZE_X = 4;
     private static final int LOCAL_SIZE_Y = 4;
 
@@ -27,12 +28,13 @@ public class PaintGizmoPass extends AbstractPass {
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
-    private UniformDTO xyDownUniform;
+    private UniformDTO xyMouseUniform;
     private UniformDTO targetImageSizeUniform;
     private UniformDTO viewportSize;
     private UniformDTO viewportOrigin;
     private UniformDTO radiusDensityUniform;
-    private final Vector3f xyDown = new Vector3f();
+    private UniformDTO colorForPainting;
+    private final Vector3f xyMouse = new Vector3f();
     private final Vector3f radiusDensityMode = new Vector3f();
     private final Vector2f viewportO = new Vector2f();
     private final Vector2f viewport = new Vector2f();
@@ -42,10 +44,11 @@ public class PaintGizmoPass extends AbstractPass {
     @Override
     public void onInitialize() {
         targetImageSizeUniform = addUniformDeclaration("targetImageSize");
-        xyDownUniform = addUniformDeclaration("xyDown");
+        xyMouseUniform = addUniformDeclaration("xyMouse");
         radiusDensityUniform = addUniformDeclaration("radiusDensityMode");
         viewportOrigin = addUniformDeclaration("viewportOrigin");
         viewportSize = addUniformDeclaration("viewportSize");
+        colorForPainting = addUniformDeclaration("colorForPainting");
     }
 
     @Override
@@ -55,7 +58,7 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        boolean isRenderable = editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        boolean isRenderable = editorRepository.foliageForPainting != null && runtimeRepository.mousePressed && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
         if (isRenderable) {
             switch (editorRepository.paintingType) {
                 case FOLIAGE: {
@@ -75,18 +78,15 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
-        FrameBufferObject fbo = fboRepository.postProcessingBuffer;
-        fbo.bindForReadWrite();
-
+        FrameBufferObject fbo = fboRepository.gBuffer;
         targetTexture.bindForWriting(1);
 
         radiusDensityMode.x = editorRepository.brushRadius;
         radiusDensityMode.y = editorRepository.brushDensity;
         radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : -1;
 
-        xyDown.x = runtimeRepository.mouseX;
-        xyDown.y = runtimeRepository.viewportH - runtimeRepository.mouseY;
-        xyDown.z = runtimeRepository.mousePressed ? 1 : 0;
+        xyMouse.x = runtimeRepository.mouseX;
+        xyMouse.y = runtimeRepository.viewportH - runtimeRepository.mouseY;
 
         viewport.x = runtimeRepository.viewportW;
         viewport.y = runtimeRepository.viewportH;
@@ -94,11 +94,13 @@ public class PaintGizmoPass extends AbstractPass {
         viewportO.x = runtimeRepository.viewportX;
         viewportO.y = runtimeRepository.viewportY;
 
-        targetImageSize.x = targetTexture.width * .5f; // DONT KNOW WHY THIS WORKS YET
+        targetImageSize.x = targetTexture.width;
         targetImageSize.y = targetTexture.height;
 
+        shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
+
         shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
-        shaderService.bindVec3(xyDown, xyDownUniform);
+        shaderService.bindVec3(xyMouse, xyMouseUniform);
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(targetImageSize, targetImageSizeUniform);
         shaderService.bindVec2(viewportO, viewportOrigin);
