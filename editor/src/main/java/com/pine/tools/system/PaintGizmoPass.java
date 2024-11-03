@@ -14,7 +14,6 @@ import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
@@ -68,9 +67,6 @@ public class PaintGizmoPass extends AbstractPass {
                     break;
                 }
             }
-            if (targetTexture != null && targetTexture.frameBuffer == null) {
-                targetTexture.genFramebuffer();
-            }
         } else {
             targetTexture = null;
         }
@@ -80,13 +76,13 @@ public class PaintGizmoPass extends AbstractPass {
     @Override
     protected void renderInternal() {
         FrameBufferObject fbo = fboRepository.postProcessingBuffer;
-        fbo.bindForCompute(0);
+        fbo.bindForReadWrite();
 
-        targetTexture.frameBuffer.bindForCompute(1);
+        targetTexture.bindForWriting(1);
 
         radiusDensityMode.x = editorRepository.brushRadius;
         radiusDensityMode.y = editorRepository.brushDensity;
-        radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : 0;
+        radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : -1;
 
         xyDown.x = runtimeRepository.mouseX;
         xyDown.y = runtimeRepository.viewportH - runtimeRepository.mouseY;
@@ -98,7 +94,7 @@ public class PaintGizmoPass extends AbstractPass {
         viewportO.x = runtimeRepository.viewportX;
         viewportO.y = runtimeRepository.viewportY;
 
-        targetImageSize.x = targetTexture.width;
+        targetImageSize.x = targetTexture.width * .5f; // DONT KNOW WHY THIS WORKS YET
         targetImageSize.y = targetTexture.height;
 
         shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
@@ -106,13 +102,13 @@ public class PaintGizmoPass extends AbstractPass {
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(targetImageSize, targetImageSizeUniform);
         shaderService.bindVec2(viewportO, viewportOrigin);
+
         shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 2);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferNormalSampler, 3);
 
         COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (fbo.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
-        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT | GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 
         shaderService.dispatch(COMPUTE_RUNTIME_DATA);
     }

@@ -73,7 +73,7 @@ public class MeshletPass extends AbstractPass implements Loggable {
     @Override
     protected void renderInternal() {
 
-        fboRepository.postProcessingBuffer.bindForCompute();
+        fboRepository.postProcessingBuffer.bindForWriting();
 
         COMPUTE_RUNTIME_DATA.groupX = triangleCount;//(fboRepository.postProcessingBuffer.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = 1;//(fboRepository.postProcessingBuffer.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;

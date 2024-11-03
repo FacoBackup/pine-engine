@@ -35,6 +35,8 @@ public class CoreSSBORepository implements CoreRepository {
                 13,
                 (long) MAX_INSTANCING * GLSLType.FLOAT.getSize() * 16
         ));
+
+        instancingMetadata.put(0, 0);
         instancingMetadataSSBO = new ShaderStorageBufferObject(new SSBOCreationData(instancingMetadata));
 
         transformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(

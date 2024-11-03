@@ -47,16 +47,16 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     protected void disposeInternal() {
         if (frameBuffer != null) {
             frameBuffer.dispose();
-        }else{
+        } else {
             GL46.glDeleteTextures(texture);
         }
     }
 
-    public void genFramebuffer() {
-        if(!isLoaded()){
-            return;
-        }
-        frameBuffer = new FrameBufferObject(width, height);
-        frameBuffer.registerTexture(0, GL46.GL_RGBA16, texture);
+    public void bindForWriting(int unit) {
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16);
+    }
+
+    public void bindForReading(int unit) {
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_ONLY, GL46.GL_RGBA16);
     }
 }

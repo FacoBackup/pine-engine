@@ -10,10 +10,11 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.IntBuffer;
 
-public class InstanceGBufferPass extends AbstractGBufferPass implements Loggable {
+public class FoliageGBufferPass extends AbstractGBufferPass implements Loggable {
     private UniformDTO probeFilteringLevels;
     private UniformDTO debugShadingMode;
     private final IntBuffer instanceCountBuffer = MemoryUtil.memAllocInt(1);
+    private TextureResourceRef instanceMaskMap;
 
     @Override
     public void onInitialize() {
@@ -34,7 +35,7 @@ public class InstanceGBufferPass extends AbstractGBufferPass implements Loggable
     @Override
     protected boolean isRenderable() {
         var heightMap = terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
-        var instanceMaskMap = heightMap != null && terrainRepository.instanceMaskMap != null ? (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE) : null;
+        instanceMaskMap = heightMap != null && terrainRepository.instanceMaskMap != null ? (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE) : null;
         return heightMap != null && instanceMaskMap != null;
     }
 
@@ -48,6 +49,8 @@ public class InstanceGBufferPass extends AbstractGBufferPass implements Loggable
     @Override
     protected void renderInternal() {
         prepareCall();
+
+        instanceMaskMap.lastUse = clockRepository.totalTime;
 
         ssboRepository.instancingTransformationSSBO.setBindingPoint(3);
         ssboService.bind(ssboRepository.instancingTransformationSSBO);

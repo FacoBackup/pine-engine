@@ -11,6 +11,9 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.terrain.TerrainService;
 import com.pine.theme.Icons;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
 
@@ -44,6 +47,9 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @InspectableField(label = "Casts shadows")
     public boolean castsShadows = true;
 
+    public final Map<String, FoliageInstance> selectedFoliage = new HashMap<>();
+
+
     @Override
     public String getTitle() {
         return "Terrain Settings";
@@ -53,4 +59,5 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     public String getIcon() {
         return Icons.terrain;
     }
+
 }

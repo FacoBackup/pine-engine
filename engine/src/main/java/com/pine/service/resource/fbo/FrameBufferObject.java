@@ -167,11 +167,11 @@ public class FrameBufferObject implements IResource {
         }
     }
 
-    public void bindForCompute() {
+    public void bindForWriting() {
         GL46.glBindImageTexture(0, mainSampler, 0, false, 0, GL46.GL_WRITE_ONLY, mainSamplerPrecision);
     }
 
-    public void bindForCompute(int unit) {
-        GL46.glBindImageTexture(unit, mainSampler, 0, false, 0, GL46.GL_WRITE_ONLY, mainSamplerPrecision);
+    public void bindForReadWrite() {
+        GL46.glBindImageTexture(0, mainSampler, 0, false, 0, GL46.GL_READ_WRITE, mainSamplerPrecision);
     }
 }

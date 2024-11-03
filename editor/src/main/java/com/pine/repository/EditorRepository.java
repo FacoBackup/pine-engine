@@ -87,7 +87,6 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public float brushRadius = 1;
     public float brushDensity = .5f;
     public PaintingType paintingType = PaintingType.TERRAIN;
-    public final Map<String, Boolean> selectedFoliage = new HashMap<>();
 
     @Override
     public String getIcon() {

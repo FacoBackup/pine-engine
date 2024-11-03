@@ -1,44 +1,26 @@
 layout (local_size_x = 4, local_size_y = 4) in;
 
 layout (rgba8, binding = 0) uniform image2D outputImage;
-layout (rgba8, binding = 1) uniform image2D targetImage;
+layout (rgba8, binding = 1) writeonly uniform image2D targetImage;
 layout (binding = 2) uniform sampler2D sceneDepth;
-layout (binding = 3) uniform sampler2D gBufferNormal;
 
 uniform vec3 xyDown;
 uniform vec2 targetImageSize;
 uniform vec3 radiusDensityMode;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
-const vec3 UP_VEC = vec3(0.0, 1.0, 0.0);// Default dome "up" direction
 
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 #include "../util/UTIL.glsl"
 
-vec3 createRay() {
-    vec2 pxNDS = (gl_GlobalInvocationID.xy/bufferResolution) * 2. - 1.;
-    vec3 pointNDS = vec3(pxNDS, -1.);
-    vec4 pointNDSH = vec4(pointNDS, 1.0);
-    vec4 dirEye = invProjectionMatrix * pointNDSH;
-    dirEye.w = 0.;
-    vec3 dirWorld = (invViewMatrix * dirEye).xyz;
-    return normalize(dirWorld);
-}
-
 float hash(float seed) {
     return fract(sin(seed * 0.1) * 43758.5453);
 }
-
-// Function to return true or false based on the density value
 bool randomBoolean(float density) {
-    // Create a unique seed based on the global invocation ID
-    float uniqueSeed = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * 10000.0; // Modify as needed for uniqueness
-    float randValue = hash(uniqueSeed); // Generate random value
-
-    // Scale the random value to match the density
-    float scaledValue = pow(randValue, 1.0 / (1.0 - density)); // Exponential scaling
-
-    return scaledValue < density; // Return true if the scaled value is less than density
+    float uniqueSeed = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * 10000.0;
+    float randValue = hash(uniqueSeed);
+    float scaledValue = pow(randValue, 1.0 / (1.0 - density));
+    return scaledValue < density;
 }
 
 void main() {
@@ -70,9 +52,6 @@ void main() {
         return;
     }
 
-    vec3 rayOrigin = placement.xyz;
-    vec3 rayDirection = createRay();
-    vec3 normal = texture(gBufferNormal, textureCoord).rgb;
     vec4 srcColor = vec4(1, .5, .5, radiusDensityMode.y);
     ivec2 pixelPos = ivec2(gl_GlobalInvocationID.xy);
     vec4 dstColor = vec4(imageLoad(outputImage, pixelPos).rgb, 1);
@@ -85,7 +64,7 @@ void main() {
     if (xyDown.b == 1.){
         if(radiusDensityMode.y == 1 || randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
             ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
-            imageStore(targetImage, uvScaled, radiusDensityMode.b == 0 ? vec4(0) : vec4(1, 0, 0, 1));
+            imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(0, 0, 0, 1) : vec4(1, 0, 0, 1));
         }
     }
 }

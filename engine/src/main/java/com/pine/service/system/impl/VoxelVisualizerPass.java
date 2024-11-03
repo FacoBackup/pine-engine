@@ -1,7 +1,6 @@
 package com.pine.service.system.impl;
 
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
@@ -63,7 +62,7 @@ public class VoxelVisualizerPass extends AbstractPass {
 
     private void bindGlobal() {
         FrameBufferObject fbo = fboRepository.postProcessingBuffer;
-        fbo.bindForCompute();
+        fbo.bindForWriting();
 
         COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (fbo.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
