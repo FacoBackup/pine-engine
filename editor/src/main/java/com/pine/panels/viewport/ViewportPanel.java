@@ -148,6 +148,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         repo.rightPressed = ImGui.isKeyDown(ImGuiKey.D);
         repo.upPressed = ImGui.isKeyDown(ImGuiKey.Space);
         repo.downPressed = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
+        repo.mousePressed = ImGui.isMouseDown(ImGuiMouseButton.Left);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = sizeVec.y;

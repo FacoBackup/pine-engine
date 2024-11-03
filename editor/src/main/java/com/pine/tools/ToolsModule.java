@@ -23,6 +23,7 @@ public class ToolsModule implements EngineExternalModule {
         withTools.add(indexGB, new BackgroundPass());
 
         withTools.add(indexFc, new GridPass());
+        withTools.add(indexFc, new InstanceMaskPaintingPass());
         withTools.add(indexFc, new PaintGizmoPass());
         withTools.add(indexFc, new OutlinePass());
         withTools.add(indexFc, new OutlineGenPass());

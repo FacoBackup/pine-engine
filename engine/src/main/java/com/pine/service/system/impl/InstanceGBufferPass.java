@@ -58,7 +58,7 @@ public class InstanceGBufferPass extends AbstractGBufferPass implements Loggable
 
         if(instanceCountBuffer.get(0) > 0) {
             meshService.bind(meshRepository.cubeMesh);
-            meshService.setInstanceCount(Math.min(instanceCountBuffer.get(0), 100));
+            meshService.setInstanceCount(instanceCountBuffer.get(0));
             meshService.draw();
             if(c >= 700) {
                 getLogger().warn("Instanced {}", instanceCountBuffer.get(0));
