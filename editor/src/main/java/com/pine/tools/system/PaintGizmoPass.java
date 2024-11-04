@@ -4,6 +4,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.GizmoType;
+import com.pine.repository.PaintingType;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
@@ -19,9 +20,8 @@ import org.lwjgl.opengl.GL46;
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class PaintGizmoPass extends AbstractPass {
-    private static final Vector3f EMPTY = new Vector3f(-1);
-    private static final int LOCAL_SIZE_X = 4;
-    private static final int LOCAL_SIZE_Y = 4;
+    private static final int LOCAL_SIZE_X = 1;
+    private static final int LOCAL_SIZE_Y = 1;
 
     @PInject
     public EditorRepository editorRepository;
@@ -29,6 +29,8 @@ public class PaintGizmoPass extends AbstractPass {
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
     private UniformDTO xyMouseUniform;
+    private UniformDTO paintMode;
+    private UniformDTO heightScale;
     private UniformDTO targetImageSizeUniform;
     private UniformDTO viewportSize;
     private UniformDTO viewportOrigin;
@@ -43,6 +45,8 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     public void onInitialize() {
+        paintMode = addUniformDeclaration("paintMode");
+        heightScale = addUniformDeclaration("heightScale");
         targetImageSizeUniform = addUniformDeclaration("targetImageSize");
         xyMouseUniform = addUniformDeclaration("xyMouse");
         radiusDensityUniform = addUniformDeclaration("radiusDensityMode");
@@ -79,7 +83,7 @@ public class PaintGizmoPass extends AbstractPass {
     @Override
     protected void renderInternal() {
         FrameBufferObject fbo = fboRepository.gBuffer;
-        targetTexture.bindForWriting(1);
+        targetTexture.bindForBoth(1);
 
         radiusDensityMode.x = editorRepository.brushRadius;
         radiusDensityMode.y = editorRepository.brushDensity;
@@ -104,6 +108,8 @@ public class PaintGizmoPass extends AbstractPass {
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(targetImageSize, targetImageSizeUniform);
         shaderService.bindVec2(viewportO, viewportOrigin);
+        shaderService.bindInt(editorRepository.paintingType.id, paintMode);
+        shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
         shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 2);
 

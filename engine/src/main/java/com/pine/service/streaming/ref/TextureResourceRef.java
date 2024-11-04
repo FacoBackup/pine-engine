@@ -56,7 +56,7 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16);
     }
 
-    public void bindForReading(int unit) {
-        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_ONLY, GL46.GL_RGBA16);
+    public void bindForBoth(int unit) {
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_WRITE, GL46.GL_RGBA16);
     }
 }

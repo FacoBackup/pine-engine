@@ -1,9 +1,15 @@
 layout (local_size_x = 4, local_size_y = 4) in;
 
+#define TERRAIN 0
+#define FOLIAGE 1
+#define MATERIAL 2
+
 layout (rgba8, binding = 0) uniform image2D outputImage;
-layout (rgba8, binding = 1) writeonly uniform image2D targetImage;
+layout (rgba8, binding = 1) uniform image2D targetImage;
 layout (binding = 2) uniform sampler2D sceneDepth;
 
+uniform int paintMode;
+uniform float heightScale;
 uniform vec3 xyMouse;
 uniform vec3 colorForPainting;
 uniform vec2 targetImageSize;
@@ -11,6 +17,7 @@ uniform vec3 radiusDensityMode;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
 
+const vec4 NONE = vec4(0, 0, 0, 1);
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 #include "../util/UTIL.glsl"
 
@@ -45,6 +52,7 @@ void main() {
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
+    float originalYPosition = worldSpacePosition.y;
     worldSpacePositionMouse.y = worldSpacePosition.y = 0;
 
     // COMPARE THE DISTANCE BETWEEN THE PIXEL WORLD POSITION AND THE MOUSE WORLD POSITION
@@ -53,8 +61,11 @@ void main() {
         return;
     }
 
-    if (radiusDensityMode.y == 1 || randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
-        ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
-        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(0, 0, 0, 1) : vec4(colorForPainting, 1));
+    ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
+    if (paintMode == TERRAIN){
+        float scale =  (distToCenter/radiusDensityMode.x) * radiusDensityMode.y;
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(vec3(originalYPosition - scale) / heightScale, 1) : vec4(vec3(originalYPosition + .1 * scale)/heightScale, 1));
+    } else if (paintMode == FOLIAGE && randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(colorForPainting, 1));
     }
 }
