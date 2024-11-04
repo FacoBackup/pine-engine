@@ -7,9 +7,7 @@ import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
 
 public class TerrainGBufferPass extends AbstractGBufferPass {
-    private UniformDTO debugShadingMode;
     private MeshResourceRef mesh;
-    private UniformDTO probeFilteringLevels;
     private TextureResourceRef heightMap;
     private UniformDTO planeSize;
     private UniformDTO heightMapU;
@@ -18,8 +16,8 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
 
     @Override
     public void onInitialize() {
-        debugShadingMode = addUniformDeclaration("debugShadingMode");
-        probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
+        super.onInitialize();
+
         planeSize = addUniformDeclaration("planeSize");
         heightMapU = addUniformDeclaration("heightMap");
         heightScale = addUniformDeclaration("heightScale");
@@ -31,16 +29,6 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
         mesh = terrainRepository.bakeId != null ? (MeshResourceRef) streamingService.stream(terrainRepository.bakeId, StreamableResourceType.MESH) : null;
         heightMap = mesh != null && terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
         return mesh != null && heightMap != null;
-    }
-
-    @Override
-    protected UniformDTO probeFilteringLevels() {
-        return probeFilteringLevels;
-    }
-
-    @Override
-    protected UniformDTO debugShadingMode() {
-        return debugShadingMode;
     }
 
     @Override

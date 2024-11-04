@@ -8,7 +8,6 @@ import java.util.List;
 
 public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO transformationIndex;
-    private UniformDTO debugShadingMode;
     private UniformDTO parallaxHeightScale;
     private UniformDTO parallaxLayers;
     private UniformDTO useParallax;
@@ -20,7 +19,6 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO renderingMode;
     private UniformDTO ssrEnabled;
     private UniformDTO fallbackMaterial;
-    private UniformDTO probeFilteringLevels;
     private UniformDTO albedoColor;
     private UniformDTO roughnessMetallic;
     private UniformDTO useAlbedoRoughnessMetallicAO;
@@ -28,12 +26,11 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
 
     @Override
     public void onInitialize() {
+        super.onInitialize();
         albedoColor = addUniformDeclaration("albedoColor");
         roughnessMetallic = addUniformDeclaration("roughnessMetallic");
         useAlbedoRoughnessMetallicAO = addUniformDeclaration("useAlbedoRoughnessMetallicAO");
         useNormalTexture = addUniformDeclaration("useNormalTexture");
-        probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
-        debugShadingMode = addUniformDeclaration("debugShadingMode");
         transformationIndex = addUniformDeclaration("transformationIndex");
         parallaxHeightScale = addUniformDeclaration("parallaxHeightScale");
         parallaxLayers = addUniformDeclaration("parallaxLayers");
@@ -46,16 +43,6 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
         renderingMode = addUniformDeclaration("renderingMode");
         ssrEnabled = addUniformDeclaration("ssrEnabled");
         fallbackMaterial = addUniformDeclaration("fallbackMaterial");
-    }
-
-    @Override
-    protected UniformDTO probeFilteringLevels() {
-        return probeFilteringLevels;
-    }
-
-    @Override
-    protected UniformDTO debugShadingMode() {
-        return debugShadingMode;
     }
 
     @Override

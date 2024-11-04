@@ -14,10 +14,16 @@ import java.util.List;
 
 public abstract class AbstractGBufferPass extends AbstractPass {
     private static final int MAX_CUBE_MAPS = 3;
+    private UniformDTO debugShadingMode;
+    private UniformDTO applyGrid;
+    private UniformDTO probeFilteringLevels;
 
-    abstract protected UniformDTO probeFilteringLevels();
-
-    abstract protected UniformDTO debugShadingMode();
+    @Override
+    public void onInitialize() {
+        debugShadingMode = addUniformDeclaration("debugShadingMode");
+        applyGrid = addUniformDeclaration("applyGrid");
+        probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
+    }
 
     @Override
     protected FrameBufferObject getTargetFBO() {
@@ -35,8 +41,9 @@ public abstract class AbstractGBufferPass extends AbstractPass {
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
 
-        shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode());
-        shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels());
+        shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
+        shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels);
+        shaderService.bindBoolean(settingsRepository.gridOverlay, applyGrid);
 
         bindEnvironmentMaps();
     }

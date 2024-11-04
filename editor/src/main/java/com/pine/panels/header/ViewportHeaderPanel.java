@@ -69,13 +69,18 @@ public class ViewportHeaderPanel extends AbstractView {
 
     private void shadingMode() {
         ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 382, 0);
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 405, 0);
         ImGui.sameLine();
 
         ImGui.text("Shading");
 
         ImGui.sameLine();
-        if (renderOption(Icons.grid_on + "Wireframe##wireframeShading", engineSettingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
+        if (renderOption(Icons.grid_on + "##grid", engineSettingsRepository.gridOverlay, true)) {
+            engineSettingsRepository.gridOverlay = !engineSettingsRepository.gridOverlay;
+        }
+
+        ImGui.sameLine();
+        if (renderOption(Icons.details + "Wireframe##wireframeShading", engineSettingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
             engineSettingsRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
             editorRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getIndex());
         }
