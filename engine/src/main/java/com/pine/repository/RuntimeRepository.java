@@ -7,7 +7,7 @@ import org.joml.Vector2f;
 @PBean
 public class RuntimeRepository  {
 
-
+    public boolean isFocused;
     private int displayW;
     private int displayH;
 

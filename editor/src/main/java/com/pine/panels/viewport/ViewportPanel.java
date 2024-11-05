@@ -111,7 +111,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         }
         cameraRepository.setCurrentCamera(camera);
 
-        boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+        boolean focused = ImGui.isWindowHovered() && !ImGuizmo.isUsing();
         AbstractCameraService cameraService;
         if (camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
@@ -142,6 +142,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
+        repo.isFocused = ImGui.isWindowHovered();
         repo.fasterPressed = ImGui.isKeyDown(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyDown(ImGuiKey.W);
         repo.backwardPressed = ImGui.isKeyDown(ImGuiKey.S);

@@ -5,11 +5,15 @@ import com.pine.injection.PInject;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.importer.ImporterService;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.ref.TextureResourceRef;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.stb.STBImage;
+import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
@@ -21,6 +25,9 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
 
     @PInject
     public StreamingRepository repository;
+
+    @PInject
+    public ImporterService importerService;
 
     @Override
     public StreamableResourceType getResourceType() {
@@ -63,5 +70,13 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
     @Override
     public AbstractResourceRef<?> newInstance(String key) {
         return new TextureResourceRef(key);
+    }
+
+    public void writeTexture(TextureResourceRef texture){
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.texture);
+        ByteBuffer buffer = BufferUtils.createByteBuffer(texture.width * texture.height * 4); // 4 bytes per pixel for RGBA
+        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        STBImageWrite.stbi_write_png(importerService.getPathToFile(texture.id, StreamableResourceType.TEXTURE), texture.width, texture.height, 4, buffer, texture.width * 4);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
 }

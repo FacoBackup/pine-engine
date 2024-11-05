@@ -45,5 +45,11 @@ void main(){
         discard;
     }
 
-    finalColor = vec4(hasSelection ? vec3(0,.75, .1) : vec3(.75, .15, .15), radiusDensityMode.y);
+    if(distToCenter > radiusDensityMode.r - .15){
+        finalColor = vec4(hasSelection ?  vec3(0, 1, 0) : vec3(1, .15, 0), 1);
+    }else if(distToCenter > radiusDensityMode.r - .5){
+        finalColor = vec4(1, 1, 1, radiusDensityMode.y);
+    }else{
+        finalColor = vec4(.2, .2, .2, .35);
+    }
 }

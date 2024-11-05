@@ -76,26 +76,36 @@ public class ResourceField extends AbstractFormField {
 
         if (type == StreamableResourceType.TEXTURE) {
             ImGui.text(dto.getLabel());
+
+            ImGui.columns(2, "##resourceColumns" + imguiId, false);
+            ImGui.setColumnWidth(0, 65);
             if (previewField == null) {
                 previewField = appendChild(new PreviewField(dto, changerHandler));
+                previewField.setSmallSize(true);
             }
             previewField.render();
-            renderOptions();
+            ImGui.nextColumn();
+            renderCombo();
+            renderRemove();
+            ImGui.columns(1);
         } else {
             ImGui.text(dto.getLabel());
-            renderOptions();
+            renderCombo();
+            ImGui.sameLine();
+            renderRemove();
         }
     }
 
-    private void renderOptions() {
-        if (ImGui.combo(imguiId, selected, itemsArr)) {
-            changerHandler.accept(dto, allByType.get(selected.get()).getId());
-        }
-
-        ImGui.sameLine();
+    private void renderRemove() {
         if (ImGui.button(Icons.close + "Remove" + imguiId)) {
             selected.set(-1);
             changerHandler.accept(dto, null);
+        }
+    }
+
+    private void renderCombo() {
+        if (ImGui.combo(imguiId, selected, itemsArr)) {
+            changerHandler.accept(dto, allByType.get(selected.get()).getId());
         }
     }
 }

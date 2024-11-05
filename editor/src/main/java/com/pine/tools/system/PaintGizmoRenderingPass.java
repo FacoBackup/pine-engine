@@ -61,7 +61,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
 
     @Override
     protected boolean isRenderable() {
-        return editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return runtimeRepository.isFocused && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override

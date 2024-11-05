@@ -20,7 +20,7 @@ import static com.pine.panels.viewport.ViewportPanel.INV_X;
 import static com.pine.panels.viewport.ViewportPanel.INV_Y;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
-public class FoliagePanel extends AbstractView {
+public class FoliagePanel extends AbstractMaskPanel {
     public static final int TABLE_FLAGS = ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
 
     @PInject
@@ -40,25 +40,12 @@ public class FoliagePanel extends AbstractView {
     private final Map<String, Boolean> toRemove = new HashMap<>();
 
     @Override
-    public void render() {
-        ImGui.dummy(0, 8);
-        if (ImGui.checkbox("Show mask" + imguiId, showMask)) {
-            showMask = !showMask;
-        }
+    protected String getTextureId() {
+        return terrainRepository.instanceMaskMap;
+    }
 
-        if (showMask) {
-            var targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
-            if (targetTexture != null) {
-                ImGui.setNextWindowSize(150, 150);
-                if (ImGui.beginChild("image##v")) {
-                    maskRes.x = ImGui.getWindowSizeX();
-                    maskRes.y = ImGui.getWindowSizeX();
-                    ImGui.image(targetTexture.texture, maskRes, INV_Y, INV_X);
-                }
-                ImGui.endChild();
-            }
-        }
-
+    @Override
+    public void renderInternal() {
         ImGui.text(Icons.add + "Foliage");
         if (ImGui.beginChild(imguiId, ImGui.getWindowSizeX(), 50, true)) {
             for (String m : filesRepository.byType.get(StreamableResourceType.MESH)) {

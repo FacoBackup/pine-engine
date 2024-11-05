@@ -32,6 +32,8 @@ public class PreviewField extends AbstractFormField {
     @PInject
     public ImporterService importerService;
 
+    private boolean smallSize;
+
     public PreviewField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
     }
@@ -49,9 +51,13 @@ public class PreviewField extends AbstractFormField {
         if (textureRef != null) {
             textureRef.lastUse = clockRepository.totalTime;
             float size = ImGui.getContentRegionAvailX() - 30;
-            sizeVec.x = size;
-            sizeVec.y = size;
+            sizeVec.x = smallSize ? 55 : size;
+            sizeVec.y = smallSize ? 55 : size;
             ImGui.image(textureRef.texture, sizeVec, INV_X_L, INV_Y);
         }
+    }
+
+    public void setSmallSize(boolean small) {
+        this.smallSize = small;
     }
 }

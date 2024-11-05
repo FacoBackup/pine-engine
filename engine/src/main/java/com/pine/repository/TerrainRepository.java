@@ -8,6 +8,9 @@ import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.impl.TextureService;
+import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.terrain.TerrainService;
 import com.pine.theme.Icons;
 
@@ -49,6 +52,24 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
 
     public final Map<String, FoliageInstance> foliage = new HashMap<>();
 
+    @PInject
+    public transient StreamingService streamingService;
+
+    @PInject
+    public transient TextureService textureService;
+
+    @Override
+    public void onSave() {
+        var mask = (TextureResourceRef) streamingService.stream(instanceMaskMap, StreamableResourceType.TEXTURE);
+        if(mask != null && mask.isLoaded()){
+            textureService.writeTexture(mask);
+        }
+
+        var heightMap = (TextureResourceRef) streamingService.stream(heightMapTexture, StreamableResourceType.TEXTURE);
+        if(heightMap != null && heightMap.isLoaded()){
+            textureService.writeTexture(heightMap);
+        }
+    }
 
     @Override
     public String getTitle() {

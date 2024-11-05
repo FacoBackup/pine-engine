@@ -18,6 +18,8 @@ public interface SerializableRepository extends Serializable, Loggable {
 //
 //    }
 
+    default void onSave(){}
+
     default void merge(Object data) {
         if (data == null) {
             return;
