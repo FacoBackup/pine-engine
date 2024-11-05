@@ -30,9 +30,6 @@ public class ProjectService implements Loggable {
     @PInject
     public SerializationService serializationService;
 
-    @PInject
-    public MessageRepository messageRepository;
-
     private String projectDirectory = null;
 
     @PostCreation

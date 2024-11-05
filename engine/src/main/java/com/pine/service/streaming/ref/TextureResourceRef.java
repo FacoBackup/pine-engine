@@ -2,6 +2,7 @@ package com.pine.service.streaming.ref;
 
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.streaming.data.TextureStreamData;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL46C;
@@ -11,6 +12,7 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int texture;
     public int width;
     public int height;
+    public FrameBufferObject frameBuffer;
 
     public TextureResourceRef(String id) {
         super(id);
@@ -31,7 +33,7 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
 
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA16, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
 
         GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
         GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
@@ -43,6 +45,18 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
 
     @Override
     protected void disposeInternal() {
-        GL46.glDeleteTextures(texture);
+        if (frameBuffer != null) {
+            frameBuffer.dispose();
+        } else {
+            GL46.glDeleteTextures(texture);
+        }
+    }
+
+    public void bindForWriting(int unit) {
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16);
+    }
+
+    public void bindForBoth(int unit) {
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_WRITE, GL46.GL_RGBA16);
     }
 }

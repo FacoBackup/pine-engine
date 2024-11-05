@@ -1,85 +1,71 @@
 layout (local_size_x = 4, local_size_y = 4) in;
 
-layout (binding = 0) uniform writeonly image2D outputImage;
-layout (binding = 1) uniform sampler2D sceneDepth;
-layout (binding = 2) uniform sampler2D gBufferNormal;
+#define TERRAIN 0
+#define FOLIAGE 1
+#define MATERIAL 2
 
-uniform vec2 xy;
+layout (rgba8, binding = 0) uniform image2D outputImage;
+layout (rgba8, binding = 1) uniform image2D targetImage;
+layout (binding = 2) uniform sampler2D sceneDepth;
+
+uniform int paintMode;
+uniform float heightScale;
+uniform vec3 xyMouse;
+uniform vec3 colorForPainting;
+uniform vec2 targetImageSize;
+uniform vec3 radiusDensityMode;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
-const vec3 UP_VEC = vec3(0.0, 1.0, 0.0);// Default dome "up" direction
 
+const vec4 NONE = vec4(0, 0, 0, 1);
 #include "../util/SCENE_DEPTH_UTILS.glsl"
+#include "../util/UTIL.glsl"
 
-vec3 createRay() {
-    vec2 pxNDS = (gl_GlobalInvocationID.xy/bufferResolution) * 2. - 1.;
-    vec3 pointNDS = vec3(pxNDS, -1.);
-    vec4 pointNDSH = vec4(pointNDS, 1.0);
-    vec4 dirEye = invProjectionMatrix * pointNDSH;
-    dirEye.w = 0.;
-    vec3 dirWorld = (invViewMatrix * dirEye).xyz;
-    return normalize(dirWorld);
+float hash(float seed) {
+    return fract(sin(seed * 0.1) * 43758.5453);
 }
-
-float domeSDF(vec3 pos, vec3 domeCenter, float domeRadius, mat3 rotationMatrix) {
-    pos -= domeCenter;
-
-    // Rotate the position
-    pos = rotationMatrix * pos;
-
-    const float t = 0.01;
-    const float h = 0;
-    vec2 q = vec2(length(pos.xz), -pos.y);
-    float w = sqrt(domeRadius * domeRadius);
-    return ((h * q.x < w * q.y) ? length(q - vec2(w, h)) : abs(length(q) - domeRadius)) - t;
-}
-
-bool renderDome(vec3 rayOrigin, vec3 rayDir, vec3 domeCenter, float domeRadius, mat3 rotationMatrix) {
-    const int maxSteps = 100;
-    const float minDist = 0.001;
-    const float maxDist = 100.0;
-
-    float t = 0.0;
-    for (int i = 0; i < maxSteps; i++) {
-        vec3 p = rayOrigin + t * rayDir;
-        float d = domeSDF(p,  domeCenter, domeRadius, rotationMatrix);
-        if (d < minDist) {
-            return true;
-        }
-        if (t > maxDist) break;
-        t += d;
-    }
-    return false;
+bool randomBoolean(float density) {
+    float uniqueSeed = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * 10000.0;
+    float randValue = hash(uniqueSeed);
+    float scaledValue = pow(randValue, 1.0 / (1.0 - density));
+    return scaledValue < density;
 }
 
 void main() {
-    vec3 rayOrigin = placement.xyz;
-    vec3 rayDirection = createRay();
-
-    vec2 textureCoord = (xy + viewportOrigin) / viewportSize;
+    // RECONSTRUCT POSITION BASED ON MOUSE POSITION
+    vec2 textureCoord = (xyMouse.xy + viewportOrigin) / viewportSize;
     float depthData = getLogDepth(textureCoord);
     if (depthData == 1.){
         return;
     }
+    vec3 viewSpacePositionMouse = viewSpacePositionFromDepth(depthData, textureCoord);
+    vec3 worldSpacePositionMouse = vec3(invViewMatrix * vec4(viewSpacePositionMouse, 1.));
 
-    vec3 normal = normalize(texture(gBufferNormal, textureCoord).rgb);
+
+    // RECONSTRUCT POSITION BASED ON FRAGMENT POSITION
+    textureCoord = vec2(gl_GlobalInvocationID.xy / bufferResolution);
+    vec4 depthIdUVData = texture(sceneDepth, textureCoord);
+    depthData = getLogDepthFromSampler(depthIdUVData);
+    if (depthData == 1.){
+        return;
+    }
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
-    vec3 axis = cross(UP_VEC, normal);// Axis to rotate around
-    float angle = acos(dot(UP_VEC, normal));// Angle between up and direction
+    float originalYPosition = worldSpacePosition.y;
+    worldSpacePositionMouse.y = worldSpacePosition.y = 0;
 
-    // Use Rodrigues' rotation formula components
-    float cosA = cos(angle);
-    float sinA = sin(angle);
-    mat3 rotationMatrix = mat3(
-        cosA + axis.x * axis.x * (1.0 - cosA), axis.x * axis.y * (1.0 - cosA) - axis.z * sinA, axis.x * axis.z * (1.0 - cosA) + axis.y * sinA,
-        axis.y * axis.x * (1.0 - cosA) + axis.z * sinA, cosA + axis.y * axis.y * (1.0 - cosA), axis.y * axis.z * (1.0 - cosA) - axis.x * sinA,
-        axis.z * axis.x * (1.0 - cosA) - axis.y * sinA, axis.z * axis.y * (1.0 - cosA) + axis.x * sinA, cosA + axis.z * axis.z * (1.0 - cosA)
-    );
+    // COMPARE THE DISTANCE BETWEEN THE PIXEL WORLD POSITION AND THE MOUSE WORLD POSITION
+    float distToCenter = length(worldSpacePosition - worldSpacePositionMouse);
+    if (distToCenter > radiusDensityMode.r) {
+        return;
+    }
 
-
-    if (renderDome(rayOrigin, rayDirection, worldSpacePosition, 1, rotationMatrix)){
-        imageStore(outputImage, ivec2(gl_GlobalInvocationID.xy), vec4(1, 0, 1, .5));
+    ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
+    if (paintMode == TERRAIN){
+        float scale =  (distToCenter/radiusDensityMode.x) * radiusDensityMode.y;
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(vec3(originalYPosition - scale) / heightScale, 1) : vec4(vec3(originalYPosition + .1 * scale)/heightScale, 1));
+    } else if (paintMode == FOLIAGE && randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(colorForPainting, 1));
     }
 }

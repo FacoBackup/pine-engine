@@ -3,16 +3,16 @@ package com.pine.panels.viewport;
 import com.pine.Engine;
 import com.pine.injection.PInject;
 import com.pine.panels.AbstractEntityViewPanel;
-import com.pine.repository.CameraRepository;
-import com.pine.repository.EditorRepository;
-import com.pine.repository.GizmoType;
-import com.pine.repository.RuntimeRepository;
+import com.pine.repository.*;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
 import com.pine.service.camera.Camera;
 import com.pine.service.camera.CameraFirstPersonService;
 import com.pine.service.camera.CameraThirdPersonService;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
@@ -56,6 +56,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     @PInject
     public ViewportPickingService viewportPickingService;
 
+
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     private GizmoPanel gizmo;
@@ -96,8 +97,8 @@ public class ViewportPanel extends AbstractEntityViewPanel {
             ImGui.textColored(GREEN, "Y: " + positionCamera.y);
             ImGui.sameLine();
             ImGui.textColored(BLUE, "Z: " + positionCamera.z);
-            ImGui.end();
         }
+        ImGui.end();
     }
 
     private void updateCamera() {
@@ -110,7 +111,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         }
         cameraRepository.setCurrentCamera(camera);
 
-        boolean focused = ImGui.isWindowFocused() && !ImGuizmo.isUsing();
+        boolean focused = ImGui.isWindowHovered() && !ImGuizmo.isUsing();
         AbstractCameraService cameraService;
         if (camera.orbitalMode) {
             cameraService = cameraThirdPersonService;
@@ -118,7 +119,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
                 if (io.getMouseWheel() != 0 && ImGui.isWindowHovered()) {
                     cameraThirdPersonService.zoom(camera, io.getMouseWheel());
                 }
-                if (io.getMouseDown(ImGuiMouseButton.Left) && io.getMouseDown(ImGuiMouseButton.Right)) {
+                if (io.getMouseDown(ImGuiMouseButton.Right)) {
                     cameraThirdPersonService.isChangingCenter = true;
                     cameraThirdPersonService.changeCenter(camera, isFirstMovement);
                 } else {
@@ -128,7 +129,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         } else {
             cameraService = cameraFirstPersonService;
         }
-        if (focused && (ImGui.isMouseDown(ImGuiMouseButton.Left) || ImGui.isMouseDown(ImGuiMouseButton.Right) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && camera.orbitalMode))) {
+        if (focused && ((ImGui.isMouseDown(ImGuiMouseButton.Right) && !camera.orbitalMode) || (ImGui.isMouseDown(ImGuiMouseButton.Middle) && camera.orbitalMode))) {
             cameraService.handleInput(camera, isFirstMovement);
             isFirstMovement = false;
         } else {
@@ -141,6 +142,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
+        repo.isFocused = ImGui.isWindowHovered();
         repo.fasterPressed = ImGui.isKeyDown(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyDown(ImGuiKey.W);
         repo.backwardPressed = ImGui.isKeyDown(ImGuiKey.S);
@@ -148,6 +150,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         repo.rightPressed = ImGui.isKeyDown(ImGuiKey.D);
         repo.upPressed = ImGui.isKeyDown(ImGuiKey.Space);
         repo.downPressed = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
+        repo.mousePressed = ImGui.isWindowFocused() && ImGui.isWindowHovered() && ImGui.isMouseDown(ImGuiMouseButton.Left);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
         repo.viewportH = sizeVec.y;

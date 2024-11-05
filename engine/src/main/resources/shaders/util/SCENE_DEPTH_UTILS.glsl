@@ -6,6 +6,12 @@ float getLogDepth(vec2 uv) {
     return pow(2.0, exponent);
 }
 
+float getLogDepthFromSampler(vec4 data) {
+    float half_co = logDepthFC * .5;
+    float exponent = data.r / half_co;
+    return pow(2.0, exponent);
+}
+
 vec3 viewSpacePositionFromDepth(float logarithimicDepth, vec2 texCoords) {
     float z = logarithimicDepth * 2.0 - 1.0;
 

@@ -24,11 +24,9 @@ const vec3 NPP = vec3(-1, 1, 1);
 const vec3 PPP = vec3(1, 1, 1);
 const vec3 POS[8] = vec3[8](NNN, PNN, NPN, PPN, NNP, PNP, NPP, PPP);
 
-float rand(vec2 co) {
-    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
-}
+
 vec3 randomColor(uint seed) {
-    float hash = fract(sin(float(seed) * 12.9898) * 43758.5453);
+    float hash = fract(sin(float(seed)) * 43758.5453);
 
     float r = fract(hash * 13.756);
     float g = fract(hash * 15.734);

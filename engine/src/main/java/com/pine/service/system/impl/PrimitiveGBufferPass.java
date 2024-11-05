@@ -1,20 +1,13 @@
 package com.pine.service.system.impl;
 
-import com.pine.repository.DebugShadingModel;
-import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.rendering.RenderingRequest;
-import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.AbstractPass;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL46;
 
 import java.util.List;
 
-public class GBufferPass extends AbstractGBufferPass {
+public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO transformationIndex;
-    private UniformDTO debugShadingMode;
     private UniformDTO parallaxHeightScale;
     private UniformDTO parallaxLayers;
     private UniformDTO useParallax;
@@ -26,7 +19,6 @@ public class GBufferPass extends AbstractGBufferPass {
     private UniformDTO renderingMode;
     private UniformDTO ssrEnabled;
     private UniformDTO fallbackMaterial;
-    private UniformDTO probeFilteringLevels;
     private UniformDTO albedoColor;
     private UniformDTO roughnessMetallic;
     private UniformDTO useAlbedoRoughnessMetallicAO;
@@ -34,12 +26,11 @@ public class GBufferPass extends AbstractGBufferPass {
 
     @Override
     public void onInitialize() {
+        super.onInitialize();
         albedoColor = addUniformDeclaration("albedoColor");
         roughnessMetallic = addUniformDeclaration("roughnessMetallic");
         useAlbedoRoughnessMetallicAO = addUniformDeclaration("useAlbedoRoughnessMetallicAO");
         useNormalTexture = addUniformDeclaration("useNormalTexture");
-        probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
-        debugShadingMode = addUniformDeclaration("debugShadingMode");
         transformationIndex = addUniformDeclaration("transformationIndex");
         parallaxHeightScale = addUniformDeclaration("parallaxHeightScale");
         parallaxLayers = addUniformDeclaration("parallaxLayers");
@@ -55,16 +46,6 @@ public class GBufferPass extends AbstractGBufferPass {
     }
 
     @Override
-    protected UniformDTO probeFilteringLevels() {
-        return probeFilteringLevels;
-    }
-
-    @Override
-    protected UniformDTO debugShadingMode() {
-        return debugShadingMode;
-    }
-
-    @Override
     protected Shader getShader() {
         return shaderRepository.gBufferShader;
     }
@@ -72,6 +53,7 @@ public class GBufferPass extends AbstractGBufferPass {
     @Override
     protected void renderInternal() {
         prepareCall();
+        ssboService.bind(ssboRepository.transformationSSBO);
 
         List<RenderingRequest> requests = renderingRepository.requests;
         int instancedOffset = 0;

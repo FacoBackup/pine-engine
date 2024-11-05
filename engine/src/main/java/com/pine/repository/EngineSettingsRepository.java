@@ -94,6 +94,7 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
 
 
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
+    public boolean gridOverlay = false;
 
     @Override
     public String getTitle() {

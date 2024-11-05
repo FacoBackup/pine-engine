@@ -12,6 +12,7 @@
 #define WIREFRAME 17
 #define UV_FLAG 18
 #define INDIRECT 19
+#define TRIANGLE_ID 20
 #define LIT -1
 
 #define ISOTROPIC 1
@@ -47,6 +48,7 @@ uniform float parallaxHeightScale;
 uniform int parallaxLayers;
 uniform int debugShadingMode;
 uniform bool useParallax;
+uniform bool applyGrid;
 
 uniform bool fallbackMaterial;
 uniform float anisotropicRotation;
@@ -82,7 +84,7 @@ void main() {
         UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
     vec3 N = normalVec;
-    gBufferDepthSampler = vec4(encode(depthFunc), renderingIndex + 1, 0, 1);
+    gBufferDepthSampler = vec4(encode(depthFunc), renderingIndex + 1, UV);
     if (!fallbackMaterial){
         bool useMetallic = useAlbedoRoughnessMetallicAO.b != 0;
         bool useRoughness = useAlbedoRoughnessMetallicAO.g != 0;
@@ -146,8 +148,27 @@ void main() {
             case INDIRECT:
             gBufferAlbedoSampler.rgb = gBufferIndirect.rgb;
             break;
-
+            case TRIANGLE_ID:
+            gBufferAlbedoSampler.rgb = randomColor(gl_PrimitiveID);
+            break;
         }
+
         gBufferAlbedoSampler.a = debugShadingMode != LIGHT_ONLY ? 1 : 0;
+    }
+
+    if (applyGrid && distanceFromCamera < 350){
+        float dx = abs(fract(worldSpacePosition.x) - .5);
+        float dz = abs(fract(worldSpacePosition.z) - .5);
+
+        float gridLine = step(.02, min(dx, dz));
+
+        dx = abs(fract(worldSpacePosition.x / 5.) - .5);
+        dz = abs(fract(worldSpacePosition.z / 5.) - .5);
+        float gridLine2 = step(.01, min(dx, dz));
+
+        vec3 color = mix(vec3(.4), gBufferAlbedoSampler.rgb, gridLine);
+        color = mix(vec3(.25), color, gridLine2);
+
+        gBufferAlbedoSampler.rgb = color;
     }
 }

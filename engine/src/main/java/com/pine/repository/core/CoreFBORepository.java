@@ -13,6 +13,7 @@ import java.util.List;
 
 @PBean
 public class CoreFBORepository implements CoreRepository {
+    public static final int[] ZERO = new int[]{0};
     @PInject
     public Engine engine;
     @PInject
@@ -31,6 +32,7 @@ public class CoreFBORepository implements CoreRepository {
     public final List<FrameBufferObject> all = new ArrayList<>();
     public FrameBufferObject brdfFBO;
 
+    public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
     public int gBufferNormalSampler;
     public int gBufferRMAOSampler;
@@ -45,6 +47,12 @@ public class CoreFBORepository implements CoreRepository {
 
     @Override
     public void initialize() {
+        atomicCounterBuffer = GL46.glGenBuffers();
+        GL46.glBindBuffer(GL46.GL_ATOMIC_COUNTER_BUFFER, atomicCounterBuffer);
+        GL46.glBufferData(GL46.GL_ATOMIC_COUNTER_BUFFER, Integer.BYTES, GL46.GL_DYNAMIC_DRAW);
+        GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, atomicCounterBuffer);
+
+
         final int displayW = runtimeRepository.getDisplayW();
         final int displayH = runtimeRepository.getDisplayH();
 
@@ -64,7 +72,7 @@ public class CoreFBORepository implements CoreRepository {
                 // Y channel: 16 bits for clearCoat + 16 bits for sheen
                 // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
                 .addSampler(3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
-                .addSampler(4, GL46.GL_RG16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index
+                .addSampler(4, GL46.GL_RGBA16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index + UV
                 .addSampler(5, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false);
         gBufferAlbedoSampler = gBuffer.getSamplers().get(0);
         gBufferNormalSampler = gBuffer.getSamplers().get(1);

@@ -99,8 +99,8 @@ public final class DockSpacePanel extends AbstractView implements Loggable, Seri
             ImGui.getWindowPos(position);
             renderHeader();
             view.render();
-            ImGui.end();
         }
+        ImGui.end();
 
         ImGui.popStyleVar(stylePushCount);
         stylePushCount = 0;

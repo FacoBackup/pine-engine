@@ -1,37 +1,27 @@
 package com.pine.service.system.impl;
 
-import com.pine.repository.DebugShadingModel;
-import com.pine.repository.rendering.RenderingMode;
-import com.pine.repository.rendering.RenderingRequest;
-import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.service.system.AbstractPass;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL46;
 
-import java.util.List;
-
-public class TerrainPass extends AbstractGBufferPass {
-    private UniformDTO debugShadingMode;
+public class TerrainGBufferPass extends AbstractGBufferPass {
     private MeshResourceRef mesh;
-    private UniformDTO probeFilteringLevels;
     private TextureResourceRef heightMap;
     private UniformDTO planeSize;
     private UniformDTO heightMapU;
     private UniformDTO heightScale;
+    private UniformDTO fallbackMaterial;
 
     @Override
     public void onInitialize() {
-        debugShadingMode = addUniformDeclaration("debugShadingMode");
-        probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
+        super.onInitialize();
+
         planeSize = addUniformDeclaration("planeSize");
         heightMapU = addUniformDeclaration("heightMap");
         heightScale = addUniformDeclaration("heightScale");
+        fallbackMaterial = addUniformDeclaration("fallbackMaterial");
     }
 
     @Override
@@ -39,16 +29,6 @@ public class TerrainPass extends AbstractGBufferPass {
         mesh = terrainRepository.bakeId != null ? (MeshResourceRef) streamingService.stream(terrainRepository.bakeId, StreamableResourceType.MESH) : null;
         heightMap = mesh != null && terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
         return mesh != null && heightMap != null;
-    }
-
-    @Override
-    protected UniformDTO probeFilteringLevels() {
-        return probeFilteringLevels;
-    }
-
-    @Override
-    protected UniformDTO debugShadingMode() {
-        return debugShadingMode;
     }
 
     @Override
@@ -63,6 +43,7 @@ public class TerrainPass extends AbstractGBufferPass {
         shaderService.bindSampler2d(heightMap, heightMapU);
         shaderService.bindInt(heightMap.width, planeSize);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
+        shaderService.bindBoolean(true, fallbackMaterial);
 
         meshService.bind(mesh);
         meshService.setInstanceCount(0);
