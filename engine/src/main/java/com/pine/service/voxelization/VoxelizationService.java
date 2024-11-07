@@ -18,6 +18,8 @@ import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.impl.MaterialService;
 import com.pine.service.streaming.impl.MeshService;
 import com.pine.service.streaming.impl.TextureService;
+import com.pine.service.voxelization.svo.SVOGrid;
+import com.pine.service.voxelization.svo.SparseVoxelOctree;
 import com.pine.service.voxelization.util.MeshUtil;
 import com.pine.service.voxelization.util.VoxelizerUtil;
 import org.jetbrains.annotations.NotNull;

@@ -12,6 +12,8 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int texture;
     public int width;
     public int height;
+    public int depth;
+    public int internalFormat = GL46.GL_RGBA16;
     public FrameBufferObject frameBuffer;
 
     public TextureResourceRef(String id) {
@@ -33,7 +35,7 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
 
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA16, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, internalFormat, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
 
         GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
         GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
@@ -53,10 +55,14 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     }
 
     public void bindForWriting(int unit) {
-        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16);
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_WRITE_ONLY, internalFormat);
+    }
+
+    public void bindForWriting3d(int unit) {
+        GL46.glBindImageTexture(unit, texture, 0, true, 0, GL46.GL_WRITE_ONLY, internalFormat);
     }
 
     public void bindForBoth(int unit) {
-        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_WRITE, GL46.GL_RGBA16);
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_WRITE, internalFormat);
     }
 }

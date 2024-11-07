@@ -1,5 +1,7 @@
 package com.pine.service.voxelization;
 
+import com.pine.service.voxelization.svo.SparseVoxelOctree;
+import com.pine.service.voxelization.svo.VoxelColorData;
 import org.joml.Vector3f;
 
 public class LorenzAttractorDemo {
@@ -22,8 +24,7 @@ public class LorenzAttractorDemo {
             x += dx * DT;
             y += dy * DT;
             z += dz * DT;
-            float offset = octree.getSize() / 2f;
-            octree.insert(new Vector3f((float) x + offset, (float) z, (float) y + offset), new VoxelData(1, 1, 1));
+            octree.insert(new Vector3f((float) x, (float) z, (float) y), new VoxelColorData(1, 0, 1));
         }
     }
 }

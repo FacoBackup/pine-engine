@@ -5,7 +5,7 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
-import com.pine.repository.core.CoreFBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
@@ -22,7 +22,7 @@ public class ViewportPickingService implements Loggable {
     public RenderingRepository renderingRepository;
 
     @PInject
-    public CoreFBORepository coreFBORepository;
+    public CoreBufferRepository coreBufferRepository;
 
     @PInject
     public RuntimeRepository runtimeRepository;
@@ -37,7 +37,7 @@ public class ViewportPickingService implements Loggable {
         getLogger().warn("X: {} Y: {} OX: {} OY: {}", x, y, runtimeRepository.mouseX, runtimeRepository.mouseY);
         FloatBuffer pixelBuffer = BufferUtils.createFloatBuffer(2);
 
-        GL46.glBindFramebuffer(GL46.GL_READ_FRAMEBUFFER, coreFBORepository.gBuffer.getFBO());
+        GL46.glBindFramebuffer(GL46.GL_READ_FRAMEBUFFER, coreBufferRepository.gBuffer.getFBO());
         GL46.glReadBuffer(GL46.GL_COLOR_ATTACHMENT4);
         GL46.glReadPixels(x, y, 1, 1, GL46.GL_RG, GL46.GL_FLOAT, pixelBuffer);
 

@@ -7,7 +7,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.core.CoreFBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.core.CoreShaderRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -42,7 +42,7 @@ public class EnvironmentMapGenPass implements Initializable {
     @PInject
     public StreamingService streamingService;
     @PInject
-    public CoreFBORepository fboRepository;
+    public CoreBufferRepository fboRepository;
     @PInject
     public AtmosphereSettingsRepository atmosphereSettingsRepository;
     @PInject

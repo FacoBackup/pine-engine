@@ -2,8 +2,7 @@ package com.pine.service.voxelization.util;
 
 import com.pine.service.importer.data.MeshImportData;
 import com.pine.service.streaming.data.TextureStreamData;
-import com.pine.service.voxelization.SparseVoxelOctree;
-import com.pine.service.voxelization.Triangle;
+import com.pine.service.voxelization.svo.SparseVoxelOctree;
 import org.joml.Vector3f;
 
 

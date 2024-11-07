@@ -26,7 +26,6 @@ public class CoreSSBORepository implements CoreRepository {
     public ShaderStorageBufferObject transformationSSBO;
     public ShaderStorageBufferObject foliageTransformationSSBO;
 
-
     @Override
     public void initialize() {
         foliageTransformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
@@ -48,5 +47,6 @@ public class CoreSSBORepository implements CoreRepository {
     public void dispose() {
         transformationSSBO.dispose();
         lightMetadataSSBO.dispose();
+        foliageTransformationSSBO.dispose();
     }
 }

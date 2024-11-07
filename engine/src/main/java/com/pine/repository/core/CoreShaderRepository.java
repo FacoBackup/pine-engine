@@ -34,6 +34,9 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader gBufferShading;
     public Shader environmentMap;
     public Shader voxelRaymarchingCompute;
+    public Shader cloudDetailCompute;
+    public Shader cloudShapeCompute;
+    public Shader cloudsRaymarcher;
     public Shader meshletCompute;
 
     @PInject
@@ -68,6 +71,9 @@ public class CoreShaderRepository implements CoreRepository {
         atmosphereShader = shaderService.create("QUAD.vert", "ATMOSPHERE.frag");
         environmentMap = shaderService.create("uber/ENVIRONMENT_MAP.vert", "uber/ENVIRONMENT_MAP.frag");
         voxelRaymarchingCompute = shaderService.create("compute/VOXEL_RAY_MARCHING_COMPUTE.glsl");
+        cloudDetailCompute = shaderService.create("compute/CLOUD_DETAIL_COMPUTE.glsl");
+        cloudShapeCompute = shaderService.create("compute/CLOUD_SHAPE_COMPUTE.glsl");
+        cloudsRaymarcher = shaderService.create("QUAD.vert", "CLOUD_RAYMARCHER.frag");
         meshletCompute = shaderService.create("compute/MESHLET_COMPUTE.glsl");
     }
 

@@ -33,7 +33,7 @@ public class VoxelVisualizerPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return renderingRepository.voxelChunksFilled > 0;
+        return voxelRepository.showVoxels && renderingRepository.voxelChunksFilled > 0;
     }
 
     @Override

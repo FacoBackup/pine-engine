@@ -24,6 +24,7 @@ public class SystemService implements SyncTask {
             new FoliageGBufferPass(),
             new GBufferShadingPass(),
             new AtmospherePass(),
+            new VolumetricCloudsPass(),
             new PostProcessingPass(),
             new VoxelVisualizerPass(),
             new FrameCompositionPass()

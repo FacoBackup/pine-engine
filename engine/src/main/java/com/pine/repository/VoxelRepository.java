@@ -6,8 +6,7 @@ import com.pine.injection.PInject;
 import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
-import com.pine.messaging.MessageRepository;
-import com.pine.service.voxelization.SVOGrid;
+import com.pine.service.voxelization.svo.SVOGrid;
 import com.pine.service.voxelization.VoxelizationService;
 import com.pine.theme.Icons;
 
@@ -17,14 +16,12 @@ public class VoxelRepository extends Inspectable implements SerializableReposito
 
     @PInject
     public transient VoxelizationService voxelizationService;
-
     @ExecutableField(icon = Icons.apps, label = "Bake voxelized scene")
     public void process(){
         if(!voxelizationService.bake()){
             getLogger().error("Already voxelizing scene");
         }
     }
-
     @InspectableField(label = "Chunk grid size", min = 1)
     public int chunkGridSize = 4;
 
@@ -33,6 +30,9 @@ public class VoxelRepository extends Inspectable implements SerializableReposito
 
     @InspectableField(label = "Max depth", min = 1, max = 10)
     public int maxDepth = 6;
+
+    @InspectableField(group = "Debug", label = "Render voxels")
+    public boolean showVoxels = false;
 
     @InspectableField(group = "Debug", label = "Random colors")
     public boolean randomColors = true;

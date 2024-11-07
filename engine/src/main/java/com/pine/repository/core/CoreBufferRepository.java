@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PBean
-public class CoreFBORepository implements CoreRepository {
+public class CoreBufferRepository implements CoreRepository {
     public static final int[] ZERO = new int[]{0};
     @PInject
     public Engine engine;
@@ -20,7 +20,6 @@ public class CoreFBORepository implements CoreRepository {
     public ShaderService shaderService;
     @PInject
     public RuntimeRepository runtimeRepository;
-
 
     public FrameBufferObject auxBuffer;
     public FrameBufferObject postProcessingBuffer;

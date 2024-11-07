@@ -204,6 +204,18 @@ public class ShaderService extends AbstractResourceService<Shader> {
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, sampler);
     }
 
+    public void bindSampler3d(TextureResourceRef texture, UniformDTO uniform) {
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, texture.texture);
+        GL46.glUniform1i(uniform.location, currentSamplerIndex);
+        currentSamplerIndex++;
+    }
+
+    public void bindSampler3dDirect(TextureResourceRef sampler, int bindingPoint) {
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + bindingPoint);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, sampler.texture);
+    }
+
     public Shader create(String compute) {
         compute = processShader(compute);
         var instance = new Shader(compute);

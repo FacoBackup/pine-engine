@@ -1,7 +1,12 @@
 package com.pine.service.voxelization.util;
 
 import com.pine.service.streaming.data.TextureStreamData;
-import com.pine.service.voxelization.VoxelData;
+import com.pine.service.streaming.ref.TextureResourceRef;
+import com.pine.service.voxelization.svo.VoxelColorData;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL46;
+
+import java.nio.ByteBuffer;
 
 public class TextureUtil {
     private static int[] uvToPixelCoords(float u, float v, int imgWidth, int imgHeight) {
@@ -16,9 +21,9 @@ public class TextureUtil {
         return new int[]{x, y};
     }
 
-    public static VoxelData sampleTextureAtUV(TextureStreamData image, float u, float v) {
+    public static VoxelColorData sampleTextureAtUV(TextureStreamData image, float u, float v) {
         if (image == null) {
-            return new VoxelData(0, 0, 0);
+            return new VoxelColorData(0, 0, 0);
         }
 
         int[] pixelCoords = uvToPixelCoords(u, v, image.width, image.height);
@@ -31,6 +36,32 @@ public class TextureUtil {
         int g = (image.imageBuffer.get(pixelIndex + 1) & 0xFF);
         int b = (image.imageBuffer.get(pixelIndex + 2) & 0xFF);
 
-        return new VoxelData(r, g, b);
+        return new VoxelColorData(r, g, b);
     }
+
+    public static TextureResourceRef create3DTexture(int width, int height, int depth, int internalFormat, int format, int type) {
+        int textureID = GL46.glGenTextures();
+
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, textureID);
+
+        GL46.glTexParameteri(GL46.GL_TEXTURE_3D, GL46.GL_TEXTURE_WRAP_S, GL46.GL_REPEAT);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_3D, GL46.GL_TEXTURE_WRAP_T, GL46.GL_REPEAT);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_3D, GL46.GL_TEXTURE_WRAP_R, GL46.GL_REPEAT);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_3D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_3D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
+
+        GL46.glTexImage3D(GL46.GL_TEXTURE_3D, 0, internalFormat, width, height, depth, 0, format, type, (ByteBuffer) null);
+
+        var texture = new TextureResourceRef(null);
+        texture.texture = textureID;
+        texture.width = width;
+        texture.height = height;
+        texture.depth = depth;
+        texture.internalFormat = internalFormat;
+
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, GL11.GL_NONE);
+
+        return texture;
+    }
+
 }

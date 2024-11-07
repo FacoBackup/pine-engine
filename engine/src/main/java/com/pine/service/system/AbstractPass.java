@@ -21,6 +21,8 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public AtmosphereSettingsRepository atmosphere;
     @PInject
+    public CloudsRepository cloudsRepository;
+    @PInject
     public Engine engine;
     @PInject
     public TerrainRepository terrainRepository;
@@ -53,17 +55,22 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public CoreUBORepository uboRepository;
     @PInject
-    public CoreFBORepository fboRepository;
+    public CoreBufferRepository fboRepository;
     @PInject
     public CoreMeshRepository meshRepository;
     @PInject
     public VoxelRepository voxelRepository;
+
+    protected void onBeforeRender(){}
+
+    protected void onAfterRender(){}
 
     final public void render() {
         if (!isRenderable()) {
             return;
         }
         startTracking();
+        onBeforeRender();
         FrameBufferObject fbo = getTargetFBO();
         shaderService.bind(getShader());
         if (fbo != null) {
@@ -73,6 +80,7 @@ public abstract class AbstractPass extends MetricCollector {
         } else {
             renderInternal();
         }
+        onAfterRender();
         endTracking();
     }
 
