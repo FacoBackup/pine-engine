@@ -5,7 +5,7 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.RuntimeRepository;
-import com.pine.repository.core.CoreUBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.tasks.SyncTask;
 
 @PBean
@@ -16,7 +16,7 @@ public class CameraService implements SyncTask {
     public CameraRepository repository;
 
     @PInject
-    public CoreUBORepository uboRepository;
+    public CoreBufferRepository bufferRepository;
 
     @PInject
     public RuntimeRepository runtimeRepository;
@@ -81,7 +81,7 @@ public class CameraService implements SyncTask {
     }
 
     private void updateUBOBuffer() {
-        var V = uboRepository.cameraViewUBOState;
+        var V = bufferRepository.globalDataBuffer;
         EngineUtils.copyWithOffset(V, repository.viewProjectionMatrix, 0);
         EngineUtils.copyWithOffset(V, repository.viewMatrix, 16);
         EngineUtils.copyWithOffset(V, repository.invViewMatrix, 32);

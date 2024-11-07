@@ -6,8 +6,14 @@ import com.pine.injection.PInject;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.ubo.UBOCreationData;
+import com.pine.service.resource.ubo.UBOData;
+import com.pine.service.resource.ubo.UniformBufferObject;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryUtil;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +50,11 @@ public class CoreBufferRepository implements CoreRepository {
     public int ssaoBlurredSampler;
     public int brdfSampler;
 
+
+    public UniformBufferObject globalDataUBO;
+    public final FloatBuffer globalDataBuffer = MemoryUtil.memAllocFloat(95);
+
+
     @Override
     public void initialize() {
         atomicCounterBuffer = GL46.glGenBuffers();
@@ -51,7 +62,26 @@ public class CoreBufferRepository implements CoreRepository {
         GL46.glBufferData(GL46.GL_ATOMIC_COUNTER_BUFFER, Integer.BYTES, GL46.GL_DYNAMIC_DRAW);
         GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, atomicCounterBuffer);
 
+        globalDataUBO = new UniformBufferObject(new UBOCreationData(
+                "GlobalData",
+                new UBOData("viewProjection", GLSLType.MAT_4), // Offset: 0
+                new UBOData("viewMatrix", GLSLType.MAT_4), // Offset: 16
+                new UBOData("invViewMatrix", GLSLType.MAT_4), // Offset: 32
+                new UBOData("cameraWorldPosition", GLSLType.VEC_4), // Offset: 48
+                new UBOData("projectionMatrix", GLSLType.MAT_4), // Offset: 52
+                new UBOData("invProjectionMatrix", GLSLType.MAT_4), // Offset: 68
+                new UBOData("bufferResolution", GLSLType.VEC_2), // Offset: 84, 85
+                new UBOData("logDepthFC", GLSLType.FLOAT), // Offset: 86
+                new UBOData("timeOfDay", GLSLType.FLOAT), // Offset: 88
 
+                new UBOData("sunLightDirection", GLSLType.VEC_3), // Offset: 89, 90, 91
+                new UBOData("sunLightColor", GLSLType.VEC_3) // Offset: 92, 93, 94
+        ));
+
+        createFrameBuffers();
+    }
+
+    private void createFrameBuffers() {
         final int displayW = runtimeRepository.getDisplayW();
         final int displayH = runtimeRepository.getDisplayH();
 
@@ -119,6 +149,7 @@ public class CoreBufferRepository implements CoreRepository {
 
     @Override
     public void dispose() {
+        globalDataUBO.dispose();
         auxBuffer.dispose();
         postProcessingBuffer.dispose();
         ssao.dispose();

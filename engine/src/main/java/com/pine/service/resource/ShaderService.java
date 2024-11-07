@@ -4,13 +4,12 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.ClockRepository;
-import com.pine.repository.core.CoreUBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.type.UBODeclaration;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
@@ -35,7 +34,8 @@ public class ShaderService extends AbstractResourceService<Shader> {
     public ClockRepository clockRepository;
 
     @PInject
-    public CoreUBORepository uboRepository;
+    public CoreBufferRepository bufferRepository;
+
     FloatBuffer bufferFloat = MemoryUtil.memAllocFloat(1);
     IntBuffer bufferIntBool = MemoryUtil.memAllocInt(1);
     FloatBuffer bufferVec2 = MemoryUtil.memAllocFloat(2);
@@ -65,8 +65,8 @@ public class ShaderService extends AbstractResourceService<Shader> {
     @Nullable
     public Shader bindWithUBO(String code, Shader instance) {
         if (instance.isValid()) {
-            if (code.contains(UBODeclaration.CAMERA_VIEW.getBlockName()))
-                uboService.bindWithShader(uboRepository.cameraViewUBO, instance.getProgram());
+            if (code.contains(bufferRepository.globalDataUBO.getBlockName()))
+                uboService.bindWithShader(bufferRepository.globalDataUBO, instance.getProgram());
             return instance;
         }
         return null;

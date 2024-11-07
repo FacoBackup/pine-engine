@@ -21,8 +21,6 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public AtmosphereSettingsRepository atmosphere;
     @PInject
-    public CloudsRepository cloudsRepository;
-    @PInject
     public Engine engine;
     @PInject
     public TerrainRepository terrainRepository;
@@ -53,9 +51,7 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public CoreSSBORepository ssboRepository;
     @PInject
-    public CoreUBORepository uboRepository;
-    @PInject
-    public CoreBufferRepository fboRepository;
+    public CoreBufferRepository bufferRepository;
     @PInject
     public CoreMeshRepository meshRepository;
     @PInject

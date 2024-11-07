@@ -15,8 +15,9 @@ void main()
     float worley0 = worley_fbm(texCoord, freq);
     float worley1 = worley_fbm(texCoord, freq * 2.0f);
     float worley2 = worley_fbm(texCoord, freq * 4.0f);
+    float worley3 = worley_fbm(texCoord, freq * 8.0f);
 
-    vec4 worley = vec4(worley0, worley1, worley2, 0.0f);
+    vec4 worley = vec4(worley0, worley1, worley2, worley3);
 
     imageStore(noiseSampler, ivec3(gl_GlobalInvocationID), worley);
 }

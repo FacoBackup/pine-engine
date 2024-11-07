@@ -35,9 +35,7 @@ public class Engine extends MetricCollector implements IResource {
     @PInject
     public CoreSSBORepository ssboRepository;
     @PInject
-    public CoreUBORepository uboRepository;
-    @PInject
-    public CoreBufferRepository fboRepository;
+    public CoreBufferRepository bufferRepository;
     @PInject
     public CoreMeshRepository primitiveRepository;
     @PInject
@@ -59,12 +57,11 @@ public class Engine extends MetricCollector implements IResource {
 
         primitiveRepository.initialize();
         ssboRepository.initialize();
-        uboRepository.initialize();
-        fboRepository.initialize();
+        bufferRepository.initialize();
         shaderRepository.initialize();
         systemsService.initialize();
 
-        targetFBO = fboRepository.auxBuffer;
+        targetFBO = bufferRepository.auxBuffer;
 
         this.modules.addModules(modules);
         tasks.forEach(AbstractTask::start);
@@ -106,7 +103,7 @@ public class Engine extends MetricCollector implements IResource {
             return;
         }
         startTracking();
-        for (FrameBufferObject fbo : fboRepository.all) {
+        for (FrameBufferObject fbo : bufferRepository.all) {
             fbo.clear();
         }
 
@@ -146,8 +143,7 @@ public class Engine extends MetricCollector implements IResource {
     public void dispose() {
         shaderRepository.dispose();
         ssboRepository.dispose();
-        uboRepository.dispose();
-        fboRepository.dispose();
+        bufferRepository.dispose();
         primitiveRepository.dispose();
     }
 

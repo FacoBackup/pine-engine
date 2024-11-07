@@ -1,7 +1,7 @@
 
 layout (location = 0) in vec3 position;
 
-#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "./buffer_objects/GLOBAL_DATA_UBO.glsl"
 
 uniform mat4 transformationMatrix;
 
@@ -34,7 +34,7 @@ void main(){
 
     if(keepSameSize){
         vec3 translation = vec3(transformationMatrix[3]);
-        float len = length(placement.xyz - translation);
+        float len = length(cameraWorldPosition.xyz - translation);
         mat4 sc;
         for ( int x = 0; x < 4; x++ )
         for ( int y = 0; y < 4; y++ )

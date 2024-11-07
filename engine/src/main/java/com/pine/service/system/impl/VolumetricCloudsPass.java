@@ -5,11 +5,9 @@ import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.voxelization.util.TextureUtil;
-import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
-
-import java.nio.ByteBuffer;
 
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
@@ -18,73 +16,59 @@ public class VolumetricCloudsPass extends AbstractQuadPassPass {
     private boolean hasSamplersComputed = false;
     private TextureResourceRef cloudNoiseTexture;
     private TextureResourceRef cloudShapeTexture;
-    private UniformDTO uBlueNoise;
-    private UniformDTO uCurlNoise;
-    private UniformDTO uPlanetCenter;
-    private UniformDTO uPlanetRadius;
-    private UniformDTO uCloudMinHeight;
-    private UniformDTO uCloudMaxHeight;
-    private UniformDTO uShapeNoiseScale;
-    private UniformDTO uDetailNoiseScale;
-    private UniformDTO uDetailNoiseModifier;
-    private UniformDTO uTurbulenceNoiseScale;
-    private UniformDTO uTurbulenceAmount;
-    private UniformDTO uCloudCoverage;
-    private UniformDTO uWindDirection;
-    private UniformDTO uWindSpeed;
-    private UniformDTO uWindShearOffset;
-    private UniformDTO uElapsedDayTime;
-    private UniformDTO uMaxNumSteps;
-    private UniformDTO uLightStepLength;
-    private UniformDTO uLightConeRadius;
-    private UniformDTO uSunColor;
-    private UniformDTO uCloudBaseColor;
-    private UniformDTO uCloudTopColor;
-    private UniformDTO uPrecipitation;
-    private UniformDTO uAmbientLightFactor;
-    private UniformDTO uSunLightFactor;
-    private UniformDTO uHenyeyGreensteinGForward;
-    private UniformDTO uHenyeyGreensteinGBackward;
+
+    private UniformDTO densityMultiplier;
+    private UniformDTO densityOffset;
+    private UniformDTO scale;
+    private UniformDTO detailNoiseScale;
+    private UniformDTO detailNoiseWeight;
+    private UniformDTO detailWeights;
+    private UniformDTO shapeNoiseWeights;
+    private UniformDTO phaseParams;
+    private UniformDTO numStepsLight;
+    private UniformDTO rayOffsetStrength;
+    private UniformDTO boundsMin;
+    private UniformDTO boundsMax;
+    private UniformDTO shapeOffset;
+    private UniformDTO detailOffset;
+    private UniformDTO lightAbsorptionTowardSun;
+    private UniformDTO lightAbsorptionThroughCloud;
+    private UniformDTO darknessThreshold;
+    private UniformDTO lightColor;
+    private UniformDTO baseSpeed;
+    private UniformDTO detailSpeed;
 
     @Override
     public void onInitialize() {
-        uBlueNoise = addUniformDeclaration("uBlueNoise");
-        uCurlNoise = addUniformDeclaration("uCurlNoise");
-        uPlanetCenter = addUniformDeclaration("uPlanetCenter");
-        uPlanetRadius = addUniformDeclaration("uPlanetRadius");
-        uCloudMinHeight = addUniformDeclaration("uCloudMinHeight");
-        uCloudMaxHeight = addUniformDeclaration("uCloudMaxHeight");
-        uShapeNoiseScale = addUniformDeclaration("uShapeNoiseScale");
-        uDetailNoiseScale = addUniformDeclaration("uDetailNoiseScale");
-        uDetailNoiseModifier = addUniformDeclaration("uDetailNoiseModifier");
-        uTurbulenceNoiseScale = addUniformDeclaration("uTurbulenceNoiseScale");
-        uTurbulenceAmount = addUniformDeclaration("uTurbulenceAmount");
-        uCloudCoverage = addUniformDeclaration("uCloudCoverage");
-        uWindDirection = addUniformDeclaration("uWindDirection");
-        uWindSpeed = addUniformDeclaration("uWindSpeed");
-        uWindShearOffset = addUniformDeclaration("uWindShearOffset");
-        uElapsedDayTime = addUniformDeclaration("uElapsedDayTime");
-        uMaxNumSteps = addUniformDeclaration("uMaxNumSteps");
-        uLightStepLength = addUniformDeclaration("uLightStepLength");
-        uLightConeRadius = addUniformDeclaration("uLightConeRadius");
-        uSunColor = addUniformDeclaration("uSunColor");
-        uCloudBaseColor = addUniformDeclaration("uCloudBaseColor");
-        uCloudTopColor = addUniformDeclaration("uCloudTopColor");
-        uPrecipitation = addUniformDeclaration("uPrecipitation");
-        uAmbientLightFactor = addUniformDeclaration("uAmbientLightFactor");
-        uSunLightFactor = addUniformDeclaration("uSunLightFactor");
-        uHenyeyGreensteinGForward = addUniformDeclaration("uHenyeyGreensteinGForward");
-        uHenyeyGreensteinGBackward = addUniformDeclaration("uHenyeyGreensteinGBackward");
+        densityMultiplier = addUniformDeclaration("densityMultiplier");
+        densityOffset = addUniformDeclaration("densityOffset");
+        scale = addUniformDeclaration("scale");
+        detailNoiseScale = addUniformDeclaration("detailNoiseScale");
+        detailNoiseWeight = addUniformDeclaration("detailNoiseWeight");
+        detailWeights = addUniformDeclaration("detailWeights");
+        shapeNoiseWeights = addUniformDeclaration("shapeNoiseWeights");
+        phaseParams = addUniformDeclaration("phaseParams");
+        numStepsLight = addUniformDeclaration("numStepsLight");
+        rayOffsetStrength = addUniformDeclaration("rayOffsetStrength");
+        boundsMin = addUniformDeclaration("boundsMin");
+        boundsMax = addUniformDeclaration("boundsMax");
+        shapeOffset = addUniformDeclaration("shapeOffset");
+        detailOffset = addUniformDeclaration("detailOffset");
+        lightAbsorptionTowardSun = addUniformDeclaration("lightAbsorptionTowardSun");
+        lightAbsorptionThroughCloud = addUniformDeclaration("lightAbsorptionThroughCloud");
+        darknessThreshold = addUniformDeclaration("darknessThreshold");
+        baseSpeed = addUniformDeclaration("baseSpeed");
+        detailSpeed = addUniformDeclaration("detailSpeed");
     }
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.auxBuffer;
+        return bufferRepository.auxBuffer;
     }
 
     @Override
     protected boolean isRenderable() {
-        return cloudsRepository.enabled;
+        return atmosphere.clouds;
     }
 
     @Override
@@ -107,9 +91,9 @@ public class VolumetricCloudsPass extends AbstractQuadPassPass {
 
         GL46.glBindImageTexture(0, texture.texture, 0, true, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16F);
 
-        COMPUTE_RUNTIME_DATA.groupX = texture.width/NUM_THREADS;
-        COMPUTE_RUNTIME_DATA.groupY = texture.height/NUM_THREADS;
-        COMPUTE_RUNTIME_DATA.groupZ = texture.depth/NUM_THREADS;
+        COMPUTE_RUNTIME_DATA.groupX = texture.width / NUM_THREADS;
+        COMPUTE_RUNTIME_DATA.groupY = texture.height / NUM_THREADS;
+        COMPUTE_RUNTIME_DATA.groupZ = texture.depth / NUM_THREADS;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 
 
@@ -137,31 +121,25 @@ public class VolumetricCloudsPass extends AbstractQuadPassPass {
         shaderService.bindSampler3dDirect(cloudNoiseTexture, 1);
 //        shaderService.bindSampler2d(cloudsRepository.blueNoise, uBlueNoise);
 //        shaderService.bindSampler2d(cloudsRepository.curlNoise, uCurlNoise);
-        shaderService.bindVec3(cloudsRepository.planetCenter, uPlanetCenter);
-        shaderService.bindFloat(cloudsRepository.planetRadius, uPlanetRadius);
-        shaderService.bindFloat(cloudsRepository.cloudMinHeight, uCloudMinHeight);
-        shaderService.bindFloat(cloudsRepository.cloudMaxHeight, uCloudMaxHeight);
-        shaderService.bindFloat(cloudsRepository.shapeNoiseScale, uShapeNoiseScale);
-        shaderService.bindFloat(cloudsRepository.detailNoiseScale, uDetailNoiseScale);
-        shaderService.bindFloat(cloudsRepository.detailNoiseModifier, uDetailNoiseModifier);
-        shaderService.bindFloat(cloudsRepository.turbulenceNoiseScale, uTurbulenceNoiseScale);
-        shaderService.bindFloat(cloudsRepository.turbulenceAmount, uTurbulenceAmount);
-        shaderService.bindFloat(cloudsRepository.cloudCoverage, uCloudCoverage);
-        shaderService.bindVec3(cloudsRepository.windDirection, uWindDirection);
-        shaderService.bindFloat(cloudsRepository.windSpeed, uWindSpeed);
-        shaderService.bindFloat(cloudsRepository.windShearOffset, uWindShearOffset);
-        shaderService.bindFloat(atmosphere.elapsedTime, uElapsedDayTime);
-        shaderService.bindFloat(cloudsRepository.maxNumSteps, uMaxNumSteps);
-        shaderService.bindFloat(cloudsRepository.lightStepLength, uLightStepLength);
-        shaderService.bindFloat(cloudsRepository.lightConeRadius, uLightConeRadius);
-        shaderService.bindVec3(cloudsRepository.sunColor, uSunColor);
-        shaderService.bindVec3(cloudsRepository.cloudBaseColor, uCloudBaseColor);
-        shaderService.bindVec3(cloudsRepository.cloudTopColor, uCloudTopColor);
-        shaderService.bindFloat(cloudsRepository.precipitation, uPrecipitation);
-        shaderService.bindFloat(cloudsRepository.ambientLightFactor, uAmbientLightFactor);
-        shaderService.bindFloat(cloudsRepository.sunLightFactor, uSunLightFactor);
-        shaderService.bindFloat(cloudsRepository.henyeyGreensteinGForward, uHenyeyGreensteinGForward);
-        shaderService.bindFloat(cloudsRepository.henyeyGreensteinGBackward, uHenyeyGreensteinGBackward);
+        shaderService.bindFloat(atmosphere.densityMultiplier, densityMultiplier);
+        shaderService.bindFloat(atmosphere.densityOffset, densityOffset);
+        shaderService.bindFloat(atmosphere.scale, scale);
+        shaderService.bindFloat(atmosphere.detailNoiseScale, detailNoiseScale);
+        shaderService.bindFloat(atmosphere.detailNoiseWeight, detailNoiseWeight);
+        shaderService.bindVec3(atmosphere.detailWeights, detailWeights);
+        shaderService.bindVec4(atmosphere.shapeNoiseWeights, shapeNoiseWeights);
+        shaderService.bindVec4(atmosphere.phaseParams, phaseParams);
+        shaderService.bindInt(atmosphere.numStepsLight, numStepsLight);
+        shaderService.bindFloat(atmosphere.rayOffsetStrength, rayOffsetStrength);
+        shaderService.bindVec3(atmosphere.boundsMin, boundsMin);
+        shaderService.bindVec3(atmosphere.boundsMax, boundsMax);
+        shaderService.bindVec3(atmosphere.shapeOffset, shapeOffset);
+        shaderService.bindVec3(atmosphere.detailOffset, detailOffset);
+        shaderService.bindFloat(atmosphere.lightAbsorptionTowardSun, lightAbsorptionTowardSun);
+        shaderService.bindFloat(atmosphere.lightAbsorptionThroughCloud, lightAbsorptionThroughCloud);
+        shaderService.bindFloat(atmosphere.darknessThreshold, darknessThreshold);
+        shaderService.bindFloat(atmosphere.shapeScrollSpeed, baseSpeed);
+        shaderService.bindFloat(atmosphere.detailScrollSpeed, detailSpeed);
     }
 
     @Override

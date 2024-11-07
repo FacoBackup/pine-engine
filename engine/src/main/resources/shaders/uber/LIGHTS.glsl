@@ -151,7 +151,7 @@ vec3 processLight(inout int attributeOffset) {
 
 #include "../uber/SUN_CONTRIBUTION.glsl"
 
-vec3 pbLightComputation(int lightCount, bool sun, float elapsedDayTime, bool screenSpaceShadows) {
+vec3 pbLightComputation(int lightCount, bool sun, bool screenSpaceShadows) {
     VrN = reflect(-V, N);
     albedoOverPI = albedo / PI;
     vec3 indirectIllumination = vec3(0.0);
@@ -168,7 +168,7 @@ vec3 pbLightComputation(int lightCount, bool sun, float elapsedDayTime, bool scr
 
     vec3 baseColor = vec3(directIllumination);
     if(sun){
-        baseColor += computeDirectionalLight(elapsedDayTime, screenSpaceShadows);
+        baseColor += computeDirectionalLight(screenSpaceShadows);
     }
     return baseColor;
 }

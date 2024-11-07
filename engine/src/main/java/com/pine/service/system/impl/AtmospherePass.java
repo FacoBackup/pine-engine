@@ -1,7 +1,5 @@
 package com.pine.service.system.impl;
 
-import com.pine.injection.PInject;
-import com.pine.repository.AtmosphereSettingsRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -13,7 +11,6 @@ public class AtmospherePass extends AbstractQuadPassPass {
     private UniformDTO renderStatic;
     private UniformDTO invViewStatic;
     private UniformDTO type;
-    private UniformDTO elapsedTime;
     private UniformDTO rayleighBeta;
     private UniformDTO mieBeta;
     private UniformDTO intensity;
@@ -30,7 +27,6 @@ public class AtmospherePass extends AbstractQuadPassPass {
         invViewStatic = addUniformDeclaration("invViewStatic");
         invSkyProjectionMatrix = addUniformDeclaration("invSkyProjectionMatrix");
         type = addUniformDeclaration("type");
-        elapsedTime = addUniformDeclaration("elapsedTime");
         rayleighBeta = addUniformDeclaration("rayleighBeta");
         mieBeta = addUniformDeclaration("mieBeta");
         intensity = addUniformDeclaration("intensity");
@@ -44,7 +40,7 @@ public class AtmospherePass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.auxBuffer;
+        return bufferRepository.auxBuffer;
     }
 
     @Override
@@ -61,7 +57,6 @@ public class AtmospherePass extends AbstractQuadPassPass {
     protected void bindUniforms() {
         shaderService.bindMat4(cameraRepository.invSkyboxProjectionMatrix, invSkyProjectionMatrix);
         shaderService.bindInt(atmosphere.renderingType.getId(), type);
-        shaderService.bindFloat(atmosphere.elapsedTime, elapsedTime);
         shaderService.bindVec3(atmosphere.betaRayleigh, rayleighBeta);
         shaderService.bindVec3(atmosphere.betaMie, mieBeta);
         shaderService.bindFloat(atmosphere.intensity, intensity);
@@ -72,7 +67,7 @@ public class AtmospherePass extends AbstractQuadPassPass {
         shaderService.bindFloat(atmosphere.threshold, threshold);
         shaderService.bindInt(atmosphere.maxSamples, samples);
         shaderService.bindBoolean(false, renderStatic);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 0);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 0);
     }
 
     @Override

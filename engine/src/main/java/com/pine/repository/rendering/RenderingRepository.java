@@ -2,9 +2,13 @@ package com.pine.repository.rendering;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.repository.AtmosphereSettingsRepository;
+import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +38,7 @@ public class RenderingRepository {
     public WorldRepository worldRepository;
 
     public void sync() {
-        if(!infoUpdated){
+        if (!infoUpdated) {
             return;
         }
 

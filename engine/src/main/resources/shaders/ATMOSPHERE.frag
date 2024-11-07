@@ -5,14 +5,13 @@
 #define ONLY_RAYLEIGH 1
 #define COMBINED  2
 
-#include "./buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "./buffer_objects/GLOBAL_DATA_UBO.glsl"
 
 in vec2 texCoords;
 layout(binding = 0) uniform sampler2D gBufferDepthSampler;
 
 uniform mat4 invSkyProjectionMatrix;
 uniform int type;
-uniform float elapsedTime;
 uniform vec3 rayleighBeta;
 uniform vec3 mieBeta;
 uniform float intensity;
@@ -144,7 +143,7 @@ void main() {
     atmosphereRadius1 *= 6420e3;
     planetRadius1 *= 6360e3;
 
-    sunDirection = normalize(vec3(sin(elapsedTime), cos(elapsedTime), 1.0f));
+    sunDirection = normalize(sunLightDirection.xyz);
     vec3 dir = createRay(renderStatic ? invViewStatic : invViewMatrix);
 
     fragColor = vec4(0., 0., 0., 1.);

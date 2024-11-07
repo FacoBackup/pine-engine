@@ -38,7 +38,7 @@ public class GridPass extends AbstractPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.postProcessingBuffer;
+        return bufferRepository.postProcessingBuffer;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class GridPass extends AbstractPass {
         );
 
         shaderService.bindVec4(buffer, settingsUniform);
-        shaderService.bindSampler2d(fboRepository.gBufferDepthIndexSampler, depthUniform);
+        shaderService.bindSampler2d(bufferRepository.gBufferDepthIndexSampler, depthUniform);
 
         meshService.bind(meshRepository.planeMesh);
         meshService.setRenderingMode(RenderingMode.TRIANGLES);

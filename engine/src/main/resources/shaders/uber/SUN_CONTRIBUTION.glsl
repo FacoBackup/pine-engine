@@ -54,9 +54,8 @@ float directionalLightShadows(float distanceFromCamera, float shadowFalloffDista
     return response;
 }
 
-vec3 computeDirectionalLight(float elapsedDayTime, bool useScreenSpaceShadows){
-    vec3 sunDirection = vec3(sin(elapsedDayTime), cos(elapsedDayTime), 1.0f) * 1000;
-    vec4 baseContribution = precomputeContribution(sunDirection);
+vec3 computeDirectionalLight(bool useScreenSpaceShadows){
+    vec4 baseContribution = precomputeContribution(sunLightDirection.xyz);
     if (baseContribution.a == 0.) return vec3(0.);
 
     float shadows = 1.;
@@ -66,9 +65,9 @@ vec3 computeDirectionalLight(float elapsedDayTime, bool useScreenSpaceShadows){
         return vec3(0.);
     }
 
-    float occlusion = useScreenSpaceShadows ? screenSpaceShadows(sunDirection) : 1.;
+    float occlusion = useScreenSpaceShadows ? screenSpaceShadows(sunLightDirection.xyz) : 1.;
     if (occlusion == 0.){
         return vec3(0.);
     }
-    return computeBRDF(baseContribution.rgb, baseContribution.a, vec3(1));
+    return computeBRDF(baseContribution.rgb, baseContribution.a, sunLightColor);
 }

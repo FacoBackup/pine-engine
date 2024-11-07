@@ -20,7 +20,7 @@ public class BRDFGenPass extends AbstractPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.brdfFBO;
+        return bufferRepository.brdfFBO;
     }
 
     @Override

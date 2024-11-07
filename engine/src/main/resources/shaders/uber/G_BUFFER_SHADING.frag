@@ -44,7 +44,6 @@ uniform int maxStepsSSS;
 uniform int lightCount;
 
 uniform bool sunEnabled;
-uniform float elapsedDayTime;
 uniform bool useScreenSpaceShadows;
 
 // MATERIAL SETTINGS
@@ -131,9 +130,9 @@ void main() {
     metallic = valueRMAOSampler.g;
     viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
     worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
-    V = normalize(placement.xyz - worldSpacePosition);
+    V = normalize(cameraWorldPosition.xyz - worldSpacePosition);
     distanceFromCamera = length(V);
-    vec3 lightContribution = pbLightComputation(lightCount, sunEnabled, elapsedDayTime, useScreenSpaceShadows);
+    vec3 lightContribution = pbLightComputation(lightCount, sunEnabled, useScreenSpaceShadows);
     color = vec4(lightContribution + sampleIndirectLight(gBufferIndirect), 1.);
 }
 

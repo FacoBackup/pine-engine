@@ -1,6 +1,6 @@
 layout (location = 0) in vec3 position;
 
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 #include "../util/UTIL.glsl"
 
 uniform int planeSize;
@@ -18,7 +18,7 @@ smooth out vec3 worldSpacePosition;
 
 void main() {
 
-    cameraPlacement = placement.xyz;
+    cameraPlacement = cameraWorldPosition.xyz;
     renderingIndex = 1;
     depthFunc = logDepthFC;
 

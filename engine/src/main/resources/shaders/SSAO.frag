@@ -17,7 +17,7 @@ void main() {
     float depthData = getLogDepth(texCoords);
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, texCoords);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
-    float distanceFromCamera = length(placement.xyz - worldSpacePosition);
+    float distanceFromCamera = length(cameraWorldPosition.xyz - worldSpacePosition);
 
     float radius = settings.x;
     float power = settings.y;

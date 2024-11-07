@@ -16,12 +16,11 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
     private UniformDTO maxStepsSSS;
     private UniformDTO lightCount;
     private UniformDTO sunEnabled;
-    private UniformDTO elapsedDayTime;
     private UniformDTO screenSpaceShadows;
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.auxBuffer;
+        return bufferRepository.auxBuffer;
     }
 
     @Override
@@ -37,7 +36,6 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
         maxStepsSSS = addUniformDeclaration("maxStepsSSS");
         lightCount = addUniformDeclaration("lightCount");
         sunEnabled = addUniformDeclaration("sunEnabled");
-        elapsedDayTime = addUniformDeclaration("elapsedDayTime");
         screenSpaceShadows = addUniformDeclaration("screenSpaceShadows");
     }
 
@@ -62,19 +60,18 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
         shaderService.bindInt(renderingRepository.lightCount, lightCount);
 
         shaderService.bindBoolean(atmosphere.enabled, sunEnabled);
-        shaderService.bindFloat(atmosphere.elapsedTime, elapsedDayTime);
         shaderService.bindBoolean(atmosphere.screenSpaceShadows, screenSpaceShadows);
 
-        shaderService.bindSampler2dDirect(fboRepository.gBufferAlbedoSampler, 0);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferNormalSampler, 1);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferRMAOSampler, 2);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferMaterialSampler, 3);
-        shaderService.bindSampler2dDirect(fboRepository.brdfSampler, 4);
-        shaderService.bindSampler2dDirect(fboRepository.ssaoBlurredSampler, 5);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferAlbedoSampler, 0);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferNormalSampler, 1);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferRMAOSampler, 2);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferMaterialSampler, 3);
+        shaderService.bindSampler2dDirect(bufferRepository.brdfSampler, 4);
+        shaderService.bindSampler2dDirect(bufferRepository.ssaoBlurredSampler, 5);
 //        shaderService.bindSampler2dDirect(fboRepository.ssgiSampler, 6);
-        shaderService.bindSampler2dDirect(fboRepository.postProcessingSampler, 7);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 8);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferIndirectSampler, 9);
+        shaderService.bindSampler2dDirect(bufferRepository.postProcessingSampler, 7);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 8);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferIndirectSampler, 9);
     }
 
 

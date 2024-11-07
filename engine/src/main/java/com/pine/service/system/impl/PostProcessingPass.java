@@ -34,7 +34,7 @@ public class PostProcessingPass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return engine.fboRepository.postProcessingBuffer;
+        return engine.bufferRepository.postProcessingBuffer;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PostProcessingPass extends AbstractQuadPassPass {
         shaderService.bindFloat(cameraRepository.vignetteStrength, vignetteStrength);
 
 //        shaderService.bindSampler2d(, bloomColor);
-        shaderService.bindSampler2dDirect(fboRepository.auxSampler, 1);
+        shaderService.bindSampler2dDirect(bufferRepository.auxSampler, 1);
 
     }
 

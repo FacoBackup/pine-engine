@@ -4,7 +4,6 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.GizmoType;
-import com.pine.repository.PaintingType;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
@@ -82,7 +81,7 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
-        FrameBufferObject fbo = fboRepository.gBuffer;
+        FrameBufferObject fbo = bufferRepository.gBuffer;
         targetTexture.bindForBoth(1);
 
         radiusDensityMode.x = editorRepository.brushRadius;
@@ -111,7 +110,7 @@ public class PaintGizmoPass extends AbstractPass {
         shaderService.bindInt(editorRepository.paintingType.id, paintMode);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
-        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 2);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 2);
 
         COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (fbo.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
