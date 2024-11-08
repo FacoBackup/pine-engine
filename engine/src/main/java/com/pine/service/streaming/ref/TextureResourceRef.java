@@ -13,7 +13,9 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int width;
     public int height;
     public int depth;
-    public int internalFormat = GL46.GL_RGBA16;
+    public int internalFormat;
+    public int format;
+    public int type;
     public FrameBufferObject frameBuffer;
 
     public TextureResourceRef(String id) {
@@ -35,14 +37,20 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
 
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, internalFormat, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, data.internalFormat, data.width, data.height, 0, data.format, data.type, data.imageBuffer);
 
-        GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
+        if (data.mipmap) {
+            GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
+        }
         GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
+
         STBImage.stbi_image_free(data.imageBuffer);
 
-        this.width = data.width;
-        this.height = data.height;
+        internalFormat = data.internalFormat;
+        format = data.format;
+        type = data.type;
+        width = data.width;
+        height = data.height;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.pine.Engine;
 import com.pine.injection.PInject;
 import com.pine.panels.AbstractEntityViewPanel;
 import com.pine.repository.*;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
@@ -55,6 +56,9 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
     @PInject
     public ViewportPickingService viewportPickingService;
+
+    @PInject
+    public CoreBufferRepository coreBufferRepository;
 
 
     private FrameBufferObject fbo;

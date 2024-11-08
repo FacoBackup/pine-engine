@@ -10,6 +10,8 @@ import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
 import com.pine.service.resource.ubo.UniformBufferObject;
+import com.pine.service.streaming.ref.TextureResourceRef;
+import com.pine.service.voxelization.util.TextureUtil;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -35,7 +37,6 @@ public class CoreBufferRepository implements CoreRepository {
     public final List<FrameBufferObject> upscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> downscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> all = new ArrayList<>();
-    public FrameBufferObject brdfFBO;
 
     public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
@@ -48,7 +49,10 @@ public class CoreBufferRepository implements CoreRepository {
     public int postProcessingSampler;
     public int ssaoSampler;
     public int ssaoBlurredSampler;
-    public int brdfSampler;
+
+    public TextureResourceRef brdfSampler;
+    public TextureResourceRef curlNoiseSampler;
+    public TextureResourceRef blueNoiseSampler;
 
 
     public UniformBufferObject globalDataUBO;
@@ -88,8 +92,9 @@ public class CoreBufferRepository implements CoreRepository {
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
 
-        brdfFBO = new FrameBufferObject(512, 512).addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false);
-        brdfSampler = brdfFBO.getSamplers().getFirst();
+        curlNoiseSampler = TextureUtil.loadTextureFromResource("/textures/curlNoise.png");
+        brdfSampler = TextureUtil.loadTextureFromResource("/textures/brdf.png");
+        blueNoiseSampler = TextureUtil.loadTextureFromResource("/textures/blueNoise.png");
 
         gBuffer = new FrameBufferObject(displayW, displayH)
                 .depthTest()
@@ -149,6 +154,10 @@ public class CoreBufferRepository implements CoreRepository {
 
     @Override
     public void dispose() {
+        brdfSampler.dispose();
+        curlNoiseSampler.dispose();
+        blueNoiseSampler.dispose();
+
         globalDataUBO.dispose();
         auxBuffer.dispose();
         postProcessingBuffer.dispose();
@@ -157,6 +166,5 @@ public class CoreBufferRepository implements CoreRepository {
         gBuffer.dispose();
         upscaleBloom.forEach(FrameBufferObject::dispose);
         downscaleBloom.forEach(FrameBufferObject::dispose);
-        brdfFBO.dispose();
     }
 }
