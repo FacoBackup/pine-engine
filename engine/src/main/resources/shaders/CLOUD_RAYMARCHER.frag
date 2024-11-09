@@ -6,7 +6,7 @@ out vec4 finalColor;
 layout(binding = 0) uniform sampler3D uShapeNoise;
 layout(binding = 1) uniform sampler3D uDetailNoise;
 layout(binding = 2) uniform sampler2D uBlueNoise;
-layout(binding = 3) uniform sampler2D uCurlNoise;
+layout(binding = 3) uniform sampler2D uDepthSampler;
 
 uniform float densityMultiplier;
 uniform float densityOffset;
@@ -71,11 +71,6 @@ float phase(float a) {
     return phaseParams.z + hgBlend*phaseParams.w;
 }
 
-float beer(float d) {
-    float beer = exp(-d);
-    return beer;
-}
-
 float remap01(float v, float low, float high) {
     return (v-low)/(high-low);
 }
@@ -113,6 +108,7 @@ float sampleDensity(vec3 rayPos) {
     // Save sampling from detail tex if shape density <= 0
     if (baseShapeDensity > 0) {
         // Sample detail noise
+
         vec3 detailSamplePos = uvw*detailNoiseScale + detailOffset * offsetSpeed + vec3(timeOfDay*.4, -timeOfDay, timeOfDay*0.1)*detailSpeed;
         vec3 detailNoise = texture(uDetailNoise, detailSamplePos, mipLevel).rgb;
         vec3 normalizedDetailWeights = detailWeights / dot(detailWeights, vec3(1));
@@ -156,6 +152,10 @@ vec3 createRay() {
 }
 
 void main(){
+    if(texture(uDepthSampler, texCoords).r != 0){
+        discard;
+    }
+
     // Create ray
     vec3 rayPos = cameraWorldPosition.xyz;
     vec3 rayDir = createRay();
@@ -172,14 +172,14 @@ void main(){
     vec3 entryPoint = rayPos + rayDir * dstToBox;
 
     // random starting offset (makes low-res results noisy rather than jagged/glitchy, which is nicer)
-    float randomOffset = texture(uBlueNoise, squareUV(texCoords*3), 0).r;
+    float randomOffset = texture(uBlueNoise, texCoords).r;
     randomOffset *= rayOffsetStrength;
 
     // Phase function makes clouds brighter around sun
     float cosAngle = dot(rayDir, sunLightDirection.xyz);
     float phaseVal = phase(cosAngle);
 
-    float dstTravelled = 0;//randomOffset;
+    float dstTravelled = randomOffset;
     float dstLimit = min(dstToBox, dstInsideBox);
 
 

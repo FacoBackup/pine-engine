@@ -51,7 +51,6 @@ public class CoreBufferRepository implements CoreRepository {
     public int ssaoBlurredSampler;
 
     public TextureResourceRef brdfSampler;
-    public TextureResourceRef curlNoiseSampler;
     public TextureResourceRef blueNoiseSampler;
 
 
@@ -92,7 +91,6 @@ public class CoreBufferRepository implements CoreRepository {
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
 
-        curlNoiseSampler = TextureUtil.loadTextureFromResource("/textures/curlNoise.png");
         brdfSampler = TextureUtil.loadTextureFromResource("/textures/brdf.png");
         blueNoiseSampler = TextureUtil.loadTextureFromResource("/textures/blueNoise.png");
 
@@ -155,7 +153,6 @@ public class CoreBufferRepository implements CoreRepository {
     @Override
     public void dispose() {
         brdfSampler.dispose();
-        curlNoiseSampler.dispose();
         blueNoiseSampler.dispose();
 
         globalDataUBO.dispose();

@@ -14,7 +14,7 @@ public class AccordionPanel extends AbstractView {
             return;
         }
 
-        if (ImGui.collapsingHeader(title + imguiId, ImGuiTreeNodeFlags.DefaultOpen)) {
+        if (ImGui.collapsingHeader(title + imguiId)) {
             super.render();
         }
     }

@@ -120,7 +120,7 @@ public class VolumetricCloudsPass extends AbstractQuadPassPass {
         shaderService.bindSampler3dDirect(cloudShapeTexture, 0);
         shaderService.bindSampler3dDirect(cloudNoiseTexture, 1);
         shaderService.bindSampler2dDirect(bufferRepository.blueNoiseSampler, 2);
-        shaderService.bindSampler2dDirect(bufferRepository.curlNoiseSampler, 3);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 3);
         shaderService.bindFloat(atmosphere.densityMultiplier, densityMultiplier);
         shaderService.bindFloat(atmosphere.densityOffset, densityOffset);
         shaderService.bindFloat(atmosphere.scale, scale);

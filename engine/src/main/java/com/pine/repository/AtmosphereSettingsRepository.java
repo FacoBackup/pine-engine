@@ -60,44 +60,50 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
     @InspectableField(group = "Atmospheric scattering", label = "Threshold", max = 10, min = -1, isDirectChange = false, isAngle = false)
     public float threshold = -.1f;
 
-    @InspectableField(group = "Clouds", label = "densityMultiplier")
-    public float densityMultiplier = 1;
-    @InspectableField(group = "Clouds", label = "densityOffset")
-    public float densityOffset = 0;
-    @InspectableField(group = "Clouds", label = "scale")
-    public float scale = .2f;
-    @InspectableField(group = "Clouds", label = "detailNoiseScale")
-    public float detailNoiseScale = 0;
-    @InspectableField(group = "Clouds", label = "detailNoiseWeight")
-    public float detailNoiseWeight = 0;
-    @InspectableField(group = "Clouds", label = "detailWeights", min = 0)
+
+    @InspectableField(group = "Cloud detail", label = "Detail noise scale")
+    public float detailNoiseScale = 1;
+    @InspectableField(group = "Cloud detail", label = "Detail noise weight")
+    public float detailNoiseWeight = 1;
+    @InspectableField(group = "Cloud detail", label = "Detail noise weights", min = 0)
     public Vector3f detailWeights = new Vector3f(0, 0, 1);
-    @InspectableField(group = "Clouds", label = "shapeNoiseWeights")
-    public Vector4f shapeNoiseWeights = new Vector4f(0, .1f, -1, 1);
-    @InspectableField(group = "Clouds", label = "phaseParams")
-    public Vector4f phaseParams = new Vector4f(0, 0, .2f, 0);
-    @InspectableField(group = "Clouds", label = "numStepsLight", max = 10, min = 0)
-    public int numStepsLight = 5;
-    @InspectableField(group = "Clouds", label = "rayOffsetStrength")
-    public float rayOffsetStrength = 1;
-    @InspectableField(group = "Clouds", label = "boundsMin")
-    public Vector3f boundsMin = new Vector3f(-1000, 200, -1000);
-    @InspectableField(group = "Clouds", label = "boundsMax")
-    public Vector3f boundsMax = new Vector3f(1000, 400, 1000);
-    @InspectableField(group = "Clouds", label = "shapeOffset")
-    public Vector3f shapeOffset = new Vector3f(0);
-    @InspectableField(group = "Clouds", label = "detailOffset")
+    @InspectableField(group = "Cloud detail", label = "Detail offset")
     public Vector3f detailOffset = new Vector3f(0);
-    @InspectableField(group = "Clouds", label = "lightAbsorptionTowardSun")
-    public float lightAbsorptionTowardSun = 1;
-    @InspectableField(group = "Clouds", label = "lightAbsorptionThroughCloud")
-    public float lightAbsorptionThroughCloud = .5f;
-    @InspectableField(group = "Clouds", label = "darknessThreshold", min = 0, max = 1)
-    public float darknessThreshold = 0;
-    @InspectableField(group = "Clouds", label = "shapeScrollSpeed")
-    public float shapeScrollSpeed = 1;
-    @InspectableField(group = "Clouds", label = "detailScrollSpeed")
+    @InspectableField(group = "Cloud detail", label = "Detail scroll speed", min = 0, max = 1)
     public float detailScrollSpeed = 1;
+
+    @InspectableField(group = "Cloud shape", label = "Shape noise weights")
+    public Vector4f shapeNoiseWeights = new Vector4f(0, .1f, -1, 1);
+    @InspectableField(group = "Cloud shape", label = "Shape offset")
+    public Vector3f shapeOffset = new Vector3f(0);
+    @InspectableField(group = "Cloud shape", label = "Shape scroll speed", min = 0)
+    public float shapeScrollSpeed = 1;
+
+    @InspectableField(group = "Clouds", label = "Density multiplier", min = 0)
+    public float densityMultiplier = 1;
+    @InspectableField(group = "Clouds", label = "Density offset", min = 0)
+    public float densityOffset = 0;
+    @InspectableField(group = "Clouds", label = "Scale", min = 0)
+    public float scale = .2f;
+
+    @InspectableField(group = "Clouds", label = "Phase params")
+    public Vector4f phaseParams = new Vector4f(0, 0, .2f, 0);
+    @InspectableField(group = "Clouds", label = "Light step count", max = 10, min = 0)
+    public int numStepsLight = 5;
+    @InspectableField(group = "Clouds", label = "Ray offset strength", min = 0)
+    public float rayOffsetStrength = 1;
+
+    @InspectableField(group = "Clouds", label = "Min Bounds")
+    public Vector3f boundsMin = new Vector3f(-1000, 200, -1000);
+    @InspectableField(group = "Clouds", label = "Max bounds")
+    public Vector3f boundsMax = new Vector3f(1000, 400, 1000);
+
+    @InspectableField(group = "Clouds", label = "Light absorption toward sun", min = 0, max = 1)
+    public float lightAbsorptionTowardSun = 1;
+    @InspectableField(group = "Clouds", label = "Light absorption through cloud", min = 0, max = 1)
+    public float lightAbsorptionThroughCloud = .5f;
+    @InspectableField(group = "Clouds", label = "Darkness threshold", min = 0, max = 1)
+    public float darknessThreshold = 0;
 
     @Override
     public String getTitle() {
