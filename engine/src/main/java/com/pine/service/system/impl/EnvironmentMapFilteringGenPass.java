@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
 import com.pine.repository.rendering.RenderingMode;
-import com.pine.service.environment.CubeMapGenerator;
+import com.pine.service.environment.CubeMapUtil;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.impl.CubeMapFace;
@@ -36,7 +36,7 @@ public class EnvironmentMapFilteringGenPass extends AbstractPass {
     protected void renderInternal() {
         for (var env : renderingRepository.environmentMaps) {
             if (env != null && env.isLoaded() && !env.hasFiltering) {
-                var texture = CubeMapGenerator.generateTexture(env.resolution);
+                var texture = CubeMapUtil.generateTexture(env.resolution);
                 GL46.glGenerateMipmap(GL46.GL_TEXTURE_CUBE_MAP);
 
                 shaderService.bindSamplerCubeDirect(env.texture, 0);

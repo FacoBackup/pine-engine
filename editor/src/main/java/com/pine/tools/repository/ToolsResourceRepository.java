@@ -18,7 +18,6 @@ public class ToolsResourceRepository implements Initializable {
 
     public Shader outlineShader;
     public Shader gridShader;
-    public Shader backgroundShader;
     public Shader paintGizmoCompute;
     public Shader paintGizmoRenderingShader;
     public Shader outlineGenShader;
@@ -27,7 +26,6 @@ public class ToolsResourceRepository implements Initializable {
 
     @Override
     public void onInitialize() {
-        backgroundShader = shaderService.create("QUAD.vert", "tool/BACKGROUND.frag");
         outlineShader = shaderService.create("QUAD.vert", "tool/OUTLINE.frag");
         paintGizmoRenderingShader = shaderService.create("QUAD.vert", "tool/PAINT_GIZMO.frag");
         outlineGenShader = shaderService.create("tool/OUTLINE_GEN.vert", "tool/OUTLINE_GEN.frag");

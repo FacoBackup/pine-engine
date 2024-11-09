@@ -30,18 +30,22 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader gaussianShader;
     public Shader upSamplingShader;
     public Shader gBufferShading;
+    public Shader brdfShader;
     public Shader voxelRaymarchingCompute;
     public Shader cloudDetailCompute;
     public Shader cloudShapeCompute;
     public Shader cloudsRaymarcher;
     public Shader meshletCompute;
+    public Shader compositingShader;
 
     @PInject
     public ShaderService shaderService;
 
     @Override
     public void initialize() {
+        compositingShader = shaderService.create("QUAD.vert", "COMPOSITE.frag");
         gBufferShading = shaderService.create("QUAD.vert", "uber/G_BUFFER_SHADING.frag");
+        brdfShader = shaderService.create("QUAD.vert", "BRDF_GEN.frag");
         spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
         gBufferShader = shaderService.create("uber/G_BUFFER.vert", "uber/G_BUFFER.frag");
         gBufferTerrainShader = shaderService.create("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag");
@@ -77,6 +81,7 @@ public class CoreShaderRepository implements CoreRepository {
         spriteShader.dispose();
         gBufferShader.dispose();
         gBufferTerrainShader.dispose();
+        brdfShader.dispose();
         gBufferInstanceShader.dispose();
         foliageCullingShader.dispose();
         toScreenShader.dispose();

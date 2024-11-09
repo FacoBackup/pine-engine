@@ -104,17 +104,7 @@ vec3 getSkyColor(vec3 pa, vec3 pb) {
     return rayleighColor + mieColor;
 }
 
-vec3 createRay(mat4 invView) {
-    vec2 pxNDS = texCoords * 2. - 1.;
-    vec3 pointNDS = vec3(pxNDS, -1.);
-    vec4 pointNDSH = vec4(pointNDS, 1.0);
-    vec4 dirEye = invProjectionMatrix * pointNDSH;
-    dirEye.w = 0.;
-    vec3 dirWorld = (invView * dirEye).xyz;
-    return normalize(dirWorld);
-}
-
-vec4 computeAtmpshere(){
+vec4 computeAtmpshere(vec3 rayDir){
     rayleighBeta1.x *= 263157.;
     rayleighBeta1.y *= 74074.;
     rayleighBeta1.z *= 30211.;
@@ -128,13 +118,12 @@ vec4 computeAtmpshere(){
     planetRadius1 *= 6360e3;
 
     sunDirection = normalize(sunLightDirection.xyz);
-    vec3 dir = createRay(invViewMatrix);
 
-    if (dir.y >= threshold) {
+    if (rayDir.y >= threshold) {
         vec3 origin = vec3(0.0, planetRadius1 + 1.0, 0.0);
 
-        float distanceToAtmosphere = raySphereIntersect(origin, dir, vec3(0.0, 0.0, 0.0), atmosphereRadius1);
-        vec3 atmosphereIntersect = origin + dir * distanceToAtmosphere;
+        float distanceToAtmosphere = raySphereIntersect(origin, rayDir, vec3(0.0, 0.0, 0.0), atmosphereRadius1);
+        vec3 atmosphereIntersect = origin + rayDir * distanceToAtmosphere;
         return vec4(getSkyColor(origin, atmosphereIntersect), 1);
     }
     return vec4(0);

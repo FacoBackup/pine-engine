@@ -10,8 +10,6 @@ import com.pine.service.resource.shader.GLSLType;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
 import com.pine.service.resource.ubo.UniformBufferObject;
-import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.service.voxelization.util.TextureUtil;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -29,15 +27,19 @@ public class CoreBufferRepository implements CoreRepository {
     @PInject
     public RuntimeRepository runtimeRepository;
 
-    public FrameBufferObject auxBuffer;
+    public FrameBufferObject gBufferTarget;
     public FrameBufferObject postProcessingBuffer;
     public FrameBufferObject ssao;
     public FrameBufferObject ssaoBlurred;
     public FrameBufferObject gBuffer;
+    public FrameBufferObject auxBufferQuaterRes;
     public final List<FrameBufferObject> upscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> downscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> all = new ArrayList<>();
+    public FrameBufferObject brdfFBO;
+    public FrameBufferObject compositingBuffer;
 
+    public int auxBufferQuaterResSampler;
     public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
     public int gBufferNormalSampler;
@@ -45,17 +47,17 @@ public class CoreBufferRepository implements CoreRepository {
     public int gBufferMaterialSampler;
     public int gBufferDepthIndexSampler;
     public int gBufferIndirectSampler;
-    public int auxSampler;
+    public int gBufferTargetSampler;
     public int postProcessingSampler;
     public int ssaoSampler;
     public int ssaoBlurredSampler;
-
-    public TextureResourceRef brdfSampler;
-    public TextureResourceRef blueNoiseSampler;
+    public int brdfSampler;
+    public int compositingSampler;
 
 
     public UniformBufferObject globalDataUBO;
     public final FloatBuffer globalDataBuffer = MemoryUtil.memAllocFloat(95);
+
 
 
     @Override
@@ -91,33 +93,11 @@ public class CoreBufferRepository implements CoreRepository {
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
 
-        brdfSampler = TextureUtil.loadTextureFromResource("/textures/brdf.png");
-        blueNoiseSampler = TextureUtil.loadTextureFromResource("/textures/blueNoise.png");
+        brdfFBO = new FrameBufferObject(512, 512).addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false);
+        brdfSampler = brdfFBO.getSamplers().getFirst();
 
-        gBuffer = new FrameBufferObject(displayW, displayH)
-                .depthTest()
-                .addSampler(0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false) // Albedo + Emissive flag
-                .addSampler(1, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Normal
-                .addSampler(2, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Roughness + Metallic + AO
-
-                // X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
-                // Y channel: 16 bits for clearCoat + 16 bits for sheen
-                // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
-                .addSampler(3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
-                .addSampler(4, GL46.GL_RGBA16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index + UV
-                .addSampler(5, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false);
-        gBufferAlbedoSampler = gBuffer.getSamplers().get(0);
-        gBufferNormalSampler = gBuffer.getSamplers().get(1);
-        gBufferRMAOSampler = gBuffer.getSamplers().get(2);
-        gBufferMaterialSampler = gBuffer.getSamplers().get(3);
-        gBufferDepthIndexSampler = gBuffer.getSamplers().get(4);
-        gBufferIndirectSampler = gBuffer.getSamplers().get(5);
-
-        auxBuffer = new FrameBufferObject(displayW, displayH)
-                .depthTest()
-                .addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
-
-        postProcessingBuffer = new FrameBufferObject(displayW, displayH).addSampler();
+        createGBuffer(displayW, displayH);
+        createMainBuffers(displayW, displayH);
 
         ssao = new FrameBufferObject(halfResW, halfResH).addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false);
         ssaoBlurred = new FrameBufferObject(halfResW, halfResH).addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false);
@@ -138,30 +118,69 @@ public class CoreBufferRepository implements CoreRepository {
 
         ssaoBlurredSampler = ssaoBlurred.getSamplers().getFirst();
         ssaoSampler = ssao.getSamplers().getFirst();
-        auxSampler = auxBuffer.getSamplers().getFirst();
-        postProcessingSampler = postProcessingBuffer.getSamplers().getFirst();
 
         all.add(postProcessingBuffer);
         all.add(gBuffer);
-        all.add(auxBuffer);
+        all.add(gBufferTarget);
         all.add(ssao);
         all.add(ssaoBlurred);
         all.addAll(upscaleBloom);
         all.addAll(downscaleBloom);
+        all.add(auxBufferQuaterRes);
+        all.add(compositingBuffer);
+    }
+
+    private void createGBuffer(int displayW, int displayH) {
+        gBuffer = new FrameBufferObject(displayW, displayH)
+                .depthTest()
+                .addSampler(0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false) // Albedo + Emissive flag
+                .addSampler(1, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Normal
+                .addSampler(2, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Roughness + Metallic + AO
+
+                // X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
+                // Y channel: 16 bits for clearCoat + 16 bits for sheen
+                // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
+                .addSampler(3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
+                .addSampler(4, GL46.GL_RGBA16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index + UV
+                .addSampler(5, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false);
+        gBufferAlbedoSampler = gBuffer.getSamplers().get(0);
+        gBufferNormalSampler = gBuffer.getSamplers().get(1);
+        gBufferRMAOSampler = gBuffer.getSamplers().get(2);
+        gBufferMaterialSampler = gBuffer.getSamplers().get(3);
+        gBufferDepthIndexSampler = gBuffer.getSamplers().get(4);
+        gBufferIndirectSampler = gBuffer.getSamplers().get(5);
+    }
+
+    private void createMainBuffers(int displayW, int displayH) {
+        gBufferTarget = new FrameBufferObject(displayW, displayH)
+                .depthTest()
+                .addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false);
+        gBufferTargetSampler = gBufferTarget.getSamplers().getFirst();
+
+        compositingBuffer = new FrameBufferObject(displayW, displayH)
+                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false);
+        compositingSampler = compositingBuffer.getSamplers().getFirst();
+
+        auxBufferQuaterRes = new FrameBufferObject(displayW /4, displayH /4)
+                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, true, false);
+        auxBufferQuaterResSampler = auxBufferQuaterRes.getMainSampler();
+
+        postProcessingBuffer = new FrameBufferObject(displayW, displayH)
+                .addSampler(0, GL46.GL_RGB, GL46.GL_RGB, GL46.GL_UNSIGNED_BYTE, false, false);
+        postProcessingSampler = postProcessingBuffer.getSamplers().getFirst();
     }
 
     @Override
     public void dispose() {
-        brdfSampler.dispose();
-        blueNoiseSampler.dispose();
-
         globalDataUBO.dispose();
-        auxBuffer.dispose();
+        auxBufferQuaterRes.dispose();
+        gBufferTarget.dispose();
         postProcessingBuffer.dispose();
         ssao.dispose();
         ssaoBlurred.dispose();
         gBuffer.dispose();
         upscaleBloom.forEach(FrameBufferObject::dispose);
         downscaleBloom.forEach(FrameBufferObject::dispose);
+        brdfFBO.dispose();
     }
 }

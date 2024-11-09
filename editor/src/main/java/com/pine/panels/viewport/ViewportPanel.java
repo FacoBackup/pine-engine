@@ -142,6 +142,12 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
         sizeVec.x = size.x;
         sizeVec.y = size.y - FRAME_SIZE;
+
+        repo.viewportH = sizeVec.y;
+        repo.viewportW = sizeVec.x;
+        repo.viewportX = position.x;
+        repo.viewportY = position.y + FRAME_SIZE;
+
         repo.isFocused = ImGui.isWindowHovered();
         repo.fasterPressed = ImGui.isKeyDown(ImGuiKey.LeftShift);
         repo.forwardPressed = ImGui.isKeyDown(ImGuiKey.W);
@@ -153,10 +159,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         repo.mousePressed = ImGui.isWindowFocused() && ImGui.isWindowHovered() && ImGui.isMouseDown(ImGuiMouseButton.Left);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
-        repo.viewportH = sizeVec.y;
-        repo.viewportW = sizeVec.x;
-        repo.viewportX = position.x;
-        repo.viewportY = position.y + FRAME_SIZE;
     }
 
     @Override

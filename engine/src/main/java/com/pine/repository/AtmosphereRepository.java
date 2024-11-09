@@ -23,7 +23,6 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     }
 
 
-
     @InspectableField(label = "Render atmosphere")
     public boolean enabled = false;
 
@@ -46,7 +45,7 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     public float atmosphereRadius = 1;
     @InspectableField(group = "Atmospheric scattering", label = "Planet Radius", max = 1, min = 0)
     public float planetRadius = 1;
-    @InspectableField(group = "Atmospheric scattering", label = "Intensity", max = 20, min = 1, isDirectChange = false, isAngle = false)
+    @InspectableField(group = "Atmospheric scattering", label = "Intensity", max = 20, min = 1)
     public float intensity = 10;
     @InspectableField(group = "Atmospheric scattering", label = "Rendering Type")
     public AtmosphereType renderingType = AtmosphereType.COMBINED;
@@ -54,16 +53,16 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     public final Vector3f betaRayleigh = new Vector3f(1);
     @InspectableField(group = "Atmospheric scattering", label = "Beta Mie")
     public final Vector3f betaMie = new Vector3f(1);
-    @InspectableField(group = "Atmospheric scattering", label = "Threshold", max = 10, min = -1, isDirectChange = false, isAngle = false)
+    @InspectableField(group = "Atmospheric scattering", label = "Threshold", max = 10, min = -1)
     public float threshold = -.1f;
 
 
     @InspectableField(group = "Clouds", label = "Layer height", min = 1)
-    public int cloudsHeight = 200;
+    public int cloudsHeight = 500;
     @InspectableField(group = "Clouds", label = "Layer width and depth", min = 1)
     public int cloudsSize = 1000;
     @InspectableField(group = "Clouds", label = "Layer altitude")
-    public int cloudsAltitude = 400;
+    public int cloudsAltitude = 1000;
 
     @InspectableField(group = "Cloud detail", label = "Detail noise scale", min = 0)
     public float detailNoiseScale = 1;
@@ -77,7 +76,7 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     public float detailScrollSpeed = 1;
 
     @InspectableField(group = "Cloud shape", label = "Shape noise weights")
-    public Vector4f shapeNoiseWeights = new Vector4f(0, .1f, -1, 1);
+    public Vector4f shapeNoiseWeights = new Vector4f(0, 0, 1, -.75f);
     @InspectableField(group = "Cloud shape", label = "Shape offset")
     public Vector3f shapeOffset = new Vector3f(0);
     @InspectableField(group = "Cloud shape", label = "Shape scroll speed", min = 0)

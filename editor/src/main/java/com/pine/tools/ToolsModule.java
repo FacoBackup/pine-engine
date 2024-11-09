@@ -17,13 +17,9 @@ public class ToolsModule implements EngineExternalModule {
     public List<AbstractPass> getExternalSystems(List<AbstractPass> systems) {
         ArrayList<AbstractPass> withTools = new ArrayList<>(systems);
         AbstractPass fc = systems.stream().filter(a -> a instanceof FrameCompositionPass).findFirst().orElse(null);
-        AbstractPass gB = systems.stream().filter(a -> a instanceof GBufferShadingPass).findFirst().orElse(null);
         AbstractPass tB = systems.stream().filter(a -> a instanceof TerrainGBufferPass).findFirst().orElse(null);
         int indexFc = systems.indexOf(fc);
-        int indexGB = systems.indexOf(gB);
         int indexTB = systems.indexOf(tB);
-
-        withTools.add(indexGB, new BackgroundPass());
 
         withTools.add(indexFc, new GridPass());
         withTools.add(indexTB + 1, new PaintGizmoPass());

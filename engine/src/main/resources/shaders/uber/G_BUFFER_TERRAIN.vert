@@ -6,7 +6,7 @@ layout (location = 0) in vec3 position;
 uniform int planeSize;
 uniform float heightScale;
 
-uniform sampler2D heightMap;
+layout (binding = 8) uniform sampler2D heightMap;
 
 flat out vec3 cameraPlacement;
 flat out int renderingIndex;

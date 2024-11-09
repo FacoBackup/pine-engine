@@ -16,15 +16,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
-    private static final Vector3f EMPTY = new Vector3f(-1);
-    private static final int LOCAL_SIZE_X = 4;
-    private static final int LOCAL_SIZE_Y = 4;
-
     @PInject
     public EditorRepository editorRepository;
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
+
     private UniformDTO xyMouseUniform;
     private UniformDTO viewportSize;
     private UniformDTO viewportOrigin;
@@ -51,7 +48,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return bufferRepository.auxBuffer;
+        return bufferRepository.gBufferTarget;
     }
 
     @Override
@@ -81,8 +78,17 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
         shaderService.bindVec3(xyDown, xyMouseUniform);
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(viewportO, viewportOrigin);
-        shaderService.bindBoolean(editorRepository.foliageForPainting != null, hasSelection);
+
+        shaderService.bindBoolean(checkIsValid(), hasSelection);
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 0);
+    }
+
+    private boolean checkIsValid() {
+        return switch (editorRepository.paintingType) {
+            case FOLIAGE -> editorRepository.foliageForPainting != null && terrainRepository.instanceMaskMap != null;
+            case TERRAIN -> terrainRepository.heightMapTexture != null;
+            default -> false;
+        };
     }
 
     @Override

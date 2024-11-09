@@ -22,9 +22,6 @@ import java.util.Map;
 @PBean
 public class EditorRepository extends Inspectable implements SerializableRepository {
 
-    @InspectableField(group = "Editor", label = "Background color")
-    public Color backgroundColor = new Color(0.24f, 0.24f, 0.24f);
-
     @InspectableField(group = "Editor", label = "Accent color")
     public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);
 

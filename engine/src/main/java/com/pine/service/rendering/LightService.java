@@ -33,15 +33,21 @@ public class LightService {
         count = 0;
         FloatBuffer b = ssboRepository.lightSSBOState;
         for (var l : worldRepository.bagPointLightComponent.values()) {
-            packagePointLight(l, b);
+            if (!worldRepository.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packagePointLight(l, b);
+            }
         }
 
         for (var l : worldRepository.bagSphereLightComponent.values()) {
-            packageSphereLight(l, b);
+            if (!worldRepository.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packageSphereLight(l, b);
+            }
         }
 
         for (var l : worldRepository.bagSpotLightComponent.values()) {
-            packageSpotLight(l, b);
+            if (!worldRepository.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packageSpotLight(l, b);
+            }
         }
         renderingRepository.lightCount = count;
     }

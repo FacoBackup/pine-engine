@@ -10,7 +10,6 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
     private MeshResourceRef mesh;
     private TextureResourceRef heightMap;
     private UniformDTO planeSize;
-    private UniformDTO heightMapU;
     private UniformDTO heightScale;
     private UniformDTO fallbackMaterial;
 
@@ -19,7 +18,6 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
         super.onInitialize();
 
         planeSize = addUniformDeclaration("planeSize");
-        heightMapU = addUniformDeclaration("heightMap");
         heightScale = addUniformDeclaration("heightScale");
         fallbackMaterial = addUniformDeclaration("fallbackMaterial");
     }
@@ -40,7 +38,7 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
     protected void renderInternal() {
         prepareCall();
 
-        shaderService.bindSampler2d(heightMap, heightMapU);
+        shaderService.bindSampler2dDirect(heightMap, 8);
         shaderService.bindInt(heightMap.width, planeSize);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
         shaderService.bindBoolean(true, fallbackMaterial);

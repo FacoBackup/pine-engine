@@ -61,7 +61,7 @@ public class Engine extends MetricCollector implements IResource {
         shaderRepository.initialize();
         systemsService.initialize();
 
-        targetFBO = bufferRepository.auxBuffer;
+        targetFBO = bufferRepository.gBufferTarget;
 
         this.modules.addModules(modules);
         tasks.forEach(AbstractTask::start);

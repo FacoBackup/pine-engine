@@ -6,6 +6,7 @@ import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.RuntimeRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
@@ -44,8 +45,12 @@ public class EnvironmentMapGenService implements Loggable {
     @PInject
     public CameraRepository cameraRepository;
 
+    @PInject
+    public RuntimeRepository runtimeRepository;
+
 
     public void bake() {
+        engineSettingsRepository.isBaking = true;
         getLogger().warn("Starting probe baking");
         boolean previous = engineSettingsRepository.disableCullingGlobally;
         engineSettingsRepository.disableCullingGlobally = true;
@@ -60,12 +65,13 @@ public class EnvironmentMapGenService implements Loggable {
             streamingRepository.discardedResources.remove(probe.getEntityId());
         }
         engineSettingsRepository.disableCullingGlobally = previous;
+        engineSettingsRepository.isBaking = false;
     }
 
     private void capture(String resourceId, Vector3f cameraPosition) {
         getLogger().warn("Baking probe {} at position X{} Y{} Z{}", resourceId, cameraPosition.x, cameraPosition.y, cameraPosition.z);
         int baseResolution = engineSettingsRepository.probeCaptureResolution;
-        var fbo = new FrameBufferObject(baseResolution, baseResolution);
+        var fbo = new FrameBufferObject(baseResolution, baseResolution).addSampler();
         engine.setTargetFBO(fbo);
         for (int i = 0; i < CubeMapFace.values().length; i++) {
             generate(i, resourceId, cameraPosition);
@@ -76,7 +82,6 @@ public class EnvironmentMapGenService implements Loggable {
     private void generate(int index, String resourceId, Vector3f cameraPosition) {
         var face = CubeMapFace.values()[index];
         var camera = new Camera();
-        camera.aspectRatio = 1;
         camera.fov = (float) Math.toRadians(90);
         camera.position.set(cameraPosition);
         camera.zNear = .1f;
@@ -84,7 +89,10 @@ public class EnvironmentMapGenService implements Loggable {
         camera.pitch = face.pitch;
         camera.yaw = face.yaw;
 
-//        cameraRepository.setCurrentCamera(camera);
+        runtimeRepository.viewportH = engine.getTargetFBO().height;
+        runtimeRepository.viewportW = engine.getTargetFBO().width;
+
+        cameraRepository.setCurrentCamera(camera);
         engine.render();
 
         String basePath = importerService.getPathToFile(resourceId, StreamableResourceType.ENVIRONMENT_MAP);

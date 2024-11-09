@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
 import com.pine.repository.rendering.RenderingMode;
-import com.pine.service.environment.CubeMapGenerator;
+import com.pine.service.environment.CubeMapUtil;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.impl.CubeMapFace;
@@ -48,7 +48,7 @@ public class IrradianceGenPass extends AbstractPass {
     protected void renderInternal() {
         for (var env : renderingRepository.environmentMaps) {
             if (env != null && env.isLoaded() && !env.hasIrradianceGenerated) {
-                env.irradiance = CubeMapGenerator.generateTexture(RES);
+                env.irradiance = CubeMapUtil.generateTexture(RES);
                 shaderService.bindSamplerCubeDirect(env, 0);
                 GL46.glDisable(GL11.GL_CULL_FACE);
 

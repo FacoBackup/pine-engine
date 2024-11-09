@@ -61,7 +61,7 @@ vec3 sampleIndirectLight(sampler2D gBufferIndirect) {
     vec3 specularColor = ssrEnabled ? computeSSR() : vec3(0.);
     vec3 F = fresnelSchlickRoughness(NdotV, F0, roughness);
 
-    vec3 envIndirect = texture(gBufferIndirect, quadUV).rgb * albedoOverPI * (F * brdf.r + brdf.g);
+    vec3 envIndirect = texture(gBufferIndirect, quadUV).rgb * albedo * (F * brdf.r + brdf.g);
 
     return envIndirect + specularColor;
 }

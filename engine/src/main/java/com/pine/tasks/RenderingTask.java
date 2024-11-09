@@ -45,9 +45,6 @@ public class RenderingTask extends AbstractTask {
     public StreamingService streamingService;
 
     @PInject
-    public EnvironmentMapGenService environmentMapGenService;
-
-    @PInject
     public LightService lightService;
 
     @PInject

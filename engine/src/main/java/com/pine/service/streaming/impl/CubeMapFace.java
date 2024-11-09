@@ -8,8 +8,8 @@ import static com.pine.Engine.PI_OVER_2;
 
 public enum CubeMapFace {
 
-    POSITIVE_X(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X, PI_OVER_2, 0, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f)),
-    NEGATIVE_X(GL46.GL_TEXTURE_CUBE_MAP_NEGATIVE_X, -PI_OVER_2, 0, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(-1.0f, 0.0f, 0.0f)),
+    POSITIVE_X(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_X, -PI_OVER_2, 0, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(1.0f, 0.0f, 0.0f)),
+    NEGATIVE_X(GL46.GL_TEXTURE_CUBE_MAP_NEGATIVE_X, PI_OVER_2, 0, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(-1.0f, 0.0f, 0.0f)),
     POSITIVE_Y(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, -PI_OVER_2, new Vector3f(0.0f, 0.0f, 1.0f), new Vector3f(0.0f, 1.0f, 0.0f)),
     NEGATIVE_Y(GL46.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, PI_OVER_2, new Vector3f(0.0f, 0.0f, -1.0f), new Vector3f(0.0f, -1.0f, 0.0f)),
     POSITIVE_Z(GL46.GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, 0, new Vector3f(0.0f, -1.0f, 0.0f), new Vector3f(0.0f, 0.0f, 1.0f)),

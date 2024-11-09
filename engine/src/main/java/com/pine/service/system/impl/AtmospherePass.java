@@ -86,7 +86,7 @@ public class AtmospherePass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return bufferRepository.auxBuffer;
+        return bufferRepository.auxBufferQuaterRes;
     }
 
     @Override
@@ -128,22 +128,14 @@ public class AtmospherePass extends AbstractQuadPassPass {
     }
 
     @Override
-    protected void onAfterRender() {
-        GL46.glBindTexture(GL46.GL_TEXTURE_3D, GL11.GL_NONE);
-    }
-
-    @Override
     protected Shader getShader() {
         return shaderRepository.cloudsRaymarcher;
     }
 
     @Override
     protected void bindUniforms() {
-        GL46.glEnable(GL11.GL_BLEND);
         shaderService.bindSampler3dDirect(cloudShapeTexture, 0);
         shaderService.bindSampler3dDirect(cloudNoiseTexture, 1);
-        shaderService.bindSampler2dDirect(bufferRepository.blueNoiseSampler, 2);
-        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 3);
         shaderService.bindFloat(atmosphere.densityMultiplier, densityMultiplier);
         shaderService.bindFloat(atmosphere.densityOffset, densityOffset);
         shaderService.bindFloat(atmosphere.scale, scale);
@@ -171,7 +163,6 @@ public class AtmospherePass extends AbstractQuadPassPass {
         shaderService.bindFloat(atmosphere.darknessThreshold, darknessThreshold);
         shaderService.bindFloat(atmosphere.shapeScrollSpeed, baseSpeed);
         shaderService.bindFloat(atmosphere.detailScrollSpeed, detailSpeed);
-
 
         // ATMOSPHERE
         shaderService.bindInt(atmosphere.renderingType.getId(), type);

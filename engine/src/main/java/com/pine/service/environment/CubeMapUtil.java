@@ -1,12 +1,11 @@
 package com.pine.service.environment;
 
 import com.pine.service.streaming.impl.CubeMapFace;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
 
-public class CubeMapGenerator {
+public class CubeMapUtil {
     public static void setUpCubeMapTexture() {
         GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_CUBE_MAP, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
