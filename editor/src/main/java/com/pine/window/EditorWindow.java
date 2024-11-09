@@ -10,6 +10,7 @@ import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.panels.ToasterPanel;
 import com.pine.panels.header.EditorHeaderPanel;
+import com.pine.panels.viewport.FullScreenViewportPanel;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.ProjectService;
@@ -20,6 +21,7 @@ import com.pine.service.serialization.SerializationService;
 import com.pine.tools.ToolsModule;
 import imgui.ImGui;
 import imgui.ImVec4;
+import imgui.flag.ImGuiKey;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,9 +38,6 @@ public class EditorWindow extends AbstractWindow {
     public Engine engine;
 
     @PInject
-    public RequestProcessingService re;
-
-    @PInject
     public ThemeService themeService;
 
     @PInject
@@ -51,6 +50,7 @@ public class EditorWindow extends AbstractWindow {
     public SerializationService serializationRepository;
 
     private boolean isInitialized = false;
+    private FullScreenViewportPanel fullscreen;
 
     @Override
     public void onInitialize() {
@@ -94,9 +94,18 @@ public class EditorWindow extends AbstractWindow {
 //                    }
 //                }
 
+                appendChild(fullscreen = new FullScreenViewportPanel());
+                removeChild(fullscreen);
                 isInitialized = true;
             }
-            super.render();
+            if (editorRepository.fullScreen) {
+                fullscreen.render();
+                if (ImGui.isKeyDown(ImGuiKey.Escape)) {
+                    editorRepository.fullScreen = false;
+                }
+            } else {
+                super.render();
+            }
         } else {
             ImGui.begin("##windowLoader", OPEN, FLAGS);
             ImGui.text("Pine Engine");

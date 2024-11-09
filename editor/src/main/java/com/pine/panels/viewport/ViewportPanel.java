@@ -57,10 +57,6 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     @PInject
     public ViewportPickingService viewportPickingService;
 
-    @PInject
-    public CoreBufferRepository coreBufferRepository;
-
-
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
     private GizmoPanel gizmo;

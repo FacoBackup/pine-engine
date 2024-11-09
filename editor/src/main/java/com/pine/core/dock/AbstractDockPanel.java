@@ -24,5 +24,4 @@ public abstract class AbstractDockPanel extends AbstractView implements Serializ
         this.position = position;
     }
 
-    public void onRemove(){}
 }

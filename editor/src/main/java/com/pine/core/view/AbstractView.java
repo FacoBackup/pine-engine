@@ -50,5 +50,7 @@ public class AbstractView extends MetricCollector implements View {
     public String getTitle() {
         return null;
     }
+
+    public void onRemove(){}
 }
 
