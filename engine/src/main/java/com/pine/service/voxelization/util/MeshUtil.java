@@ -1,7 +1,6 @@
 package com.pine.service.voxelization.util;
 
 import com.pine.service.importer.data.MeshImportData;
-import com.pine.service.voxelization.BoundingBox;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;

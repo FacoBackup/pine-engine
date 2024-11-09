@@ -33,7 +33,7 @@ public class VoxelVisualizerPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return renderingRepository.voxelChunksFilled > 0;
+        return voxelRepository.showVoxels && renderingRepository.voxelChunksFilled > 0;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class VoxelVisualizerPass extends AbstractPass {
     }
 
     private void bindGlobal() {
-        FrameBufferObject fbo = fboRepository.postProcessingBuffer;
+        FrameBufferObject fbo = bufferRepository.postProcessingBuffer;
         fbo.bindForWriting();
 
         COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;

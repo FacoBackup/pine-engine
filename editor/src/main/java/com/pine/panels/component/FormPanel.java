@@ -4,6 +4,7 @@ import com.pine.core.view.AbstractView;
 import com.pine.inspection.*;
 import com.pine.panels.component.impl.*;
 import imgui.ImGui;
+import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.HashMap;
 import java.util.Map;

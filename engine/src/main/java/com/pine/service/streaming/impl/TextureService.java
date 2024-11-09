@@ -54,7 +54,7 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
             height = heightBuffer.get();
         }
 
-        return new TextureStreamData(width, height, imageBuffer);
+        return new TextureStreamData(width, height, imageBuffer, true);
     }
 
     public int getTotalTextureCount() {

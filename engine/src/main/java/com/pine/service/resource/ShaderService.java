@@ -4,13 +4,12 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.ClockRepository;
-import com.pine.repository.core.CoreUBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.service.resource.shader.ComputeRuntimeData;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.type.UBODeclaration;
 import org.jetbrains.annotations.Nullable;
 import org.joml.*;
 import org.lwjgl.opengl.GL46;
@@ -35,7 +34,8 @@ public class ShaderService extends AbstractResourceService<Shader> {
     public ClockRepository clockRepository;
 
     @PInject
-    public CoreUBORepository uboRepository;
+    public CoreBufferRepository bufferRepository;
+
     FloatBuffer bufferFloat = MemoryUtil.memAllocFloat(1);
     IntBuffer bufferIntBool = MemoryUtil.memAllocInt(1);
     FloatBuffer bufferVec2 = MemoryUtil.memAllocFloat(2);
@@ -65,8 +65,8 @@ public class ShaderService extends AbstractResourceService<Shader> {
     @Nullable
     public Shader bindWithUBO(String code, Shader instance) {
         if (instance.isValid()) {
-            if (code.contains(UBODeclaration.CAMERA_VIEW.getBlockName()))
-                uboService.bindWithShader(uboRepository.cameraViewUBO, instance.getProgram());
+            if (code.contains(bufferRepository.globalDataUBO.getBlockName()))
+                uboService.bindWithShader(bufferRepository.globalDataUBO, instance.getProgram());
             return instance;
         }
         return null;
@@ -202,6 +202,18 @@ public class ShaderService extends AbstractResourceService<Shader> {
     public void bindSampler2dDirect(int sampler, int bindingPoint) {
         GL46.glActiveTexture(GL46.GL_TEXTURE0 + bindingPoint);
         GL46.glBindTexture(GL46.GL_TEXTURE_2D, sampler);
+    }
+
+    public void bindSampler3d(TextureResourceRef texture, UniformDTO uniform) {
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + currentSamplerIndex);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, texture.texture);
+        GL46.glUniform1i(uniform.location, currentSamplerIndex);
+        currentSamplerIndex++;
+    }
+
+    public void bindSampler3dDirect(TextureResourceRef sampler, int bindingPoint) {
+        GL46.glActiveTexture(GL46.GL_TEXTURE0 + bindingPoint);
+        GL46.glBindTexture(GL46.GL_TEXTURE_3D, sampler.texture);
     }
 
     public Shader create(String compute) {

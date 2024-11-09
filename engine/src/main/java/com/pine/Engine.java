@@ -3,7 +3,6 @@ package com.pine;
 import com.pine.injection.EngineExternalModule;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.*;
 import com.pine.service.module.EngineModulesService;
@@ -36,9 +35,7 @@ public class Engine extends MetricCollector implements IResource {
     @PInject
     public CoreSSBORepository ssboRepository;
     @PInject
-    public CoreUBORepository uboRepository;
-    @PInject
-    public CoreFBORepository fboRepository;
+    public CoreBufferRepository bufferRepository;
     @PInject
     public CoreMeshRepository primitiveRepository;
     @PInject
@@ -60,12 +57,11 @@ public class Engine extends MetricCollector implements IResource {
 
         primitiveRepository.initialize();
         ssboRepository.initialize();
-        uboRepository.initialize();
-        fboRepository.initialize();
+        bufferRepository.initialize();
         shaderRepository.initialize();
         systemsService.initialize();
 
-        targetFBO = fboRepository.auxBuffer;
+        targetFBO = bufferRepository.auxBuffer;
 
         this.modules.addModules(modules);
         tasks.forEach(AbstractTask::start);
@@ -107,7 +103,7 @@ public class Engine extends MetricCollector implements IResource {
             return;
         }
         startTracking();
-        for (FrameBufferObject fbo : fboRepository.all) {
+        for (FrameBufferObject fbo : bufferRepository.all) {
             fbo.clear();
         }
 
@@ -147,8 +143,7 @@ public class Engine extends MetricCollector implements IResource {
     public void dispose() {
         shaderRepository.dispose();
         ssboRepository.dispose();
-        uboRepository.dispose();
-        fboRepository.dispose();
+        bufferRepository.dispose();
         primitiveRepository.dispose();
     }
 

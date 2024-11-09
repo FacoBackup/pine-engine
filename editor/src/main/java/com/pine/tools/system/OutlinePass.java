@@ -33,7 +33,7 @@ public class OutlinePass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.postProcessingBuffer;
+        return bufferRepository.postProcessingBuffer;
     }
 
     @Override

@@ -29,11 +29,12 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader postProcessing;
     public Shader gaussianShader;
     public Shader upSamplingShader;
-    public Shader atmosphereShader;
-    public Shader brdfShader;
     public Shader gBufferShading;
     public Shader environmentMap;
     public Shader voxelRaymarchingCompute;
+    public Shader cloudDetailCompute;
+    public Shader cloudShapeCompute;
+    public Shader cloudsRaymarcher;
     public Shader meshletCompute;
 
     @PInject
@@ -42,7 +43,6 @@ public class CoreShaderRepository implements CoreRepository {
     @Override
     public void initialize() {
         gBufferShading = shaderService.create("QUAD.vert", "uber/G_BUFFER_SHADING.frag");
-        brdfShader = shaderService.create("QUAD.vert", "BRDF_GEN.frag");
         spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
         gBufferShader = shaderService.create("uber/G_BUFFER.vert", "uber/G_BUFFER.frag");
         gBufferTerrainShader = shaderService.create("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag");
@@ -65,20 +65,22 @@ public class CoreShaderRepository implements CoreRepository {
         postProcessing = shaderService.create("QUAD.vert", "LENS_POST_PROCESSING.frag");
         gaussianShader = shaderService.create("QUAD.vert", "GAUSSIAN.frag");
         upSamplingShader = shaderService.create("QUAD.vert", "UPSAMPLE_TENT.glsl");
-        atmosphereShader = shaderService.create("QUAD.vert", "ATMOSPHERE.frag");
         environmentMap = shaderService.create("uber/ENVIRONMENT_MAP.vert", "uber/ENVIRONMENT_MAP.frag");
         voxelRaymarchingCompute = shaderService.create("compute/VOXEL_RAY_MARCHING_COMPUTE.glsl");
+        cloudDetailCompute = shaderService.create("compute/CLOUD_DETAIL_COMPUTE.glsl");
+        cloudShapeCompute = shaderService.create("compute/CLOUD_SHAPE_COMPUTE.glsl");
+        cloudsRaymarcher = shaderService.create("QUAD.vert", "ATMOSPHERE.frag");
         meshletCompute = shaderService.create("compute/MESHLET_COMPUTE.glsl");
     }
 
     @Override
     public void dispose() {
-        gBufferTerrainShader.dispose();
-        foliageCullingShader.dispose();
         gBufferShading.dispose();
-        brdfShader.dispose();
         spriteShader.dispose();
         gBufferShader.dispose();
+        gBufferTerrainShader.dispose();
+        gBufferInstanceShader.dispose();
+        foliageCullingShader.dispose();
         toScreenShader.dispose();
         downscaleShader.dispose();
         bilateralBlurShader.dispose();
@@ -96,9 +98,11 @@ public class CoreShaderRepository implements CoreRepository {
         postProcessing.dispose();
         gaussianShader.dispose();
         upSamplingShader.dispose();
-        atmosphereShader.dispose();
         environmentMap.dispose();
         voxelRaymarchingCompute.dispose();
+        cloudDetailCompute.dispose();
+        cloudShapeCompute.dispose();
+        cloudsRaymarcher.dispose();
         meshletCompute.dispose();
     }
 }

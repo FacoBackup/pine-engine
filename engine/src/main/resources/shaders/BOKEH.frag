@@ -20,7 +20,7 @@ void main() {
 
 //    float iterations = float(BLUR_NUMBER);
 //    float DEPTH = getLogDepth(texCoords);
-//    float distanceFromCamera = length(viewSpacePositionFromDepth(DEPTH, texCoords) - placement.xyz);
+//    float distanceFromCamera = length(viewSpacePositionFromDepth(DEPTH, texCoords) - cameraWorldPosition.xyz);
 //    float percentage = min(distanceFromCamera, focusDistanceDOF) / focusDistanceDOF;
 //    float interpolation = DEPTH == 0. ? 1. : mix(0., 1., percentage);
 //    vec3 col = vec3(0.);

@@ -1,4 +1,4 @@
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
 float getLogDepth(vec2 uv) {
     float half_co = logDepthFC * .5;

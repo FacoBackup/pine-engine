@@ -34,8 +34,11 @@ public class InMemoryAppender extends AbstractAppender {
 
     @Override
     public void append(LogEvent event) {
-        if (logMessagesSource.size() >= MAX_MESSAGES_HISTORY) {
-            logMessagesSource.removeFirst();
+        try {
+            if (logMessagesSource.size() >= MAX_MESSAGES_HISTORY) {
+                logMessagesSource.removeFirst();
+            }
+        } catch (Exception ignored) {
         }
         if (event.getLevel() == Level.ERROR && event.getThrown() != null) {
             logMessagesSource.add(new LogMessage(event.getThrown().getMessage(), event.getTimeMillis()));
@@ -51,10 +54,11 @@ public class InMemoryAppender extends AbstractAppender {
 
     public static void sync() {
         if (!isSynced) {
-            try{
+            try {
                 copy.clear();
                 copy.addAll(logMessagesSource.reversed());
-            }catch (Exception ignored){}
+            } catch (Exception ignored) {
+            }
         }
         isSynced = true;
     }

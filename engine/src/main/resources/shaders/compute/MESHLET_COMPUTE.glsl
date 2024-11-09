@@ -16,7 +16,7 @@ layout(std430, binding = 3) readonly buffer Vertices {
 layout (binding = 0) uniform writeonly image2D outputImage;
 
 uniform int meshletCount;
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
 // Function to calculate barycentric coordinates
 vec3 barycentric(vec2 p, vec2 a, vec2 b, vec2 c) {

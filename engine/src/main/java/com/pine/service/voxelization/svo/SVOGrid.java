@@ -1,5 +1,6 @@
-package com.pine.service.voxelization;
+package com.pine.service.voxelization.svo;
 
+import com.pine.service.voxelization.util.BoundingBox;
 import org.joml.Vector3f;
 
 import java.io.Serializable;

@@ -4,7 +4,7 @@ layout (location = 2) in vec3 normal;
 
 #include "../buffer_objects/MODEL_SSBO.glsl"
 
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
 uniform int transformationIndex;
 
@@ -16,7 +16,7 @@ smooth out vec3 normalVec;
 smooth out vec3 worldSpacePosition;
 
 void main() {
-    cameraPlacement = placement.xyz;
+    cameraPlacement = cameraWorldPosition.xyz;
     renderingIndex = (transformationIndex + gl_InstanceID);
     mat4 modelMatrix = modelMatrices[renderingIndex];
     vec4 wPosition = modelMatrix * vec4(position, 1.0);

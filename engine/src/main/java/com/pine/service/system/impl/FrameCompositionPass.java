@@ -57,7 +57,7 @@ public class FrameCompositionPass extends AbstractQuadPassPass {
         shaderService.bindFloat(settingsRepository.fxaaReduceMin, FXAAReduceMin);
         shaderService.bindFloat(settingsRepository.fxaaReduceMul, FXAAReduceMul);
         shaderService.bindFloat(cameraRepository.filmGrainStrength, filmGrainStrength);
-        shaderService.bindSampler2d(fboRepository.postProcessingSampler, currentFrame);
+        shaderService.bindSampler2d(bufferRepository.postProcessingSampler, currentFrame);
         shaderService.bindFloat(lookupNoise(), filmGrainSeed);
     }
 

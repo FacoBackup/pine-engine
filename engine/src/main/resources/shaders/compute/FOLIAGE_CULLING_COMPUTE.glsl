@@ -14,7 +14,7 @@ uniform float heightScale;
 
 #define MAX_INSTANCING  500000
 
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 #include "../util/UTIL.glsl"
 
 vec3 heightMapToWorldSpace(vec2 uv, float planeSize) {

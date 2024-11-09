@@ -6,13 +6,21 @@ import com.pine.injection.PInject;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.ubo.UBOCreationData;
+import com.pine.service.resource.ubo.UBOData;
+import com.pine.service.resource.ubo.UniformBufferObject;
+import com.pine.service.streaming.ref.TextureResourceRef;
+import com.pine.service.voxelization.util.TextureUtil;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryUtil;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 @PBean
-public class CoreFBORepository implements CoreRepository {
+public class CoreBufferRepository implements CoreRepository {
     public static final int[] ZERO = new int[]{0};
     @PInject
     public Engine engine;
@@ -20,7 +28,6 @@ public class CoreFBORepository implements CoreRepository {
     public ShaderService shaderService;
     @PInject
     public RuntimeRepository runtimeRepository;
-
 
     public FrameBufferObject auxBuffer;
     public FrameBufferObject postProcessingBuffer;
@@ -30,7 +37,6 @@ public class CoreFBORepository implements CoreRepository {
     public final List<FrameBufferObject> upscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> downscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> all = new ArrayList<>();
-    public FrameBufferObject brdfFBO;
 
     public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
@@ -43,7 +49,14 @@ public class CoreFBORepository implements CoreRepository {
     public int postProcessingSampler;
     public int ssaoSampler;
     public int ssaoBlurredSampler;
-    public int brdfSampler;
+
+    public TextureResourceRef brdfSampler;
+    public TextureResourceRef blueNoiseSampler;
+
+
+    public UniformBufferObject globalDataUBO;
+    public final FloatBuffer globalDataBuffer = MemoryUtil.memAllocFloat(95);
+
 
     @Override
     public void initialize() {
@@ -52,15 +65,34 @@ public class CoreFBORepository implements CoreRepository {
         GL46.glBufferData(GL46.GL_ATOMIC_COUNTER_BUFFER, Integer.BYTES, GL46.GL_DYNAMIC_DRAW);
         GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, atomicCounterBuffer);
 
+        globalDataUBO = new UniformBufferObject(new UBOCreationData(
+                "GlobalData",
+                new UBOData("viewProjection", GLSLType.MAT_4), // Offset: 0
+                new UBOData("viewMatrix", GLSLType.MAT_4), // Offset: 16
+                new UBOData("invViewMatrix", GLSLType.MAT_4), // Offset: 32
+                new UBOData("cameraWorldPosition", GLSLType.VEC_4), // Offset: 48
+                new UBOData("projectionMatrix", GLSLType.MAT_4), // Offset: 52
+                new UBOData("invProjectionMatrix", GLSLType.MAT_4), // Offset: 68
+                new UBOData("bufferResolution", GLSLType.VEC_2), // Offset: 84, 85
+                new UBOData("logDepthFC", GLSLType.FLOAT), // Offset: 86
+                new UBOData("timeOfDay", GLSLType.FLOAT), // Offset: 88
 
+                new UBOData("sunLightDirection", GLSLType.VEC_3), // Offset: 89, 90, 91
+                new UBOData("sunLightColor", GLSLType.VEC_3) // Offset: 92, 93, 94
+        ));
+
+        createFrameBuffers();
+    }
+
+    private void createFrameBuffers() {
         final int displayW = runtimeRepository.getDisplayW();
         final int displayH = runtimeRepository.getDisplayH();
 
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
 
-        brdfFBO = new FrameBufferObject(512, 512).addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false);
-        brdfSampler = brdfFBO.getSamplers().getFirst();
+        brdfSampler = TextureUtil.loadTextureFromResource("/textures/brdf.png");
+        blueNoiseSampler = TextureUtil.loadTextureFromResource("/textures/blueNoise.png");
 
         gBuffer = new FrameBufferObject(displayW, displayH)
                 .depthTest()
@@ -120,6 +152,10 @@ public class CoreFBORepository implements CoreRepository {
 
     @Override
     public void dispose() {
+        brdfSampler.dispose();
+        blueNoiseSampler.dispose();
+
+        globalDataUBO.dispose();
         auxBuffer.dispose();
         postProcessingBuffer.dispose();
         ssao.dispose();
@@ -127,6 +163,5 @@ public class CoreFBORepository implements CoreRepository {
         gBuffer.dispose();
         upscaleBloom.forEach(FrameBufferObject::dispose);
         downscaleBloom.forEach(FrameBufferObject::dispose);
-        brdfFBO.dispose();
     }
 }

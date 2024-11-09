@@ -1,4 +1,4 @@
-package com.pine.service.voxelization;
+package com.pine.service.voxelization.svo;
 
 import java.io.Serializable;
 

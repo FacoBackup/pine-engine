@@ -12,7 +12,7 @@ uniform vec4 centerScale;
 uniform ivec3 settings;
 
 #define COUNT 64.
-#include "../buffer_objects/CAMERA_VIEW_INFO.glsl"
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
 const vec3 NNN = vec3(-1, -1, -1);
 const vec3 PNN = vec3(1, -1, -1);
@@ -170,7 +170,7 @@ bool showRayTestCount
 }
 
 void main() {
-    vec3 rayOrigin = placement.xyz;
+    vec3 rayOrigin = cameraWorldPosition.xyz;
     vec3 rayDirection = createRay();
     vec4 outColor = trace(
     Ray(rayOrigin, rayDirection, 1./rayDirection),

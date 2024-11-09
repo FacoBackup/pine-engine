@@ -1,8 +1,8 @@
-package com.pine.service.voxelization;
+package com.pine.service.voxelization.svo;
 
-import java.io.Serializable;
+public record VoxelColorData(int r, int g, int b) implements VoxelData {
 
-public record VoxelData(int r, int g, int b) implements Serializable {
+    @Override
     public int compress() {
         int red = (r / 2) & 0x7F;      // Scale down and mask to 7 bits
         int green = g & 0xFF;          // No change, 8 bits

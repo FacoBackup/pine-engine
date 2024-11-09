@@ -12,6 +12,10 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int texture;
     public int width;
     public int height;
+    public int depth;
+    public int internalFormat;
+    public int format;
+    public int type;
     public FrameBufferObject frameBuffer;
 
     public TextureResourceRef(String id) {
@@ -33,14 +37,20 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
 
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, GL46.GL_RGBA16, data.width, data.height, 0, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, data.imageBuffer);
+        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, data.internalFormat, data.width, data.height, 0, data.format, data.type, data.imageBuffer);
 
-        GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
+        if (data.mipmap) {
+            GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
+        }
         GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
+
         STBImage.stbi_image_free(data.imageBuffer);
 
-        this.width = data.width;
-        this.height = data.height;
+        internalFormat = data.internalFormat;
+        format = data.format;
+        type = data.type;
+        width = data.width;
+        height = data.height;
     }
 
     @Override
@@ -53,10 +63,14 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     }
 
     public void bindForWriting(int unit) {
-        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_WRITE_ONLY, GL46.GL_RGBA16);
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_WRITE_ONLY, internalFormat);
+    }
+
+    public void bindForWriting3d(int unit) {
+        GL46.glBindImageTexture(unit, texture, 0, true, 0, GL46.GL_WRITE_ONLY, internalFormat);
     }
 
     public void bindForBoth(int unit) {
-        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_WRITE, GL46.GL_RGBA16);
+        GL46.glBindImageTexture(unit, texture, 0, false, 0, GL46.GL_READ_WRITE, internalFormat);
     }
 }

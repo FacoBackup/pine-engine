@@ -31,7 +31,7 @@ public class BackgroundPass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.auxBuffer;
+        return bufferRepository.auxBuffer;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class BackgroundPass extends AbstractQuadPassPass {
     @Override
     protected void bindUniforms() {
         shaderService.bindVec3(editorRepository.backgroundColor, color);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 0);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 0);
     }
 
     @Override

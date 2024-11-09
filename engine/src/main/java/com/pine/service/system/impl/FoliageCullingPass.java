@@ -1,7 +1,6 @@
 package com.pine.service.system.impl;
 
-import com.pine.repository.FoliageInstance;
-import com.pine.repository.core.CoreFBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -60,8 +59,8 @@ public class FoliageCullingPass extends AbstractPass {
         ssboRepository.foliageTransformationSSBO.setBindingPoint(3);
         ssboService.bind(ssboRepository.foliageTransformationSSBO);
 
-        GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 2, fboRepository.atomicCounterBuffer);
-        GL46.glBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, CoreFBORepository.ZERO);
+        GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 2, bufferRepository.atomicCounterBuffer);
+        GL46.glBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, CoreBufferRepository.ZERO);
 
         COMPUTE_RUNTIME_DATA.groupX = (instanceMaskMap.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (instanceMaskMap.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;

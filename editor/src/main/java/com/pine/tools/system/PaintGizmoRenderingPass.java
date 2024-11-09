@@ -4,12 +4,9 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.GizmoType;
-import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.service.system.AbstractPass;
 import com.pine.service.system.impl.AbstractQuadPassPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
@@ -17,8 +14,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
-
-import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
     private static final Vector3f EMPTY = new Vector3f(-1);
@@ -56,7 +51,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return fboRepository.auxBuffer;
+        return bufferRepository.auxBuffer;
     }
 
     @Override
@@ -87,7 +82,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(viewportO, viewportOrigin);
         shaderService.bindBoolean(editorRepository.foliageForPainting != null, hasSelection);
-        shaderService.bindSampler2dDirect(fboRepository.gBufferDepthIndexSampler, 0);
+        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 0);
     }
 
     @Override

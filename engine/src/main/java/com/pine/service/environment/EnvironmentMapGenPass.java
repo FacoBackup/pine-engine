@@ -4,10 +4,10 @@ import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.AtmosphereSettingsRepository;
+import com.pine.repository.AtmosphereRepository;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.core.CoreFBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.core.CoreShaderRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -21,7 +21,6 @@ import com.pine.service.streaming.impl.MeshService;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.system.SystemService;
-import com.pine.service.system.impl.AtmospherePass;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -42,16 +41,15 @@ public class EnvironmentMapGenPass implements Initializable {
     @PInject
     public StreamingService streamingService;
     @PInject
-    public CoreFBORepository fboRepository;
+    public CoreBufferRepository fboRepository;
     @PInject
-    public AtmosphereSettingsRepository atmosphereSettingsRepository;
+    public AtmosphereRepository atmosphereRepository;
     @PInject
     public WorldRepository worldRepository;
     @PInject
     public SystemService systemService;
 
     private boolean initialized;
-    private AtmospherePass atmospherePass;
 
     private UniformDTO fallbackMaterial;
     private UniformDTO viewProjection;
@@ -63,7 +61,6 @@ public class EnvironmentMapGenPass implements Initializable {
 
     @Override
     public void onInitialize() {
-        atmospherePass = (AtmospherePass) systemService.getSystems().stream().filter(a -> a instanceof AtmospherePass).findFirst().orElse(null);
         fallbackMaterial = shaderRepository.environmentMap.addUniformDeclaration("fallbackMaterial");
         viewProjection = shaderRepository.environmentMap.addUniformDeclaration("viewProjection");
         albedoColor = shaderRepository.environmentMap.addUniformDeclaration("albedoColor");
@@ -79,10 +76,10 @@ public class EnvironmentMapGenPass implements Initializable {
             initialized = true;
         }
 
-        if (atmosphereSettingsRepository.enabled) {
+        if (atmosphereRepository.enabled) {
             Matrix4f centeredViewMatrixInv = CubeMapFace.createViewMatrixForFace(face, new Vector3f(0));
             centeredViewMatrixInv.invert(centeredViewMatrixInv);
-            atmospherePass.renderToCubeMap(centeredViewMatrixInv, CubeMapFace.invProjection);
+//            atmospherePass.renderToCubeMap(centeredViewMatrixInv, CubeMapFace.invProjection);
         }
 
 

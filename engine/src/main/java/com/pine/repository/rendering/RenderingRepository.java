@@ -34,11 +34,6 @@ public class RenderingRepository {
     public WorldRepository worldRepository;
 
     public void sync() {
-        if(!infoUpdated){
-            return;
-        }
-
-        infoUpdated = false;
         pendingTransformations = pendingTransformationsInternal;
         var aux = requests;
         requests = newRequests;
