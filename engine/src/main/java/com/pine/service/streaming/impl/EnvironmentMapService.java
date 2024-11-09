@@ -5,6 +5,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.environment.EnvironmentMapGenService;
 import com.pine.service.streaming.AbstractStreamableService;
 import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.data.EnvironmentMapStreamData;
@@ -14,8 +15,6 @@ import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.Map;
-
-import static com.pine.service.environment.CubeMapWriteUtil.getPathToFile;
 
 @PBean
 public class EnvironmentMapService extends AbstractStreamableService<EnvironmentMapResourceRef> {
@@ -36,7 +35,7 @@ public class EnvironmentMapService extends AbstractStreamableService<Environment
         ByteBuffer[] textures = new ByteBuffer[6];
         for (int i = 0; i < CubeMapFace.values().length; i++) {
             CubeMapFace face = CubeMapFace.values()[i];
-            String path = getPathToFile(pathToFile, face);
+            String path = EnvironmentMapGenService.getPathToFile(pathToFile, face);
             var textureData = (TextureStreamData) textureService.stream(path, Collections.emptyMap(), Collections.emptyMap());
             textures[i] = textureData.imageBuffer;
             imageSize = textureData.width;

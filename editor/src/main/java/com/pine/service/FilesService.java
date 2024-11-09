@@ -85,7 +85,7 @@ public class FilesService implements Loggable {
             }
 
             messageRepository.pushMessage(paths.size() + " files imported", MessageSeverity.SUCCESS);
-            projectService.saveSilently();
+            projectService.serializationService.serializeRepository(projectService.getProjectDirectory(), filesRepository);
             filesRepository.isImporting = false;
         });
     }

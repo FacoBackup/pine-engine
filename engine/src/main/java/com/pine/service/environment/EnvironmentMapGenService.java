@@ -14,10 +14,9 @@ import com.pine.service.importer.ImporterService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.streaming.impl.CubeMapFace;
+import com.pine.service.streaming.impl.TextureService;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL46;
 
-import static com.pine.service.environment.CubeMapWriteUtil.saveCubeMapToDisk;
 
 @PBean
 public class EnvironmentMapGenService implements Loggable {
@@ -35,6 +34,9 @@ public class EnvironmentMapGenService implements Loggable {
 
     @PInject
     public Engine engine;
+
+    @PInject
+    public TextureService textureService;
 
     @PInject
     public StreamingRepository streamingRepository;
@@ -82,11 +84,16 @@ public class EnvironmentMapGenService implements Loggable {
         camera.pitch = face.pitch;
         camera.yaw = face.yaw;
 
-        cameraRepository.setCurrentCamera(camera);
+//        cameraRepository.setCurrentCamera(camera);
         engine.render();
 
+        String basePath = importerService.getPathToFile(resourceId, StreamableResourceType.ENVIRONMENT_MAP);
         getLogger().warn("Writing to disk {}", resourceId);
-        saveCubeMapToDisk(engine.getTargetFBO().getMainSampler(), engine.getTargetFBO().width, importerService.getPathToFile(resourceId, StreamableResourceType.ENVIRONMENT_MAP));
+        textureService.writeTexture(getPathToFile(basePath, face), engine.getTargetFBO().width, engine.getTargetFBO().height, engine.getTargetFBO().getMainSampler());
     }
 
+    public static String getPathToFile(String basePath, CubeMapFace face) {
+        String type = StreamableResourceType.ENVIRONMENT_MAP.name();
+        return basePath.replace("." + type, "-" + face.name() + type + ".png");
+    }
 }

@@ -50,10 +50,7 @@ public class SerializationService implements Loggable {
         new Thread(() -> {
             boolean success = true;
             for (SerializableRepository r : serializableRepositories) {
-                if (!FSUtil.writeJson(r, getFilePath(projectDirectory, r))) {
-                    getLogger().error("Could not save project");
-                    success = false;
-                }
+                success = serializeRepository(projectDirectory, r);
             }
             if (!silent && success) {
                 messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
@@ -61,6 +58,14 @@ public class SerializationService implements Loggable {
             long end = System.currentTimeMillis() - start;
             getLogger().warn("Serialization took {}ms", end);
         }).start();
+    }
+
+    public boolean serializeRepository(String projectDirectory, SerializableRepository r) {
+        if (!FSUtil.writeJson(r, getFilePath(projectDirectory, r))) {
+            getLogger().error("Could not save project");
+            return false;
+        }
+        return true;
     }
 
     private String getFilePath(String projectDirectory, SerializableRepository repository) {
