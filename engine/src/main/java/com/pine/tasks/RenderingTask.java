@@ -4,10 +4,7 @@ import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.AtmosphereRepository;
-import com.pine.repository.CameraRepository;
-import com.pine.repository.VoxelRepository;
-import com.pine.repository.WorldRepository;
+import com.pine.repository.*;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.LightUtil;
 import com.pine.repository.rendering.RenderingRepository;
@@ -57,9 +54,13 @@ public class RenderingTask extends AbstractTask {
     public CoreBufferRepository bufferRepository;
 
     @PInject
+    public ClockRepository clockRepository;
+
+    @PInject
     public AtmosphereRepository atmosphere;
 
     private int renderIndex = 0;
+    private float elapsedTime = .5f;
 
     @Override
     protected void tickInternal() {
@@ -95,10 +96,11 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void updateSunInformation() {
-        Vector3f sunLightDirection = new Vector3f((float) Math.sin(atmosphere.elapsedTime), (float) Math.cos(atmosphere.elapsedTime), 0).mul(atmosphere.sunDistance);
+        elapsedTime += .0005f * atmosphere.elapsedTimeSpeed;
+        Vector3f sunLightDirection = new Vector3f((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 0).mul(atmosphere.sunDistance);
         Vector3f sunLightColor = LightUtil.computeSunlightColor(sunLightDirection, cameraRepository.currentCamera.position);
 
-        bufferRepository.globalDataBuffer.put(87, atmosphere.elapsedTime);
+        bufferRepository.globalDataBuffer.put(87, elapsedTime);
 
         bufferRepository.globalDataBuffer.put(88, sunLightDirection.x);
         bufferRepository.globalDataBuffer.put(89, sunLightDirection.y);

@@ -27,8 +27,8 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @InspectableField(label = "Render atmosphere")
     public boolean enabled = false;
 
-    @InspectableField(label = "Time of day")
-    public float elapsedTime = 0;
+    @InspectableField(label = "Time of day speed")
+    public float elapsedTimeSpeed = 1;
 
     @InspectableField(label = "Sun distance")
     public float sunDistance = 1000;
