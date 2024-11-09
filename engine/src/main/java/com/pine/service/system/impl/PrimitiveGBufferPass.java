@@ -1,9 +1,12 @@
 package com.pine.service.system.impl;
 
+import com.pine.component.MeshComponent;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class PrimitiveGBufferPass extends AbstractGBufferPass {
@@ -23,10 +26,12 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO roughnessMetallic;
     private UniformDTO useAlbedoRoughnessMetallicAO;
     private UniformDTO useNormalTexture;
+    private UniformDTO modelMatrix;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
+        modelMatrix = addUniformDeclaration("modelMatrix");
         albedoColor = addUniformDeclaration("albedoColor");
         roughnessMetallic = addUniformDeclaration("roughnessMetallic");
         useAlbedoRoughnessMetallicAO = addUniformDeclaration("useAlbedoRoughnessMetallicAO");
@@ -53,24 +58,21 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
     @Override
     protected void renderInternal() {
         prepareCall();
-        ssboService.bind(ssboRepository.transformationSSBO);
-
-        List<RenderingRequest> requests = renderingRepository.requests;
-        int instancedOffset = 0;
-        for (int i = 0; i < requests.size(); i++) {
-            var request = requests.get(i);
-            request.renderIndex = (i + instancedOffset);
-            shaderService.bindInt(request.renderIndex, transformationIndex);
-            if (request.material != null) {
-                bindMaterial(request);
-            } else {
-                shaderService.bindBoolean(true, fallbackMaterial);
-            }
-            meshService.bind(request.mesh);
-            meshService.setInstanceCount(request.transformationComponents.size());
-            meshService.draw();
-            if (!request.transformationComponents.isEmpty()) {
-                instancedOffset += request.transformationComponents.size() - 1;
+        meshService.setInstanceCount(0);
+        Collection<MeshComponent> meshes = worldRepository.bagMeshComponent.values();
+        for (var mesh : meshes) {
+            if(mesh.canRender(settingsRepository.disableCullingGlobally, worldRepository.hiddenEntityMap)) {
+                var request = mesh.renderRequest;
+                // TODO - SINGLE BUFFER FOR EVERY MESH ATTRIBUTE (Material ID, Model Matrix, Transformation Index); BIND BUFFER INSTEAD OF INDIVIDUAL BINDS
+                shaderService.bindInt(request.renderIndex, transformationIndex);
+                shaderService.bindMat4(request.modelMatrix, modelMatrix);
+                if (request.material != null) {
+                    bindMaterial(request);
+                } else {
+                    shaderService.bindBoolean(true, fallbackMaterial);
+                }
+                meshService.bind(request.mesh);
+                meshService.draw();
             }
         }
     }

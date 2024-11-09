@@ -59,7 +59,6 @@ public class RenderingTask extends AbstractTask {
     @PInject
     public AtmosphereRepository atmosphere;
 
-    private int renderIndex = 0;
     private float elapsedTime = .5f;
 
     @Override
@@ -72,20 +71,10 @@ public class RenderingTask extends AbstractTask {
             defineVoxelGrid();
             defineProbes();
             lightService.packageLights();
-            renderIndex = 0;
             renderingRepository.offset = 0;
             renderingRepository.auxAddedToBufferEntities.clear();
-            renderingRepository.pendingTransformationsInternal = 0;
-            renderingRepository.newRequests.clear();
 
-            for (var mesh : worldRepository.bagMeshComponent.values()) {
-                var t = worldRepository.bagTransformationComponent.get(mesh.getEntityId());
-                if (t != null) {
-                    updateMeshData(mesh, t);
-                }
-            }
-
-
+            updateMeshes();
             updateSunInformation();
 
             renderingRepository.infoUpdated = true;
@@ -93,6 +82,21 @@ public class RenderingTask extends AbstractTask {
             getLogger().error(e.getMessage(), e);
         }
         endTracking();
+    }
+
+    private void updateMeshes() {
+        int renderIndex = 0;
+        for (var mesh : worldRepository.bagMeshComponent.values()) {
+            var t = worldRepository.bagTransformationComponent.get(mesh.getEntityId());
+            if (t != null) {
+                mesh.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
+                RenderingRequest request = renderingRequestService.prepare(mesh, t);
+                if (request != null) {
+                    request.renderIndex = renderIndex;
+                    renderIndex++;
+                }
+            }
+        }
     }
 
     private void updateSunInformation() {
@@ -114,15 +118,13 @@ public class RenderingTask extends AbstractTask {
 
     private void defineProbes() {
         var probes = worldRepository.bagEnvironmentProbeComponent.values();
-        if (environmentMapGenService.isBaked) {
-            int i = 0;
-            for (var probe : probes) {
-                if (i == 3) {
-                    break;
-                }
-                renderingRepository.environmentMaps[i] = (EnvironmentMapResourceRef) streamingService.stream(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
-                i++;
+        int i = 0;
+        for (var probe : probes) {
+            if (i == 3) {
+                break;
             }
+            renderingRepository.environmentMaps[i] = (EnvironmentMapResourceRef) streamingService.stream(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
+            i++;
         }
     }
 
@@ -148,25 +150,6 @@ public class RenderingTask extends AbstractTask {
                 filled++;
             }
             renderingRepository.voxelChunksFilled = filledWithContent;
-        }
-    }
-
-    private void updateMeshData(MeshComponent meshComponent, TransformationComponent transformation) {
-        meshComponent.distanceFromCamera = transformationService.getDistanceFromCamera(transformation.translation);
-        if (meshComponent.isInstancedRendering) {
-            RenderingRequest request = renderingRequestService.prepareInstanced(meshComponent, transformation);
-            if (request != null) {
-                request.renderIndex = renderIndex;
-                renderIndex += request.transformationComponents.size() + 1;
-                renderingRepository.newRequests.add(request);
-            }
-        } else {
-            RenderingRequest request = renderingRequestService.prepareNormal(meshComponent, transformation);
-            if (request != null) {
-                request.renderIndex = renderIndex;
-                renderIndex++;
-                renderingRepository.newRequests.add(request);
-            }
         }
     }
 

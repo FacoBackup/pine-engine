@@ -9,6 +9,7 @@ import com.pine.theme.Icons;
 @PBean
 public class EngineSettingsRepository extends Inspectable implements SerializableRepository {
 
+    @InspectableField(label = "Disable culling")
     public boolean disableCullingGlobally = false;
 
     @InspectableField(label = "Probe capture resolution")

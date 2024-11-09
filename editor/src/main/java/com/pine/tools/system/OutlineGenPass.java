@@ -1,5 +1,6 @@
 package com.pine.tools.system;
 
+import com.pine.component.MeshComponent;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -8,6 +9,8 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
+
+import java.util.Collection;
 
 
 public class OutlineGenPass extends AbstractPass {
@@ -18,10 +21,12 @@ public class OutlineGenPass extends AbstractPass {
     public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO renderIndex;
+    private UniformDTO modelMatrix;
 
     @Override
     public void onInitialize() {
         renderIndex = addUniformDeclaration("renderIndex");
+        modelMatrix = addUniformDeclaration("modelMatrix");
     }
 
     @Override
@@ -45,14 +50,17 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
-        ssboService.bind(ssboRepository.transformationSSBO);
-
-        for (var request : renderingRepository.requests) {
-            if (editorRepository.selected.containsKey(request.entity)) {
-                shaderService.bindInt(request.renderIndex, renderIndex);
-                meshService.bind(request.mesh);
-                meshService.setInstanceCount(request.transformationComponents.size());
-                meshService.draw();
+        meshService.setInstanceCount(0);
+        Collection<MeshComponent> meshes = worldRepository.bagMeshComponent.values();
+        for (var mesh : meshes) {
+            if (mesh.canRender(settingsRepository.disableCullingGlobally, worldRepository.hiddenEntityMap)) {
+                var request = mesh.renderRequest;
+                if (editorRepository.selected.containsKey(request.entity)) {
+                    shaderService.bindInt(request.renderIndex, renderIndex);
+                    shaderService.bindMat4(request.modelMatrix, modelMatrix);
+                    meshService.bind(request.mesh);
+                    meshService.draw();
+                }
             }
         }
     }

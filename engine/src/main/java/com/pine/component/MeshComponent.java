@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -54,15 +55,7 @@ public class MeshComponent extends AbstractComponent {
     @InspectableField(group = "Mesh", label = "Mesh LOD 4")
     public String lod4;
 
-    // INSTANCING
-    @InspectableField(group = "Instancing", label = "Enable instancing")
-    public boolean isInstancedRendering = false;
-    @InspectableField(group = "Instancing", label = "Number of instances", min = 1)
-    public int numberOfInstances = 10;
-    @InspectableField(group = "Instancing", label = "Scene members")
-    public List<TransformationComponent> instances = new ArrayList<>();
-
-    public transient RenderingRequest renderRequest;
+    public RenderingRequest renderRequest;
 
     // CULLING
     @InspectableField(group = "Culling", label = "Enable culling")
@@ -89,16 +82,7 @@ public class MeshComponent extends AbstractComponent {
         return ComponentType.MESH;
     }
 
-
-    @Override
-    public AbstractComponent cloneComponent(Entity entity) {
-        var clone = (MeshComponent) super.cloneComponent(entity);
-        clone.instances = new ArrayList<>();
-        if(clone.isInstancedRendering){
-            this.instances.forEach(i -> {
-                clone.instances.add((TransformationComponent) i.cloneComponent(entity));
-            });
-        }
-        return clone;
+    public boolean canRender(boolean isDisableCulling, Map<String, Boolean> hiddenEntities) {
+        return !hiddenEntities.containsKey(getEntityId()) && renderRequest != null && renderRequest.modelMatrix != null && renderRequest.mesh != null && (!renderRequest.isCulled || isDisableCulling);
     }
 }

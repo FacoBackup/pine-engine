@@ -40,7 +40,7 @@ public class ResourcesPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableHeadersRow();
 
-            render("Total triangles", meshService.getTotalTriangleCount());
+            render("Individual draw calls", renderingRepository.getDrawCallQuantity());
 
             render("Triangles being rendered", renderingRepository.getTotalTriangleCount());
 
@@ -52,7 +52,6 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
 
-            render("Renderable entities", worldRepository.bagMeshComponent.size());
 
             ImGui.endTable();
         }

@@ -47,6 +47,8 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
+    public WorldRepository worldRepository;
+    @PInject
     public RuntimeRepository runtimeRepository;
     @PInject
     public CoreSSBORepository ssboRepository;
