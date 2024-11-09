@@ -3,7 +3,6 @@ package com.pine.repository;
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.inspection.Color;
 import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
@@ -14,7 +13,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 @PBean
-public class AtmosphereSettingsRepository extends Inspectable implements SerializableRepository {
+public class AtmosphereRepository extends Inspectable implements SerializableRepository {
 
     @PInject
     public transient EnvironmentMapGenService environmentMapGenService;
@@ -25,16 +24,14 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
 
 
 
-    @InspectableField(label = "Atmospheric scattering")
+    @InspectableField(label = "Render atmosphere")
     public boolean enabled = false;
-    @InspectableField(label = "Volumetric Clouds")
-    public boolean clouds;
 
     @InspectableField(label = "Time of day")
     public float elapsedTime = 0;
 
-    @InspectableField(label = "Sun-light color")
-    public Color sunLightColor = new Color(1, 1, 1);
+    @InspectableField(label = "Sun distance")
+    public float sunDistance = 1000;
 
     @InspectableField(label = "Screen space shadows")
     public boolean screenSpaceShadows = false;
@@ -61,9 +58,16 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
     public float threshold = -.1f;
 
 
-    @InspectableField(group = "Cloud detail", label = "Detail noise scale")
+    @InspectableField(group = "Clouds", label = "Layer height", min = 1)
+    public int cloudsHeight = 200;
+    @InspectableField(group = "Clouds", label = "Layer width and depth", min = 1)
+    public int cloudsSize = 1000;
+    @InspectableField(group = "Clouds", label = "Layer altitude")
+    public int cloudsAltitude = 400;
+
+    @InspectableField(group = "Cloud detail", label = "Detail noise scale", min = 0)
     public float detailNoiseScale = 1;
-    @InspectableField(group = "Cloud detail", label = "Detail noise weight")
+    @InspectableField(group = "Cloud detail", label = "Detail noise weight", min = 1)
     public float detailNoiseWeight = 1;
     @InspectableField(group = "Cloud detail", label = "Detail noise weights", min = 0)
     public Vector3f detailWeights = new Vector3f(0, 0, 1);
@@ -92,11 +96,6 @@ public class AtmosphereSettingsRepository extends Inspectable implements Seriali
     public int numStepsLight = 5;
     @InspectableField(group = "Clouds", label = "Ray offset strength", min = 0)
     public float rayOffsetStrength = 1;
-
-    @InspectableField(group = "Clouds", label = "Min Bounds")
-    public Vector3f boundsMin = new Vector3f(-1000, 200, -1000);
-    @InspectableField(group = "Clouds", label = "Max bounds")
-    public Vector3f boundsMax = new Vector3f(1000, 400, 1000);
 
     @InspectableField(group = "Clouds", label = "Light absorption toward sun", min = 0, max = 1)
     public float lightAbsorptionTowardSun = 1;

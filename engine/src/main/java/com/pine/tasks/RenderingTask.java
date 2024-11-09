@@ -4,9 +4,12 @@ import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.repository.AtmosphereRepository;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.VoxelRepository;
 import com.pine.repository.WorldRepository;
+import com.pine.repository.core.CoreBufferRepository;
+import com.pine.repository.rendering.LightUtil;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -17,13 +20,14 @@ import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
+import org.joml.Vector3f;
 
 
 @PBean
 public class RenderingTask extends AbstractTask {
 
     @PInject
-    public CameraRepository camera;
+    public CameraRepository cameraRepository;
 
     @PInject
     public RenderingRepository renderingRepository;
@@ -48,6 +52,12 @@ public class RenderingTask extends AbstractTask {
 
     @PInject
     public LightService lightService;
+
+    @PInject
+    public CoreBufferRepository bufferRepository;
+
+    @PInject
+    public AtmosphereRepository atmosphere;
 
     private int renderIndex = 0;
 
@@ -74,11 +84,30 @@ public class RenderingTask extends AbstractTask {
                 }
             }
 
+
+            updateSunInformation();
+
             renderingRepository.infoUpdated = true;
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
         endTracking();
+    }
+
+    private void updateSunInformation() {
+        Vector3f sunLightDirection = new Vector3f((float) Math.sin(atmosphere.elapsedTime), (float) Math.cos(atmosphere.elapsedTime), 0).mul(atmosphere.sunDistance);
+        Vector3f sunLightColor = LightUtil.computeSunlightColor(sunLightDirection, cameraRepository.currentCamera.position);
+
+        bufferRepository.globalDataBuffer.put(87, atmosphere.elapsedTime);
+
+        bufferRepository.globalDataBuffer.put(88, sunLightDirection.x);
+        bufferRepository.globalDataBuffer.put(89, sunLightDirection.y);
+        bufferRepository.globalDataBuffer.put(90, sunLightDirection.z);
+        bufferRepository.globalDataBuffer.put(91, 0);
+
+        bufferRepository.globalDataBuffer.put(92, sunLightColor.x);
+        bufferRepository.globalDataBuffer.put(93, sunLightColor.y);
+        bufferRepository.globalDataBuffer.put(94, sunLightColor.z);
     }
 
     private void defineProbes() {

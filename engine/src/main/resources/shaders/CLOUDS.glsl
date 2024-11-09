@@ -1,12 +1,6 @@
-#include "./buffer_objects/GLOBAL_DATA_UBO.glsl"
-
-in vec2 texCoords;
-out vec4 finalColor;
-
 layout(binding = 0) uniform sampler3D uShapeNoise;
 layout(binding = 1) uniform sampler3D uDetailNoise;
 layout(binding = 2) uniform sampler2D uBlueNoise;
-layout(binding = 3) uniform sampler2D uDepthSampler;
 
 uniform float densityMultiplier;
 uniform float densityOffset;
@@ -96,11 +90,11 @@ float sampleDensity(vec3 rayPos) {
     float gMin = .2;
     float gMax = .7;
     float heightPercent = (rayPos.y - boundsMin.y) / size.y;
-    float heightGradient = clamp(remap(heightPercent, 0.0, gMin, 0, 1),0.0,1.0) * clamp(remap(heightPercent, 1, gMax, 0, 1),0.0,1.0);
+    float heightGradient = clamp(remap(heightPercent, 0.0, gMin, 0, 1), 0.0, 1.0) * clamp(remap(heightPercent, 1, gMax, 0, 1), 0.0, 1.0);
     heightGradient *= edgeWeight;
 
     // Calculate base shape density
-    vec4 shapeNoise = texture(uShapeNoise, shapeSamplePos , mipLevel);
+    vec4 shapeNoise = texture(uShapeNoise, shapeSamplePos, mipLevel);
     vec4 normalizedShapeWeights = shapeNoiseWeights / dot(shapeNoiseWeights, vec4(1));
     float shapeFBM = dot(shapeNoise, normalizedShapeWeights) * heightGradient;
     float baseShapeDensity = shapeFBM + densityOffset * .1;
@@ -151,11 +145,7 @@ vec3 createRay() {
     return normalize(dirWorld);
 }
 
-void main(){
-    if(texture(uDepthSampler, texCoords).r != 0){
-        discard;
-    }
-
+vec4 computeClouds(){
     // Create ray
     vec3 rayPos = cameraWorldPosition.xyz;
     vec3 rayDir = createRay();
@@ -164,18 +154,15 @@ void main(){
     float dstToBox = rayToContainerInfo.x;
     float dstInsideBox = rayToContainerInfo.y;
 
-    if(dstInsideBox == 0){
-        discard;
+    if (dstInsideBox == 0){
+        return vec4(0);
     }
 
-    // point of intersection with the cloud container
     vec3 entryPoint = rayPos + rayDir * dstToBox;
 
-    // random starting offset (makes low-res results noisy rather than jagged/glitchy, which is nicer)
     float randomOffset = texture(uBlueNoise, texCoords).r;
     randomOffset *= rayOffsetStrength;
 
-    // Phase function makes clouds brighter around sun
     float cosAngle = dot(rayDir, sunLightDirection.xyz);
     float phaseVal = phase(cosAngle);
 
@@ -205,5 +192,5 @@ void main(){
         }
         dstTravelled += stepSize;
     }
-    finalColor = vec4(lightEnergy * sunLightColor, 1 - transmittance);
+    return vec4(lightEnergy * sunLightColor, 1 - transmittance);
 }

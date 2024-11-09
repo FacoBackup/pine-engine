@@ -19,7 +19,7 @@ import com.pine.service.streaming.impl.MeshService;
 
 public abstract class AbstractPass extends MetricCollector {
     @PInject
-    public AtmosphereSettingsRepository atmosphere;
+    public AtmosphereRepository atmosphere;
     @PInject
     public Engine engine;
     @PInject
