@@ -7,7 +7,6 @@ import org.joml.Vector3f;
 public class ShaderDataSyncPass extends AbstractPass implements Loggable {
     @Override
     protected void renderInternal() {
-        ssboService.updateBuffer(ssboRepository.transformationSSBO, ssboRepository.transformationSSBOState, 0);
         uboService.updateBuffer(bufferRepository.globalDataUBO, bufferRepository.globalDataBuffer, 0);
         if (!renderingRepository.infoUpdated) {
             return;

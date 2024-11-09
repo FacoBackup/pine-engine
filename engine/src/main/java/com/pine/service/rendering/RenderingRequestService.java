@@ -13,8 +13,6 @@ import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
 @PBean
 public class RenderingRequestService {
     @PInject
@@ -29,74 +27,28 @@ public class RenderingRequestService {
     @PInject
     public RenderingRepository renderingRepository;
 
-    public RenderingRequest prepareInstanced(MeshComponent scene, TransformationComponent t) {
+    public RenderingRequest prepare(MeshComponent scene, TransformationComponent transform) {
         MeshResourceRef mesh = selectLOD(scene);
         if (mesh == null) return null;
-
-        prepareTransformations(scene, t, mesh);
-        fillInstanceRequest(scene);
-        scene.renderRequest.mesh = mesh;
-        if (scene.renderRequest.transformationComponents.isEmpty()) {
-            return null;
-        }
-        return scene.renderRequest;
-    }
-
-    private void fillInstanceRequest(MeshComponent scene) {
-        for (var primitive : scene.instances) {
-            if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
-                primitive.isCulled = transformationService.isCulled(primitive.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
-            } else {
-                primitive.isCulled = false;
-            }
-            if (primitive.isCulled) {
-                continue;
-            }
-            transformationService.extractTransformations(primitive);
-            scene.renderRequest.transformationComponents.add(primitive);
-        }
-        prepareMaterial(scene, scene.renderRequest);
-    }
-
-    private void prepareTransformations(MeshComponent scene, TransformationComponent t, MeshResourceRef mesh) {
-        if (scene.instances.size() > scene.numberOfInstances) {
-            scene.instances = new ArrayList<>(scene.instances.subList(0, scene.numberOfInstances));
-        } else if (scene.instances.size() < scene.numberOfInstances) {
-            for (int i = scene.instances.size(); i < scene.numberOfInstances; i++) {
-                scene.instances.add(new TransformationComponent(scene.getEntityId(), true));
-            }
-        }
 
         if (scene.renderRequest == null) {
-            scene.renderRequest = new RenderingRequest(mesh, t, new ArrayList<>());
+            scene.renderRequest = new RenderingRequest();
         }
-        scene.renderRequest.entity = scene.getEntityId();
-        scene.renderRequest.transformationComponents.clear();
-    }
 
-
-    public RenderingRequest prepareNormal(MeshComponent scene, TransformationComponent transform) {
-        MeshResourceRef mesh = selectLOD(scene);
-        if (mesh == null) return null;
-
-        if (scene.isCullingEnabled && !engineSettings.disableCullingGlobally) {
-            transform.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
+        if (scene.isCullingEnabled) {
+            scene.renderRequest.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
         } else {
-            transform.isCulled = false;
+            scene.renderRequest.isCulled = false;
         }
-        if (!transform.isCulled) {
-            if (transform.renderRequest == null) {
-                transform.renderRequest = new RenderingRequest(mesh, transform);
-            }
-            transform.renderRequest.entity = scene.getEntityId();
-            prepareMaterial(scene, transform.renderRequest);
 
-            transform.renderRequest.mesh = mesh;
-            if (!transform.renderRequest.transformationComponents.isEmpty()) {
-                transform.renderRequest.transformationComponents.clear();
-            }
-            transformationService.extractTransformations(transform);
-            return transform.renderRequest;
+        if (!scene.renderRequest.isCulled) {
+            scene.renderRequest.mesh = mesh;
+            scene.renderRequest.entity = scene.getEntityId();
+            prepareMaterial(scene, scene.renderRequest);
+
+            scene.renderRequest.mesh = mesh;
+            scene.renderRequest.modelMatrix = transform.modelMatrix;
+            return scene.renderRequest;
         }
         return null;
     }

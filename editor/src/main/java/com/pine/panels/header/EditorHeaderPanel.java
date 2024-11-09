@@ -54,7 +54,12 @@ public class EditorHeaderPanel extends AbstractView {
             projectService.save();
         }
         ImGui.sameLine();
+        spacing();
 
+        if (ImGui.button(Icons.fullscreen + "##fullscreen", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
+            editorRepository.fullScreen = true;
+        }
+        ImGui.sameLine();
         spacing();
 
         if (ImGui.button(Icons.undo, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) { /* Action for Undo */ }
@@ -80,7 +85,7 @@ public class EditorHeaderPanel extends AbstractView {
         ImGui.text(1000 / framerate + "ms | " + framerate + "fps");
     }
 
-    private void hotKeys(){
+    private void hotKeys() {
         if (ImGui.isKeyDown(ImGuiKey.LeftCtrl) && ImGui.isKeyPressed(ImGuiKey.S)) {
             projectService.save();
         }

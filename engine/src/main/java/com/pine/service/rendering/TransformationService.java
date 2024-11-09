@@ -1,7 +1,5 @@
 package com.pine.service.rendering;
 
-import com.pine.EngineUtils;
-import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -51,15 +49,6 @@ public class TransformationService extends AbstractTask {
             parentHasChanged = true;
         }
 
-        var mesh = (MeshComponent) worldRepository.bagMeshComponent.get(root);
-        if (mesh != null) {
-            if (mesh.isInstancedRendering) {
-                mesh.instances.forEach(t -> {
-                    transform(t, st);
-                });
-            }
-        }
-
         var children = worldRepository.parentChildren.get(root);
         if (children != null) {
             for (var child : children) {
@@ -68,10 +57,9 @@ public class TransformationService extends AbstractTask {
         }
     }
 
-
     private void transform(TransformationComponent st, TransformationComponent parentTransform) {
         if (parentTransform != null) {
-            auxMat4.set(parentTransform.globalMatrix);
+            auxMat4.set(parentTransform.modelMatrix);
         } else {
             auxMat4.identity();
         }
@@ -83,7 +71,7 @@ public class TransformationService extends AbstractTask {
                 .scale(st.scale);
 
         auxMat4.mul(auxMat42);
-        st.globalMatrix.set(auxMat4);
+        st.modelMatrix.set(auxMat4);
         st.freezeVersion();
 
     }
@@ -97,11 +85,6 @@ public class TransformationService extends AbstractTask {
             }
         }
         return null;
-    }
-
-    public void extractTransformations(TransformationComponent st) {
-        EngineUtils.copyWithOffset(ssboRepository.transformationSSBOState, st.globalMatrix, renderingRepository.offset);
-        renderingRepository.offset += 16;
     }
 
     public float getDistanceFromCamera(Vector3f translation) {

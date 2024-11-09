@@ -1,10 +1,12 @@
 package com.pine.service;
 
+import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import imgui.ImGui;
@@ -14,6 +16,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @PBean
@@ -29,6 +33,9 @@ public class ViewportPickingService implements Loggable {
 
     @PInject
     public SelectionService selectionService;
+
+    @PInject
+    public WorldRepository worldRepository;
 
     public void pick() {
         int x = (int) ((runtimeRepository.mouseX - runtimeRepository.viewportX) * (runtimeRepository.getDisplayW() / runtimeRepository.viewportW));
@@ -65,21 +72,10 @@ public class ViewportPickingService implements Loggable {
     }
 
     private TransformationComponent findEntity(int actualIndex) {
-        int instancedOffset = 0;
-        for (int i = 0; i < renderingRepository.requests.size(); i++) {
-            var curr = renderingRepository.requests.get(i);
-            if (i + instancedOffset == actualIndex) {
-                return curr.transformationComponent;
-            }
-            List<TransformationComponent> transformationComponents = curr.transformationComponents;
-            for (int j = 0, transformationComponentsSize = transformationComponents.size(); j < transformationComponentsSize; j++) {
-                if (i + instancedOffset + j == actualIndex) {
-                    return curr.transformationComponents.get(j);
-                }
-            }
-
-            if (!renderingRepository.requests.get(i).transformationComponents.isEmpty()) {
-                instancedOffset += curr.transformationComponents.size() - 1;
+        Collection<MeshComponent> meshes = worldRepository.bagMeshComponent.values();
+        for (var mesh : meshes) {
+            if (mesh.renderRequest != null && !mesh.renderRequest.isCulled && mesh.renderRequest.renderIndex == actualIndex) {
+                return worldRepository.bagTransformationComponent.get(mesh.getEntityId());
             }
         }
         return null;

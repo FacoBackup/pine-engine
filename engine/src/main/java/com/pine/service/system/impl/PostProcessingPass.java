@@ -57,7 +57,7 @@ public class PostProcessingPass extends AbstractQuadPassPass {
         shaderService.bindFloat(cameraRepository.vignetteStrength, vignetteStrength);
 
 //        shaderService.bindSampler2d(, bloomColor);
-        shaderService.bindSampler2dDirect(bufferRepository.auxSampler, 1);
+        shaderService.bindSampler2dDirect(bufferRepository.compositingSampler, 1);
 
     }
 

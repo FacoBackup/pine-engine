@@ -14,6 +14,7 @@ public class SystemService implements SyncTask {
     public PInjector pInjector;
 
     private List<AbstractPass> systems = List.of(
+            new BRDFGenPass(),
             new IrradianceGenPass(),
             new EnvironmentMapFilteringGenPass(),
             new ShaderDataSyncPass(),
@@ -23,6 +24,7 @@ public class SystemService implements SyncTask {
             new FoliageGBufferPass(),
             new GBufferShadingPass(),
             new AtmospherePass(),
+            new CompositingPass(),
             new PostProcessingPass(),
             new VoxelVisualizerPass(),
             new FrameCompositionPass()

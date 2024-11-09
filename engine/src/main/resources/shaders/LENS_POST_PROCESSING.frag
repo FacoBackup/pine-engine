@@ -24,8 +24,6 @@ layout(binding = 1)uniform sampler2D sceneColor;
 
 out vec4 fragColor;
 
-#include "./util/ACES.glsl"
-
 vec3 chromaticAberration(vec2 uv) {
     float amount = chromaticAberrationIntensity * .001;
     vec3 col;
@@ -43,12 +41,32 @@ vec2 lensDistortion(vec2 uv, float k) {
     return nUv;
 }
 
+// https://github.com/KhronosGroup/ToneMapping/blob/main/PBR_Neutral/pbrNeutral.glsl
+vec3 PBRNeutralToneMapping( vec3 color ) {
+    const float startCompression = 0.8 - 0.04;
+    const float desaturation = 0.15;
+
+    float x = min(color.r, min(color.g, color.b));
+    float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;
+    color -= offset;
+
+    float peak = max(color.r, max(color.g, color.b));
+    if (peak < startCompression) return color;
+
+    const float d = 1. - startCompression;
+    float newPeak = 1. - d * d / (peak + d - startCompression);
+    color *= newPeak / peak;
+
+    float g = 1. - 1. / (desaturation * (peak - newPeak) + 1.);
+    return mix(color, newPeak * vec3(1, 1, 1), g);
+}
+
 void main(void) {
 
     vec2 texCoords = distortionEnabled ? lensDistortion(texCoords, distortionIntensity * .5) : texCoords;
-    vec3 color = bloomEnabled ? aces(texture(bloomColor, texCoords).rgb) : vec3(0.);
+    vec3 color = bloomEnabled ? PBRNeutralToneMapping(texture(bloomColor, texCoords).rgb) : vec3(0.);
     color += chromaticAberrationEnabled ? chromaticAberration(texCoords) : texture(sceneColor, texCoords).rgb;
-    fragColor = vec4(aces(color), 1.);
+    fragColor = vec4(PBRNeutralToneMapping(color), 1.);
 
     if (vignetteEnabled) {
         vec2 uv = texCoords;

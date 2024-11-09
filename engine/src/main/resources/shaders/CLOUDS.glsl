@@ -1,6 +1,5 @@
 layout(binding = 0) uniform sampler3D uShapeNoise;
 layout(binding = 1) uniform sampler3D uDetailNoise;
-layout(binding = 2) uniform sampler2D uBlueNoise;
 
 uniform float densityMultiplier;
 uniform float densityOffset;
@@ -135,20 +134,30 @@ float lightmarch(vec3 position) {
     return darknessThreshold + transmittance * (1-darknessThreshold);
 }
 
-vec3 createRay() {
-    vec2 pxNDS = texCoords * 2. - 1.;
-    vec3 pointNDS = vec3(pxNDS, -1.);
-    vec4 pointNDSH = vec4(pointNDS, 1.0);
-    vec4 dirEye = invProjectionMatrix * pointNDSH;
-    dirEye.w = 0.;
-    vec3 dirWorld = (invViewMatrix * dirEye).xyz;
-    return normalize(dirWorld);
+// Hash function for pseudo-random numbers
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
 }
 
-vec4 computeClouds(){
+// Blue noise approximation function
+float blueNoise(vec2 uv) {
+    vec2 i = floor(uv);
+    vec2 f = fract(uv);
+
+    // Weighted random values around the pixel
+    float a = hash(i + vec2(0.0, 0.0));
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+
+    // Bilinear interpolation to smooth transitions
+    vec2 blend = smoothstep(0.0, 1.0, f);
+    return mix(mix(a, b, blend.x), mix(c, d, blend.x), blend.y);
+}
+
+vec4 computeClouds(vec3 rayDir){
     // Create ray
     vec3 rayPos = cameraWorldPosition.xyz;
-    vec3 rayDir = createRay();
 
     vec2 rayToContainerInfo = rayBoxDst(boundsMin, boundsMax, rayPos, 1/rayDir);
     float dstToBox = rayToContainerInfo.x;
@@ -160,7 +169,7 @@ vec4 computeClouds(){
 
     vec3 entryPoint = rayPos + rayDir * dstToBox;
 
-    float randomOffset = texture(uBlueNoise, texCoords).r;
+    float randomOffset = blueNoise(texCoords);
     randomOffset *= rayOffsetStrength;
 
     float cosAngle = dot(rayDir, sunLightDirection.xyz);

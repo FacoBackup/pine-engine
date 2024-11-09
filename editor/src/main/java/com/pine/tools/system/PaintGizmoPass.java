@@ -61,15 +61,19 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        boolean isRenderable = editorRepository.foliageForPainting != null && runtimeRepository.mousePressed && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        boolean isRenderable = runtimeRepository.mousePressed && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
         if (isRenderable) {
             switch (editorRepository.paintingType) {
                 case FOLIAGE: {
-                    targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
+                    if (editorRepository.foliageForPainting != null && terrainRepository.instanceMaskMap != null) {
+                        targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
+                    }
                     break;
                 }
                 case TERRAIN: {
-                    targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
+                    if (terrainRepository.heightMapTexture != null) {
+                        targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
+                    }
                     break;
                 }
             }
@@ -100,7 +104,9 @@ public class PaintGizmoPass extends AbstractPass {
         targetImageSize.x = targetTexture.width;
         targetImageSize.y = targetTexture.height;
 
-        shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
+        if(editorRepository.foliageForPainting != null && terrainRepository.foliage.containsKey(editorRepository.foliageForPainting)) {
+            shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
+        }
 
         shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
         shaderService.bindVec3(xyMouse, xyMouseUniform);

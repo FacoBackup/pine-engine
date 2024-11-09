@@ -5,13 +5,11 @@ import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.GizmoType;
 import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
 import com.pine.service.rendering.RequestProcessingService;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
-import imgui.extension.imguizmo.flag.Operation;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -67,7 +65,7 @@ public class GizmoPanel extends AbstractView {
         }
 
         if (stateRepository.primitiveSelected != localSelected || localSelected.getChangeId() != localChangeId) {
-            stateRepository.primitiveSelected.globalMatrix.get(cacheMatrix);
+            stateRepository.primitiveSelected.modelMatrix.get(cacheMatrix);
             localSelected = stateRepository.primitiveSelected;
             getLogger().warn("Updating gizmo {} {}", stateRepository.primitiveSelected != localSelected, localSelected.getChangeId() != localChangeId);
             localChangeId = localSelected.getChangeId();

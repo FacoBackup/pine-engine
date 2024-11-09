@@ -10,7 +10,7 @@ import org.lwjgl.stb.STBImage;
 
 import java.nio.ByteBuffer;
 
-import static com.pine.service.environment.CubeMapGenerator.setUpCubeMapTexture;
+import static com.pine.service.environment.CubeMapUtil.setUpCubeMapTexture;
 
 public class EnvironmentMapResourceRef extends AbstractResourceRef<EnvironmentMapStreamData> {
     public int texture;

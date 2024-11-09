@@ -154,34 +154,6 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         ImGui.textDisabled("--");
         ImGui.tableNextColumn();
         ImGui.textDisabled("--");
-        if (component.getType() == ComponentType.MESH) {
-            var meshComponent = (MeshComponent) component;
-            if (meshComponent.isInstancedRendering) {
-                renderInstancedComponent(meshComponent);
-            }
-        }
-    }
-
-    private void renderInstancedComponent(MeshComponent instanced) {
-        List<TransformationComponent> primitives = instanced.instances;
-        for (int i = 0, primitivesSize = primitives.size(); i < primitivesSize; i++) {
-            TransformationComponent p = primitives.get(i);
-            ImGui.tableNextRow();
-            ImGui.tableNextColumn();
-            String title = Icons.content_copy + " Instance - " + i;
-            if (stateRepository.primitiveSelected == p) {
-                ImGui.textColored(stateRepository.accent, title);
-            } else {
-                ImGui.textDisabled(title);
-            }
-            if (ImGui.isItemClicked()) {
-                stateRepository.primitiveSelected = p;
-            }
-            ImGui.tableNextColumn();
-            ImGui.textDisabled("--");
-            ImGui.tableNextColumn();
-            ImGui.textDisabled("--");
-        }
     }
 
     private int getFlags(Entity node) {

@@ -26,5 +26,5 @@ public class FilesRepository implements SerializableRepository {
             put(type, new ArrayList<>());
         }
     }};
-    public boolean isImporting;
+    public transient boolean isImporting;
 }

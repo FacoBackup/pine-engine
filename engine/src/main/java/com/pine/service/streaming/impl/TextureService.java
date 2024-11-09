@@ -72,11 +72,11 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
         return new TextureResourceRef(key);
     }
 
-    public void writeTexture(TextureResourceRef texture){
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture.texture);
-        ByteBuffer buffer = BufferUtils.createByteBuffer(texture.width * texture.height * 4); // 4 bytes per pixel for RGBA
+    public void writeTexture(String pathToFile, int width, int height, int textureId){
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+        ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4); // 4 bytes per pixel for RGBA
         GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
-        STBImageWrite.stbi_write_png(importerService.getPathToFile(texture.id, StreamableResourceType.TEXTURE), texture.width, texture.height, 4, buffer, texture.width * 4);
+        STBImageWrite.stbi_write_png(pathToFile, width, height, 4, buffer, width * 4);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
     }
 }

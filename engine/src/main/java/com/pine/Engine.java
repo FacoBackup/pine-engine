@@ -22,7 +22,7 @@ import java.util.List;
 
 @PBean
 public class Engine extends MetricCollector implements IResource {
-    public static final int MAX_ENTITIES = 10_000;
+    public static final float PI_OVER_2 = (float) (Math.PI / 2);
     public static final int MAX_LIGHTS = 310;
     private FrameBufferObject targetFBO;
 
@@ -61,7 +61,7 @@ public class Engine extends MetricCollector implements IResource {
         shaderRepository.initialize();
         systemsService.initialize();
 
-        targetFBO = bufferRepository.auxBuffer;
+        targetFBO = bufferRepository.gBufferTarget;
 
         this.modules.addModules(modules);
         tasks.forEach(AbstractTask::start);

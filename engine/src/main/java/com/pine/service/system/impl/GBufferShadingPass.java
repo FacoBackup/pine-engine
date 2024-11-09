@@ -20,7 +20,7 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return bufferRepository.auxBuffer;
+        return bufferRepository.gBufferTarget;
     }
 
     @Override

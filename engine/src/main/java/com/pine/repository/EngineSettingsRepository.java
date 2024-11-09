@@ -2,13 +2,19 @@ package com.pine.repository;
 
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
+import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 import com.pine.theme.Icons;
+import org.joml.Vector4f;
 
 @PBean
 public class EngineSettingsRepository extends Inspectable implements SerializableRepository {
 
+    @InspectableField(label = "Background color")
+    public Color backgroundColor = new Color(0.23f, 0.23f, 0.23f);
+
+    @InspectableField(label = "Disable culling")
     public boolean disableCullingGlobally = false;
 
     @InspectableField(label = "Probe capture resolution")
@@ -92,9 +98,10 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     @InspectableField(group = "Ambient occlusion", label = "Max Samples")
     public int ssaoMaxSamples = 64;
 
-
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
     public boolean gridOverlay = false;
+    public transient boolean isBaking;
+
 
     @Override
     public String getTitle() {
