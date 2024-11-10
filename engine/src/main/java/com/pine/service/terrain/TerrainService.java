@@ -89,7 +89,7 @@ public class TerrainService implements Loggable {
         tile.terrainHeightMapId = id;
 
         // MASK TEXTURE
-        ImageUtil.generateTexture(width * 5, width * 5, importerService.engine.getResourceDirectory() + tile.terrainFoliageId + "." + StreamableResourceType.TEXTURE.name());
+        ImageUtil.generateTexture(width, width, importerService.engine.getResourceDirectory() + tile.terrainFoliageId + "." + StreamableResourceType.TEXTURE.name());
     }
 
     public void onSave() {

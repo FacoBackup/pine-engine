@@ -53,7 +53,7 @@ public class ImageUtil {
 
             int imageWidth = widthBuffer.get(0);
             int imageHeight = heightBuffer.get(0);
-            int components = channelsBuffer.get(0);
+            int components = 4;
 
             if (imageWidth <= TILE_SIZE) {
                 STBImage.stbi_image_free(imageBuffer);

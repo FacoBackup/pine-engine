@@ -21,7 +21,7 @@ public class HashGrid {
     }
 
     public static int getTileLocation(float v) {
-        return v < 0 ? (int) Math.ceil(v / TILE_SIZE) : (int) Math.floor(v / TILE_SIZE);
+        return (int) Math.floor(v / TILE_SIZE);
     }
 
     /**

@@ -10,6 +10,7 @@ layout(std430, binding = 3) writeonly buffer TransformationBuffer {
 
 uniform vec3 colorToMatch;
 uniform vec2 imageSize;
+uniform vec2 tileOffset;
 uniform float heightScale;
 
 #define MAX_INSTANCING  500000
@@ -46,10 +47,13 @@ void main() {
         uint index = atomicCounterIncrement(globalIndex);
         if (index < MAX_INSTANCING){
             float localHeight = texture(heightMap, scaledTexCoord).r;
-            worldSpaceCoord.y = localHeight * heightScale;
+            vec3 localWorld = worldSpaceCoord;
+            localWorld.y = localHeight * heightScale;
+            localWorld.x += tileOffset.x;
+            localWorld.z += tileOffset.y;
             vec3 normalVec = normalize(getNormalFromHeightMap(localHeight, heightMap, scaledTexCoord));
             mat3 rotation = getRotationFromNormal(normalVec);
-            transformations[index] = createTransformationMatrix(rotation, worldSpaceCoord);
+            transformations[index] = createTransformationMatrix(rotation, localWorld);
         }
     }
 }

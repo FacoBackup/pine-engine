@@ -9,7 +9,6 @@ public class Tile {
     private final int x;
     private final int z;
     private final String id;
-    public boolean isLoaded = false;
     public boolean isTerrainPresent = false;
     public String terrainFoliageId;
     public String terrainHeightMapId;

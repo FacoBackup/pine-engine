@@ -4,6 +4,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.GizmoType;
+import com.pine.repository.PaintingType;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.grid.Tile;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -62,41 +63,41 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        Tile currentTile = hashGridService.getCurrentTile();
-        if (!currentTile.isTerrainPresent) {
-            return false;
-        }
-
-        boolean isRenderable = runtimeRepository.mousePressed && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
-        if (isRenderable) {
-            switch (editorRepository.paintingType) {
-                case FOLIAGE: {
-                    if (editorRepository.foliageForPainting != null) {
-                        targetTexture = (TextureResourceRef) streamingService.streamIn(currentTile.terrainFoliageId, StreamableResourceType.TEXTURE);
-                    }
-                    break;
-                }
-                case TERRAIN: {
-                    targetTexture = (TextureResourceRef) streamingService.streamIn(currentTile.terrainHeightMapId, StreamableResourceType.TEXTURE);
-                    break;
-                }
-            }
-        } else {
-            targetTexture = null;
-        }
-        return isRenderable && targetTexture != null;
+        return runtimeRepository.mousePressed && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override
     protected void renderInternal() {
-        FrameBufferObject fbo = bufferRepository.gBuffer;
-        targetTexture.bindForBoth(1);
+        // TODO - FIX PAINTING APPLYING TO ALL TILES
+        for (var tile : hashGridService.getLoadedTiles()) {
+            if (tile != null && tile.isTerrainPresent) {
+                switch (editorRepository.paintingType) {
+                    case FOLIAGE: {
+                        if (editorRepository.foliageForPainting != null) {
+                            targetTexture = (TextureResourceRef) streamingService.streamIn(tile.terrainFoliageId, StreamableResourceType.TEXTURE);
+                        }
+                        break;
+                    }
+                    case TERRAIN: {
+                        targetTexture = (TextureResourceRef) streamingService.streamIn(tile.terrainHeightMapId, StreamableResourceType.TEXTURE);
+                        break;
+                    }
+                }
 
+                if (targetTexture != null) {
+                    targetTexture.bindForBoth(1);
+                    dispatch();
+                }
+            }
+        }
+    }
+
+    private void dispatch() {
         updateUniforms();
         bindUniforms();
 
-        COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
-        COMPUTE_RUNTIME_DATA.groupY = (fbo.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
+        COMPUTE_RUNTIME_DATA.groupX = (bufferRepository.gBuffer.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
+        COMPUTE_RUNTIME_DATA.groupY = (bufferRepository.gBuffer.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT | GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 

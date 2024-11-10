@@ -32,61 +32,18 @@ public class HashGridService extends AbstractTask implements Loggable {
     public StreamingService streamingService;
 
     private final Tile[] visibleTiles = new Tile[3];
-    private Tile currentTile;
 
     public Tile[] getLoadedTiles() {
         return repo.hashGrid.getLoadedTiles(cameraRepository.currentCamera.position);
     }
 
     public Tile getCurrentTile() {
-        if (currentTile == null) {
-            currentTile = repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
-        }
-        return currentTile;
+       return repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
     }
+    int count = 0;
 
     @Override
     protected void tickInternal() {
-        var cameraLocation = cameraRepository.currentCamera.position;
-        var hashGrid = repo.hashGrid;
-        var previousTile = hashGrid.getOrCreateTile(repo.previousCameraLocation);
-        var currentTile = hashGrid.getOrCreateTile(cameraLocation);
-
-        if (previousTile != currentTile) {
-            var previousLoadedTiles = hashGrid.getLoadedTiles(repo.previousCameraLocation);
-            var currentLoadedTiles = hashGrid.getLoadedTiles(cameraLocation);
-            for (Tile localTile : previousLoadedTiles) {
-                if (localTile == null) {
-                    continue;
-                }
-                boolean isIncluded = false;
-                for (Tile currentLoadedTile : currentLoadedTiles) {
-                    if (localTile == currentLoadedTile) {
-                        isIncluded = true;
-                        break;
-                    }
-                }
-                if (!isIncluded) {
-                    localTile.isLoaded = false;
-                    unloadTile(localTile);
-                }
-            }
-
-            for (Tile currentLoadedTile : currentLoadedTiles) {
-                if (currentLoadedTile != null && !currentLoadedTile.isLoaded) {
-                    loadTile(currentLoadedTile);
-                }
-            }
-            repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
-        }
-
-        findVisibleTiles();
-        repo.previousCameraLocation.set(cameraLocation);
-    }
-
-    int count = 0;
-
-    private void findVisibleTiles() {
         Vector2f direction = new Vector2f(
                 -cameraRepository.viewMatrix.m02(),
                 -cameraRepository.viewMatrix.m22()
@@ -136,47 +93,6 @@ public class HashGridService extends AbstractTask implements Loggable {
                 vector.x * cosTheta - vector.y * sinTheta,
                 vector.x * sinTheta + vector.y * cosTheta
         );
-    }
-
-    private void unloadTile(Tile tile) {
-        getLogger().warn("Unloading tile {}", tile.getId());
-        for (MeshComponent mesh : tile.getWorld().bagMeshComponent.values()) {
-            streamingService.streamOut(mesh.lod0, StreamableResourceType.MESH);
-            streamingService.streamOut(mesh.lod1, StreamableResourceType.MESH);
-            streamingService.streamOut(mesh.lod2, StreamableResourceType.MESH);
-            streamingService.streamOut(mesh.lod3, StreamableResourceType.MESH);
-            streamingService.streamOut(mesh.lod4, StreamableResourceType.MESH);
-            streamingService.streamOut(mesh.material, StreamableResourceType.MATERIAL);
-        }
-
-        for (EnvironmentProbeComponent probe : tile.getWorld().bagEnvironmentProbeComponent.values()) {
-            streamingService.streamOut(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
-        }
-        if (tile.isTerrainPresent) {
-            streamingService.streamOut(tile.getId(), StreamableResourceType.MESH);
-            streamingService.streamOut(tile.getId(), StreamableResourceType.TEXTURE);
-        }
-    }
-
-    private void loadTile(Tile tile) {
-        getLogger().warn("Loading tile {}", tile.getId());
-        for (MeshComponent mesh : tile.getWorld().bagMeshComponent.values()) {
-            streamingService.streamIn(mesh.lod0, StreamableResourceType.MESH);
-            streamingService.streamIn(mesh.lod1, StreamableResourceType.MESH);
-            streamingService.streamIn(mesh.lod2, StreamableResourceType.MESH);
-            streamingService.streamIn(mesh.lod3, StreamableResourceType.MESH);
-            streamingService.streamIn(mesh.lod4, StreamableResourceType.MESH);
-            streamingService.streamIn(mesh.material, StreamableResourceType.MATERIAL);
-        }
-
-        for (EnvironmentProbeComponent probe : tile.getWorld().bagEnvironmentProbeComponent.values()) {
-            streamingService.streamIn(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
-        }
-
-        if (tile.isTerrainPresent) {
-            streamingService.streamIn(tile.getId(), StreamableResourceType.MESH);
-            streamingService.streamIn(tile.getId(), StreamableResourceType.TEXTURE);
-        }
     }
 
     @Override

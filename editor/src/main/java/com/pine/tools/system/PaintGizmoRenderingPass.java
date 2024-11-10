@@ -49,7 +49,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return bufferRepository.gBufferTarget;
+        return bufferRepository.postProcessingBuffer;
     }
 
     @Override
