@@ -16,12 +16,16 @@ public class HierarchyRequest extends AbstractRequest {
 
     @Override
     public void run() {
-        String previousParent = repository.childParent.get(child.id());
-        repository.parentChildren.get(previousParent).remove(child.id());
-        String newParent =  parent != null ? parent.id() : repository.rootEntity.id();
-        repository.childParent.put(child.id(), newParent);
-        repository.parentChildren.putIfAbsent(newParent, new LinkedList<>());
-        repository.parentChildren.get(newParent).add(child.id());
-        getLogger().warn("Entity {} linked to {}", child.id, parent == null ? null : parent.id);
+        for (var tile : hashGridService.getLoadedTiles()) {
+            if (tile != null && tile.getWorld().entityMap.containsKey(child.id()) && (parent == null || tile.getWorld().entityMap.containsKey(parent.id()))) {
+                String previousParent = tile.getWorld().childParent.get(child.id());
+                tile.getWorld().parentChildren.get(previousParent).remove(child.id());
+                String newParent = parent != null ? parent.id() : tile.getWorld().rootEntity.id();
+                tile.getWorld().childParent.put(child.id(), newParent);
+                tile.getWorld().parentChildren.putIfAbsent(newParent, new LinkedList<>());
+                tile.getWorld().parentChildren.get(newParent).add(child.id());
+                getLogger().warn("Entity {} linked to {}", child.id, parent == null ? null : parent.id);
+            }
+        }
     }
 }

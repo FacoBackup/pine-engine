@@ -40,8 +40,8 @@ public class FoliageCullingPass extends AbstractPass {
             return false;
         }
         if ((clockRepository.totalTime - sinceLastRun) >= TIMEOUT) {
-            heightMap = terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
-            instanceMaskMap = heightMap != null && terrainRepository.instanceMaskMap != null ? (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE) : null;
+            heightMap = terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
+            instanceMaskMap = heightMap != null && terrainRepository.instanceMaskMap != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE) : null;
             return heightMap != null && instanceMaskMap != null;
         }
         return false;

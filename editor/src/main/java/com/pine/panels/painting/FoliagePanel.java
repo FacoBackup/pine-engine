@@ -1,11 +1,9 @@
 package com.pine.panels.painting;
 
-import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamingService;
-import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.ImVec2;
@@ -16,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.pine.panels.viewport.ViewportPanel.INV_X;
-import static com.pine.panels.viewport.ViewportPanel.INV_Y;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class FoliagePanel extends AbstractMaskPanel {

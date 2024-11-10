@@ -1,6 +1,5 @@
 package com.pine.service.voxelization.util;
 
-import com.pine.service.voxelization.LorenzAttractorDemo;
 import com.pine.service.voxelization.svo.DensityVoxelData;
 import com.pine.service.voxelization.svo.SparseVoxelOctree;
 import org.joml.Vector3f;

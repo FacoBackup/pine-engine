@@ -2,12 +2,11 @@ package com.pine.service.system.impl;
 
 import com.pine.component.MeshComponent;
 import com.pine.repository.rendering.RenderingRequest;
+import com.pine.service.grid.Tile;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO transformationIndex;
@@ -59,20 +58,25 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
     protected void renderInternal() {
         prepareCall();
         meshService.setInstanceCount(0);
-        Collection<MeshComponent> meshes = worldRepository.bagMeshComponent.values();
-        for (var mesh : meshes) {
-            if(mesh.canRender(settingsRepository.disableCullingGlobally, worldRepository.hiddenEntityMap)) {
-                var request = mesh.renderRequest;
-                // TODO - SINGLE BUFFER FOR EVERY MESH ATTRIBUTE (Material ID, Model Matrix, Transformation Index); BIND BUFFER INSTEAD OF INDIVIDUAL BINDS
-                shaderService.bindInt(request.renderIndex, transformationIndex);
-                shaderService.bindMat4(request.modelMatrix, modelMatrix);
-                if (request.material != null) {
-                    bindMaterial(request);
-                } else {
-                    shaderService.bindBoolean(true, fallbackMaterial);
+
+        for(Tile tile : hashGridService.getVisibleTiles()) {
+            if (tile != null) {
+                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
+                for (var mesh : meshes) {
+                    if(mesh.canRender(settingsRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
+                        var request = mesh.renderRequest;
+                        // TODO - SINGLE BUFFER FOR EVERY MESH ATTRIBUTE (Material ID, Model Matrix, Transformation Index); BIND BUFFER INSTEAD OF INDIVIDUAL BINDS
+                        shaderService.bindInt(request.renderIndex, transformationIndex);
+                        shaderService.bindMat4(request.modelMatrix, modelMatrix);
+                        if (request.material != null) {
+                            bindMaterial(request);
+                        } else {
+                            shaderService.bindBoolean(true, fallbackMaterial);
+                        }
+                        meshService.bind(request.mesh);
+                        meshService.draw();
+                    }
                 }
-                meshService.bind(request.mesh);
-                meshService.draw();
             }
         }
     }

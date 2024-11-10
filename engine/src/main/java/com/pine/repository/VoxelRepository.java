@@ -6,8 +6,8 @@ import com.pine.injection.PInject;
 import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
-import com.pine.service.voxelization.svo.SVOGrid;
 import com.pine.service.voxelization.VoxelizationService;
+import com.pine.service.voxelization.svo.SVOGrid;
 import com.pine.theme.Icons;
 
 @PBean

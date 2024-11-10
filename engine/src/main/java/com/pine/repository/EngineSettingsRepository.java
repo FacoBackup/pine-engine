@@ -6,7 +6,6 @@ import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 import com.pine.theme.Icons;
-import org.joml.Vector4f;
 
 @PBean
 public class EngineSettingsRepository extends Inspectable implements SerializableRepository {
@@ -100,8 +99,7 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
 
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
     public boolean gridOverlay = false;
-    public transient boolean isBaking;
-
+    public transient boolean isBakingEnvironmentMaps;
 
     @Override
     public String getTitle() {

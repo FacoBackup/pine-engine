@@ -6,9 +6,8 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreBufferRepository;
-import com.pine.repository.rendering.RenderingRepository;
+import com.pine.service.grid.HashGridService;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import org.lwjgl.BufferUtils;
@@ -17,14 +16,9 @@ import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 @PBean
 public class ViewportPickingService implements Loggable {
-    @PInject
-    public RenderingRepository renderingRepository;
-
     @PInject
     public CoreBufferRepository coreBufferRepository;
 
@@ -35,7 +29,7 @@ public class ViewportPickingService implements Loggable {
     public SelectionService selectionService;
 
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
 
     public void pick() {
         int x = (int) ((runtimeRepository.mouseX - runtimeRepository.viewportX) * (runtimeRepository.getDisplayW() / runtimeRepository.viewportW));
@@ -72,10 +66,14 @@ public class ViewportPickingService implements Loggable {
     }
 
     private TransformationComponent findEntity(int actualIndex) {
-        Collection<MeshComponent> meshes = worldRepository.bagMeshComponent.values();
-        for (var mesh : meshes) {
-            if (mesh.renderRequest != null && !mesh.renderRequest.isCulled && mesh.renderRequest.renderIndex == actualIndex) {
-                return worldRepository.bagTransformationComponent.get(mesh.getEntityId());
+        for (var tile : hashGridService.getLoadedTiles()) {
+            if (tile != null) {
+                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
+                for (var mesh : meshes) {
+                    if (mesh.renderRequest != null && !mesh.renderRequest.isCulled && mesh.renderRequest.renderIndex == actualIndex) {
+                        return tile.getWorld().bagTransformationComponent.get(mesh.getEntityId());
+                    }
+                }
             }
         }
         return null;

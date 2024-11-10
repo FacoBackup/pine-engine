@@ -8,8 +8,7 @@ import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import org.lwjgl.opengl.GL46;
 
@@ -118,7 +117,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
 
     public int getTotalTriangleCount() {
         int total = 0;
-        for (var resourceRef : repository.loadedResources.values()) {
+        for (var resourceRef : repository.streamed.values()) {
             if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.MESH) {
                 total += ((MeshResourceRef) resourceRef).triangleCount;
             }

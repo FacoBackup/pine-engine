@@ -1,16 +1,17 @@
 package com.pine.tasks;
 
-import com.pine.component.MeshComponent;
-import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.*;
+import com.pine.repository.AtmosphereRepository;
+import com.pine.repository.CameraRepository;
+import com.pine.repository.ClockRepository;
+import com.pine.repository.VoxelRepository;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.LightUtil;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.environment.EnvironmentMapGenService;
+import com.pine.service.grid.HashGridService;
 import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.TransformationService;
@@ -30,7 +31,7 @@ public class RenderingTask extends AbstractTask {
     public RenderingRepository renderingRepository;
 
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
 
     @PInject
     public TransformationService transformationService;
@@ -83,14 +84,18 @@ public class RenderingTask extends AbstractTask {
 
     private void updateMeshes() {
         int renderIndex = 0;
-        for (var mesh : worldRepository.bagMeshComponent.values()) {
-            var t = worldRepository.bagTransformationComponent.get(mesh.getEntityId());
-            if (t != null) {
-                mesh.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
-                RenderingRequest request = renderingRequestService.prepare(mesh, t);
-                if (request != null) {
-                    request.renderIndex = renderIndex;
-                    renderIndex++;
+        for (var tile : hashGridService.getLoadedTiles()) {
+            if (tile != null) {
+                for (var mesh : tile.getWorld().bagMeshComponent.values()) {
+                    var t = tile.getWorld().bagTransformationComponent.get(mesh.getEntityId());
+                    if (t != null) {
+                        mesh.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
+                        RenderingRequest request = renderingRequestService.prepare(mesh, t);
+                        if (request != null) {
+                            request.renderIndex = renderIndex;
+                            renderIndex++;
+                        }
+                    }
                 }
             }
         }
@@ -114,14 +119,18 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void defineProbes() {
-        var probes = worldRepository.bagEnvironmentProbeComponent.values();
-        int i = 0;
-        for (var probe : probes) {
-            if (i == 3) {
-                break;
+        for (var tile : hashGridService.getVisibleTiles()) {
+            if (tile != null) {
+                var probes = tile.getWorld().bagEnvironmentProbeComponent.values();
+                int i = 0;
+                for (var probe : probes) {
+                    if (i == 3) {
+                        break;
+                    }
+                    renderingRepository.environmentMaps[i] = (EnvironmentMapResourceRef) streamingService.streamIn(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
+                    i++;
+                }
             }
-            renderingRepository.environmentMaps[i] = (EnvironmentMapResourceRef) streamingService.stream(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
-            i++;
         }
     }
 
@@ -136,7 +145,7 @@ public class RenderingTask extends AbstractTask {
                 if (culled || filled > 3) {
                     continue;
                 }
-                var chunkStream = (VoxelChunkResourceRef) streamingService.stream(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
+                var chunkStream = (VoxelChunkResourceRef) streamingService.streamIn(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
                 renderingRepository.newVoxelChunks[filled] = chunkStream;
                 if (chunkStream != null) {
                     filledWithContent++;

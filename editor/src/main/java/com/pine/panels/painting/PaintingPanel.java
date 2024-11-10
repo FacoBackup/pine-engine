@@ -2,14 +2,11 @@ package com.pine.panels.painting;
 
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.inspection.Inspectable;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.PaintingType;
-import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
-import imgui.flag.ImGuiTabBarFlags;
 
 public class PaintingPanel extends AbstractDockPanel {
     @PInject

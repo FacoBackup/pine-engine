@@ -66,13 +66,13 @@ public class PaintGizmoPass extends AbstractPass {
             switch (editorRepository.paintingType) {
                 case FOLIAGE: {
                     if (editorRepository.foliageForPainting != null && terrainRepository.instanceMaskMap != null) {
-                        targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
+                        targetTexture = (TextureResourceRef) streamingService.streamIn(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
                     }
                     break;
                 }
                 case TERRAIN: {
                     if (terrainRepository.heightMapTexture != null) {
-                        targetTexture = (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
+                        targetTexture = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
                     }
                     break;
                 }

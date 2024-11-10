@@ -7,9 +7,9 @@ import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.FSEntry;
 import com.pine.repository.FilesRepository;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.FilesService;
+import com.pine.service.grid.HashGridService;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.data.SceneImportData;
 import com.pine.service.rendering.RequestProcessingService;
@@ -39,7 +39,7 @@ public class DirectoryPanel extends AbstractView {
     @PInject
     public FilesRepository filesRepository;
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
     @PInject
     public EditorRepository editorRepository;
     @PInject
@@ -228,13 +228,13 @@ public class DirectoryPanel extends AbstractView {
             switch (root.getType()) {
                 case SCENE -> {
                     var scene = (SceneImportData) sceneService.stream(importerService.getPathToFile(root.getId(), StreamableResourceType.SCENE), Collections.emptyMap(), Collections.emptyMap());
-                    requestProcessingService.addRequest(new LoadSceneRequest(worldRepository.rootEntity, scene));
+                    requestProcessingService.addRequest(new LoadSceneRequest(hashGridService.getCurrentTile().getWorld().rootEntity, scene));
                 }
                 case MESH -> {
                     var request = new AddEntityRequest(List.of(ComponentType.MESH));
                     requestProcessingService.addRequest(request);
 
-                    MeshComponent meshComponent = worldRepository.bagMeshComponent.get(request.getResponse().id());
+                    MeshComponent meshComponent = hashGridService.getCurrentTile().getWorld().bagMeshComponent.get(request.getResponse().id());
                     meshComponent.lod0 = root.getId();
                 }
             }

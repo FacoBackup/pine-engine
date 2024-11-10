@@ -1,7 +1,8 @@
 package com.pine.service.request;
 
 import com.pine.messaging.Loggable;
-import com.pine.repository.WorldRepository;
+import com.pine.service.grid.Tile;
+import com.pine.service.grid.TileWorld;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,29 +19,38 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     @Override
     public void run() {
         for (String entityId : entities) {
-            if (!Objects.equals(entityId, repository.rootEntity.id())) {
-                String parent = repository.childParent.get(entityId);
-                var parentList = repository.parentChildren.get(parent);
-                if(parentList != null) {
-                    parentList.remove(entityId);
+            if (!Objects.equals(entityId, TileWorld.ROOT_ID)) {
+                for(var tile : hashGridService.getLoadedTiles()){
+                    if(tile != null && tile.getWorld().entityMap.containsKey(entityId)){
+                        removeEntity(entityId, tile);
+                    }
                 }
-                repository.childParent.remove(entityId);
-
-                removeComponentsHierarchically(entityId, repository);
-                repository.parentChildren.remove(entityId);
             }
         }
+
         getLogger().warn("Deleted {} entities", entities.size());
     }
 
-    private void removeComponentsHierarchically(String entity, WorldRepository repository) {
-        repository.unregisterComponents(entity);
-        repository.entityMap.remove(entity);
+    public static void removeEntity(String entityId, Tile tile) {
+        String parent = tile.getWorld().childParent.get(entityId);
+        var parentList = tile.getWorld().parentChildren.get(parent);
+        if(parentList != null) {
+            parentList.remove(entityId);
+        }
+        tile.getWorld().childParent.remove(entityId);
 
-        var children = repository.parentChildren.get(entity);
+        removeComponentsHierarchically(entityId, tile.getWorld());
+        tile.getWorld().parentChildren.remove(entityId);
+    }
+
+    private static void removeComponentsHierarchically(String entity, TileWorld world) {
+        world.unregisterComponents(entity);
+        world.entityMap.remove(entity);
+
+        var children = world.parentChildren.get(entity);
         if(children != null) {
             for (String c : children) {
-                removeComponentsHierarchically(c, repository);
+                removeComponentsHierarchically(c, world);
             }
         }
     }

@@ -8,7 +8,7 @@ import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.panels.component.FormPanel;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.WorldRepository;
+import com.pine.service.grid.HashGridService;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
@@ -29,7 +29,7 @@ public class InspectorPanel extends AbstractDockPanel {
     @PInject
     public EditorRepository editorRepository;
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
     @PInject
     public List<Inspectable> repositories;
 
@@ -98,12 +98,24 @@ public class InspectorPanel extends AbstractDockPanel {
         if (!Objects.equals(editorRepository.mainSelection, selectedId)) {
             additionalInspection.clear();
             selectedId = editorRepository.mainSelection;
-            selected = selectedId != null ? worldRepository.entityMap.get(selectedId) : null;
-            additionalInspection.add(selected);
-            if (selected != null) {
-                worldRepository.runByComponent(this::addComponent, selectedId);
-                currentInspection = additionalInspection.getFirst();
+
+            if(selectedId != null) {
+                for (var tile : hashGridService.getLoadedTiles()) {
+                    if (tile != null) {
+                        selected = selectedId != null ? tile.getWorld().entityMap.get(selectedId) : null;
+                        if (selected != null) {
+                            additionalInspection.add(selected);
+                            tile.getWorld().runByComponent(this::addComponent, selectedId);
+                            currentInspection = additionalInspection.getFirst();
+                            break;
+                        }
+                    }
+                }
             }else{
+                selected = null;
+            }
+
+            if(selectedId != null && selected == null) {
                 currentInspection = repositories.getFirst();
             }
         }

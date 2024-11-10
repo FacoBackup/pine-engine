@@ -5,9 +5,7 @@ import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
-import com.pine.service.rendering.RequestProcessingService;
 import imgui.ImVec2;
 import imgui.extension.imguizmo.ImGuizmo;
 import org.jetbrains.annotations.Nullable;
@@ -24,12 +22,6 @@ public class GizmoPanel extends AbstractView {
 
     @PInject
     public SelectionService selectionService;
-
-    @PInject
-    public WorldRepository world;
-
-    @PInject
-    public RequestProcessingService requestProcessingService;
 
     private final Matrix4f auxMat4 = new Matrix4f();
     private final Vector3f auxTranslation = new Vector3f();

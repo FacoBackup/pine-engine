@@ -3,8 +3,7 @@ package com.pine.service.streaming.impl;
 import com.pine.injection.PBean;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.ref.AudioResourceRef;
 
 import java.util.Map;

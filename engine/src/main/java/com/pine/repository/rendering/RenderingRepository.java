@@ -4,7 +4,7 @@ import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EngineSettingsRepository;
-import com.pine.repository.WorldRepository;
+import com.pine.service.grid.HashGridService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 
@@ -29,7 +29,7 @@ public class RenderingRepository {
     private int totalDrawCalls = 0;
 
     @PInject
-    public transient WorldRepository worldRepository;
+    public transient HashGridService hashGridService;
 
     @PInject
     public transient EngineSettingsRepository engineSettingsRepository;
@@ -47,13 +47,19 @@ public class RenderingRepository {
 
     public int getDrawCallQuantity() {
         totalTriangles = totalDrawCalls = 0;
-        Collection<MeshComponent> meshes = worldRepository.bagMeshComponent.values();
-        for (var mesh : meshes) {
-            if (mesh.canRender(engineSettingsRepository.disableCullingGlobally, worldRepository.hiddenEntityMap)) {
-                totalTriangles += mesh.renderRequest.mesh.triangleCount;
-                totalDrawCalls++;
+
+        for(var tile : hashGridService.getLoadedTiles()){
+            if(tile != null){
+                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
+                for (var mesh : meshes) {
+                    if (mesh.canRender(engineSettingsRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
+                        totalTriangles += mesh.renderRequest.mesh.triangleCount;
+                        totalDrawCalls++;
+                    }
+                }
             }
         }
+
         return totalDrawCalls;
     }
 }

@@ -6,10 +6,11 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.VoxelRepository;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.grid.HashGridService;
+import com.pine.service.grid.TileWorld;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.data.MeshImportData;
 import com.pine.service.streaming.StreamingService;
@@ -43,7 +44,7 @@ public class VoxelizationService implements Loggable {
     public ImporterService importerService;
 
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
 
     @PInject
     public MeshService meshService;
@@ -69,12 +70,12 @@ public class VoxelizationService implements Loggable {
         isVoxelizing = true;
         if (voxelRepository.grid != null) {
             for (var chunk : voxelRepository.grid.chunks) {
-                AbstractResourceRef<?> ref = streamingService.repository.loadedResources.get(chunk.getId());
+                AbstractResourceRef<?> ref = streamingService.repository.streamed.get(chunk.getId());
                 if (ref != null) {
                     ref.dispose();
                 }
                 streamingService.repository.discardedResources.put(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
-                streamingService.repository.loadedResources.remove(chunk.getId());
+                streamingService.repository.streamed.remove(chunk.getId());
             }
         }
         new Thread(this::voxelize).start();
@@ -94,31 +95,11 @@ public class VoxelizationService implements Loggable {
             }
             var grid = new SVOGrid(voxelRepository.chunkSize, voxelRepository.chunkGridSize, voxelRepository.maxDepth);
 
-            getLogger().warn("Voxelizing {}", worldRepository.bagMeshComponent.size());
-            for (MeshComponent meshComponent : worldRepository.bagMeshComponent.values()) {
-                if (meshComponent.lod0 == null) {
-                    continue;
-                }
-
-                getLogger().warn("Voxelizing entity {}", meshComponent.getEntityId());
-                Matrix4f globalMatrix = worldRepository.bagTransformationComponent.get(meshComponent.getEntityId()).modelMatrix;
-                var mesh = streamMesh(meshComponent.lod0, globalMatrix, meshComponent);
-                List<SparseVoxelOctree> intersectingChunks = getIntersectingChunks(mesh, grid, meshComponent);
-                if (intersectingChunks.isEmpty()) {
-                    getLogger().warn("No intersections found for {}", meshComponent.getEntityId());
-                    continue;
-                }
-                getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.getEntityId());
-
-                TextureStreamData albedoTexture = streamTexture(mesh, meshComponent);
-                long startLocal = System.currentTimeMillis();
-                for (SparseVoxelOctree chunk : intersectingChunks) {
-                    VoxelizerUtil.voxelize(mesh, chunk, albedoTexture);
-                }
-                getLogger().warn("Voxelization of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
-
-                if (albedoTexture != null) {
-                    STBImage.stbi_image_free(albedoTexture.imageBuffer);
+            for (var tile : hashGridService.getTiles().values()) {
+                var world = tile.getWorld();
+                getLogger().warn("Voxelizing {}", world.bagMeshComponent.size());
+                for (MeshComponent meshComponent : world.bagMeshComponent.values()) {
+                    voxelizeMesh(meshComponent, world, grid);
                 }
             }
 
@@ -127,6 +108,33 @@ public class VoxelizationService implements Loggable {
             getLogger().error(e.getMessage(), e);
         }
         isVoxelizing = false;
+    }
+
+    private void voxelizeMesh(MeshComponent meshComponent, TileWorld world, SVOGrid grid) {
+        if (meshComponent.lod0 == null) {
+            return;
+        }
+
+        getLogger().warn("Voxelizing entity {}", meshComponent.getEntityId());
+        Matrix4f globalMatrix = world.bagTransformationComponent.get(meshComponent.getEntityId()).modelMatrix;
+        var mesh = streamMesh(meshComponent.lod0, globalMatrix, meshComponent);
+        List<SparseVoxelOctree> intersectingChunks = getIntersectingChunks(mesh, grid, meshComponent);
+        if (intersectingChunks.isEmpty()) {
+            getLogger().warn("No intersections found for {}", meshComponent.getEntityId());
+            return;
+        }
+        getLogger().warn("{} intersections found for {}", intersectingChunks.size(), meshComponent.getEntityId());
+
+        TextureStreamData albedoTexture = streamTexture(mesh, meshComponent);
+        long startLocal = System.currentTimeMillis();
+        for (SparseVoxelOctree chunk : intersectingChunks) {
+            VoxelizerUtil.voxelize(mesh, chunk, albedoTexture);
+        }
+        getLogger().warn("Voxelization of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
+
+        if (albedoTexture != null) {
+            STBImage.stbi_image_free(albedoTexture.imageBuffer);
+        }
     }
 
     private @Nullable TextureStreamData streamTexture(MeshImportData mesh, MeshComponent meshComponent) {

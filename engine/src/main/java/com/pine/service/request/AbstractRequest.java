@@ -1,17 +1,17 @@
 package com.pine.service.request;
 
 import com.pine.messaging.Loggable;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.grid.HashGridService;
 
 public abstract class AbstractRequest implements Loggable {
-    public WorldRepository repository;
+    public HashGridService hashGridService;
     public StreamingRepository streamingRepository;
 
     public abstract void run();
 
-    public void setup(WorldRepository worldRepository, StreamingRepository streamingRepository) {
-        this.repository = worldRepository;
+    public void setup(HashGridService hashGridService, StreamingRepository streamingRepository) {
+        this.hashGridService = hashGridService;
         this.streamingRepository = streamingRepository;
     }
 }

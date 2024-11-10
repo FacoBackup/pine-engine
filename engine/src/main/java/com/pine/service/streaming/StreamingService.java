@@ -41,33 +41,41 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
 
     private long sinceLastCleanup;
 
-    public AbstractResourceRef<?> stream(String id, StreamableResourceType type) {
-        if (id == null || repository.scheduleToLoad.containsKey(id)) {
+    public AbstractResourceRef<?> streamIn(String id, StreamableResourceType type) {
+        if (id == null || repository.toStreamIn.containsKey(id)) {
             return null;
         }
-        AbstractResourceRef<?> val = repository.loadedResources.get(id);
+        AbstractResourceRef<?> val = repository.streamed.get(id);
         if (val != null) {
             if (val.isLoaded()) {
                 return val;
             }
         }
         if (!repository.discardedResources.containsKey(id)) {
-            repository.scheduleToLoad.put(id, type);
+            repository.toStreamIn.put(id, type);
             getLogger().warn("Requesting stream of {} of type {}", id, type);
         }
         return null;
     }
 
+    public void streamOut(String id, StreamableResourceType type) {
+        if (id == null || !repository.streamed.containsKey(id)) {
+            return;
+        }
+        repository.toStreamOut.put(id, type);
+        getLogger().warn("Streaming out {} of type {}", id, type);
+    }
+
     @Override
     public void sync() {
-        for (String resource : repository.toLoadResources.keySet()) {
-            AbstractResourceRef<?> ref = repository.loadedResources.get(resource);
+        for (String resource : repository.streamData.keySet()) {
+            AbstractResourceRef<?> ref = repository.streamed.get(resource);
             if (ref != null) {
                 getLogger().warn("Loading streamed resource {} of type {}", resource, ref.getResourceType());
-                ref.load(repository.toLoadResources.get(resource));
+                ref.load(repository.streamData.get(resource));
             }
-            repository.toLoadResources.remove(resource);
-            repository.scheduleToLoad.remove(resource);
+            repository.streamData.remove(resource);
+            repository.toStreamIn.remove(resource);
         }
         disposeOfUnusedResources();
     }
@@ -76,18 +84,27 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
         if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
             sinceLastCleanup = clock.totalTime;
             getLogger().warn("Disposing of unused resources");
-            for (AbstractResourceRef<?> resource : repository.loadedResources.values()) {
+            for (AbstractResourceRef<?> resource : repository.streamed.values()) {
                 if ((clock.totalTime - resource.lastUse) >= MAX_TIMEOUT) {
                     resource.dispose();
-                    repository.loadedResources.remove(resource.id);
+                    repository.streamed.remove(resource.id);
                 }
             }
+
+            for (String resourceId : repository.toStreamOut.keySet()) {
+                var resource = repository.streamed.get(resourceId);
+                if (resource != null) {
+                    resource.dispose();
+                    repository.streamed.remove(resource.id);
+                }
+            }
+            repository.toStreamOut.clear();
         }
     }
 
     @Override
     public void dispose() {
-        for (var resource : repository.loadedResources.values()) {
+        for (var resource : repository.streamed.values()) {
             if (!resource.isLoaded()) {
                 continue;
             }
@@ -101,19 +118,9 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
             String id = UUID.randomUUID().toString();
             var textureRef = new TextureResourceRef(id);
             textureRef.load(texture);
-            repository.loadedResources.put(id, textureRef);
+            repository.streamed.put(id, textureRef);
             return textureRef;
         }
         return null;
-    }
-
-    public AbstractResourceRef<?> streamSync(String id, StreamableResourceType type) {
-        if (id == null) {
-            return null;
-        }
-        stream(id, type);
-        streamingTask.streamAll();
-        sync();
-        return repository.loadedResources.get(id);
     }
 }

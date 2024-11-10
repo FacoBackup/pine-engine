@@ -4,10 +4,12 @@ import com.pine.component.Entity;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.WorldRepository;
+import com.pine.service.grid.HashGridService;
 
 import java.util.Collection;
 import java.util.Objects;
+
+import static com.pine.service.grid.TileWorld.ROOT_ID;
 
 @PBean
 public class SelectionService {
@@ -15,12 +17,12 @@ public class SelectionService {
     public EditorRepository stateRepository;
 
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
 
     public void addSelected(String entity) {
         if (stateRepository.selected.isEmpty() || entity == null) {
             stateRepository.mainSelection = entity;
-            if (Objects.equals(stateRepository.mainSelection, worldRepository.rootEntity.id())) {
+            if (stateRepository.mainSelection != null && stateRepository.mainSelection.contains(ROOT_ID)) {
                 stateRepository.mainSelection = null;
             } else if (stateRepository.mainSelection != null) {
                 updatePrimitiveSelected();
@@ -47,7 +49,11 @@ public class SelectionService {
 
     public void updatePrimitiveSelected() {
         if (stateRepository.mainSelection != null) {
-            stateRepository.primitiveSelected = worldRepository.bagTransformationComponent.get(stateRepository.mainSelection);
+            for (var tile : hashGridService.getLoadedTiles()) {
+                if (tile != null) {
+                    stateRepository.primitiveSelected = tile.getWorld().bagTransformationComponent.get(stateRepository.mainSelection);
+                }
+            }
         }
     }
 }

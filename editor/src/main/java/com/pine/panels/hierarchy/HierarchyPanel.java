@@ -1,7 +1,9 @@
 package com.pine.panels.hierarchy;
 
-import com.pine.component.*;
+import com.pine.component.AbstractComponent;
+import com.pine.component.Entity;
 import com.pine.panels.AbstractEntityViewPanel;
+import com.pine.service.grid.TileWorld;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -12,7 +14,6 @@ import imgui.type.ImString;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +32,8 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     private final Map<String, String> searchMatchWith = new HashMap<>();
     private final Map<String, Byte> searchMatch = new HashMap<>();
     private final Map<String, Integer> opened = new HashMap<>();
+    private TileWorld currentWorld;
+    private boolean isCenterWorld;
 
     @Override
     public void onInitialize() {
@@ -49,10 +52,17 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableHeadersRow();
 
-            for (String pinned : stateRepository.pinnedEntities.keySet()) {
-                renderNodePinned(world.entityMap.get(pinned));
+            var currentTile = hashGridService.getCurrentTile();
+            for (var tile : hashGridService.getLoadedTiles()) {
+                if (tile != null) {
+                    currentWorld = tile.getWorld();
+                    isCenterWorld = tile == currentTile;
+                    for (String pinned : stateRepository.pinnedEntities.keySet()) {
+                        renderNodePinned(currentWorld.entityMap.get(pinned));
+                    }
+                    renderNode(currentWorld.rootEntity.id());
+                }
             }
-            renderNode(world.rootEntity.id());
             ImGui.endTable();
         }
     }
@@ -69,7 +79,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     }
 
     private boolean renderNode(String entityId) {
-        Entity entity = world.entityMap.get(entityId);
+        Entity entity = currentWorld.entityMap.get(entityId);
         if (entity == null || (isOnSearch && searchMatch.containsKey(entity.id()) && Objects.equals(searchMatchWith.get(entity.id()), search.get()))) {
             return false;
         }
@@ -80,7 +90,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         int flags = getFlags(entity);
         boolean open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
 
-        if (entity != world.rootEntity) {
+        if (!Objects.equals(entity.id(), currentWorld.rootEntity.id())) {
             handleDragDrop(entity);
             renderEntityColumns(entity, false);
         }
@@ -95,7 +105,8 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     }
 
     private @NotNull String getNodeLabel(Entity node, boolean addId) {
-        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (addId ? ("##" + node.id() + imguiId) : "");
+        boolean isRoot = Objects.equals(currentWorld.rootEntity.id(), node.id());
+        return (isRoot ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (isCenterWorld && isRoot ? " (current)" : "") + (addId ? ("##" + node.id() + imguiId) : "");
     }
 
     private boolean matchSearch(Entity node) {
@@ -116,7 +127,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     }
 
     private void renderEntityChildren(Entity node) {
-        var children = world.parentChildren.get(node.id());
+        var children = currentWorld.parentChildren.get(node.id());
 
         if (isOnSearch) {
             if (children != null) {
@@ -142,7 +153,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private void renderComponents(Entity node) {
         if (!stateRepository.showOnlyEntitiesHierarchy) {
-            world.runByComponent(this::addComponent, node.id());
+            currentWorld.runByComponent(this::addComponent, node.id());
         }
     }
 
@@ -175,7 +186,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
 
-        boolean isVisible = !world.hiddenEntityMap.containsKey(node.id());
+        boolean isVisible = !currentWorld.hiddenEntityMap.containsKey(node.id());
         if (ImGui.button((isVisible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "##vpinned" : "##v") + node.id() + imguiId, 20, 15)) {
             changeVisibilityRecursively(node.id(), !isVisible);
         }
@@ -194,11 +205,11 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private void changeVisibilityRecursively(String node, boolean isVisible) {
         if (isVisible) {
-            world.hiddenEntityMap.remove(node);
+            currentWorld.hiddenEntityMap.remove(node);
         } else {
-            world.hiddenEntityMap.put(node, true);
+            currentWorld.hiddenEntityMap.put(node, true);
         }
-        var children = world.parentChildren.get(node);
+        var children = currentWorld.parentChildren.get(node);
 
         if (children != null) {
             for (var child : children) {

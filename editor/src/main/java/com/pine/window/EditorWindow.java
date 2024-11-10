@@ -1,29 +1,22 @@
 package com.pine.window;
 
 import com.pine.Engine;
-import com.pine.component.ComponentType;
-import com.pine.component.MeshComponent;
 import com.pine.core.AbstractWindow;
 import com.pine.core.WindowService;
-import com.pine.core.dock.DockService;
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.panels.ToasterPanel;
 import com.pine.panels.header.EditorHeaderPanel;
 import com.pine.panels.viewport.FullScreenViewportPanel;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.WorldRepository;
 import com.pine.service.ProjectService;
 import com.pine.service.ThemeService;
-import com.pine.service.rendering.RequestProcessingService;
-import com.pine.service.request.AddEntityRequest;
 import com.pine.service.serialization.SerializationService;
 import com.pine.tools.ToolsModule;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiKey;
 
-import java.util.Collections;
 import java.util.List;
 
 import static com.pine.core.dock.DockPanel.FLAGS;

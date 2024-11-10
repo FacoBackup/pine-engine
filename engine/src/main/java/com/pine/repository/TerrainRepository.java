@@ -64,12 +64,12 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
 
     @Override
     public void onSave() {
-        var mask = (TextureResourceRef) streamingService.stream(instanceMaskMap, StreamableResourceType.TEXTURE);
+        var mask = (TextureResourceRef) streamingService.streamIn(instanceMaskMap, StreamableResourceType.TEXTURE);
         if(mask != null && mask.isLoaded()){
             textureService.writeTexture(importerService.getPathToFile(mask.id, StreamableResourceType.TEXTURE), mask.width, mask.height, mask.texture);
         }
 
-        var heightMap = (TextureResourceRef) streamingService.stream(heightMapTexture, StreamableResourceType.TEXTURE);
+        var heightMap = (TextureResourceRef) streamingService.streamIn(heightMapTexture, StreamableResourceType.TEXTURE);
         if(heightMap != null && heightMap.isLoaded()){
             textureService.writeTexture(importerService.getPathToFile(heightMap.id, StreamableResourceType.TEXTURE), heightMap.width, heightMap.height, heightMap.texture);
         }

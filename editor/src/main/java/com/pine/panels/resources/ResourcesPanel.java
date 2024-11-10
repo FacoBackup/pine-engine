@@ -2,10 +2,8 @@ package com.pine.panels.resources;
 
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.streaming.impl.MeshService;
 import com.pine.service.streaming.impl.TextureService;
 import com.pine.service.voxelization.VoxelizationService;
 import imgui.ImGui;
@@ -19,9 +17,6 @@ public class ResourcesPanel extends AbstractDockPanel {
     public RenderingRepository renderingRepository;
 
     @PInject
-    public MeshService meshService;
-
-    @PInject
     public TextureService textureService;
 
     @PInject
@@ -29,9 +24,6 @@ public class ResourcesPanel extends AbstractDockPanel {
 
     @PInject
     public StreamingRepository streamingRepository;
-
-    @PInject
-    public WorldRepository worldRepository;
 
     @Override
     public void render() {
@@ -48,9 +40,9 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Voxels", voxelizationService.getVoxelCount());
 
-            render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
+            render("Resources to be streamed in", streamingRepository.toStreamIn.size());
 
-            render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
+            render("Resources to be streamed in", streamingRepository.toStreamIn.size());
 
 
             ImGui.endTable();

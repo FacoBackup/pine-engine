@@ -7,10 +7,10 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EngineSettingsRepository;
 import com.pine.repository.RuntimeRepository;
-import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.camera.Camera;
+import com.pine.service.grid.HashGridService;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -22,7 +22,7 @@ import org.joml.Vector3f;
 @PBean
 public class EnvironmentMapGenService implements Loggable {
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
 
     @PInject
     public ShaderService shaderService;
@@ -50,22 +50,28 @@ public class EnvironmentMapGenService implements Loggable {
 
 
     public void bake() {
-        engineSettingsRepository.isBaking = true;
+        engineSettingsRepository.isBakingEnvironmentMaps = true;
         getLogger().warn("Starting probe baking");
         boolean previous = engineSettingsRepository.disableCullingGlobally;
         engineSettingsRepository.disableCullingGlobally = true;
-        for (var probe : worldRepository.bagEnvironmentProbeComponent.values()) {
-            capture(probe.getEntityId(), worldRepository.bagTransformationComponent.get(probe.getEntityId()).translation);
-            var probeOld = streamingRepository.loadedResources.get(probe.getEntityId());
-            if (probeOld != null) {
-                probeOld.dispose();
+
+        for(var tile : hashGridService.getTiles().values()){
+            if(tile != null){
+                for (var probe : tile.getWorld().bagEnvironmentProbeComponent.values()) {
+                    capture(probe.getEntityId(), tile.getWorld().bagTransformationComponent.get(probe.getEntityId()).translation);
+                    var probeOld = streamingRepository.streamed.get(probe.getEntityId());
+                    if (probeOld != null) {
+                        probeOld.dispose();
+                    }
+                    streamingRepository.toStreamIn.remove(probe.getEntityId());
+                    streamingRepository.streamData.remove(probe.getEntityId());
+                    streamingRepository.discardedResources.remove(probe.getEntityId());
+                }
             }
-            streamingRepository.scheduleToLoad.remove(probe.getEntityId());
-            streamingRepository.toLoadResources.remove(probe.getEntityId());
-            streamingRepository.discardedResources.remove(probe.getEntityId());
         }
+
         engineSettingsRepository.disableCullingGlobally = previous;
-        engineSettingsRepository.isBaking = false;
+        engineSettingsRepository.isBakingEnvironmentMaps = false;
     }
 
     private void capture(String resourceId, Vector3f cameraPosition) {

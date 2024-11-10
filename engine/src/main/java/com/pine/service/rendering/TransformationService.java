@@ -4,9 +4,10 @@ import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.WorldRepository;
-import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.service.grid.HashGridService;
+import com.pine.service.grid.Tile;
+import com.pine.service.grid.TileWorld;
 import com.pine.tasks.AbstractTask;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -21,43 +22,45 @@ public class TransformationService extends AbstractTask {
     public RenderingRepository renderingRepository;
 
     @PInject
-    public CoreSSBORepository ssboRepository;
-
-    @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
 
     private final Vector3f distanceAux = new Vector3f();
     private final Matrix4f auxMat4 = new Matrix4f();
     private final Matrix4f auxMat42 = new Matrix4f();
+
     @Override
     protected void tickInternal() {
         startTracking();
         try {
-            traverse(WorldRepository.ROOT_ID, false);
+            for (var tile : hashGridService.getLoadedTiles()) {
+                if (tile != null) {
+                    traverse(tile, tile.getWorld().rootEntity.id(), false);
+                }
+            }
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
         endTracking();
     }
 
-    public void traverse(String root, boolean parentHasChanged) {
-        TransformationComponent st = worldRepository.bagTransformationComponent.get(root);
+    public void traverse(Tile tile, String entityId, boolean parentHasChanged) {
+        TransformationComponent st = tile.getWorld().bagTransformationComponent.get(entityId);
         if (st != null && (st.isNotFrozen() || parentHasChanged)) {
-            TransformationComponent parentTransform = findParent(st.getEntityId());
-            transform(st, parentTransform);
+            TransformationComponent parentTransform = findParent(tile, st.getEntityId());
+            transform(tile, st, parentTransform);
             st.freezeVersion();
             parentHasChanged = true;
         }
 
-        var children = worldRepository.parentChildren.get(root);
+        var children = tile.getWorld().parentChildren.get(entityId);
         if (children != null) {
             for (var child : children) {
-                traverse(child, parentHasChanged);
+                traverse(tile, child, parentHasChanged);
             }
         }
     }
 
-    private void transform(TransformationComponent st, TransformationComponent parentTransform) {
+    private void transform(Tile previousTile, TransformationComponent st, TransformationComponent parentTransform) {
         if (parentTransform != null) {
             auxMat4.set(parentTransform.modelMatrix);
         } else {
@@ -73,15 +76,17 @@ public class TransformationService extends AbstractTask {
         auxMat4.mul(auxMat42);
         st.modelMatrix.set(auxMat4);
         st.freezeVersion();
-
+        hashGridService.moveEntityBetweenTiles(previousTile, st.translation, st.getEntityId());
     }
 
-    private TransformationComponent findParent(String id) {
-        while (id != null && !id.equals(WorldRepository.ROOT_ID)) {
-            id = worldRepository.childParent.get(id);
-            var t = worldRepository.bagTransformationComponent.get(id);
-            if (t != null) {
-                return t;
+    private TransformationComponent findParent(Tile tile, String id) {
+        if (tile != null && tile.getWorld().entityMap.containsKey(id)) {
+            while (id != null && !id.equals(tile.getWorld().rootEntity.id())) {
+                id = tile.getWorld().childParent.get(id);
+                var t = tile.getWorld().bagTransformationComponent.get(id);
+                if (t != null) {
+                    return t;
+                }
             }
         }
         return null;

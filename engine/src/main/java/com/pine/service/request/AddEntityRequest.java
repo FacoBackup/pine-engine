@@ -27,14 +27,15 @@ public class AddEntityRequest extends AbstractRequest {
     @Override
     public void run() {
         entity = new Entity();
-        repository.entityMap.put(entity.id(), entity);
+        var world = hashGridService.getCurrentTile().getWorld();
+        world.entityMap.put(entity.id(), entity);
 
-        repository.parentChildren.putIfAbsent(repository.rootEntity.id(), new LinkedList<>());
-        repository.parentChildren.get(repository.rootEntity.id()).add(entity.id());
-        repository.childParent.put(entity.id(), repository.rootEntity.id());
+        world.parentChildren.putIfAbsent(world.rootEntity.id(), new LinkedList<>());
+        world.parentChildren.get(world.rootEntity.id()).add(entity.id());
+        world.childParent.put(entity.id(), world.rootEntity.id());
 
         try {
-            AddComponentRequest.add(components, entity, repository);
+            AddComponentRequest.add(components, entity, world);
             getLogger().warn("Entity created successfully");
         } catch (Exception e) {
             getLogger().error("Error while adding component", e);

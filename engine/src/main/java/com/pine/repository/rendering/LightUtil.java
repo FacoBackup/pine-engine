@@ -1,7 +1,5 @@
 package com.pine.repository.rendering;
 
-import com.pine.repository.CameraRepository;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class LightUtil {

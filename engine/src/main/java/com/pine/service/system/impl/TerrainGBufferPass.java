@@ -24,8 +24,8 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
 
     @Override
     protected boolean isRenderable() {
-        mesh = terrainRepository.bakeId != null ? (MeshResourceRef) streamingService.stream(terrainRepository.bakeId, StreamableResourceType.MESH) : null;
-        heightMap = mesh != null && terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.stream(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
+        mesh = terrainRepository.bakeId != null ? (MeshResourceRef) streamingService.streamIn(terrainRepository.bakeId, StreamableResourceType.MESH) : null;
+        heightMap = mesh != null && terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
         return mesh != null && heightMap != null;
     }
 

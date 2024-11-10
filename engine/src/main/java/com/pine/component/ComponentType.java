@@ -12,10 +12,8 @@ public enum ComponentType implements Serializable {
     POINT_LIGHT(LightType.POINT.getTitle(), Icons.lightbulb, PointLightComponent.class),
     SPHERE_LIGHT(LightType.SPHERE.getTitle(), Icons.circle, SphereLightComponent.class),
     SPOT_LIGHT(LightType.SPOT.getTitle(), Icons.highlight, SpotLightComponent.class),
-    DECAL("Decal", Icons.format_shapes, DecalComponent.class),
     ENVIRONMENT_PROBE("Environment Probe", Icons.panorama_photosphere, EnvironmentProbeComponent.class),
     MESH("Mesh", Icons.category, MeshComponent.class),
-    SPRITE("Sprite", Icons.image, SpriteComponent.class),
     TRANSFORMATION("Transformation", Icons.transform, TransformationComponent.class);
 
     private final String title;

@@ -3,6 +3,7 @@ package com.pine.tools.system;
 import com.pine.component.MeshComponent;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
+import com.pine.service.grid.Tile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -51,15 +52,19 @@ public class OutlineGenPass extends AbstractPass {
     @Override
     protected void renderInternal() {
         meshService.setInstanceCount(0);
-        Collection<MeshComponent> meshes = worldRepository.bagMeshComponent.values();
-        for (var mesh : meshes) {
-            if (mesh.canRender(settingsRepository.disableCullingGlobally, worldRepository.hiddenEntityMap)) {
-                var request = mesh.renderRequest;
-                if (editorRepository.selected.containsKey(request.entity)) {
-                    shaderService.bindInt(request.renderIndex, renderIndex);
-                    shaderService.bindMat4(request.modelMatrix, modelMatrix);
-                    meshService.bind(request.mesh);
-                    meshService.draw();
+        for(Tile tile : hashGridService.getVisibleTiles()){
+            if(tile != null){
+                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
+                for (var mesh : meshes) {
+                    if (mesh.canRender(settingsRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
+                        var request = mesh.renderRequest;
+                        if (editorRepository.selected.containsKey(request.entity)) {
+                            shaderService.bindInt(request.renderIndex, renderIndex);
+                            shaderService.bindMat4(request.modelMatrix, modelMatrix);
+                            meshService.bind(request.mesh);
+                            meshService.draw();
+                        }
+                    }
                 }
             }
         }

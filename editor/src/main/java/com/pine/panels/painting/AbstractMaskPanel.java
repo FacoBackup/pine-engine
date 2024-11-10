@@ -2,7 +2,6 @@ package com.pine.panels.painting;
 
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.repository.TerrainRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.TextureResourceRef;
@@ -31,7 +30,7 @@ public abstract class AbstractMaskPanel extends AbstractView {
             }
 
             if (showMask) {
-                var targetTexture = (TextureResourceRef) streamingService.stream(getTextureId(), StreamableResourceType.TEXTURE);
+                var targetTexture = (TextureResourceRef) streamingService.streamIn(getTextureId(), StreamableResourceType.TEXTURE);
                 if (targetTexture != null) {
                     ImGui.setNextWindowSize(150, 150);
                     if (ImGui.beginChild(imguiId)) {

@@ -6,8 +6,7 @@ import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import org.lwjgl.BufferUtils;
@@ -59,7 +58,7 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
 
     public int getTotalTextureCount() {
         int total = 0;
-        for (AbstractResourceRef<?> resourceRef : repository.loadedResources.values()) {
+        for (AbstractResourceRef<?> resourceRef : repository.streamed.values()) {
             if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.TEXTURE) {
                 total++;
             }

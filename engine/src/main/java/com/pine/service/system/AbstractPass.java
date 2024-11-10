@@ -5,8 +5,12 @@ import com.pine.Engine;
 import com.pine.MetricCollector;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
-import com.pine.repository.core.*;
+import com.pine.repository.core.CoreBufferRepository;
+import com.pine.repository.core.CoreMeshRepository;
+import com.pine.repository.core.CoreSSBORepository;
+import com.pine.repository.core.CoreShaderRepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.service.grid.HashGridService;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.UBOService;
@@ -47,7 +51,7 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
-    public WorldRepository worldRepository;
+    public HashGridService hashGridService;
     @PInject
     public RuntimeRepository runtimeRepository;
     @PInject

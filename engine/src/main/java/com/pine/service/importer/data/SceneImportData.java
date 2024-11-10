@@ -1,7 +1,7 @@
 package com.pine.service.importer.data;
 
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.StreamData;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,11 +1,11 @@
 package com.pine.core.dock;
 
-import com.pine.panels.painting.PaintingPanel;
 import com.pine.panels.console.ConsolePanel;
 import com.pine.panels.files.ContentBrowser;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.metrics.MetricsPanel;
+import com.pine.panels.painting.PaintingPanel;
 import com.pine.panels.resources.ResourcesPanel;
 import com.pine.panels.viewport.ViewportPanel;
 import com.pine.theme.Icons;

@@ -11,7 +11,6 @@ import com.pine.theme.Icons;
 import com.pine.tools.types.ExecutionEnvironment;
 import imgui.ImVec4;
 import imgui.extension.imguizmo.flag.Mode;
-import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
 

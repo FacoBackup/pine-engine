@@ -6,9 +6,8 @@ import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.environment.EnvironmentMapGenService;
-import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.StreamData;
 import com.pine.service.streaming.data.EnvironmentMapStreamData;
+import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 

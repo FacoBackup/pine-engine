@@ -2,7 +2,6 @@ package com.pine.panels.component;
 
 import com.pine.core.view.AbstractView;
 import imgui.ImGui;
-import imgui.flag.ImGuiTreeNodeFlags;
 
 public class AccordionPanel extends AbstractView {
     public String title;
