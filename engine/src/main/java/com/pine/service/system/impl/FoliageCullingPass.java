@@ -18,8 +18,6 @@ public class FoliageCullingPass extends AbstractPass {
     private final static int TIMEOUT = 16;
     private static final int LOCAL_SIZE_X = 1;
     private static final int LOCAL_SIZE_Y = 1;
-    private TextureResourceRef heightMap;
-    private TextureResourceRef instanceMaskMap;
     private UniformDTO imageSizeU;
     private UniformDTO heightScale;
     private UniformDTO colorToMatchU;
@@ -36,15 +34,7 @@ public class FoliageCullingPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        if (terrainRepository.foliage.isEmpty()) {
-            return false;
-        }
-        if ((clockRepository.totalTime - sinceLastRun) >= TIMEOUT) {
-            heightMap = terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
-            instanceMaskMap = heightMap != null && terrainRepository.instanceMaskMap != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE) : null;
-            return heightMap != null && instanceMaskMap != null;
-        }
-        return false;
+        return (clockRepository.totalTime - sinceLastRun) >= TIMEOUT;
     }
 
     @Override
@@ -55,25 +45,37 @@ public class FoliageCullingPass extends AbstractPass {
     @Override
     protected void renderInternal() {
         sinceLastRun = clockRepository.totalTime;
+        for (var tile : hashGridService.getVisibleTiles()) {
+            if (tile != null && tile.isTerrainPresent) {
+                var heightMap = (TextureResourceRef) streamingService.streamIn(tile.terrainHeightMapId, StreamableResourceType.TEXTURE);
+                var foliageMask = (TextureResourceRef) streamingService.streamIn(tile.terrainFoliageId, StreamableResourceType.TEXTURE);
+                if (heightMap != null && foliageMask != null) {
+                    foliageMask.lastUse = heightMap.lastUse = sinceLastRun;
+                    runForTexture(heightMap, foliageMask);
+                }
+            }
+        }
+    }
 
+    private void runForTexture(TextureResourceRef heightMap, TextureResourceRef foliageMask) {
         ssboRepository.foliageTransformationSSBO.setBindingPoint(3);
         ssboService.bind(ssboRepository.foliageTransformationSSBO);
 
         GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 2, bufferRepository.atomicCounterBuffer);
         GL46.glBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, CoreBufferRepository.ZERO);
 
-        COMPUTE_RUNTIME_DATA.groupX = (instanceMaskMap.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
-        COMPUTE_RUNTIME_DATA.groupY = (instanceMaskMap.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
+        COMPUTE_RUNTIME_DATA.groupX = (foliageMask.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
+        COMPUTE_RUNTIME_DATA.groupY = (foliageMask.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT | GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 
-        shaderService.bindSampler2dDirect(instanceMaskMap, 0);
+        shaderService.bindSampler2dDirect(foliageMask, 0);
         shaderService.bindSampler2dDirect(heightMap, 1);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
         shaderService.bindVec2(imageSize, imageSizeU);
 
         int offset = 0;
-        for(var foliage : terrainRepository.foliage.values()){
+        for (var foliage : terrainRepository.foliage.values()) {
             // TODO - ONE RUN PER FRAME INSTEAD OF EVERYTHING ALL AT ONCE
             imageSize.x = heightMap.width;
             imageSize.y = heightMap.height;

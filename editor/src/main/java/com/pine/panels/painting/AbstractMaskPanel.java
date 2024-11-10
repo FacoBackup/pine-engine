@@ -3,6 +3,7 @@ package com.pine.panels.painting;
 import com.pine.core.view.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.importer.ImporterService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
@@ -15,6 +16,9 @@ public abstract class AbstractMaskPanel extends AbstractView {
 
     @PInject
     public StreamingService streamingService;
+
+    @PInject
+    public ImporterService importerService;
 
     private boolean showMask = false;
     private final ImVec2 maskRes = new ImVec2();
@@ -32,6 +36,7 @@ public abstract class AbstractMaskPanel extends AbstractView {
             if (showMask) {
                 var targetTexture = (TextureResourceRef) streamingService.streamIn(getTextureId(), StreamableResourceType.TEXTURE);
                 if (targetTexture != null) {
+                    targetTexture.lastUse = System.currentTimeMillis();
                     ImGui.setNextWindowSize(150, 150);
                     if (ImGui.beginChild(imguiId)) {
                         maskRes.x = ImGui.getWindowSizeX();

@@ -5,6 +5,7 @@ import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.GizmoType;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.grid.Tile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -61,19 +62,22 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
+        Tile currentTile = hashGridService.getCurrentTile();
+        if (!currentTile.isTerrainPresent) {
+            return false;
+        }
+
         boolean isRenderable = runtimeRepository.mousePressed && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
         if (isRenderable) {
             switch (editorRepository.paintingType) {
                 case FOLIAGE: {
-                    if (editorRepository.foliageForPainting != null && terrainRepository.instanceMaskMap != null) {
-                        targetTexture = (TextureResourceRef) streamingService.streamIn(terrainRepository.instanceMaskMap, StreamableResourceType.TEXTURE);
+                    if (editorRepository.foliageForPainting != null) {
+                        targetTexture = (TextureResourceRef) streamingService.streamIn(currentTile.terrainFoliageId, StreamableResourceType.TEXTURE);
                     }
                     break;
                 }
                 case TERRAIN: {
-                    if (terrainRepository.heightMapTexture != null) {
-                        targetTexture = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
-                    }
+                    targetTexture = (TextureResourceRef) streamingService.streamIn(currentTile.terrainHeightMapId, StreamableResourceType.TEXTURE);
                     break;
                 }
             }
@@ -88,6 +92,18 @@ public class PaintGizmoPass extends AbstractPass {
         FrameBufferObject fbo = bufferRepository.gBuffer;
         targetTexture.bindForBoth(1);
 
+        updateUniforms();
+        bindUniforms();
+
+        COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
+        COMPUTE_RUNTIME_DATA.groupY = (fbo.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
+        COMPUTE_RUNTIME_DATA.groupZ = 1;
+        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT | GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
+
+        shaderService.dispatch(COMPUTE_RUNTIME_DATA);
+    }
+
+    private void updateUniforms() {
         radiusDensityMode.x = editorRepository.brushRadius;
         radiusDensityMode.y = editorRepository.brushDensity;
         radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : -1;
@@ -103,8 +119,10 @@ public class PaintGizmoPass extends AbstractPass {
 
         targetImageSize.x = targetTexture.width;
         targetImageSize.y = targetTexture.height;
+    }
 
-        if(editorRepository.foliageForPainting != null && terrainRepository.foliage.containsKey(editorRepository.foliageForPainting)) {
+    private void bindUniforms() {
+        if (editorRepository.foliageForPainting != null && terrainRepository.foliage.containsKey(editorRepository.foliageForPainting)) {
             shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
         }
 
@@ -117,13 +135,6 @@ public class PaintGizmoPass extends AbstractPass {
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 2);
-
-        COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
-        COMPUTE_RUNTIME_DATA.groupY = (fbo.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
-        COMPUTE_RUNTIME_DATA.groupZ = 1;
-        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT | GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
-
-        shaderService.dispatch(COMPUTE_RUNTIME_DATA);
     }
 
     @Override

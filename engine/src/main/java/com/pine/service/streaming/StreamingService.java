@@ -32,9 +32,6 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     public TextureService textureService;
 
     @PInject
-    public StreamingTask streamingTask;
-
-    @PInject
     public Engine engine;
 
     public static final int MAX_TIMEOUT = 1000;

@@ -57,8 +57,6 @@ public class RenderingTask extends AbstractTask {
     @PInject
     public AtmosphereRepository atmosphere;
 
-    private float elapsedTime = .5f;
-
     @Override
     protected void tickInternal() {
         if (renderingRepository.infoUpdated) {
@@ -102,11 +100,11 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void updateSunInformation() {
-        elapsedTime += .0005f * atmosphere.elapsedTimeSpeed;
-        Vector3f sunLightDirection = new Vector3f((float) Math.sin(elapsedTime), (float) Math.cos(elapsedTime), 0).mul(atmosphere.sunDistance);
+        atmosphere.elapsedTime += .0005f * atmosphere.elapsedTimeSpeed;
+        Vector3f sunLightDirection = new Vector3f((float) Math.sin(atmosphere.elapsedTime), (float) Math.cos(atmosphere.elapsedTime), 0).mul(atmosphere.sunDistance);
         Vector3f sunLightColor = LightUtil.computeSunlightColor(sunLightDirection, cameraRepository.currentCamera.position);
 
-        bufferRepository.globalDataBuffer.put(87, elapsedTime);
+        bufferRepository.globalDataBuffer.put(87, atmosphere.elapsedTime);
 
         bufferRepository.globalDataBuffer.put(88, sunLightDirection.x);
         bufferRepository.globalDataBuffer.put(89, sunLightDirection.y);

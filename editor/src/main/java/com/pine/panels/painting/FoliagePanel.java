@@ -3,10 +3,9 @@ package com.pine.panels.painting;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.StreamingService;
+import com.pine.service.grid.HashGridService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
-import imgui.ImVec2;
 import imgui.flag.ImGuiTableColumnFlags;
 import imgui.flag.ImGuiTableFlags;
 
@@ -26,18 +25,19 @@ public class FoliagePanel extends AbstractMaskPanel {
     public FilesRepository filesRepository;
 
     @PInject
-    public StreamingService streamingService;
-
-    @PInject
     public TerrainRepository terrainRepository;
 
-    private final ImVec2 maskRes = new ImVec2();
-    private boolean showMask = false;
+    @PInject
+    public HashGridService hashGridService;
+
     private final Map<String, Boolean> toRemove = new HashMap<>();
 
     @Override
     protected String getTextureId() {
-        return terrainRepository.instanceMaskMap;
+        if(!hashGridService.getCurrentTile().isTerrainPresent){
+            return null;
+        }
+        return hashGridService.getCurrentTile().terrainFoliageId;
     }
 
     @Override

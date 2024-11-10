@@ -115,16 +115,6 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
         return (StreamData) FSUtil.readBinary(pathToFile);
     }
 
-    public int getTotalTriangleCount() {
-        int total = 0;
-        for (var resourceRef : repository.streamed.values()) {
-            if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.MESH) {
-                total += ((MeshResourceRef) resourceRef).triangleCount;
-            }
-        }
-        return total;
-    }
-
     @Override
     public AbstractResourceRef<?> newInstance(String key) {
         return new MeshResourceRef(key);

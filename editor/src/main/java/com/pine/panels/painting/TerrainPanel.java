@@ -1,14 +1,17 @@
 package com.pine.panels.painting;
 
 import com.pine.injection.PInject;
-import com.pine.repository.TerrainRepository;
+import com.pine.service.grid.HashGridService;
 
 public class TerrainPanel extends AbstractMaskPanel {
     @PInject
-    public TerrainRepository terrainRepository;
+    public HashGridService hashGridService;
 
     @Override
     protected String getTextureId() {
-        return terrainRepository.heightMapTexture;
+        if(!hashGridService.getCurrentTile().isTerrainPresent){
+            return null;
+        }
+        return hashGridService.getCurrentTile().terrainHeightMapId;
     }
 }

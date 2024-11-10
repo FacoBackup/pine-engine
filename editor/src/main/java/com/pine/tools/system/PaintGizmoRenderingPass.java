@@ -4,6 +4,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.GizmoType;
+import com.pine.service.grid.Tile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -84,9 +85,10 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
     }
 
     private boolean checkIsValid() {
+        Tile currentTile = hashGridService.getCurrentTile();
         return switch (editorRepository.paintingType) {
-            case FOLIAGE -> editorRepository.foliageForPainting != null && terrainRepository.instanceMaskMap != null;
-            case TERRAIN -> terrainRepository.heightMapTexture != null;
+            case FOLIAGE -> currentTile.isTerrainPresent && editorRepository.foliageForPainting != null && currentTile.terrainFoliageId != null;
+            case TERRAIN -> currentTile.terrainHeightMapId != null;
             default -> false;
         };
     }

@@ -4,11 +4,15 @@ import com.pine.service.voxelization.svo.SparseVoxelOctree;
 import org.jetbrains.annotations.NotNull;
 
 public class Tile {
+    public static final String FOLIAGE_MASK = "foliage-mask";
     private final String[] adjacentTiles = new String[4]; // LEFT UP RIGHT DOWN
     private final int x;
     private final int z;
     private final String id;
     public boolean isLoaded = false;
+    public boolean isTerrainPresent = false;
+    public String terrainFoliageId;
+    public String terrainHeightMapId;
     private SparseVoxelOctree octree;
     private final TileWorld world;
 

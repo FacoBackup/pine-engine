@@ -31,17 +31,18 @@ public class HashGridService extends AbstractTask implements Loggable {
     @PInject
     public StreamingService streamingService;
 
-    @PInject
-    public TransformationService transformationService;
-
-    private Tile[] visibleTiles = new Tile[3];
+    private final Tile[] visibleTiles = new Tile[3];
+    private Tile currentTile;
 
     public Tile[] getLoadedTiles() {
         return repo.hashGrid.getLoadedTiles(cameraRepository.currentCamera.position);
     }
 
     public Tile getCurrentTile() {
-        return repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
+        if (currentTile == null) {
+            currentTile = repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
+        }
+        return currentTile;
     }
 
     @Override
@@ -76,15 +77,15 @@ public class HashGridService extends AbstractTask implements Loggable {
                     loadTile(currentLoadedTile);
                 }
             }
+            repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
         }
 
-
         findVisibleTiles();
-
         repo.previousCameraLocation.set(cameraLocation);
     }
 
     int count = 0;
+
     private void findVisibleTiles() {
         Vector2f direction = new Vector2f(
                 -cameraRepository.viewMatrix.m02(),
@@ -99,7 +100,7 @@ public class HashGridService extends AbstractTask implements Loggable {
             }
         }
 
-        if(count >= 50){
+        if (count >= 100) {
             count = 0;
             getLogger().warn("Tiles visible: {} {} {}",
                     visibleTiles[0] != null ? visibleTiles[0].getId() : null,
@@ -151,6 +152,10 @@ public class HashGridService extends AbstractTask implements Loggable {
         for (EnvironmentProbeComponent probe : tile.getWorld().bagEnvironmentProbeComponent.values()) {
             streamingService.streamOut(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
         }
+        if (tile.isTerrainPresent) {
+            streamingService.streamOut(tile.getId(), StreamableResourceType.MESH);
+            streamingService.streamOut(tile.getId(), StreamableResourceType.TEXTURE);
+        }
     }
 
     private void loadTile(Tile tile) {
@@ -166,6 +171,11 @@ public class HashGridService extends AbstractTask implements Loggable {
 
         for (EnvironmentProbeComponent probe : tile.getWorld().bagEnvironmentProbeComponent.values()) {
             streamingService.streamIn(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
+        }
+
+        if (tile.isTerrainPresent) {
+            streamingService.streamIn(tile.getId(), StreamableResourceType.MESH);
+            streamingService.streamIn(tile.getId(), StreamableResourceType.TEXTURE);
         }
     }
 
@@ -194,5 +204,9 @@ public class HashGridService extends AbstractTask implements Loggable {
 
             DeleteEntityRequest.removeEntity(entityId, tile);
         }
+    }
+
+    public HashGrid getHashGrid() {
+        return repo.hashGrid;
     }
 }

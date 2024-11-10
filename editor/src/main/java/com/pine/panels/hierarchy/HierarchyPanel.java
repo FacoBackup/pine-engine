@@ -3,6 +3,7 @@ package com.pine.panels.hierarchy;
 import com.pine.component.AbstractComponent;
 import com.pine.component.Entity;
 import com.pine.panels.AbstractEntityViewPanel;
+import com.pine.service.grid.Tile;
 import com.pine.service.grid.TileWorld;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
@@ -55,21 +56,45 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             var currentTile = hashGridService.getCurrentTile();
             for (var tile : hashGridService.getLoadedTiles()) {
                 if (tile != null) {
-                    currentWorld = tile.getWorld();
-                    isCenterWorld = tile == currentTile;
-                    for (String pinned : stateRepository.pinnedEntities.keySet()) {
-                        renderNodePinned(currentWorld.entityMap.get(pinned));
-                    }
-                    renderNode(currentWorld.rootEntity.id());
+                    renderTile(tile, currentTile);
                 }
             }
             ImGui.endTable();
         }
     }
 
-    private void renderNodePinned(Entity node) {
+    private void renderTile(Tile tile, Tile currentTile) {
+        currentWorld = tile.getWorld();
+        isCenterWorld = tile == currentTile;
+        next();
+        int flags = ImGuiTreeNodeFlags.SpanFullWidth;
+        if(isCenterWorld || tile.isTerrainPresent){
+            flags |= ImGuiTreeNodeFlags.DefaultOpen;
+        }
+
+        if (ImGui.treeNodeEx(Icons.inventory_2 + tile.getWorld().rootEntity.name + (isCenterWorld ? " (current)##" : "##") + tile.getWorld().rootEntity.id, flags)) {
+            if(tile.isTerrainPresent){
+                next();
+                ImGui.textDisabled(Icons.terrain + "Terrain chunk");
+            }
+            for (String pinned : stateRepository.pinnedEntities.keySet()) {
+                renderNodePinned(currentWorld.entityMap.get(pinned));
+            }
+            var children = currentWorld.parentChildren.get(currentWorld.rootEntity.id);
+            for(var child : children){
+                renderNode(child);
+            }
+            ImGui.treePop();
+        }
+    }
+
+    private static void next() {
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
+    }
+
+    private void renderNodePinned(Entity node) {
+        next();
         if (stateRepository.selected.containsKey(node.id())) {
             ImGui.textColored(stateRepository.accent, getNodeLabel(node, false));
         } else {
@@ -85,15 +110,11 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         }
 
         boolean isSearchMatch = matchSearch(entity);
-        ImGui.tableNextRow();
-        ImGui.tableNextColumn();
+        next();
         int flags = getFlags(entity);
         boolean open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
-
-        if (!Objects.equals(entity.id(), currentWorld.rootEntity.id())) {
-            handleDragDrop(entity);
-            renderEntityColumns(entity, false);
-        }
+        handleDragDrop(entity);
+        renderEntityColumns(entity, false);
         if (open) {
             opened.put(entity.id(), ImGuiTreeNodeFlags.DefaultOpen);
             renderEntityChildren(entity);
@@ -105,8 +126,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     }
 
     private @NotNull String getNodeLabel(Entity node, boolean addId) {
-        boolean isRoot = Objects.equals(currentWorld.rootEntity.id(), node.id());
-        return (isRoot ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (isCenterWorld && isRoot ? " (current)" : "") + (addId ? ("##" + node.id() + imguiId) : "");
+        return Icons.view_in_ar + node.getTitle() + (addId ? ("##" + node.id() + imguiId) : "");
     }
 
     private boolean matchSearch(Entity node) {
@@ -158,8 +178,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     }
 
     private void addComponent(AbstractComponent component) {
-        ImGui.tableNextRow();
-        ImGui.tableNextColumn();
+        next();
         ImGui.textDisabled(component.getIcon() + component.getTitle());
         ImGui.tableNextColumn();
         ImGui.textDisabled("--");

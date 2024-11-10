@@ -17,6 +17,7 @@ import com.pine.theme.Icons;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
@@ -25,8 +26,9 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
 
     @PInject
     public transient TerrainService terrainService;
+    public final String id = UUID.randomUUID().toString();
 
-    @ExecutableField(icon = Icons.terrain, label = "Process terrain")
+    @ExecutableField(icon = Icons.terrain, label = "Import terrain")
     public void process(){
         if(heightMapTexture == null){
             getLogger().error("No height map texture configured");
@@ -38,12 +40,8 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     }
 
     @ResourceTypeField(type = StreamableResourceType.TEXTURE)
-    @InspectableField(label = "Height map")
+    @InspectableField(label = "Link height map")
     public String heightMapTexture;
-
-    @ResourceTypeField(type = StreamableResourceType.TEXTURE)
-    @InspectableField(label = "Instance mask map")
-    public String instanceMaskMap;
 
     @InspectableField(label = "Height Scale", min = 1)
     public float heightScale = 1;
@@ -59,20 +57,9 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @PInject
     public transient ImporterService importerService;
 
-    @PInject
-    public transient TextureService textureService;
-
     @Override
     public void onSave() {
-        var mask = (TextureResourceRef) streamingService.streamIn(instanceMaskMap, StreamableResourceType.TEXTURE);
-        if(mask != null && mask.isLoaded()){
-            textureService.writeTexture(importerService.getPathToFile(mask.id, StreamableResourceType.TEXTURE), mask.width, mask.height, mask.texture);
-        }
-
-        var heightMap = (TextureResourceRef) streamingService.streamIn(heightMapTexture, StreamableResourceType.TEXTURE);
-        if(heightMap != null && heightMap.isLoaded()){
-            textureService.writeTexture(importerService.getPathToFile(heightMap.id, StreamableResourceType.TEXTURE), heightMap.width, heightMap.height, heightMap.texture);
-        }
+        terrainService.onSave();
     }
 
     @Override
@@ -84,5 +71,4 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     public String getIcon() {
         return Icons.terrain;
     }
-
 }

@@ -22,6 +22,8 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
         environmentMapGenService.bake();
     }
 
+    @InspectableField(label = "Elapsed time")
+    public float elapsedTime = .5f;
 
     @InspectableField(label = "Render atmosphere")
     public boolean enabled = false;

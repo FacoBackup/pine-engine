@@ -5,6 +5,7 @@ layout (location = 0) in vec3 position;
 
 uniform int planeSize;
 uniform float heightScale;
+uniform vec2 terrainLocation;
 
 layout (binding = 8) uniform sampler2D heightMap;
 
@@ -21,14 +22,15 @@ void main() {
     cameraPlacement = cameraWorldPosition.xyz;
     renderingIndex = 1;
     depthFunc = logDepthFC;
-
-
+    vec3 p = position;
+    p.x += terrainLocation.x;
+    p.z += terrainLocation.y;
     initialUV = vec2(position.x / planeSize + 0.5, position.z / planeSize + 0.5);
 
     float height = texture(heightMap, initialUV).r;
     normalVec = getNormalFromHeightMap(height, heightMap, initialUV);
 
-    worldSpacePosition = position;
+    worldSpacePosition = p;
     worldSpacePosition.y = height * heightScale;
     gl_Position = viewProjection * vec4(worldSpacePosition, 1);
 }
