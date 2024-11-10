@@ -28,6 +28,9 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     public transient TerrainService terrainService;
     public final String id = UUID.randomUUID().toString();
 
+    @InspectableField(disabled = true, label = "Imported terrain size")
+    public int textureSize = 0;
+
     @ExecutableField(icon = Icons.terrain, label = "Import terrain")
     public void process(){
         if(heightMapTexture == null){

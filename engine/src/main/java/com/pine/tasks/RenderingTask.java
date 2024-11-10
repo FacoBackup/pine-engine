@@ -117,7 +117,7 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void defineProbes() {
-        for (var tile : hashGridService.getVisibleTiles()) {
+        for (var tile : hashGridService.getLoadedTiles()) {
             if (tile != null) {
                 var probes = tile.getWorld().bagEnvironmentProbeComponent.values();
                 int i = 0;

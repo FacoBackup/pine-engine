@@ -56,8 +56,8 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
         shaderService.bindSampler2dDirect(heightMap, 8);
         shaderService.bindInt(heightMap.width, planeSize);
 
-        terrainLocation.x = x * TILE_SIZE - TILE_SIZE / 2f;
-        terrainLocation.y = z * TILE_SIZE - TILE_SIZE / 2f;
+        terrainLocation.x = x * TILE_SIZE + TILE_SIZE / 2f;
+        terrainLocation.y = z * TILE_SIZE + TILE_SIZE / 2f;
         shaderService.bindVec2(terrainLocation, terrainLocationU);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
         shaderService.bindBoolean(true, fallbackMaterial);

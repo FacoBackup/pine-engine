@@ -1,6 +1,7 @@
 package com.pine.service.terrain;
 
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.grid.HashGrid;
 import org.apache.logging.log4j.util.TriConsumer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
@@ -85,8 +86,9 @@ public class ImageUtil {
                             }
                         }
                     }
-                    String chunkName = getTerrainTileName(x, y);
-                    onImageLoad.accept(imageWidth, x, y);
+
+                    String chunkName = getTerrainTileName(x - columns / 2, y - rows / 2);
+                    onImageLoad.accept(imageWidth, x - columns / 2, y - rows / 2);
                     STBImageWrite.stbi_write_png(basePath + chunkName + "." + StreamableResourceType.TEXTURE.name(), TILE_SIZE, TILE_SIZE, components, tileBuffer, TILE_SIZE * components);
                 }
             }

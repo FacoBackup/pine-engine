@@ -64,8 +64,8 @@ public class TerrainService implements Loggable {
 
             long start = System.currentTimeMillis();
             String imagePath = importerService.getPathToFile(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
-
             var texture = (TextureStreamData) textureService.stream(imagePath, Collections.emptyMap(), Collections.emptyMap());
+            terrainRepository.textureSize = texture.width;
             STBImage.stbi_image_free(texture.imageBuffer);
 
             var mesh = TerrainGenerationUtil.computeMesh(TILE_SIZE);

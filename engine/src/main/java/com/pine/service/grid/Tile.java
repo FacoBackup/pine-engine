@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class Tile {
     public static final String FOLIAGE_MASK = "foliage-mask";
-    private final String[] adjacentTiles = new String[4]; // LEFT UP RIGHT DOWN
+    private final String[] adjacentTiles = new String[8];
     private final int x;
     private final int z;
     private final String id;
@@ -64,16 +64,46 @@ public class Tile {
     }
 
     private void updateTiles(Tile adjacentTile, String key) {
-        if (adjacentTile.x > x && adjacentTile.z == z) { // UP
+        boolean isWest = adjacentTile.z < z && adjacentTile.x == x;
+        boolean isEast = adjacentTile.z > z && adjacentTile.x == x;
+        boolean isNorth = adjacentTile.x > x && adjacentTile.z == z;
+        boolean isSouth = adjacentTile.x < x && adjacentTile.z == z;
+
+        boolean isSouthEast = adjacentTile.x < x && adjacentTile.z > z;
+        boolean isSouthWest = adjacentTile.x < x && adjacentTile.z < z;
+        boolean isNorthEast = adjacentTile.x > x && adjacentTile.z > z;
+        boolean isNorthWest = adjacentTile.x > x && adjacentTile.z < z;
+
+        if (isWest) {
+            adjacentTiles[0] = key;
+        }
+
+        if (isNorth) {
             adjacentTiles[1] = key;
-        } else if(adjacentTile.x < x && adjacentTile.z == z){ // DOWN
+        }
+
+        if (isEast) {
+            adjacentTiles[2] = key;
+        }
+
+        if (isSouth) {
             adjacentTiles[3] = key;
         }
 
-        if (adjacentTile.z > z && adjacentTile.x == x) { // RIGHT
-            adjacentTiles[2] = key;
-        } else if(adjacentTile.z < z && adjacentTile.x == x){ // LEFT
-            adjacentTiles[0] = key;
+        if (isSouthWest) {
+            adjacentTiles[4] = key;
+        }
+
+        if (isSouthEast) {
+            adjacentTiles[5] = key;
+        }
+
+        if (isNorthWest) {
+            adjacentTiles[6] = key;
+        }
+
+        if (isNorthEast) {
+            adjacentTiles[7] = key;
         }
     }
 }

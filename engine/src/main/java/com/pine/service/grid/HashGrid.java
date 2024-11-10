@@ -8,7 +8,7 @@ import java.util.Map;
 public class HashGrid {
     public static final int TILE_SIZE = 150;
     private final Map<String, Tile> tiles = new HashMap<>();
-    private transient Tile[] loadedTiles = new Tile[5];
+    private transient Tile[] loadedTiles = new Tile[9];
 
     public Tile getOrCreateTile(Vector3f point) {
         int tileX = getTileLocation(point.x);
@@ -31,12 +31,12 @@ public class HashGrid {
      */
     public Tile[] getLoadedTiles(Vector3f point) {
         if (loadedTiles == null) {
-            loadedTiles = new Tile[5];
+            loadedTiles = new Tile[9];
         }
         var center = getOrCreateTile(point);
         loadedTiles[0] = center;
         var adjacentIds = center.getAdjacentTiles();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 8; i++) {
             loadedTiles[i + 1] = tiles.get(adjacentIds[i]);
         }
         return loadedTiles;
@@ -56,36 +56,34 @@ public class HashGrid {
         }
         var newTile = new Tile(x, z, id);
         tiles.put(newTile.getId(), newTile);
-        String leftTileId = Tile.getId(x, z - 1);
-        String rightTileId = Tile.getId(x, z + 1);
-        String topTileId = Tile.getId(x + 1, z);
-        String bottomTileId = Tile.getId(x - 1, z);
 
-        var leftTile = tiles.get(leftTileId);
-        var rightTile = tiles.get(rightTileId);
-        var topTile = tiles.get(topTileId);
-        var bottomTile = tiles.get(bottomTileId);
+        String westTileId = Tile.getId(x, z - 1);
+        String eastTileId = Tile.getId(x, z + 1);
+        String northTileId = Tile.getId(x + 1, z);
+        String southTileId = Tile.getId(x - 1, z);
+        String northEastTileId = Tile.getId(x + 1, z + 1);
+        String northWestTileId = Tile.getId(x + 1, z - 1);
+        String southEastTileId = Tile.getId(x - 1, z + 1);
+        String southWestTileId = Tile.getId(x - 1, z - 1);
 
-        if (leftTile != null) {
-            leftTile.putAdjacentTile(newTile);
-            newTile.putAdjacentTile(leftTile);
-        }
+        putTile(westTileId, newTile);
+        putTile(eastTileId, newTile);
+        putTile(northTileId, newTile);
+        putTile(southTileId, newTile);
+        putTile(northEastTileId, newTile);
+        putTile(northWestTileId, newTile);
+        putTile(southEastTileId, newTile);
+        putTile(southWestTileId, newTile);
 
-        if (rightTile != null) {
-            rightTile.putAdjacentTile(newTile);
-            newTile.putAdjacentTile(rightTile);
-        }
-
-        if (topTile != null) {
-            topTile.putAdjacentTile(newTile);
-            newTile.putAdjacentTile(topTile);
-        }
-
-        if (bottomTile != null) {
-            bottomTile.putAdjacentTile(newTile);
-            newTile.putAdjacentTile(bottomTile);
-        }
         return newTile;
+    }
+
+    private void putTile(String tileId, Tile newTile) {
+        var tile = tiles.get(tileId);
+        if (tile != null) {
+            tile.putAdjacentTile(newTile);
+            newTile.putAdjacentTile(tile);
+        }
     }
 
     public Map<String, Tile> getTiles() {

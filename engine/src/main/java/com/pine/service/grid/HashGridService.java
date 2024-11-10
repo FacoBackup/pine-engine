@@ -12,15 +12,18 @@ import com.pine.service.rendering.TransformationService;
 import com.pine.service.request.DeleteEntityRequest;
 import com.pine.service.streaming.StreamingService;
 import com.pine.tasks.AbstractTask;
+import com.pine.tasks.SyncTask;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import java.util.Map;
 
 import static com.pine.service.grid.HashGrid.TILE_SIZE;
+import static java.lang.Math.sin;
+import static org.joml.Math.cos;
 
 @PBean
-public class HashGridService extends AbstractTask implements Loggable {
+public class HashGridService implements SyncTask, Loggable {
 
     @PInject
     public HashGridRepository repo;
@@ -31,81 +34,39 @@ public class HashGridService extends AbstractTask implements Loggable {
     @PInject
     public StreamingService streamingService;
 
-    private final Tile[] visibleTiles = new Tile[3];
+    private Tile[] loadedTiles;
+    private Tile currentTile;
 
     public Tile[] getLoadedTiles() {
-        return repo.hashGrid.getLoadedTiles(cameraRepository.currentCamera.position);
+        if(loadedTiles == null){
+            updateLoadedTiles();
+        }
+        return loadedTiles;
     }
 
     public Tile getCurrentTile() {
-       return repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
-    }
-    int count = 0;
-
-    @Override
-    protected void tickInternal() {
-        Vector2f direction = new Vector2f(
-                -cameraRepository.viewMatrix.m02(),
-                -cameraRepository.viewMatrix.m22()
-        ).normalize();
-
-        int currentTileIndex = 0;
-        for (Tile currentLoadedTile : getLoadedTiles()) {
-            if (currentLoadedTile != null && currentTileIndex < 3 && isInFrustum(currentLoadedTile.getX() * TILE_SIZE, currentLoadedTile.getZ() * TILE_SIZE, cameraRepository.currentCamera, direction)) {
-                visibleTiles[currentTileIndex] = currentLoadedTile;
-                currentTileIndex++;
-            }
+        if(currentTile == null){
+            updateCurrentTile();
         }
-
-        if (count >= 100) {
-            count = 0;
-            getLogger().warn("Tiles visible: {} {} {}",
-                    visibleTiles[0] != null ? visibleTiles[0].getId() : null,
-                    visibleTiles[1] != null ? visibleTiles[1].getId() : null,
-                    visibleTiles[2] != null ? visibleTiles[2].getId() : null);
-        }
-        count++;
+        return currentTile;
     }
 
-    public static boolean isInFrustum(float x, float z, Camera camera, Vector2f direction) {
-        float halfAngle = camera.fov / 2;
-
-        Vector2f leftBoundary = rotateVector(direction, halfAngle);
-        Vector2f rightBoundary = rotateVector(direction, -halfAngle);
-
-        Vector2f toPoint = new Vector2f(x, z).sub(camera.position.x, camera.position.z);
-        float distToPoint = toPoint.length();
-
-        if (distToPoint < TILE_SIZE / 2f) {
-            return true;
-        }
-        toPoint.normalize();
-
-        boolean withinLeft = toPoint.dot(leftBoundary) >= 0;
-        boolean withinRight = toPoint.dot(rightBoundary) <= 0;
-        return withinLeft && withinRight;
+    private void updateLoadedTiles() {
+        loadedTiles = repo.hashGrid.getLoadedTiles(cameraRepository.currentCamera.position);
     }
 
-    private static Vector2f rotateVector(Vector2f vector, float angle) {
-        float cosTheta = (float) Math.cos(angle);
-        float sinTheta = (float) Math.sin(angle);
-        return new Vector2f(
-                vector.x * cosTheta - vector.y * sinTheta,
-                vector.x * sinTheta + vector.y * cosTheta
-        );
+    private void updateCurrentTile() {
+        currentTile = repo.hashGrid.getOrCreateTile(cameraRepository.currentCamera.position);
     }
 
     @Override
-    public String getTitle() {
-        return "Grid streaming";
+    public void sync() {
+        updateLoadedTiles();
+        updateCurrentTile();
     }
 
     public Map<String, Tile> getTiles() {
         return repo.hashGrid.getTiles();
-    }
-
-    public Tile[] getVisibleTiles() {
-        return visibleTiles;
     }
 
     public void moveEntityBetweenTiles(Tile tile, Vector3f newLocation, String entityId) {

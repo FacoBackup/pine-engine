@@ -52,7 +52,7 @@ public class OutlineGenPass extends AbstractPass {
     @Override
     protected void renderInternal() {
         meshService.setInstanceCount(0);
-        for(Tile tile : hashGridService.getVisibleTiles()){
+        for(Tile tile : hashGridService.getLoadedTiles()){
             if(tile != null){
                 Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
                 for (var mesh : meshes) {

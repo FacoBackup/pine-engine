@@ -18,6 +18,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
+import static com.pine.service.grid.HashGrid.TILE_SIZE;
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class PaintGizmoPass extends AbstractPass {
@@ -29,18 +30,17 @@ public class PaintGizmoPass extends AbstractPass {
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
+
+    private final Vector3f terrainLocation = new Vector3f();
     private UniformDTO xyMouseUniform;
     private UniformDTO paintMode;
     private UniformDTO heightScale;
     private UniformDTO targetImageSizeUniform;
-    private UniformDTO viewportSize;
-    private UniformDTO viewportOrigin;
     private UniformDTO radiusDensityUniform;
+    private UniformDTO terrainLocationU;
     private UniformDTO colorForPainting;
-    private final Vector3f xyMouse = new Vector3f();
+    private final Vector2f xyMouse = new Vector2f();
     private final Vector3f radiusDensityMode = new Vector3f();
-    private final Vector2f viewportO = new Vector2f();
-    private final Vector2f viewport = new Vector2f();
     private final Vector2f targetImageSize = new Vector2f();
     private TextureResourceRef targetTexture;
 
@@ -50,9 +50,8 @@ public class PaintGizmoPass extends AbstractPass {
         heightScale = addUniformDeclaration("heightScale");
         targetImageSizeUniform = addUniformDeclaration("targetImageSize");
         xyMouseUniform = addUniformDeclaration("xyMouse");
+        terrainLocationU = addUniformDeclaration("terrainLocation");
         radiusDensityUniform = addUniformDeclaration("radiusDensityMode");
-        viewportOrigin = addUniformDeclaration("viewportOrigin");
-        viewportSize = addUniformDeclaration("viewportSize");
         colorForPainting = addUniformDeclaration("colorForPainting");
     }
 
@@ -86,15 +85,15 @@ public class PaintGizmoPass extends AbstractPass {
 
                 if (targetTexture != null) {
                     targetTexture.bindForBoth(1);
-                    dispatch();
+                    dispatch(tile);
                 }
             }
         }
     }
 
-    private void dispatch() {
+    private void dispatch(Tile tile) {
         updateUniforms();
-        bindUniforms();
+        bindUniforms(tile);
 
         COMPUTE_RUNTIME_DATA.groupX = (bufferRepository.gBuffer.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
         COMPUTE_RUNTIME_DATA.groupY = (bufferRepository.gBuffer.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
@@ -109,29 +108,26 @@ public class PaintGizmoPass extends AbstractPass {
         radiusDensityMode.y = editorRepository.brushDensity;
         radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : -1;
 
-        xyMouse.x = runtimeRepository.mouseX;
-        xyMouse.y = runtimeRepository.viewportH - runtimeRepository.mouseY;
-
-        viewport.x = runtimeRepository.viewportW;
-        viewport.y = runtimeRepository.viewportH;
-
-        viewportO.x = runtimeRepository.viewportX;
-        viewportO.y = runtimeRepository.viewportY;
+        xyMouse.x = (runtimeRepository.mouseX + runtimeRepository.viewportX) / runtimeRepository.viewportW;
+        xyMouse.y = (runtimeRepository.viewportH - runtimeRepository.mouseY + runtimeRepository.viewportY) / runtimeRepository.viewportH;
 
         targetImageSize.x = targetTexture.width;
         targetImageSize.y = targetTexture.height;
     }
 
-    private void bindUniforms() {
+    private void bindUniforms(Tile tile) {
         if (editorRepository.foliageForPainting != null && terrainRepository.foliage.containsKey(editorRepository.foliageForPainting)) {
             shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
         }
 
+        terrainLocation.x = tile.getX();
+        terrainLocation.y = tile.getZ();
+        terrainLocation.z = TILE_SIZE;
+
+        shaderService.bindVec3(terrainLocation, terrainLocationU);
         shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
-        shaderService.bindVec3(xyMouse, xyMouseUniform);
-        shaderService.bindVec2(viewport, viewportSize);
+        shaderService.bindVec2(xyMouse, xyMouseUniform);
         shaderService.bindVec2(targetImageSize, targetImageSizeUniform);
-        shaderService.bindVec2(viewportO, viewportOrigin);
         shaderService.bindInt(editorRepository.paintingType.id, paintMode);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 

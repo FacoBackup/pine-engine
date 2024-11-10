@@ -80,8 +80,8 @@ public class FoliageCullingPass extends AbstractPass {
         ssboRepository.foliageTransformationSSBO.setBindingPoint(3);
         ssboService.bind(ssboRepository.foliageTransformationSSBO);
 
-        COMPUTE_RUNTIME_DATA.groupX = (foliageMask.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
-        COMPUTE_RUNTIME_DATA.groupY = (foliageMask.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
+        COMPUTE_RUNTIME_DATA.groupX = (heightMap.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
+        COMPUTE_RUNTIME_DATA.groupY = (heightMap.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT | GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 
@@ -93,8 +93,8 @@ public class FoliageCullingPass extends AbstractPass {
         imageSize.y = heightMap.height;
         shaderService.bindVec2(imageSize, imageSizeU);
 
-        imageSize.x = tile.getX() * TILE_SIZE - TILE_SIZE / 2f;
-        imageSize.y = tile.getZ() * TILE_SIZE - TILE_SIZE / 2f;
+        imageSize.x = tile.getX() * TILE_SIZE + TILE_SIZE / 2f;
+        imageSize.y = tile.getZ() * TILE_SIZE + TILE_SIZE / 2f;
         shaderService.bindVec2(imageSize, tileOffset);
 
         shaderService.bindVec3(foliage.color, colorToMatchU);
