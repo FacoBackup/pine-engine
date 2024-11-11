@@ -6,6 +6,7 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import org.joml.Vector2f;
+import org.lwjgl.opengl.GL46;
 
 import static com.pine.service.grid.HashGrid.TILE_SIZE;
 
@@ -62,9 +63,8 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
         shaderService.bindBoolean(true, fallbackMaterial);
 
-        meshService.bind(mesh);
-        meshService.setInstanceCount(0);
-        meshService.draw();
+        int vertexCount = TILE_SIZE * TILE_SIZE  * 6;
+        GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, vertexCount);
     }
 
     @Override
