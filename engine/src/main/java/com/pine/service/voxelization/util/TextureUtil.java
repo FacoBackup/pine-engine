@@ -72,32 +72,4 @@ public class TextureUtil {
         return texture;
     }
 
-    public static TextureResourceRef loadTextureFromResource(String resourcePath) {
-        ByteBuffer buffer;
-        try (InputStream in = TextureUtil.class.getResourceAsStream(resourcePath)) {
-            if (in == null) {
-                return null;
-            }
-            byte[] bytes = in.readAllBytes();
-            buffer = BufferUtils.createByteBuffer(bytes.length).put(bytes);
-            buffer.flip();
-        } catch (Exception e) {
-            LOGGER.error("Failed to load texture from {}", resourcePath, e);
-            return null;
-        }
-
-        IntBuffer width = BufferUtils.createIntBuffer(1);
-        IntBuffer height = BufferUtils.createIntBuffer(1);
-        IntBuffer channels = BufferUtils.createIntBuffer(1);
-
-        ByteBuffer imageData = STBImage.stbi_load_from_memory(buffer, width, height, channels, 4);
-        if (imageData == null) {
-            return null;
-        }
-
-        var texture = new TextureResourceRef(null);
-        texture.load(new TextureStreamData(width.get(0), height.get(0), imageData, false));
-        return texture;
-    }
-
 }

@@ -1,6 +1,6 @@
-package com.pine.core.view;
+package com.pine.core;
 
-import com.pine.MetricCollector;
+import com.pine.Renderable;
 import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
 
@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AbstractView extends MetricCollector implements View {
+public class AbstractView implements Renderable {
     protected final String id;
     protected final String imguiId;
-    protected final List<View> children = new ArrayList<>();
+    protected final List<AbstractView> children = new ArrayList<>();
 
     @PInject
     public PInjector injector;
@@ -21,34 +21,26 @@ public class AbstractView extends MetricCollector implements View {
         this.imguiId = "##" + id;
     }
 
-    @Override
-    public List<View> getChildren() {
+    public List<AbstractView> getChildren() {
         return children;
     }
 
-    @Override
-    public <T extends View> T appendChild(T child) {
+    public <T extends AbstractView> T appendChild(T child) {
         injector.inject(child);
         children.add(child);
         child.onInitialize();
         return child;
     }
 
-    @Override
-    public void removeChild(View child) {
+    public void removeChild(AbstractView child) {
         children.remove(child);
     }
 
     @Override
     public void render() {
-        for (View child : children) {
+        for (AbstractView child : children) {
             child.render();
         }
-    }
-
-    @Override
-    public String getTitle() {
-        return null;
     }
 
     public void onRemove(){}

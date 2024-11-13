@@ -2,6 +2,7 @@ package com.pine.service.grid;
 
 import com.pine.component.Entity;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.EngineRepository;
 import com.pine.service.camera.Camera;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Assertions;
@@ -14,11 +15,11 @@ import static com.pine.service.grid.HashGrid.TILE_SIZE;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashGridServiceTest {
-    private HashGridService hashGridService = new HashGridService();
+    private final HashGridService hashGridService = new HashGridService();
 
     @BeforeEach
     void setUp() {
-        hashGridService.repo = new HashGridRepository();
+        hashGridService.repo = new EngineRepository();
         hashGridService.cameraRepository = new CameraRepository();
     }
 
@@ -87,17 +88,4 @@ class HashGridServiceTest {
         }
     }
 
-    @Test
-    void moveEntityBetweenTiles() {
-        hashGridService.cameraRepository.currentCamera.position.set(0, 0, 0);
-        var current = hashGridService.getCurrentTile();
-        var entity = new Entity();
-        current.getWorld().entityMap.put(entity.id, entity);
-
-        hashGridService.moveEntityBetweenTiles(hashGridService.getCurrentTile(), new Vector3f(-1), entity.id);
-        Assertions.assertFalse(current.getWorld().entityMap.containsKey(entity.id));
-
-        var newTile = hashGridService.getTiles().get(Tile.getId(-1, -1));
-        Assertions.assertTrue(newTile.getWorld().entityMap.containsKey(entity.id));
-    }
 }

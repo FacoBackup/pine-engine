@@ -2,7 +2,7 @@ package com.pine.panels.files;
 
 import com.pine.component.ComponentType;
 import com.pine.component.MeshComponent;
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.FSEntry;

@@ -10,7 +10,6 @@ import com.pine.service.grid.HashGridService;
 import com.pine.service.grid.Tile;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.impl.MeshImporter;
-import com.pine.service.meshlet.TerrainGenerationUtil;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.impl.TextureService;
@@ -24,9 +23,6 @@ import static com.pine.service.grid.HashGrid.TILE_SIZE;
 
 @PBean
 public class TerrainService implements Loggable {
-    @PInject
-    public MeshImporter meshImporter;
-
     @PInject
     public ImporterService importerService;
 
@@ -67,10 +63,6 @@ public class TerrainService implements Loggable {
             var texture = (TextureStreamData) textureService.stream(imagePath, Collections.emptyMap(), Collections.emptyMap());
             terrainRepository.textureSize = texture.width;
             STBImage.stbi_image_free(texture.imageBuffer);
-
-            var mesh = TerrainGenerationUtil.computeMesh(TILE_SIZE);
-            mesh.id = terrainRepository.id;
-            meshImporter.persist(mesh);
 
             ImageUtil.splitImage(imagePath, importerService.engine.getResourceDirectory(), this::writeTile);
             streamingService.repository.discardedResources.clear();

@@ -1,5 +1,7 @@
 package com.pine.core.dock;
 
+import com.pine.core.AbstractWindow;
+import com.pine.core.AbstractView;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import imgui.ImGui;
@@ -7,6 +9,7 @@ import imgui.flag.ImGuiDir;
 import imgui.internal.ImGuiDockNode;
 import imgui.type.ImInt;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @PBean
@@ -16,11 +19,20 @@ public class DockService {
     @PInject
     public DockRepository dockRepository;
 
-    public void buildViews(ImInt dockMainId, DockPanel panel) {
+    public void buildViews(ImInt dockMainId, AbstractWindow panel) {
         if (dockRepository.isInitialized || dockRepository.center == null) {
             return;
         }
+
+        List<AbstractView> toKeep = new ArrayList<>();
+        panel.getChildren().forEach(child -> {
+            if(!(child instanceof DockSpacePanel)) {
+                toKeep.add(child);
+            }
+        });
         panel.getChildren().clear();
+        panel.getChildren().addAll(toKeep);
+
         imgui.internal.ImGui.dockBuilderRemoveNode(dockMainId.get());
         imgui.internal.ImGui.dockBuilderAddNode(dockMainId.get(), NO_TAB_BAR_FLAG);
         imgui.internal.ImGui.dockBuilderSetNodeSize(dockMainId.get(), ImGui.getMainViewport().getSize());
@@ -105,10 +117,10 @@ public class DockService {
         imGuiDockNode.addLocalFlags(NO_TAB_BAR_FLAG);
     }
 
-    private void addWindow(DockDTO d, DockPanel panel) {
+    private void addWindow(DockDTO d, AbstractWindow panel) {
         try {
             imgui.internal.ImGui.dockBuilderDockWindow(d.getInternalId(), d.getNodeId().get());
-            panel.appendChild(new DockSpacePanel((DockSpacePanel) panel.getChildren().stream().findFirst().orElse(null), d));
+            panel.appendChild(new DockSpacePanel((DockSpacePanel) panel.getChildren().stream().filter(e -> e instanceof DockSpacePanel).findFirst().orElse(null), d));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -119,7 +131,7 @@ public class DockService {
         dockRepository.dockPanelToRemove = dockSpacePanel;
     }
 
-    public void updateForRemoval(DockPanel panel) {
+    public void updateForRemoval(AbstractWindow panel) {
         if (dockRepository.dockPanelToRemove != null) {
             switch (dockRepository.dockToRemove.getPosition()) {
                 case LEFT: {

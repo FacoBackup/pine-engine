@@ -14,6 +14,8 @@ import org.lwjgl.opengl.GL46;
 
 import java.util.Map;
 
+import static com.pine.service.grid.HashGrid.TILE_SIZE;
+
 @PBean
 public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     private RenderingMode renderingMode;
@@ -111,12 +113,16 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     }
 
     @Override
-    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources){
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
         return (StreamData) FSUtil.readBinary(pathToFile);
     }
 
     @Override
     public AbstractResourceRef<?> newInstance(String key) {
         return new MeshResourceRef(key);
+    }
+
+    public void renderTerrain(int tileSize) {
+        GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, tileSize * tileSize * 6);
     }
 }

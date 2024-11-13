@@ -5,7 +5,7 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.EngineRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
@@ -28,7 +28,7 @@ public class EnvironmentMapGenService implements Loggable {
     public ShaderService shaderService;
 
     @PInject
-    public EngineSettingsRepository engineSettingsRepository;
+    public EngineRepository engineRepository;
 
     @PInject
     public ImporterService importerService;
@@ -50,10 +50,10 @@ public class EnvironmentMapGenService implements Loggable {
 
 
     public void bake() {
-        engineSettingsRepository.isBakingEnvironmentMaps = true;
+        engineRepository.isBakingEnvironmentMaps = true;
         getLogger().warn("Starting probe baking");
-        boolean previous = engineSettingsRepository.disableCullingGlobally;
-        engineSettingsRepository.disableCullingGlobally = true;
+        boolean previous = engineRepository.disableCullingGlobally;
+        engineRepository.disableCullingGlobally = true;
 
         for(var tile : hashGridService.getTiles().values()){
             if(tile != null){
@@ -70,13 +70,13 @@ public class EnvironmentMapGenService implements Loggable {
             }
         }
 
-        engineSettingsRepository.disableCullingGlobally = previous;
-        engineSettingsRepository.isBakingEnvironmentMaps = false;
+        engineRepository.disableCullingGlobally = previous;
+        engineRepository.isBakingEnvironmentMaps = false;
     }
 
     private void capture(String resourceId, Vector3f cameraPosition) {
         getLogger().warn("Baking probe {} at position X{} Y{} Z{}", resourceId, cameraPosition.x, cameraPosition.y, cameraPosition.z);
-        int baseResolution = engineSettingsRepository.probeCaptureResolution;
+        int baseResolution = engineRepository.probeCaptureResolution;
         var fbo = new FrameBufferObject(baseResolution, baseResolution).addSampler();
         engine.setTargetFBO(fbo);
         for (int i = 0; i < CubeMapFace.values().length; i++) {

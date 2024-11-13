@@ -4,7 +4,7 @@ import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.EngineRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -22,7 +22,7 @@ public class RenderingRequestService {
     public StreamingService streamingService;
 
     @PInject
-    public EngineSettingsRepository engineSettings;
+    public EngineRepository engineSettings;
 
     @PInject
     public RenderingRepository renderingRepository;

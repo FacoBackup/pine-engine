@@ -1,6 +1,6 @@
 package com.pine.panels.console;
 
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.theme.Icons;
 import com.pine.util.InMemoryAppender;
 import imgui.ImGui;

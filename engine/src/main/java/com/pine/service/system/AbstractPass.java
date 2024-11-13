@@ -31,7 +31,7 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public StreamingService streamingService;
     @PInject
-    public EngineSettingsRepository settingsRepository;
+    public EngineRepository settingsRepository;
     @PInject
     public CameraRepository cameraRepository;
     @PInject

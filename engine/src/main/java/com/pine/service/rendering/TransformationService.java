@@ -7,7 +7,6 @@ import com.pine.repository.CameraRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.service.grid.HashGridService;
 import com.pine.service.grid.Tile;
-import com.pine.service.grid.TileWorld;
 import com.pine.tasks.AbstractTask;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -47,7 +46,7 @@ public class TransformationService extends AbstractTask {
         TransformationComponent st = tile.getWorld().bagTransformationComponent.get(entityId);
         if (st != null && (st.isNotFrozen() || parentHasChanged)) {
             TransformationComponent parentTransform = findParent(tile, st.getEntityId());
-            transform(tile, st, parentTransform);
+            transform(st, parentTransform);
             st.freezeVersion();
             parentHasChanged = true;
         }
@@ -60,7 +59,7 @@ public class TransformationService extends AbstractTask {
         }
     }
 
-    private void transform(Tile previousTile, TransformationComponent st, TransformationComponent parentTransform) {
+    private void transform(TransformationComponent st, TransformationComponent parentTransform) {
         if (parentTransform != null) {
             auxMat4.set(parentTransform.modelMatrix);
         } else {
@@ -76,7 +75,6 @@ public class TransformationService extends AbstractTask {
         auxMat4.mul(auxMat42);
         st.modelMatrix.set(auxMat4);
         st.freezeVersion();
-        hashGridService.moveEntityBetweenTiles(previousTile, st.translation, st.getEntityId());
     }
 
     private TransformationComponent findParent(Tile tile, String id) {

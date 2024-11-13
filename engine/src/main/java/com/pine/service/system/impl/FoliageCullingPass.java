@@ -93,8 +93,8 @@ public class FoliageCullingPass extends AbstractPass {
         imageSize.y = heightMap.height;
         shaderService.bindVec2(imageSize, imageSizeU);
 
-        imageSize.x = tile.getX() * TILE_SIZE + TILE_SIZE / 2f;
-        imageSize.y = tile.getZ() * TILE_SIZE + TILE_SIZE / 2f;
+        imageSize.x = tile.getX() * TILE_SIZE;
+        imageSize.y = tile.getZ() * TILE_SIZE;
         shaderService.bindVec2(imageSize, tileOffset);
 
         shaderService.bindVec3(foliage.color, colorToMatchU);

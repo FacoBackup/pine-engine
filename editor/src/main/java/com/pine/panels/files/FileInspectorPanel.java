@@ -1,7 +1,7 @@
 package com.pine.panels.files;
 
 import com.pine.FSUtil;
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
 import com.pine.panels.component.FormPanel;

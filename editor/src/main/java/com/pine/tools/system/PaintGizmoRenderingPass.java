@@ -2,8 +2,8 @@ package com.pine.tools.system;
 
 import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
+import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.GizmoType;
 import com.pine.service.grid.Tile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
@@ -54,7 +54,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
 
     @Override
     protected boolean isRenderable() {
-        return runtimeRepository.isFocused && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return runtimeRepository.isFocused && editorRepository.editorMode != EditorMode.TRANSFORM && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override

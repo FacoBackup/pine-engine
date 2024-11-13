@@ -1,6 +1,6 @@
 package com.pine.panels.component;
 
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import imgui.ImGui;
 
 public class AccordionPanel extends AbstractView {

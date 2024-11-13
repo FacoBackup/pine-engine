@@ -52,8 +52,12 @@ public class SerializationService implements Loggable {
             for (SerializableRepository r : serializableRepositories) {
                 success = serializeRepository(projectDirectory, r);
             }
-            if (!silent && success) {
-                messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
+            if (!silent) {
+                if(success) {
+                    messageRepository.pushMessage("Project saved", MessageSeverity.SUCCESS);
+                }else{
+                    messageRepository.pushMessage("Error while saving project", MessageSeverity.ERROR);
+                }
             }
             long end = System.currentTimeMillis() - start;
             getLogger().warn("Serialization took {}ms", end);

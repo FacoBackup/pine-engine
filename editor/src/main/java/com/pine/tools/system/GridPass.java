@@ -15,7 +15,7 @@ import org.lwjgl.opengl.GL46;
 
 public class GridPass extends AbstractPass {
     @PInject
-    public EditorRepository engineConfig;
+    public EditorRepository editorRepository;
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
@@ -33,7 +33,7 @@ public class GridPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return engineConfig.showGrid && engineConfig.environment == ExecutionEnvironment.DEVELOPMENT;
+        return editorRepository.showGrid && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override
@@ -46,10 +46,10 @@ public class GridPass extends AbstractPass {
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glDisable(GL46.GL_CULL_FACE);
         buffer.set(
-                engineConfig.gridColor,
-                engineConfig.gridScale,
-                engineConfig.gridThreshold,
-                engineConfig.gridOpacity
+                editorRepository.gridColor,
+                editorRepository.gridScale,
+                editorRepository.gridThreshold,
+                editorRepository.gridOpacity
         );
 
         shaderService.bindVec4(buffer, settingsUniform);

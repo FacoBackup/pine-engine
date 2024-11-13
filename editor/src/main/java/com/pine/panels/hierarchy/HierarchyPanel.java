@@ -34,7 +34,6 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     private final Map<String, Byte> searchMatch = new HashMap<>();
     private final Map<String, Integer> opened = new HashMap<>();
     private TileWorld currentWorld;
-    private boolean isCenterWorld;
 
     @Override
     public void onInitialize() {
@@ -53,27 +52,36 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             ImGui.tableSetupColumn(Icons.lock, ImGuiTableColumnFlags.WidthFixed, 20f);
             ImGui.tableHeadersRow();
 
-            var currentTile = hashGridService.getCurrentTile();
-            for (var tile : hashGridService.getLoadedTiles()) {
+            for (var tile : hashGridService.getTiles().values()) {
                 if (tile != null) {
-                    renderTile(tile, currentTile);
+                    renderTile(tile);
                 }
             }
             ImGui.endTable();
         }
     }
 
-    private void renderTile(Tile tile, Tile currentTile) {
+    private void renderTile(Tile tile) {
         currentWorld = tile.getWorld();
-        isCenterWorld = tile == currentTile;
         next();
         int flags = ImGuiTreeNodeFlags.SpanFullWidth;
-        if(isCenterWorld || tile.isTerrainPresent){
+
+        boolean isCenterWorld = tile == hashGridService.getCurrentTile();
+        if (isCenterWorld || tile.isTerrainPresent) {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
         }
 
-        if (ImGui.treeNodeEx(Icons.inventory_2 + tile.getWorld().rootEntity.name + (isCenterWorld ? " (current)##" : "##") + tile.getWorld().rootEntity.id, flags)) {
-            if(tile.isTerrainPresent){
+        String separator = "##";
+        if (isCenterWorld) {
+            separator = " (current)" + separator;
+        }
+
+        if(tile.isLoaded()){
+            separator = " (loaded)" + separator;
+        }
+
+        if (ImGui.treeNodeEx(Icons.inventory_2 + tile.getWorld().rootEntity.name + separator + tile.getWorld().rootEntity.id, flags)) {
+            if (tile.isTerrainPresent) {
                 next();
                 ImGui.textDisabled(Icons.terrain + "Terrain chunk");
             }
@@ -81,7 +89,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
                 renderNodePinned(currentWorld.entityMap.get(pinned));
             }
             var children = currentWorld.parentChildren.get(currentWorld.rootEntity.id);
-            for(var child : children){
+            for (var child : children) {
                 renderNode(child);
             }
             ImGui.treePop();

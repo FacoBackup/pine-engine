@@ -44,27 +44,25 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
 
                 var foliageMask = (TextureResourceRef) streamingService.streamIn(tile.terrainFoliageId, StreamableResourceType.TEXTURE);
                 var heightMap = (TextureResourceRef) streamingService.streamIn(tile.terrainHeightMapId, StreamableResourceType.TEXTURE);
-                var mesh = (MeshResourceRef) streamingService.streamIn(terrainRepository.id, StreamableResourceType.MESH);
-                if (mesh != null && heightMap != null && foliageMask != null) {
-                    foliageMask.lastUse = mesh.lastUse = heightMap.lastUse = clockRepository.totalTime;
-                    renderChunk(mesh, heightMap, tile.getX(), tile.getZ());
+                if (heightMap != null && foliageMask != null) {
+                    foliageMask.lastUse = heightMap.lastUse = clockRepository.totalTime;
+                    renderChunk(heightMap, tile.getX(), tile.getZ());
                 }
             }
         }
     }
 
-    private void renderChunk(MeshResourceRef mesh, TextureResourceRef heightMap, int x, int z) {
+    private void renderChunk(TextureResourceRef heightMap, int x, int z) {
         shaderService.bindSampler2dDirect(heightMap, 8);
         shaderService.bindInt(heightMap.width, planeSize);
 
-        terrainLocation.x = x * TILE_SIZE + TILE_SIZE / 2f;
-        terrainLocation.y = z * TILE_SIZE + TILE_SIZE / 2f;
+        terrainLocation.x = x * TILE_SIZE;
+        terrainLocation.y = z * TILE_SIZE;
         shaderService.bindVec2(terrainLocation, terrainLocationU);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
         shaderService.bindBoolean(true, fallbackMaterial);
 
-        int vertexCount = TILE_SIZE * TILE_SIZE  * 6;
-        GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, vertexCount);
+        meshService.renderTerrain(TILE_SIZE);
     }
 
     @Override

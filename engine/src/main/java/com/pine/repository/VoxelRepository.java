@@ -7,13 +7,10 @@ import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 import com.pine.service.voxelization.VoxelizationService;
-import com.pine.service.voxelization.svo.SVOGrid;
 import com.pine.theme.Icons;
 
 @PBean
 public class VoxelRepository extends Inspectable implements SerializableRepository {
-    public SVOGrid grid;
-
     @PInject
     public transient VoxelizationService voxelizationService;
     @ExecutableField(icon = Icons.apps, label = "Bake voxelized scene")
@@ -24,9 +21,6 @@ public class VoxelRepository extends Inspectable implements SerializableReposito
     }
     @InspectableField(label = "Chunk grid size", min = 1)
     public int chunkGridSize = 4;
-
-    @InspectableField(label = "Chunk size", min = 1)
-    public int chunkSize = 100;
 
     @InspectableField(label = "Max depth", min = 1, max = 10)
     public int maxDepth = 6;

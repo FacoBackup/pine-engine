@@ -1,8 +1,10 @@
 package com.pine.service.system.impl;
 
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 import com.pine.service.system.AbstractPass;
 import org.joml.Vector3i;
 import org.joml.Vector4f;
@@ -40,8 +42,10 @@ public class VoxelVisualizerPass extends AbstractPass {
     protected void renderInternal() {
         bindGlobal();
 
-        for (var chunk : renderingRepository.voxelChunks) {
-            if (chunk != null && chunk.getQuantity() > 1) {
+        var currentSvo = hashGridService.getCurrentTile().getSvo();
+        if (currentSvo != null) {
+            var chunk = (VoxelChunkResourceRef) streamingService.streamIn(currentSvo.getId(), StreamableResourceType.VOXEL_CHUNK);
+            if (chunk != null) {
                 chunk.lastUse = clockRepository.totalTime;
 
                 chunk.getBuffer().setBindingPoint(BUFFER_BINDING_POINT);
@@ -57,6 +61,7 @@ public class VoxelVisualizerPass extends AbstractPass {
                 shaderService.dispatch(COMPUTE_RUNTIME_DATA);
             }
         }
+
         shaderService.unbind();
     }
 

@@ -3,11 +3,9 @@ package com.pine.tools.system;
 import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.GizmoType;
-import com.pine.repository.PaintingType;
+import com.pine.repository.EditorMode;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.grid.Tile;
-import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
@@ -62,7 +60,7 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return runtimeRepository.mousePressed && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return runtimeRepository.mousePressed && editorRepository.editorMode != EditorMode.TRANSFORM && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override

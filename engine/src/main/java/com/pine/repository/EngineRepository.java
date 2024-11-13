@@ -5,16 +5,22 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
+import com.pine.service.grid.HashGrid;
 import com.pine.theme.Icons;
 
+import static com.pine.service.grid.HashGrid.TILE_SIZE;
+
 @PBean
-public class EngineSettingsRepository extends Inspectable implements SerializableRepository {
+public class EngineRepository extends Inspectable implements SerializableRepository {
 
     @InspectableField(label = "Background color")
     public Color backgroundColor = new Color(0.23f, 0.23f, 0.23f);
 
     @InspectableField(label = "Disable culling")
     public boolean disableCullingGlobally = false;
+
+    @InspectableField(label = "Tile max distance")
+    public float tileCullingMaxDistance = TILE_SIZE * 3;
 
     @InspectableField(label = "Probe capture resolution")
     public int probeCaptureResolution = 128;
@@ -33,24 +39,6 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
 
     @InspectableField(group = "Anti aliasing",label = "FXAA Reduce Multiplier")
     public float fxaaReduceMul = 1 / 8f;
-
-    @InspectableField(group = "Global illumination", label = "Enabled")
-    public boolean ssgiEnabled = false;
-
-    @InspectableField(group = "Global illumination", label = "Blur Samples")
-    public int ssgiBlurSamples = 5;
-
-    @InspectableField(group = "Global illumination", label = "Blur Radius")
-    public float ssgiBlurRadius = 5f;
-
-    @InspectableField(group = "Global illumination", label = "Step Size")
-    public float ssgiStepSize = 1f;
-
-    @InspectableField(group = "Global illumination", label = "Max Steps")
-    public int ssgiMaxSteps = 4;
-
-    @InspectableField(group = "Global illumination", label = "Strength")
-    public float ssgiStrength = 1f;
 
     @InspectableField(group = "Screen space reflections", label = "Falloff")
     public float ssrFalloff = 3f;
@@ -100,6 +88,7 @@ public class EngineSettingsRepository extends Inspectable implements Serializabl
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
     public boolean gridOverlay = false;
     public transient boolean isBakingEnvironmentMaps;
+    public final HashGrid hashGrid = new HashGrid();
 
     @Override
     public String getTitle() {

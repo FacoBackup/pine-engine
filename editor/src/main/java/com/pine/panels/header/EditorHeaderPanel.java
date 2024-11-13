@@ -1,6 +1,6 @@
 package com.pine.panels.header;
 
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.service.ProjectService;
@@ -11,7 +11,7 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImString;
 
-import static com.pine.panels.header.ViewportHeaderPanel.spacing;
+import static com.pine.panels.viewport.ViewportHeaderPanel.spacing;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class EditorHeaderPanel extends AbstractView {
@@ -27,7 +27,7 @@ public class EditorHeaderPanel extends AbstractView {
     @Override
     public void onInitialize() {
         io = ImGui.getIO();
-        appendChild(new ViewportHeaderPanel());
+        appendChild(new GlobalSettingsPanel());
     }
 
     @Override

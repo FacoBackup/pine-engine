@@ -1,50 +1,67 @@
-package com.pine.panels.header;
+package com.pine.panels.viewport;
 
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.ImVec4;
 import imgui.extension.imguizmo.flag.Mode;
+import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiComboFlags;
 import imgui.flag.ImGuiStyleVar;
+import imgui.flag.ImGuiWindowFlags;
 
+import static com.pine.core.AbstractWindow.*;
+import static com.pine.core.dock.DockSpacePanel.FRAME_SIZE;
+import static com.pine.panels.header.GlobalSettingsPanel.renderOption;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class ViewportHeaderPanel extends AbstractView {
+    private static final int FLAGS = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
     private static final ImVec2 SPACING = new ImVec2(0, 0);
     private static final String[] SNAP_ROTATE_OPTIONS = new String[]{"5", "10", "15", "30", "45"};
     private static final String[] SNAP_TRANSLATE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
     private static final String[] SNAP_SCALE_OPTIONS = new String[]{"0.5", "1", "2", "5", "10"};
-    private static final String[] SHADING_MODE_OPTIONS = DebugShadingModel.getLabels();
     private static final ImVec2 MEDIUM_SPACING = new ImVec2(5, 0);
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
+    private static final ImVec2 PADDING = new ImVec2(4, 4);
+    private static final float HEIGHT = 35;
+    private final ImVec2 position = new ImVec2(0, 0);
+    private final ImVec2 size = new ImVec2(0, 0);
 
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public EngineSettingsRepository engineSettingsRepository;
 
     @PInject
     public CameraRepository cameraRepository;
 
     @Override
     public void render() {
+        position.x = ImGui.getWindowPosX();
+        position.y = ImGui.getWindowPosY() + FRAME_SIZE;
+
+        size.x = ImGui.getWindowSizeX();
+        size.y = HEIGHT;
+
+        ImGui.setNextWindowPos(position);
+        ImGui.setNextWindowSize(size);
+        ImGui.setNextWindowBgAlpha(.1f);
+        ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, PADDING);
+        ImGui.begin(imguiId, OPEN, FLAGS);
+        ImGui.popStyleVar();
+
+        renderContent();
+        ImGui.end();
+    }
+
+    private void renderContent() {
         gizmoMode();
-
         gizmoSelection();
-
         gizmoGrid();
-
         cameraMode();
-
-        shadingMode();
-
-        ImGui.sameLine();
-        ImGui.dummy(1, 0);
     }
 
     private void cameraMode() {
@@ -60,40 +77,10 @@ public class ViewportHeaderPanel extends AbstractView {
         }
 
         ImGui.sameLine();
+        ImGui.dummy(ImGui.getContentRegionAvailX() - 75, 0);
+        ImGui.sameLine();
         if (ImGui.button(cameraRepository.currentCamera.orbitalMode ? "Orbital " + Icons.trip_origin : "Free " + Icons.outbound + "##cameraMode")) {
             cameraRepository.currentCamera.orbitalMode = !cameraRepository.currentCamera.orbitalMode;
-        }
-        ImGui.sameLine();
-    }
-
-    private void shadingMode() {
-        ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 405, 0);
-        ImGui.sameLine();
-
-        ImGui.text("Shading");
-
-        ImGui.sameLine();
-        if (renderOption(Icons.grid_on + "##grid", engineSettingsRepository.gridOverlay, true)) {
-            engineSettingsRepository.gridOverlay = !engineSettingsRepository.gridOverlay;
-        }
-
-        ImGui.sameLine();
-        if (renderOption(Icons.details + "Wireframe##wireframeShading", engineSettingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false)) {
-            engineSettingsRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
-            editorRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getIndex());
-        }
-
-        ImGui.sameLine();
-        if (renderOption(Icons.palette + "Random##randomShading", engineSettingsRepository.debugShadingModel == DebugShadingModel.RANDOM, false)) {
-            engineSettingsRepository.debugShadingModel = DebugShadingModel.RANDOM;
-            editorRepository.shadingModelOption.set(DebugShadingModel.RANDOM.getIndex());
-        }
-
-        ImGui.sameLine();
-        ImGui.setNextItemWidth(150);
-        if (ImGui.combo("##shadingMode", editorRepository.shadingModelOption, SHADING_MODE_OPTIONS)) {
-            engineSettingsRepository.debugShadingModel = DebugShadingModel.values()[editorRepository.shadingModelOption.get()];
         }
     }
 
@@ -126,20 +113,16 @@ public class ViewportHeaderPanel extends AbstractView {
     }
 
     private void gizmoSelection() {
-        if (renderOption(Icons.control_camera + " Translate", editorRepository.gizmoType == GizmoType.TRANSLATE, false)) {
-            editorRepository.gizmoType = GizmoType.TRANSLATE;
+        if (renderOption(Icons.control_camera + " Translate", editorRepository.gizmoType == Operation.TRANSLATE, false, editorRepository.accent)) {
+            editorRepository.gizmoType = Operation.TRANSLATE;
         }
         ImGui.sameLine();
-        if (renderOption(Icons.crop_rotate + " Rotate", editorRepository.gizmoType == GizmoType.ROTATE, false)) {
-            editorRepository.gizmoType = GizmoType.ROTATE;
+        if (renderOption(Icons.crop_rotate + " Rotate", editorRepository.gizmoType == Operation.ROTATE, false, editorRepository.accent)) {
+            editorRepository.gizmoType = Operation.ROTATE;
         }
         ImGui.sameLine();
-        if (renderOption(Icons.expand + " Scale", editorRepository.gizmoType == GizmoType.SCALE, false)) {
-            editorRepository.gizmoType = GizmoType.SCALE;
-        }
-        ImGui.sameLine();
-        if (renderOption(Icons.format_paint + " Paint", editorRepository.gizmoType == GizmoType.PAINT, false)) {
-            editorRepository.gizmoType = GizmoType.PAINT;
+        if (renderOption(Icons.expand + " Scale", editorRepository.gizmoType == Operation.SCALE, false, editorRepository.accent)) {
+            editorRepository.gizmoType = Operation.SCALE;
         }
     }
 
@@ -156,7 +139,7 @@ public class ViewportHeaderPanel extends AbstractView {
     }
 
     private void renderSnapTranslate() {
-        if (renderOption(Icons.control_camera, editorRepository.gizmoUseSnapTranslate, true)) {
+        if (renderOption(Icons.control_camera, editorRepository.gizmoUseSnapTranslate, true, editorRepository.accent)) {
             editorRepository.gizmoUseSnapTranslate = !editorRepository.gizmoUseSnapTranslate;
         }
         ImGui.sameLine();
@@ -170,7 +153,7 @@ public class ViewportHeaderPanel extends AbstractView {
     }
 
     private void renderSnapRotate() {
-        if (renderOption(Icons.i360, editorRepository.gizmoUseSnapRotate, true)) {
+        if (renderOption(Icons.i360, editorRepository.gizmoUseSnapRotate, true, editorRepository.accent)) {
             editorRepository.gizmoUseSnapRotate = !editorRepository.gizmoUseSnapRotate;
         }
         ImGui.sameLine();
@@ -182,7 +165,7 @@ public class ViewportHeaderPanel extends AbstractView {
     }
 
     private void renderSnapScale() {
-        if (renderOption(Icons.expand, editorRepository.gizmoUseSnapScale, true)) {
+        if (renderOption(Icons.expand, editorRepository.gizmoUseSnapScale, true, editorRepository.accent)) {
             editorRepository.gizmoUseSnapScale = !editorRepository.gizmoUseSnapScale;
         }
         ImGui.sameLine();
@@ -191,21 +174,5 @@ public class ViewportHeaderPanel extends AbstractView {
             float data = Float.parseFloat(SNAP_SCALE_OPTIONS[editorRepository.gizmoSnapScaleOption.get()]);
             editorRepository.gizmoSnapScale.set(data);
         }
-    }
-
-    private boolean renderOption(String label, boolean selected, boolean fixedSize) {
-        int popStyle = 0;
-        if (selected) {
-            ImGui.pushStyleColor(ImGuiCol.Button, editorRepository.accent);
-            popStyle++;
-        }
-        boolean value;
-        if (fixedSize) {
-            value = ImGui.button(label, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE);
-        } else {
-            value = ImGui.button(label);
-        }
-        ImGui.popStyleColor(popStyle);
-        return value;
     }
 }

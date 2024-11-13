@@ -12,21 +12,17 @@ public class SparseVoxelOctree implements Serializable {
     private final int maxDepth;
     private transient OctreeNode root = new OctreeNode();
     private final float voxelSize;
-    private final BoundingBox boundingBox;
-    private final Vector3f center;
     private int nodeQuantity = 1;
     private transient int bufferIndex = 0;
     private transient int[] voxels;
     private final String id = UUID.randomUUID().toString();
+    private final BoundingBox boundingBox;
 
-    public SparseVoxelOctree(Vector3f center, int size, int maxDepth) {
-        this.center = center;
+    public SparseVoxelOctree(BoundingBox boundingBox, int size, int maxDepth) {
+        this.boundingBox = boundingBox;
         this.size = size;
         this.maxDepth = maxDepth;
         this.voxelSize = (float) (size / Math.pow(2, maxDepth));
-        this.boundingBox = new BoundingBox();
-        boundingBox.max = new Vector3f(center).add(size / 2f, size / 2f, size / 2f);
-        boundingBox.min = new Vector3f(center).sub(size / 2f, size / 2f, size / 2f);
     }
 
     public int getNodeQuantity() {
@@ -131,14 +127,6 @@ public class SparseVoxelOctree implements Serializable {
         bufferIndex++;
     }
 
-    public BoundingBox getBoundingBox() {
-        return boundingBox;
-    }
-
-    public Vector3f getCenter() {
-        return center;
-    }
-
     public void purgeData() {
         voxels = null;
         root = null;
@@ -149,9 +137,9 @@ public class SparseVoxelOctree implements Serializable {
     }
 
     private void worldToChunkLocal(Vector3f worldCoordinate) {
-        float minX = center.x - size / 2f;
-        float minY = center.y - size / 2f;
-        float minZ = center.z - size / 2f;
+        float minX = boundingBox.center.x - size / 2f;
+        float minY = boundingBox.center.y - size / 2f;
+        float minZ = boundingBox.center.z - size / 2f;
 
         worldCoordinate.x = worldCoordinate.x - minX;
         worldCoordinate.y = worldCoordinate.y - minY;

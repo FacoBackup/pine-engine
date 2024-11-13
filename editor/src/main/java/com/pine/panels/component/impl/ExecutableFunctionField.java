@@ -1,6 +1,6 @@
 package com.pine.panels.component.impl;
 
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.inspection.MethodDTO;
 import imgui.ImGui;
 

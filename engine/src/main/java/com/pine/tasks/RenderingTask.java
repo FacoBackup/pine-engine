@@ -40,9 +40,6 @@ public class RenderingTask extends AbstractTask {
     public RenderingRequestService renderingRequestService;
 
     @PInject
-    public VoxelRepository voxelRepository;
-
-    @PInject
     public StreamingService streamingService;
 
     @PInject
@@ -64,7 +61,6 @@ public class RenderingTask extends AbstractTask {
         }
         startTracking();
         try {
-            defineVoxelGrid();
             defineProbes();
             lightService.packageLights();
             renderingRepository.offset = 0;
@@ -129,31 +125,6 @@ public class RenderingTask extends AbstractTask {
                     i++;
                 }
             }
-        }
-    }
-
-    private void defineVoxelGrid() {
-        if (voxelRepository.grid != null) {
-            int filledWithContent = 0;
-            int filled = 0;
-
-            // TODO - SORT BY DISTANCE
-            for (var chunk : voxelRepository.grid.chunks) {
-                boolean culled = false;// transformationService.isCulled(chunk.getCenter(), 100, new Vector3f((float) chunk.getSize()));
-                if (culled || filled > 3) {
-                    continue;
-                }
-                var chunkStream = (VoxelChunkResourceRef) streamingService.streamIn(chunk.getId(), StreamableResourceType.VOXEL_CHUNK);
-                renderingRepository.newVoxelChunks[filled] = chunkStream;
-                if (chunkStream != null) {
-                    filledWithContent++;
-                    chunkStream.size = chunk.getSize();
-                    chunkStream.center = chunk.getCenter();
-                    chunkStream.depth = chunk.getDepth();
-                }
-                filled++;
-            }
-            renderingRepository.voxelChunksFilled = filledWithContent;
         }
     }
 

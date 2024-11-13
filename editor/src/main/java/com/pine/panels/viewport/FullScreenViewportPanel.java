@@ -1,7 +1,7 @@
 package com.pine.panels.viewport;
 
 import com.pine.Engine;
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
@@ -17,8 +17,8 @@ import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 
-import static com.pine.core.dock.DockPanel.FLAGS;
-import static com.pine.core.dock.DockPanel.OPEN;
+import static com.pine.core.AbstractWindow.FLAGS;
+import static com.pine.core.AbstractWindow.OPEN;
 import static com.pine.panels.viewport.ViewportPanel.INV_X;
 import static com.pine.panels.viewport.ViewportPanel.INV_Y;
 

@@ -6,26 +6,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class MeshUtil {
-    public static BoundingBox computeBoundingBox(MeshImportData mesh) {
-        var bounding = new BoundingBox();
-        int[] indices = mesh.indices;
-        float[] vertices = mesh.vertices;
-
-        for (int i = 0; i < indices.length; i++) {
-            int index = indices[i];
-            Vector3f vertex = new Vector3f(vertices[index * 3], vertices[index * 3 + 1], vertices[index * 3 + 2]);
-
-            if (vertex.x < bounding.min.x) bounding.min.x = vertex.x;
-            if (vertex.y < bounding.min.y) bounding.min.y = vertex.y;
-            if (vertex.z < bounding.min.z) bounding.min.z = vertex.z;
-
-            if (vertex.x > bounding.max.x) bounding.max.x = vertex.x;
-            if (vertex.y > bounding.max.y) bounding.max.y = vertex.y;
-            if (vertex.z > bounding.max.z) bounding.max.z = vertex.z;
-        }
-        return bounding;
-    }
-
     public static MeshImportData transformVertices(MeshImportData stream, Matrix4f transform) {
         int[] indices = stream.indices;
         float[] vertices = stream.vertices;
