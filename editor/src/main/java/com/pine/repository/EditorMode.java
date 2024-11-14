@@ -6,7 +6,8 @@ import imgui.extension.imguizmo.flag.Operation;
 public enum EditorMode {
     TRANSFORM("Transform", Icons.transform, 0),
     TERRAIN("Terrain", Icons.terrain, 1),
-    FOLIAGE("Foliage", Icons.forest, 2);
+    FOLIAGE("Foliage", Icons.forest, 2),
+    MATERIAL("Material", Icons.format_paint, 3);
 
     private static String[] options;
     public final String label;

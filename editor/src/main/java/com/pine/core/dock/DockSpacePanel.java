@@ -14,7 +14,7 @@ import org.joml.Vector2f;
 
 import java.io.Serializable;
 
-import static com.pine.core.AbstractWindow.OPEN;
+import static com.pine.core.UIUtil.OPEN;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public final class DockSpacePanel extends AbstractView implements Loggable, Serializable {

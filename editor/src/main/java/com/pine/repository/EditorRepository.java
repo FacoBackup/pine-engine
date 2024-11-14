@@ -84,9 +84,9 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public BrushMode brushMode = BrushMode.ADD;
     public float brushRadius = 10;
     public float brushDensity = .5f;
-    public PaintingType paintingType = PaintingType.TERRAIN;
     public String foliageForPainting;
     public boolean fullScreen;
+    public boolean showPaintingMask = false;
 
     @Override
     public String getIcon() {

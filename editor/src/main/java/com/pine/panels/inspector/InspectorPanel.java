@@ -3,6 +3,8 @@ package com.pine.panels.inspector;
 import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
+import com.pine.core.AbstractView;
+import com.pine.core.UIUtil;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
@@ -14,14 +16,11 @@ import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
-import imgui.flag.ImGuiCol;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class InspectorPanel extends AbstractDockPanel {
     @PInject
@@ -40,12 +39,14 @@ public class InspectorPanel extends AbstractDockPanel {
     private String selectedId;
     private final List<String> types = new ArrayList<>();
     private FormPanel formPanel;
+    private AbstractView foliagePanel;
 
     @Override
     public void onInitialize() {
         types.add(Icons.add + " Add component");
         types.addAll(Stream.of(ComponentType.values()).map(a -> a.getIcon() + a.getTitle()).toList());
         formPanel = appendChild(new FormPanel((dto, newValue) -> requestProcessingService.addRequest(new UpdateFieldRequest(dto, newValue))));
+        foliagePanel = appendChild(new FoliagePanel());
         currentInspection = repositories.getFirst();
     }
 
@@ -55,14 +56,18 @@ public class InspectorPanel extends AbstractDockPanel {
         ImGui.columns(2, "##inspectorColumns" + imguiId, false);
         ImGui.setColumnWidth(0, 30);
         for (var repo : repositories) {
-            renderOption(repo);
+            if (UIUtil.renderOption(repo.getIcon(), Objects.equals(currentInspection, repo), true, editorRepository.accent)) {
+                currentInspection = repo;
+            }
         }
 
         ImGui.spacing();
         ImGui.spacing();
         for (var additional : additionalInspection) {
             if (additional != null) {
-                renderOption(additional);
+                if (UIUtil.renderOption(additional.getIcon(), Objects.equals(currentInspection, additional), true, editorRepository.accent)) {
+                    currentInspection = additional;
+                }
             }
         }
 
@@ -85,10 +90,17 @@ public class InspectorPanel extends AbstractDockPanel {
                     ImGui.endCombo();
                 }
             }
+
+
             if (formPanel.getInspectable() != currentInspection) {
                 formPanel.setInspection(currentInspection);
             }
+
             super.render();
+
+            if (Objects.equals(currentInspection, editorRepository)) {
+                foliagePanel.render();
+            }
         }
         ImGui.endChild();
         ImGui.columns(1);
@@ -99,7 +111,7 @@ public class InspectorPanel extends AbstractDockPanel {
             additionalInspection.clear();
             selectedId = editorRepository.mainSelection;
 
-            if(selectedId != null) {
+            if (selectedId != null) {
                 for (var tile : hashGridService.getLoadedTiles()) {
                     if (tile != null) {
                         selected = selectedId != null ? tile.getWorld().entityMap.get(selectedId) : null;
@@ -111,27 +123,14 @@ public class InspectorPanel extends AbstractDockPanel {
                         }
                     }
                 }
-            }else{
+            } else {
                 selected = null;
             }
 
-            if(selectedId != null && selected == null) {
+            if (selectedId != null && selected == null) {
                 currentInspection = repositories.getFirst();
             }
         }
-    }
-
-    private void renderOption(Inspectable repo) {
-        int popStyle = 0;
-        if (Objects.equals(currentInspection, repo)) {
-            ImGui.pushStyleColor(ImGuiCol.Button, editorRepository.accent);
-            popStyle++;
-        }
-
-        if (ImGui.button(repo.getIcon(), ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            currentInspection = repo;
-        }
-        ImGui.popStyleColor(popStyle);
     }
 
     private void addComponent(AbstractComponent abstractComponent) {

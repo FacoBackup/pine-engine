@@ -77,8 +77,8 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
         if(editorRepository.editorMode == EditorMode.TRANSFORM){
             gizmoPanel.render();
-            headerPanel.render();
         }
+        headerPanel.render();
         cameraPanel.render();
     }
 

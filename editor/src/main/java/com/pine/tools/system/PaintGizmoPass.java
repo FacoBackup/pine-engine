@@ -20,8 +20,8 @@ import static com.pine.service.grid.HashGrid.TILE_SIZE;
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class PaintGizmoPass extends AbstractPass {
-    private static final int LOCAL_SIZE_X = 1;
-    private static final int LOCAL_SIZE_Y = 1;
+    private static final int LOCAL_SIZE_X = 8;
+    private static final int LOCAL_SIZE_Y = 8;
 
     @PInject
     public EditorRepository editorRepository;
@@ -68,7 +68,7 @@ public class PaintGizmoPass extends AbstractPass {
         // TODO - FIX PAINTING APPLYING TO ALL TILES
         for (var tile : hashGridService.getLoadedTiles()) {
             if (tile != null && tile.isTerrainPresent) {
-                switch (editorRepository.paintingType) {
+                switch (editorRepository.editorMode) {
                     case FOLIAGE: {
                         if (editorRepository.foliageForPainting != null) {
                             targetTexture = (TextureResourceRef) streamingService.streamIn(tile.terrainFoliageId, StreamableResourceType.TEXTURE);
@@ -126,7 +126,7 @@ public class PaintGizmoPass extends AbstractPass {
         shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
         shaderService.bindVec2(xyMouse, xyMouseUniform);
         shaderService.bindVec2(targetImageSize, targetImageSizeUniform);
-        shaderService.bindInt(editorRepository.paintingType.id, paintMode);
+        shaderService.bindInt(editorRepository.editorMode.index, paintMode);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 2);

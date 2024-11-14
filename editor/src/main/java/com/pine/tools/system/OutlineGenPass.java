@@ -62,40 +62,42 @@ public class OutlineGenPass extends AbstractPass {
     @Override
     protected void renderInternal() {
         meshService.setInstanceCount(0);
-        if (editorRepository.editorMode == EditorMode.TRANSFORM) {
-            shaderService.bind(toolsResourceRepository.outlineGenShader);
-            for (Tile tile : hashGridService.getLoadedTiles()) {
-                if (tile != null) {
+        shaderService.bind(toolsResourceRepository.outlineGenShader);
+        for (Tile tile : hashGridService.getLoadedTiles()) {
+            if (tile != null) {
+                if (editorRepository.editorMode == EditorMode.TRANSFORM) {
                     Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
                     for (var mesh : meshes) {
-                        if (mesh.canRender(settingsRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
+                        if (editorRepository.selected.containsKey(mesh.getEntityId()) && mesh.canRender(settingsRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
                             var request = mesh.renderRequest;
-                            if (editorRepository.selected.containsKey(request.entity)) {
-                                shaderService.bindInt(request.renderIndex, renderIndex);
-                                shaderService.bindMat4(request.modelMatrix, modelMatrix);
-                                meshService.bind(request.mesh);
-                                meshService.draw();
-                            }
+                            shaderService.bindInt(request.renderIndex, renderIndex);
+                            shaderService.bindMat4(request.modelMatrix, modelMatrix);
+                            meshService.bind(request.mesh);
+                            meshService.draw();
                         }
                     }
+                } else if (editorRepository.selected.containsKey(tile.getId())) {
+                    shaderService.bind(toolsResourceRepository.outlineTerrainGenShader);
+                    var current = hashGridService.getCurrentTile();
+                    renderTileTerrain(current);
                 }
             }
-        } else {
-            shaderService.bind(toolsResourceRepository.outlineTerrainGenShader);
-            var current = hashGridService.getCurrentTile();
-            var heightMap = (TextureResourceRef) streamingService.streamIn(current.terrainHeightMapId, StreamableResourceType.TEXTURE);
-            if (heightMap != null) {
-                terrainLocationV.x = current.getX() * TILE_SIZE;
-                terrainLocationV.y = current.getZ() * TILE_SIZE;
+        }
+    }
 
-                shaderService.bindInt(heightMap.width, planeSize);
-                shaderService.bindFloat(terrainRepository.heightScale, heightScale);
-                shaderService.bindVec2(terrainLocationV, terrainLocation);
+    private void renderTileTerrain(Tile current) {
+        var heightMap = (TextureResourceRef) streamingService.streamIn(current.terrainHeightMapId, StreamableResourceType.TEXTURE);
+        if (heightMap != null) {
+            terrainLocationV.x = current.getX() * TILE_SIZE;
+            terrainLocationV.y = current.getZ() * TILE_SIZE;
 
-                shaderService.bindSampler2dDirect(heightMap, 8);
+            shaderService.bindInt(heightMap.width, planeSize);
+            shaderService.bindFloat(terrainRepository.heightScale, heightScale);
+            shaderService.bindVec2(terrainLocationV, terrainLocation);
 
-                meshService.renderTerrain(TILE_SIZE);
-            }
+            shaderService.bindSampler2dDirect(heightMap, 8);
+
+            meshService.renderTerrain(TILE_SIZE);
         }
     }
 

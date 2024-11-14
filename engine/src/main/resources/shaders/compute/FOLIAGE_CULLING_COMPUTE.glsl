@@ -19,8 +19,8 @@ uniform float heightScale;
 #include "../util/UTIL.glsl"
 
 vec3 heightMapToWorldSpace(vec2 uv, float planeSize) {
-    float worldX = uv.x * planeSize - planeSize / 2.0;
-    float worldZ = uv.y * planeSize - planeSize / 2.0;
+    float worldX = uv.x * planeSize ;
+    float worldZ = uv.y * planeSize ;
     return vec3(worldX, 0, worldZ);
 }
 

@@ -1,5 +1,6 @@
 package com.pine.panels.files;
 
+import com.pine.core.UIUtil;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.messaging.MessageRepository;
@@ -105,10 +106,8 @@ public class ContentBrowser extends AbstractDockPanel {
         ImGui.sameLine();
         ImGui.text(searchPath);
 
-        ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 210, 0);
+        UIUtil.dynamicSpacing(210);
 
-        ImGui.sameLine();
         if (ImGui.button(StreamableResourceType.MATERIAL.getIcon() + "Create material##addFile" + imguiId)) {
             var response = importerService.createNew(StreamableResourceType.MATERIAL);
             if (response == null) {

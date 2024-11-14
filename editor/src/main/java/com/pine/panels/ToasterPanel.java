@@ -11,7 +11,7 @@ import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 
-import static com.pine.core.AbstractWindow.OPEN;
+import static com.pine.core.UIUtil.OPEN;
 import static com.pine.messaging.MessageRepository.MESSAGE_DURATION;
 
 public class ToasterPanel extends AbstractView {

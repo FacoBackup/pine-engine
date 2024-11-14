@@ -71,6 +71,10 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
         }
 
+        if (stateRepository.selected.containsKey(tile.getId())) {
+            flags |= ImGuiTreeNodeFlags.Selected;
+        }
+
         String separator = "##";
         if (isCenterWorld) {
             separator = " (current)" + separator;
@@ -81,6 +85,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         }
 
         if (ImGui.treeNodeEx(Icons.inventory_2 + tile.getWorld().rootEntity.name + separator + tile.getWorld().rootEntity.id, flags)) {
+            handleClick(tile.getId());
             if (tile.isTerrainPresent) {
                 next();
                 ImGui.textDisabled(Icons.terrain + "Terrain chunk");
@@ -206,7 +211,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     }
 
     private void renderEntityColumns(Entity node, boolean isPinned) {
-        handleClick(node);
+        handleClick(node.id);
         ImGui.tableNextColumn();
 
         ImGui.pushStyleColor(ImGuiCol.Button, TRANSPARENT);
@@ -245,13 +250,13 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         }
     }
 
-    private void handleClick(Entity node) {
+    private void handleClick(String id) {
         if (ImGui.isItemClicked()) {
             boolean isMultiSelect = ImGui.isKeyDown(ImGuiKey.LeftCtrl);
             if (!isMultiSelect) {
                 selectionService.clearSelection();
             }
-            selectionService.addSelected(node.id());
+            selectionService.addSelected(id);
         }
     }
 

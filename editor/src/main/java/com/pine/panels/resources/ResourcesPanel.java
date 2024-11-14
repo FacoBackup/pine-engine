@@ -1,20 +1,32 @@
 package com.pine.panels.resources;
 
+import com.pine.component.MeshComponent;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
+import com.pine.repository.EngineRepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.repository.streaming.AbstractResourceRef;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.grid.HashGridService;
 import com.pine.service.streaming.impl.TextureService;
 import com.pine.service.voxelization.VoxelizationService;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 
+import java.util.Collection;
+
 import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
+import static com.pine.service.grid.HashGrid.TILE_SIZE;
 
 
 public class ResourcesPanel extends AbstractDockPanel {
+
     @PInject
-    public RenderingRepository renderingRepository;
+    public HashGridService hashGridService;
+
+    @PInject
+    public EngineRepository engineRepository;
 
     @PInject
     public TextureService textureService;
@@ -25,6 +37,10 @@ public class ResourcesPanel extends AbstractDockPanel {
     @PInject
     public StreamingRepository streamingRepository;
 
+    private int totalTriangles = 0;
+    private int totalTerrainTiles = 0;
+    private int totalTerrainTriangles = 0;
+
     @Override
     public void render() {
         if (ImGui.beginTable("##resources" + imguiId, 2, TABLE_FLAGS)) {
@@ -32,20 +48,76 @@ public class ResourcesPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableHeadersRow();
 
-            render("Individual draw calls", renderingRepository.getDrawCallQuantity());
+            computeTerrainData();
 
-            render("Triangles being rendered", renderingRepository.getTotalTriangleCount());
+            render("Individual draw calls", getDrawCallQuantity());
 
-            render("Textures", textureService.getTotalTextureCount());
+            render("Terrain tiles visible", totalTerrainTiles);
 
-            render("Voxels", voxelizationService.getVoxelCount());
+            render("Terrain triangles rendered", totalTerrainTriangles);
+
+            render("Triangles being rendered", getTotalTriangleCount());
+
+            render("Textures", getTotalTextureCount());
+
+            render("Voxels", getVoxelCount());
 
             render("Resources to be streamed in", streamingRepository.toStreamIn.size());
 
             render("Resources to be streamed in", streamingRepository.toStreamIn.size());
-
 
             ImGui.endTable();
+        }
+    }
+
+    public int getVoxelCount() {
+        var svo = hashGridService.getCurrentTile().getSvo();
+        if(svo != null){
+            return svo.getNodeQuantity();
+        }
+        return 0;
+    }
+
+    public int getTotalTextureCount() {
+        int total = 0;
+        for (AbstractResourceRef<?> resourceRef : streamingRepository.streamed.values()) {
+            if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.TEXTURE) {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    public int getTotalTriangleCount() {
+        // TODO - INCLUDE FOLIAGE
+        return totalTriangles;
+    }
+
+    public int getDrawCallQuantity() {
+        int totalDrawCalls = totalTriangles = 0;
+
+        for (var tile : hashGridService.getLoadedTiles()) {
+            if (tile != null) {
+                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
+                for (var mesh : meshes) {
+                    if (mesh.canRender(engineRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
+                        totalTriangles += mesh.renderRequest.mesh.triangleCount;
+                        totalDrawCalls++;
+                    }
+                }
+            }
+        }
+
+        return totalDrawCalls;
+    }
+
+    private void computeTerrainData() {
+        totalTerrainTiles = totalTerrainTriangles = 0;
+        for(var tile : hashGridService.getTiles().values()){
+            if(tile.isTerrainPresent && !tile.isCulled()){
+                totalTerrainTriangles += TILE_SIZE * TILE_SIZE * 3;
+                totalTerrainTiles++;
+            }
         }
     }
 

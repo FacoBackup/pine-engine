@@ -168,12 +168,4 @@ public class VoxelizationService implements Loggable {
         }
         getLogger().warn("Writing voxels for tile {} took {}ms", tile.getId(), System.currentTimeMillis() - startMemory);
     }
-
-    public int getVoxelCount() {
-        var svo = hashGridService.getCurrentTile().getSvo();
-        if(svo != null){
-            return svo.getNodeQuantity();
-        }
-        return 0;
-    }
 }

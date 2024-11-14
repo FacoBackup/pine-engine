@@ -86,7 +86,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
 
     private boolean checkIsValid() {
         Tile currentTile = hashGridService.getCurrentTile();
-        return switch (editorRepository.paintingType) {
+        return switch (editorRepository.editorMode) {
             case FOLIAGE -> currentTile.isTerrainPresent && editorRepository.foliageForPainting != null && currentTile.terrainFoliageId != null;
             case TERRAIN -> currentTile.terrainHeightMapId != null;
             default -> false;

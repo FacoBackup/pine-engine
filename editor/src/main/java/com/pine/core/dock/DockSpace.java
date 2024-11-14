@@ -5,7 +5,6 @@ import com.pine.panels.files.ContentBrowser;
 import com.pine.panels.hierarchy.HierarchyPanel;
 import com.pine.panels.inspector.InspectorPanel;
 import com.pine.panels.metrics.MetricsPanel;
-import com.pine.panels.painting.PaintingPanel;
 import com.pine.panels.resources.ResourcesPanel;
 import com.pine.panels.viewport.ViewportPanel;
 import com.pine.theme.Icons;
@@ -17,7 +16,6 @@ public enum DockSpace {
     Hierarchy("Hierarchy", Icons.account_tree, HierarchyPanel.class),
     Inspector("Inspector", Icons.search, InspectorPanel.class),
     Console("Console", Icons.terminal, ConsolePanel.class),
-    Painting("Painting", Icons.brush, PaintingPanel.class),
     Files("Files", Icons.folder_open, ContentBrowser.class),
     Resources("Resources", Icons.data_array, ResourcesPanel.class),
     Metrics("Metrics", Icons.bar_chart, MetricsPanel.class);

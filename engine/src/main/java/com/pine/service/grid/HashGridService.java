@@ -74,20 +74,6 @@ public class HashGridService extends AbstractTask implements SyncTask, Loggable 
         return repo.hashGrid.getTiles();
     }
 
-    public void moveEntityBetweenTiles(Tile tile, Vector3f newLocation, String entityId) {
-        var newTile = repo.hashGrid.getOrCreateTile(newLocation);
-        if (newTile != tile) {
-            newTile.getWorld().entityMap.put(entityId, tile.getWorld().entityMap.get(entityId));
-            tile.getWorld().runByComponent(comp -> {
-                newTile.getWorld().registerComponent(comp);
-            }, entityId);
-
-            getLogger().warn("Entity moved to tile {} from tile {}", newTile.getId(), tile.getId());
-
-            DeleteEntityRequest.removeEntity(entityId, tile);
-        }
-    }
-
     public HashGrid getHashGrid() {
         return repo.hashGrid;
     }
@@ -102,7 +88,7 @@ public class HashGridService extends AbstractTask implements SyncTask, Loggable 
     }
 
     private void updateTile(Tile tile, Tile currentTile) {
-        tile.setCulled(transformationService.isCulled(tile.getBoundingBox().center, repo.tileCullingMaxDistance, TILE_SIZE));
+        tile.setCulled(transformationService.isCulled(tile.getBoundingBox().center, repo.tileCullingMaxDistance, (float) Math.sqrt(TILE_SIZE)));
         if(tile == currentTile) {
             tile.setLoaded(true);
             return;

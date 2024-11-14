@@ -1,5 +1,6 @@
-package com.pine.panels.painting;
+package com.pine.panels.inspector;
 
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -15,7 +16,7 @@ import java.util.Objects;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
-public class FoliagePanel extends AbstractMaskPanel {
+public class FoliagePanel extends AbstractView {
     public static final int TABLE_FLAGS = ImGuiTableFlags.Resizable | ImGuiTableFlags.RowBg | ImGuiTableFlags.NoBordersInBody;
 
     @PInject
@@ -33,15 +34,7 @@ public class FoliagePanel extends AbstractMaskPanel {
     private final Map<String, Boolean> toRemove = new HashMap<>();
 
     @Override
-    protected String getTextureId() {
-        if(!hashGridService.getCurrentTile().isTerrainPresent){
-            return null;
-        }
-        return hashGridService.getCurrentTile().terrainFoliageId;
-    }
-
-    @Override
-    public void renderInternal() {
+    public void render() {
         ImGui.text(Icons.add + "Foliage");
         if (ImGui.beginChild(imguiId, ImGui.getWindowSizeX(), 50, true)) {
             for (String m : filesRepository.byType.get(StreamableResourceType.MESH)) {

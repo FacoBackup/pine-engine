@@ -35,8 +35,8 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
     @Override
     protected void renderInternal() {
         boolean isPrepared = false;
-        for (var tile : hashGridService.getLoadedTiles()) {
-            if (tile != null && tile.isTerrainPresent) {
+        for (var tile : hashGridService.getTiles().values()) {
+            if ( tile != null && tile.isTerrainPresent && !tile.isCulled()) {
                 if (!isPrepared) {
                     prepareCall();
                     isPrepared = true;

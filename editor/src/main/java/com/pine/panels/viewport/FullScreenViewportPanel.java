@@ -18,7 +18,7 @@ import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 
 import static com.pine.core.AbstractWindow.FLAGS;
-import static com.pine.core.AbstractWindow.OPEN;
+import static com.pine.core.UIUtil.OPEN;
 import static com.pine.panels.viewport.ViewportPanel.INV_X;
 import static com.pine.panels.viewport.ViewportPanel.INV_Y;
 

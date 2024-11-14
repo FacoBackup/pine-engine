@@ -9,11 +9,9 @@ import imgui.ImVec4;
 import imgui.flag.ImGuiDockNodeFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
-import imgui.type.ImBoolean;
 import imgui.type.ImInt;
 
 public abstract class AbstractWindow extends AbstractView {
-    public static final ImBoolean OPEN = new ImBoolean(true);
     public static final int FLAGS = ImGuiWindowFlags.NoDocking |
             ImGuiWindowFlags.NoTitleBar |
             ImGuiWindowFlags.NoCollapse |
@@ -43,7 +41,7 @@ public abstract class AbstractWindow extends AbstractView {
 
         dockService.updateForRemoval(this);
         beginMainWindowSetup(viewport);
-        ImGui.begin(NAME, OPEN, FLAGS);
+        ImGui.begin(NAME, UIUtil.OPEN, FLAGS);
 
         int windowId = ImGui.getID(NAME);
         dockMainId.set(windowId);
@@ -64,7 +62,7 @@ public abstract class AbstractWindow extends AbstractView {
         ImGui.setNextWindowPos(viewport.getPosX(), 0);
         ImGui.setNextWindowSize(viewport.getSizeX(), HEADER_HEIGHT);
         windowStyle();
-        ImGui.begin(NAME + "2", OPEN, FLAGS | ImGuiWindowFlags.NoScrollbar);
+        ImGui.begin(NAME + "2", UIUtil.OPEN, FLAGS | ImGuiWindowFlags.NoScrollbar);
         endMainWindowSetup();
 
         headerView.render();
