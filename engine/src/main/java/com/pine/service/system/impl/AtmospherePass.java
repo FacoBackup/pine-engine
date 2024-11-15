@@ -6,7 +6,6 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.voxelization.util.TextureUtil;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;

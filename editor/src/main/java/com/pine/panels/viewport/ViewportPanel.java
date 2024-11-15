@@ -1,38 +1,31 @@
 package com.pine.panels.viewport;
 
 import com.pine.Engine;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.panels.AbstractEntityViewPanel;
-import com.pine.repository.*;
-import com.pine.repository.core.CoreBufferRepository;
-import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.CameraRepository;
+import com.pine.repository.EditorMode;
+import com.pine.repository.EditorRepository;
+import com.pine.repository.RuntimeRepository;
 import com.pine.service.ViewportPickingService;
 import com.pine.service.camera.AbstractCameraService;
 import com.pine.service.camera.Camera;
 import com.pine.service.camera.CameraFirstPersonService;
 import com.pine.service.camera.CameraThirdPersonService;
 import com.pine.service.resource.fbo.FrameBufferObject;
-import com.pine.service.streaming.StreamingService;
-import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
-import imgui.ImVec4;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
-import imgui.flag.ImGuiWindowFlags;
-import org.joml.Vector3f;
 
-import static com.pine.core.dock.DockPanel.OPEN;
 import static com.pine.core.dock.DockSpacePanel.FRAME_SIZE;
 
 public class ViewportPanel extends AbstractEntityViewPanel {
-    private static final int CAMERA_FLAGS = ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
-    private static final ImVec4 RED = new ImVec4(1, 0, 0, 1);
-    private static final ImVec4 GREEN = new ImVec4(0, 1, 0, 1);
-    private static final ImVec4 BLUE = new ImVec4(0, .5f, 1, 1);
+
     public static final ImVec2 INV_X = new ImVec2(1, 0);
     public static final ImVec2 INV_Y = new ImVec2(0, 1);
 
@@ -59,15 +52,19 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
     private FrameBufferObject fbo;
     private final ImVec2 sizeVec = new ImVec2();
-    private GizmoPanel gizmo;
     private ImGuiIO io;
     private boolean isFirstMovement;
+    private AbstractView headerPanel;
+    private AbstractView cameraPanel;
+    private AbstractView gizmoPanel;
 
     @Override
     public void onInitialize() {
         this.fbo = new FrameBufferObject(engine.runtimeRepository.getDisplayW(), engine.runtimeRepository.getDisplayH()).addSampler();
-        appendChild(gizmo = new GizmoPanel(position, sizeVec));
         io = ImGui.getIO();
+        appendChild(headerPanel = new ViewportHeaderPanel());
+        appendChild(gizmoPanel = new GizmoPanel(position, sizeVec));
+        appendChild(cameraPanel = new CameraPositionPanel());
     }
 
     @Override
@@ -78,27 +75,16 @@ public class ViewportPanel extends AbstractEntityViewPanel {
 
         renderFrame();
 
-        gizmo.render();
-        renderCameraPosition();
+        if(editorRepository.editorMode == EditorMode.TRANSFORM){
+            gizmoPanel.render();
+        }
+        headerPanel.render();
+        cameraPanel.render();
     }
 
     private void renderFrame() {
         engine.render();
         ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, INV_Y, INV_X);
-    }
-
-    private void renderCameraPosition() {
-        ImGui.setNextWindowPos(position.x + 8, position.y + size.y - 25);
-        ImGui.setNextWindowSize(size.x - 16, 16);
-        if (ImGui.begin(imguiId + "cameraPos", OPEN, CAMERA_FLAGS)) {
-            Vector3f positionCamera = cameraRepository.currentCamera.position;
-            ImGui.textColored(RED, "X: " + positionCamera.x);
-            ImGui.sameLine();
-            ImGui.textColored(GREEN, "Y: " + positionCamera.y);
-            ImGui.sameLine();
-            ImGui.textColored(BLUE, "Z: " + positionCamera.z);
-        }
-        ImGui.end();
     }
 
     private void updateCamera() {
@@ -164,13 +150,13 @@ public class ViewportPanel extends AbstractEntityViewPanel {
     @Override
     protected void hotKeysInternal() {
         if (ImGui.isKeyPressed(ImGuiKey.T))
-            editorRepository.gizmoType = GizmoType.TRANSLATE;
+            editorRepository.gizmoType = Operation.TRANSLATE;
         if (ImGui.isKeyPressed(ImGuiKey.R))
-            editorRepository.gizmoType = GizmoType.ROTATE;
+            editorRepository.gizmoType = Operation.ROTATE;
         if (ImGui.isKeyPressed(ImGuiKey.Y))
-            editorRepository.gizmoType = GizmoType.SCALE;
+            editorRepository.gizmoType = Operation.SCALE;
 
-        if (ImGui.isWindowHovered() && !ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
+        if (editorRepository.editorMode == EditorMode.TRANSFORM && ImGui.isWindowHovered() && !ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
             viewportPickingService.pick();
         }
     }

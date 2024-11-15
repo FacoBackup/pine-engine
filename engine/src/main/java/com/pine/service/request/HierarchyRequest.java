@@ -1,6 +1,7 @@
 package com.pine.service.request;
 
 import com.pine.component.Entity;
+import com.pine.repository.WorldRepository;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -16,12 +17,12 @@ public class HierarchyRequest extends AbstractRequest {
 
     @Override
     public void run() {
-        String previousParent = repository.childParent.get(child.id());
-        repository.parentChildren.get(previousParent).remove(child.id());
-        String newParent =  parent != null ? parent.id() : repository.rootEntity.id();
-        repository.childParent.put(child.id(), newParent);
-        repository.parentChildren.putIfAbsent(newParent, new LinkedList<>());
-        repository.parentChildren.get(newParent).add(child.id());
+        String previousParent = world.childParent.get(child.id());
+        world.parentChildren.get(previousParent).remove(child.id());
+        String newParent =  parent != null ? parent.id() : WorldRepository.ROOT_ID;
+        world.childParent.put(child.id(), newParent);
+        world.parentChildren.putIfAbsent(newParent, new LinkedList<>());
+        world.parentChildren.get(newParent).add(child.id());
         getLogger().warn("Entity {} linked to {}", child.id, parent == null ? null : parent.id);
     }
 }

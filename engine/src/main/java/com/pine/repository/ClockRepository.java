@@ -1,8 +1,6 @@
 package com.pine.repository;
 
 import com.pine.injection.PBean;
-import com.pine.injection.PInject;
-import com.pine.repository.core.CoreBufferRepository;
 import com.pine.tasks.SyncTask;
 
 @PBean

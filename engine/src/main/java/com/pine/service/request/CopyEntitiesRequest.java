@@ -4,10 +4,7 @@ import com.pine.component.Entity;
 import com.pine.messaging.Loggable;
 import com.pine.repository.WorldRepository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
     private final List<String> entities;
@@ -25,7 +22,7 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
 
     @Override
     public void run() {
-        if (parentId == null || !repository.entityMap.containsKey(parentId)) {
+        if (parentId == null || !world.entityMap.containsKey(parentId)) {
             parentId = WorldRepository.ROOT_ID;
         }
 
@@ -36,17 +33,17 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
     }
 
     private void clone(String entityId, String parent) {
-        var entity = repository.entityMap.get(entityId);
-        if (entity != repository.rootEntity) {
+        var entity = world.entityMap.get(entityId);
+        if (!Objects.equals(entity.id(), WorldRepository.ROOT_ID)) {
             try {
                 var cloned = entity.cloneEntity();
-                repository.entityMap.put(cloned.id(), cloned);
+                world.entityMap.put(cloned.id(), cloned);
 
                 linkHierarchy(parent, cloned);
 
                 cloneComponents(entityId, cloned);
                 allCloned.add(cloned);
-                var children = repository.parentChildren.get(entityId);
+                var children = world.parentChildren.get(entityId);
                 if (children != null) {
                     for (var child : children) {
                         clone(child, cloned.id);
@@ -59,14 +56,14 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
     }
 
     private void cloneComponents(String entityId, Entity cloned) {
-        repository.runByComponent((abstractComponent -> {
-            repository.registerComponent(abstractComponent.cloneComponent(cloned));
+        world.runByComponent((abstractComponent -> {
+            world.registerComponent(abstractComponent.cloneComponent(cloned));
         }), entityId);
     }
 
     private void linkHierarchy(String parent, Entity cloned) {
-        repository.parentChildren.putIfAbsent(parent, new LinkedList<>());
-        repository.parentChildren.get(parent).add(cloned.id());
-        repository.childParent.put(cloned.id(), parent);
+        world.parentChildren.putIfAbsent(parent, new LinkedList<>());
+        world.parentChildren.get(parent).add(cloned.id());
+        world.childParent.put(cloned.id(), parent);
     }
 }

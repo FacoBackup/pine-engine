@@ -1,6 +1,6 @@
 package com.pine.core.dock;
 
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.messaging.MessageRepository;
@@ -14,7 +14,7 @@ import org.joml.Vector2f;
 
 import java.io.Serializable;
 
-import static com.pine.core.dock.DockPanel.OPEN;
+import static com.pine.core.UIUtil.OPEN;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public final class DockSpacePanel extends AbstractView implements Loggable, Serializable {

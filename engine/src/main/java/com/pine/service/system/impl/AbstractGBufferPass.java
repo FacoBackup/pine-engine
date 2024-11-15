@@ -5,7 +5,6 @@ import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
-import org.jetbrains.annotations.Debug;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
@@ -31,7 +30,7 @@ public abstract class AbstractGBufferPass extends AbstractPass {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
         GL46.glDisable(GL11.GL_BLEND);
 
-        if (!settingsRepository.isBaking && settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
+        if (!engineRepository.isBakingEnvironmentMaps && engineRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
             GL46.glDisable(GL11.GL_CULL_FACE);
         } else {
@@ -39,13 +38,13 @@ public abstract class AbstractGBufferPass extends AbstractPass {
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
 
-        if(settingsRepository.isBaking){
+        if(engineRepository.isBakingEnvironmentMaps){
             shaderService.bindInt(DebugShadingModel.LIT.getId(), debugShadingMode);
             shaderService.bindBoolean(false, applyGrid);
         }else {
-            shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
-            shaderService.bindBoolean(settingsRepository.gridOverlay, applyGrid);
-            shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels);
+            shaderService.bindInt(engineRepository.debugShadingModel.getId(), debugShadingMode);
+            shaderService.bindBoolean(engineRepository.gridOverlay, applyGrid);
+            shaderService.bindFloat(engineRepository.probeFiltering, probeFilteringLevels);
             bindEnvironmentMaps();
         }
     }

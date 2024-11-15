@@ -7,6 +7,7 @@ import com.pine.messaging.MessageSeverity;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
+import com.pine.service.grid.WorldService;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.CopyEntitiesRequest;
 import com.pine.service.request.DeleteEntityRequest;
@@ -18,13 +19,15 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
     @PInject
     public SelectionService selectionService;
     @PInject
-    public WorldRepository world;
+    public WorldService worldService;
     @PInject
     public EditorRepository stateRepository;
     @PInject
     public RequestProcessingService requestProcessingService;
     @PInject
     public MessageRepository messageRepository;
+    @PInject
+    public WorldRepository world;
 
     protected void hotKeys() {
         if(!isWindowFocused || ImGuizmo.isUsing()){
@@ -49,7 +52,11 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
         }
 
         if (ctrlDown && ImGui.isKeyPressed(ImGuiKey.A)) {
-            selectionService.addAllSelected(world.entityMap.values());
+            for(var tile : worldService.getLoadedTiles()){
+                if(tile != null) {
+                    selectionService.addAllSelected(world.entityMap.values());
+                }
+            }
         }
 
         if (!stateRepository.copied.isEmpty() && ctrlDown && ImGui.isKeyPressed(ImGuiKey.V)) {

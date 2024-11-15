@@ -2,6 +2,7 @@ package com.pine.service.request;
 
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
+import com.pine.repository.WorldRepository;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -27,14 +28,14 @@ public class AddEntityRequest extends AbstractRequest {
     @Override
     public void run() {
         entity = new Entity();
-        repository.entityMap.put(entity.id(), entity);
+        world.entityMap.put(entity.id(), entity);
 
-        repository.parentChildren.putIfAbsent(repository.rootEntity.id(), new LinkedList<>());
-        repository.parentChildren.get(repository.rootEntity.id()).add(entity.id());
-        repository.childParent.put(entity.id(), repository.rootEntity.id());
+        world.parentChildren.putIfAbsent(WorldRepository.ROOT_ID, new LinkedList<>());
+        world.parentChildren.get(WorldRepository.ROOT_ID).add(entity.id());
+        world.childParent.put(entity.id(), WorldRepository.ROOT_ID);
 
         try {
-            AddComponentRequest.add(components, entity, repository);
+            AddComponentRequest.add(components, entity, world);
             getLogger().warn("Entity created successfully");
         } catch (Exception e) {
             getLogger().error("Error while adding component", e);

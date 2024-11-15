@@ -2,7 +2,6 @@ in vec2 texCoords;
 
 layout (binding = 0) uniform sampler2D sceneDepth;
 
-uniform bool hasSelection;
 uniform vec3 color;
 uniform vec2 viewportOrigin;
 uniform vec2 viewportSize;
@@ -45,9 +44,7 @@ void main(){
         discard;
     }
 
-    if(distToCenter > radiusDensityMode.r - .15){
-        finalColor = vec4(hasSelection ?  vec3(0, 1, 0) : vec3(1, .15, 0), 1);
-    }else if(distToCenter > radiusDensityMode.r - .5){
+    if(distToCenter > radiusDensityMode.r - .35){
         finalColor = vec4(1, 1, 1, radiusDensityMode.y);
     }else{
         finalColor = vec4(.2, .2, .2, .35);

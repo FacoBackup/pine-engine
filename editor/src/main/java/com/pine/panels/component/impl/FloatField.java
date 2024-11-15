@@ -17,6 +17,8 @@ public class FloatField extends AbstractFormField {
 
     @Override
     public void render() {
+        values[0] = (Float) dto.getValue();
+
         if (dto.isDisabled()) {
             ImGui.text(dto.getLabel() + ": ");
             ImGui.textDisabled(String.valueOf(values[0]));

@@ -13,6 +13,7 @@
 #define UV_FLAG 18
 #define INDIRECT 19
 #define TRIANGLE_ID 20
+#define HEIGHT 21
 #define LIT -1
 
 #define ISOTROPIC 1
@@ -150,6 +151,9 @@ void main() {
             break;
             case TRIANGLE_ID:
             gBufferAlbedoSampler.rgb = randomColor(gl_PrimitiveID);
+            break;
+            case HEIGHT:
+            gBufferAlbedoSampler.rgb = vec3(worldSpacePosition.y/10);
             break;
         }
 

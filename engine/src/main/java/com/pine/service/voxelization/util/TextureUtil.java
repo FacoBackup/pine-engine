@@ -3,16 +3,12 @@ package com.pine.service.voxelization.util;
 import com.pine.service.streaming.data.TextureStreamData;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.voxelization.svo.VoxelColorData;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.stb.STBImage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 public class TextureUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(TextureUtil.class);
@@ -69,34 +65,6 @@ public class TextureUtil {
 
         GL46.glBindTexture(GL46.GL_TEXTURE_3D, GL11.GL_NONE);
 
-        return texture;
-    }
-
-    public static TextureResourceRef loadTextureFromResource(String resourcePath) {
-        ByteBuffer buffer;
-        try (InputStream in = TextureUtil.class.getResourceAsStream(resourcePath)) {
-            if (in == null) {
-                return null;
-            }
-            byte[] bytes = in.readAllBytes();
-            buffer = BufferUtils.createByteBuffer(bytes.length).put(bytes);
-            buffer.flip();
-        } catch (Exception e) {
-            LOGGER.error("Failed to load texture from {}", resourcePath, e);
-            return null;
-        }
-
-        IntBuffer width = BufferUtils.createIntBuffer(1);
-        IntBuffer height = BufferUtils.createIntBuffer(1);
-        IntBuffer channels = BufferUtils.createIntBuffer(1);
-
-        ByteBuffer imageData = STBImage.stbi_load_from_memory(buffer, width, height, channels, 4);
-        if (imageData == null) {
-            return null;
-        }
-
-        var texture = new TextureResourceRef(null);
-        texture.load(new TextureStreamData(width.get(0), height.get(0), imageData, false));
         return texture;
     }
 

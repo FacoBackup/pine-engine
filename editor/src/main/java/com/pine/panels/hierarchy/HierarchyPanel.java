@@ -1,7 +1,9 @@
 package com.pine.panels.hierarchy;
 
-import com.pine.component.*;
+import com.pine.component.AbstractComponent;
+import com.pine.component.Entity;
 import com.pine.panels.AbstractEntityViewPanel;
+import com.pine.repository.WorldRepository;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -12,7 +14,6 @@ import imgui.type.ImString;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -52,7 +53,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
             for (String pinned : stateRepository.pinnedEntities.keySet()) {
                 renderNodePinned(world.entityMap.get(pinned));
             }
-            renderNode(world.rootEntity.id());
+            renderNode(WorldRepository.ROOT_ID);
             ImGui.endTable();
         }
     }
@@ -80,7 +81,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         int flags = getFlags(entity);
         boolean open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
 
-        if (entity != world.rootEntity) {
+        if (!Objects.equals(entity.id(), WorldRepository.ROOT_ID)) {
             handleDragDrop(entity);
             renderEntityColumns(entity, false);
         }
@@ -95,7 +96,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     }
 
     private @NotNull String getNodeLabel(Entity node, boolean addId) {
-        return (world.rootEntity == node ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (addId ? ("##" + node.id() + imguiId) : "");
+        return (Objects.equals(WorldRepository.ROOT_ID, node.id()) ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (addId ? ("##" + node.id() + imguiId) : "");
     }
 
     private boolean matchSearch(Entity node) {

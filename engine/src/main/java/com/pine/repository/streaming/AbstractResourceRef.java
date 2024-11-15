@@ -2,7 +2,7 @@ package com.pine.repository.streaming;
 
 import com.pine.injection.Disposable;
 import com.pine.messaging.Loggable;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.StreamData;
 
 public abstract class AbstractResourceRef<T extends StreamData> implements Disposable, Loggable {
     public transient boolean loaded = false;

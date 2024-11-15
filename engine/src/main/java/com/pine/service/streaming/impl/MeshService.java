@@ -4,13 +4,19 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.ClockRepository;
+import com.pine.repository.TerrainRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.camera.CameraService;
+import com.pine.service.resource.ShaderService;
+import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.ref.MeshResourceRef;
+import com.pine.service.streaming.ref.TextureResourceRef;
+import org.joml.Vector2f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.Map;
@@ -26,6 +32,15 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
 
     @PInject
     public ClockRepository clockRepository;
+
+    @PInject
+    public TerrainRepository terrain;
+
+    @PInject
+    public CameraService cameraService;
+
+    @PInject
+    public ShaderService shaderService;
 
     public void setRenderingMode(RenderingMode renderingMode) {
         this.renderingMode = renderingMode;
@@ -112,22 +127,57 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     }
 
     @Override
-    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources){
+    public StreamData stream(String pathToFile, Map<String, StreamableResourceType> schedule, Map<String, AbstractResourceRef<?>> streamableResources) {
         return (StreamData) FSUtil.readBinary(pathToFile);
-    }
-
-    public int getTotalTriangleCount() {
-        int total = 0;
-        for (var resourceRef : repository.loadedResources.values()) {
-            if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.MESH) {
-                total += ((MeshResourceRef) resourceRef).triangleCount;
-            }
-        }
-        return total;
     }
 
     @Override
     public AbstractResourceRef<?> newInstance(String key) {
         return new MeshResourceRef(key);
+    }
+
+    public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO heightScale, UniformDTO tilesScaleTranslation, UniformDTO fallbackMaterial) {
+        Vector4f terrainLocation = new Vector4f();
+        Vector2f dist = new Vector2f();
+        var camPos = cameraService.repository.currentCamera.position;
+        for (int x = 0; x < terrain.cellsX; x++) {
+            for (int z = 0; z < terrain.cellsZ; z++) {
+                float locationX = x * terrain.quads - terrain.offsetX;
+                float locationZ = z * terrain.quads - terrain.offsetZ;
+
+                int distance = (int) dist.set((float) Math.floor(locationX / terrain.quads), (float) Math.floor(locationZ / terrain.quads))
+                        .sub((float) Math.floor(camPos.x / terrain.quads), (float) Math.floor(camPos.z / terrain.quads))
+                        .length();
+                shaderService.bindSampler2dDirect(heightMap, 8);
+
+                int divider = 1;
+                if (distance >= 2) {
+                    divider = 2;
+                }
+
+                if (distance >= 3) {
+                    divider = 4;
+                }
+
+                if (distance >= 4) {
+                    divider = 8;
+                }
+
+                terrainLocation.x = (float) terrain.quads / divider;
+                terrainLocation.y = divider;
+                terrainLocation.z = locationX;
+                terrainLocation.w = locationZ;
+                shaderService.bindVec4(terrainLocation, tilesScaleTranslation);
+
+                shaderService.bindFloat(terrain.heightScale, heightScale);
+                shaderService.bindInt(heightMap.width, textureSize);
+
+                if (fallbackMaterial != null) {
+                    shaderService.bindBoolean(true, fallbackMaterial);
+                }
+
+                GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, (int) (terrainLocation.x * terrainLocation.x * 6));
+            }
+        }
     }
 }

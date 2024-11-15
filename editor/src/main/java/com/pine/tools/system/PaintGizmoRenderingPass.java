@@ -2,8 +2,9 @@ package com.pine.tools.system;
 
 import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
+import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.GizmoType;
+import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -48,12 +49,12 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return bufferRepository.gBufferTarget;
+        return bufferRepository.postProcessingBuffer;
     }
 
     @Override
     protected boolean isRenderable() {
-        return runtimeRepository.isFocused && editorRepository.gizmoType == GizmoType.PAINT && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return runtimeRepository.isFocused && editorRepository.editorMode != EditorMode.TRANSFORM && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override
@@ -79,16 +80,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(viewportO, viewportOrigin);
 
-        shaderService.bindBoolean(checkIsValid(), hasSelection);
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 0);
-    }
-
-    private boolean checkIsValid() {
-        return switch (editorRepository.paintingType) {
-            case FOLIAGE -> editorRepository.foliageForPainting != null && terrainRepository.instanceMaskMap != null;
-            case TERRAIN -> terrainRepository.heightMapTexture != null;
-            default -> false;
-        };
     }
 
     @Override

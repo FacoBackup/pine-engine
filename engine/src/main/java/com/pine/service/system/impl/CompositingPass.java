@@ -25,7 +25,7 @@ public class CompositingPass extends AbstractQuadPassPass {
 
     @Override
     protected void bindUniforms() {
-        shaderService.bindVec3(settingsRepository.backgroundColor, backgroundColor);
+        shaderService.bindVec3(engineRepository.backgroundColor, backgroundColor);
         shaderService.bindSampler2dDirect(bufferRepository.gBufferTargetSampler, 0);
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 1);
         shaderService.bindSampler2dDirect(bufferRepository.auxBufferQuaterResSampler, 2);

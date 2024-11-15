@@ -10,6 +10,7 @@ layout(std430, binding = 3) writeonly buffer TransformationBuffer {
 
 uniform vec3 colorToMatch;
 uniform vec2 imageSize;
+uniform vec2 terrainOffset;
 uniform float heightScale;
 
 #define MAX_INSTANCING  500000
@@ -17,9 +18,9 @@ uniform float heightScale;
 #include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 #include "../util/UTIL.glsl"
 
-vec3 heightMapToWorldSpace(vec2 uv, float planeSize) {
-    float worldX = uv.x * planeSize - planeSize / 2.0;
-    float worldZ = uv.y * planeSize - planeSize / 2.0;
+vec3 heightMapToWorldSpace(vec2 uv, vec2 planeSize) {
+    float worldX = uv.x * planeSize.x - planeSize.x/2.;
+    float worldZ = uv.y * planeSize.y - planeSize.y/2.;
     return vec3(worldX, 0, worldZ);
 }
 
@@ -38,7 +39,7 @@ mat4 createTransformationMatrix(mat3 rotation, vec3 translation) {
 
 void main() {
     vec2 scaledTexCoord= vec2(gl_GlobalInvocationID.xy) / imageSize;
-    vec3 worldSpaceCoord = heightMapToWorldSpace(scaledTexCoord, imageSize.x);
+    vec3 worldSpaceCoord = heightMapToWorldSpace(scaledTexCoord, imageSize);
 
     // TODO - FRUSTUM CULLING BASED ON WORLD COORD
     vec3 pixelColor = texture(foliageMask, scaledTexCoord).rgb;

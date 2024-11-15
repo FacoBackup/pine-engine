@@ -1,10 +1,11 @@
-package com.pine.service.streaming;
+package com.pine.service.streaming.impl;
 
 import com.pine.Engine;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.streaming.data.StreamData;
 
 import java.util.Map;
 
