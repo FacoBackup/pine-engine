@@ -25,19 +25,19 @@ public class LoadSceneRequest extends AbstractRequest {
 
     private void traverse(Entity parent, SceneImportData localScene) {
         var add = new AddEntityRequest(localScene.meshResourceId != null ? List.of(ComponentType.MESH) : Collections.emptyList());
-        add.setup(hashGridService, streamingRepository);
+        add.setup(world, streamingRepository, worldService);
         add.run();
 
         Entity entity = add.getResponse();
         entity.name = localScene.name;
         if (localScene.meshResourceId != null) {
-            var comp = (MeshComponent) hashGridService.getCurrentTile().getWorld().bagMeshComponent.get(entity.id());
+            var comp = (MeshComponent) world.bagMeshComponent.get(entity.id());
             comp.lod0 = localScene.meshResourceId;
             comp.material = localScene.materialResourceId;
         }
 
         var hierarchy = new HierarchyRequest(parent, entity);
-        hierarchy.setup(hashGridService, streamingRepository);
+        hierarchy.setup(world, streamingRepository, worldService);
         hierarchy.run();
 
         for (var childScene : localScene.children) {

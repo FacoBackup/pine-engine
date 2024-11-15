@@ -14,7 +14,6 @@ uniform vec2 xyMouse;
 uniform vec3 colorForPainting;
 uniform vec2 targetImageSize;
 uniform vec3 radiusDensityMode;
-uniform vec3 terrainLocation;
 
 
 const vec4 NONE = vec4(0, 0, 0, 1);
@@ -51,24 +50,20 @@ void main() {
     vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePosition = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
 
-    int wX = int(floor(worldSpacePosition.x/terrainLocation.z));
-    int wZ = int(floor(worldSpacePosition.z/terrainLocation.z));
-    if (wX == int(terrainLocation.x) && wZ == int(terrainLocation.y)){
-        float originalYPosition = worldSpacePosition.y;
-        worldSpacePositionMouse.y = worldSpacePosition.y = 0;
+    float originalYPosition = worldSpacePosition.y;
+    worldSpacePositionMouse.y = worldSpacePosition.y = 0;
 
-        // COMPARE THE DISTANCE BETWEEN THE PIXEL WORLD POSITION AND THE MOUSE WORLD POSITION
-        float distToCenter = length(worldSpacePosition - worldSpacePositionMouse);
-        if (distToCenter > radiusDensityMode.r) {
-            return;
-        }
+    // COMPARE THE DISTANCE BETWEEN THE PIXEL WORLD POSITION AND THE MOUSE WORLD POSITION
+    float distToCenter = length(worldSpacePosition - worldSpacePositionMouse);
+    if (distToCenter > radiusDensityMode.r) {
+        return;
+    }
 
-        ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
-        if (paintMode == TERRAIN){
-            float scale =  (distToCenter/radiusDensityMode.x) * radiusDensityMode.y;
-            imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(vec3(originalYPosition - scale) / heightScale, 1) : vec4(vec3(originalYPosition + .1 * scale)/heightScale, 1));
-        } else if (paintMode == FOLIAGE && randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
-            imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(colorForPainting, 1));
-        }
+    ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
+    if (paintMode == TERRAIN){
+        float scale =  (distToCenter/radiusDensityMode.x) * radiusDensityMode.y;
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(vec3(originalYPosition - scale) / heightScale, 1) : vec4(vec3(originalYPosition + .1 * scale)/heightScale, 1));
+    } else if (paintMode == FOLIAGE && randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(colorForPainting, 1));
     }
 }

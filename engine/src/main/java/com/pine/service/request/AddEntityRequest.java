@@ -2,6 +2,7 @@ package com.pine.service.request;
 
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
+import com.pine.repository.WorldRepository;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -27,12 +28,11 @@ public class AddEntityRequest extends AbstractRequest {
     @Override
     public void run() {
         entity = new Entity();
-        var world = hashGridService.getCurrentTile().getWorld();
         world.entityMap.put(entity.id(), entity);
 
-        world.parentChildren.putIfAbsent(world.rootEntity.id(), new LinkedList<>());
-        world.parentChildren.get(world.rootEntity.id()).add(entity.id());
-        world.childParent.put(entity.id(), world.rootEntity.id());
+        world.parentChildren.putIfAbsent(WorldRepository.ROOT_ID, new LinkedList<>());
+        world.parentChildren.get(WorldRepository.ROOT_ID).add(entity.id());
+        world.childParent.put(entity.id(), WorldRepository.ROOT_ID);
 
         try {
             AddComponentRequest.add(components, entity, world);

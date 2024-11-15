@@ -1,18 +1,23 @@
-package com.pine.service.grid;
+package com.pine.repository;
 
+import com.pine.SerializableRepository;
 import com.pine.component.*;
 import com.pine.component.light.PointLightComponent;
 import com.pine.component.light.SphereLightComponent;
 import com.pine.component.light.SpotLightComponent;
+import com.pine.injection.PBean;
+import com.pine.service.grid.WorldGrid;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Consumer;
 
-public class TileWorld {
+@PBean
+public class WorldRepository implements SerializableRepository {
     public static final String ROOT_ID = Entity.class.getCanonicalName();
+
+    public final WorldGrid worldGrid = new WorldGrid();
 
     public final Map<String, PointLightComponent> bagPointLightComponent = new HashMap<>();
     public final Map<String, SphereLightComponent> bagSphereLightComponent = new HashMap<>();
@@ -21,17 +26,14 @@ public class TileWorld {
     public final Map<String, MeshComponent> bagMeshComponent = new HashMap<>();
     public final Map<String, TransformationComponent> bagTransformationComponent = new HashMap<>();
 
-    public final Entity rootEntity;
-    public final Map<String, Entity> entityMap = new HashMap<>();
-    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>();
+    public final Map<String, Entity> entityMap = new HashMap<>(){{
+        put(ROOT_ID, new Entity(ROOT_ID, "World"));
+    }};
+    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>(){{
+        put(ROOT_ID, new LinkedList<>());
+    }};
     public final Map<String, String> childParent = new HashMap<>();
     public final Map<String, Boolean> hiddenEntityMap = new HashMap<>();
-
-    public TileWorld(int x, int z) {
-        this.rootEntity = new Entity(ROOT_ID + UUID.randomUUID(), "Tile " + x + " " + z);
-        entityMap.put(rootEntity.id(), rootEntity);
-        parentChildren.put(rootEntity.id(), new LinkedList<>());
-    }
 
     public void registerComponent(AbstractComponent component) {
         switch (component.getType()) {

@@ -2,14 +2,14 @@ package com.pine.service.request;
 
 import com.pine.component.Entity;
 import com.pine.messaging.Loggable;
-import com.pine.service.grid.TileWorld;
+import com.pine.repository.WorldRepository;
 
 import java.util.*;
 
 public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
     private final List<String> entities;
     private final List<Entity> allCloned = new ArrayList<>();
-    private final String parentId;
+    private String parentId;
 
     public CopyEntitiesRequest(Collection<String> entities, String parentId) {
         this.entities = new ArrayList<>(entities);
@@ -22,36 +22,31 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
 
     @Override
     public void run() {
-        for (String entityId : entities) {
-            for (var tile : hashGridService.getLoadedTiles()) {
-                if (tile != null && tile.getWorld().entityMap.containsKey(entityId)) {
-                    String parentIdLocal = parentId;
-                    if (parentIdLocal == null || !tile.getWorld().entityMap.containsKey(parentIdLocal)) {
-                        parentIdLocal = tile.getWorld().rootEntity.id();
-                    }
+        if (parentId == null || !world.entityMap.containsKey(parentId)) {
+            parentId = WorldRepository.ROOT_ID;
+        }
 
-                    clone(tile.getWorld(), entityId, parentIdLocal);
-                }
-            }
+        for (String entityId : entities) {
+            clone(entityId, parentId);
         }
         getLogger().warn("{} entities copied", entities.size());
     }
 
-    private void clone(TileWorld tile, String entityId, String parent) {
-        var entity = tile.entityMap.get(entityId);
-        if (!Objects.equals(entityId, TileWorld.ROOT_ID) && entity != null) {
+    private void clone(String entityId, String parent) {
+        var entity = world.entityMap.get(entityId);
+        if (!Objects.equals(entity.id(), WorldRepository.ROOT_ID)) {
             try {
                 var cloned = entity.cloneEntity();
-                tile.entityMap.put(cloned.id(), cloned);
+                world.entityMap.put(cloned.id(), cloned);
 
-                linkHierarchy(tile, parent, cloned);
+                linkHierarchy(parent, cloned);
 
-                cloneComponents(tile, entityId, cloned);
+                cloneComponents(entityId, cloned);
                 allCloned.add(cloned);
-                var children = tile.parentChildren.get(entityId);
+                var children = world.parentChildren.get(entityId);
                 if (children != null) {
                     for (var child : children) {
-                        clone(tile, child, cloned.id);
+                        clone(child, cloned.id);
                     }
                 }
             } catch (Exception e) {
@@ -60,13 +55,13 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
         }
     }
 
-    private void cloneComponents(TileWorld tileWorld, String entityId, Entity cloned) {
-        tileWorld.runByComponent((abstractComponent -> {
-            tileWorld.registerComponent(abstractComponent.cloneComponent(cloned));
+    private void cloneComponents(String entityId, Entity cloned) {
+        world.runByComponent((abstractComponent -> {
+            world.registerComponent(abstractComponent.cloneComponent(cloned));
         }), entityId);
     }
 
-    private void linkHierarchy(TileWorld world, String parent, Entity cloned) {
+    private void linkHierarchy(String parent, Entity cloned) {
         world.parentChildren.putIfAbsent(parent, new LinkedList<>());
         world.parentChildren.get(parent).add(cloned.id());
         world.childParent.put(cloned.id(), parent);

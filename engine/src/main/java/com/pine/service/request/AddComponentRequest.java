@@ -2,7 +2,7 @@ package com.pine.service.request;
 
 import com.pine.component.ComponentType;
 import com.pine.component.Entity;
-import com.pine.service.grid.TileWorld;
+import com.pine.repository.WorldRepository;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public class AddComponentRequest extends AbstractRequest {
         this.entity = entity;
     }
 
-    private static void addComponent(ComponentType type, Entity entity, TileWorld world) throws Exception {
+    private static void addComponent(ComponentType type, Entity entity, WorldRepository world) throws Exception {
         if (world.getBagByType(type).containsKey(entity.id())) {
             return;
         }
@@ -27,7 +27,7 @@ public class AddComponentRequest extends AbstractRequest {
         }
     }
 
-    public static void add(List<ComponentType> components, Entity entity, TileWorld world) throws Exception {
+    public static void add(List<ComponentType> components, Entity entity, WorldRepository world) throws Exception {
         for (var type : components) {
             AddComponentRequest.addComponent(type, entity, world);
         }
@@ -35,17 +35,13 @@ public class AddComponentRequest extends AbstractRequest {
 
     @Override
     public void run() {
-        for (var tile : hashGridService.getLoadedTiles()) {
-            if (tile != null && tile.getWorld().entityMap.containsKey(entity.id())) {
-                if (tile.getWorld().getBagByType(type).containsKey(entity.id())) {
-                    getLogger().warn("Component {} already exists on entity {}", type.getTitle(), entity.id());
-                }
-                try {
-                    AddComponentRequest.add(List.of(type), entity, tile.getWorld());
-                } catch (Exception e) {
-                    getLogger().error("Error while adding component {}", type.getTitle(), e);
-                }
-            }
+        if (world.getBagByType(type).containsKey(entity.id())) {
+            getLogger().warn("Component {} already exists on entity {}", type.getTitle(), entity.id());
+        }
+        try {
+            AddComponentRequest.add(List.of(type), entity, world);
+        } catch (Exception e) {
+            getLogger().error("Error while adding component {}", type.getTitle(), e);
         }
     }
 }

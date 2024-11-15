@@ -1,7 +1,7 @@
 package com.pine.core.dock;
 
-import com.pine.core.AbstractWindow;
 import com.pine.core.AbstractView;
+import com.pine.core.AbstractWindow;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import imgui.ImGui;

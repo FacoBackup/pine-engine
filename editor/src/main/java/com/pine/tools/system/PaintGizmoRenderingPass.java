@@ -4,7 +4,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
-import com.pine.service.grid.Tile;
+import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
@@ -80,17 +80,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
         shaderService.bindVec2(viewport, viewportSize);
         shaderService.bindVec2(viewportO, viewportOrigin);
 
-        shaderService.bindBoolean(checkIsValid(), hasSelection);
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 0);
-    }
-
-    private boolean checkIsValid() {
-        Tile currentTile = hashGridService.getCurrentTile();
-        return switch (editorRepository.editorMode) {
-            case FOLIAGE -> currentTile.isTerrainPresent && editorRepository.foliageForPainting != null && currentTile.terrainFoliageId != null;
-            case TERRAIN -> currentTile.terrainHeightMapId != null;
-            default -> false;
-        };
     }
 
     @Override

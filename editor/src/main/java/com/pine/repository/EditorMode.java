@@ -1,7 +1,6 @@
 package com.pine.repository;
 
 import com.pine.theme.Icons;
-import imgui.extension.imguizmo.flag.Operation;
 
 public enum EditorMode {
     TRANSFORM("Transform", Icons.transform, 0),

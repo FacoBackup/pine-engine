@@ -5,7 +5,6 @@ import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import imgui.ImGui;
 import imgui.ImVec4;
-import imgui.flag.ImGuiWindowFlags;
 import org.joml.Vector3f;
 
 import static com.pine.core.UIUtil.FIXED_WINDOW_FLAGS;

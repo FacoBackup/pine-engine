@@ -9,7 +9,7 @@ import com.pine.type.LightType;
 
 import java.util.Set;
 
-import static com.pine.service.grid.HashGrid.TILE_SIZE;
+import static com.pine.service.grid.WorldGrid.TILE_SIZE;
 
 public abstract class AbstractLightComponent extends AbstractComponent {
     @InspectableField(label = "Screen Space Shadows")

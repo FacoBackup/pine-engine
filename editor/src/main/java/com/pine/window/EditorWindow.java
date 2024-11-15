@@ -1,9 +1,9 @@
 package com.pine.window;
 
 import com.pine.Engine;
+import com.pine.core.AbstractView;
 import com.pine.core.AbstractWindow;
 import com.pine.core.WindowService;
-import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.panels.ToasterPanel;
 import com.pine.panels.header.EditorHeaderPanel;

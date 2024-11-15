@@ -4,7 +4,8 @@ import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.grid.HashGridService;
+import com.pine.service.SelectionService;
+import com.pine.service.grid.WorldService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
@@ -26,33 +27,33 @@ public class FoliagePanel extends AbstractView {
     public FilesRepository filesRepository;
 
     @PInject
-    public TerrainRepository terrainRepository;
+    public EngineRepository engineRepository;
 
     @PInject
-    public HashGridService hashGridService;
+    public TerrainRepository terrainRepository;
 
     private final Map<String, Boolean> toRemove = new HashMap<>();
 
     @Override
     public void render() {
-        ImGui.text(Icons.add + "Foliage");
-        if (ImGui.beginChild(imguiId, ImGui.getWindowSizeX(), 50, true)) {
-            for (String m : filesRepository.byType.get(StreamableResourceType.MESH)) {
-                if (terrainRepository.foliage.containsKey(m)) {
-                    continue;
-                }
+        if (ImGui.collapsingHeader("Foliage" + imguiId)) {
+            if (ImGui.beginChild(imguiId, ImGui.getWindowSizeX(), 50, true)) {
+                for (String m : filesRepository.byType.get(StreamableResourceType.MESH)) {
+                    if (terrainRepository.foliage.containsKey(m)) {
+                        continue;
+                    }
 
-                FSEntry entry = filesRepository.entry.get(m);
-                if (ImGui.button(entry.name)) {
-                    var instance = new FoliageInstance(m, terrainRepository.foliage.size() + 1);
-                    terrainRepository.foliage.put(m, instance);
+                    FSEntry entry = filesRepository.entry.get(m);
+                    if (ImGui.button(entry.name)) {
+                        var instance = new FoliageInstance(m, terrainRepository.foliage.size() + 1);
+                        terrainRepository.foliage.put(m, instance);
+                    }
                 }
             }
+            ImGui.endChild();
+            ImGui.dummy(0, 8);
+            renderSelected();
         }
-        ImGui.endChild();
-
-        ImGui.dummy(0, 8);
-        renderSelected();
     }
 
     private void renderSelected() {
@@ -91,13 +92,12 @@ public class FoliagePanel extends AbstractView {
     private void remove() {
         if (!toRemove.isEmpty()) {
             for (String e : toRemove.keySet()) {
-                if(Objects.equals(e, editorRepository.foliageForPainting)){
+                if (Objects.equals(e, editorRepository.foliageForPainting)) {
                     editorRepository.foliageForPainting = null;
                 }
                 terrainRepository.foliage.remove(e);
             }
             toRemove.clear();
-            terrainRepository.registerChange();
         }
     }
 }

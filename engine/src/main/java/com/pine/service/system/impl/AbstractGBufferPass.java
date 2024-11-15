@@ -30,7 +30,7 @@ public abstract class AbstractGBufferPass extends AbstractPass {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
         GL46.glDisable(GL11.GL_BLEND);
 
-        if (!settingsRepository.isBakingEnvironmentMaps && settingsRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
+        if (!engineRepository.isBakingEnvironmentMaps && engineRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
             GL46.glDisable(GL11.GL_CULL_FACE);
         } else {
@@ -38,13 +38,13 @@ public abstract class AbstractGBufferPass extends AbstractPass {
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
 
-        if(settingsRepository.isBakingEnvironmentMaps){
+        if(engineRepository.isBakingEnvironmentMaps){
             shaderService.bindInt(DebugShadingModel.LIT.getId(), debugShadingMode);
             shaderService.bindBoolean(false, applyGrid);
         }else {
-            shaderService.bindInt(settingsRepository.debugShadingModel.getId(), debugShadingMode);
-            shaderService.bindBoolean(settingsRepository.gridOverlay, applyGrid);
-            shaderService.bindFloat(settingsRepository.probeFiltering, probeFilteringLevels);
+            shaderService.bindInt(engineRepository.debugShadingModel.getId(), debugShadingMode);
+            shaderService.bindBoolean(engineRepository.gridOverlay, applyGrid);
+            shaderService.bindFloat(engineRepository.probeFiltering, probeFilteringLevels);
             bindEnvironmentMaps();
         }
     }

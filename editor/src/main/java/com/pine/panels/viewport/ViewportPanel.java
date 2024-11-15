@@ -156,7 +156,7 @@ public class ViewportPanel extends AbstractEntityViewPanel {
         if (ImGui.isKeyPressed(ImGuiKey.Y))
             editorRepository.gizmoType = Operation.SCALE;
 
-        if (ImGui.isWindowHovered() && !ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
+        if (editorRepository.editorMode == EditorMode.TRANSFORM && ImGui.isWindowHovered() && !ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
             viewportPickingService.pick();
         }
     }

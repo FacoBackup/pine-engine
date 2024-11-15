@@ -10,7 +10,9 @@ import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.panels.component.FormPanel;
 import com.pine.repository.EditorRepository;
-import com.pine.service.grid.HashGridService;
+import com.pine.repository.TerrainRepository;
+import com.pine.repository.WorldRepository;
+import com.pine.service.grid.WorldService;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.AddComponentRequest;
 import com.pine.service.request.UpdateFieldRequest;
@@ -28,7 +30,11 @@ public class InspectorPanel extends AbstractDockPanel {
     @PInject
     public EditorRepository editorRepository;
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
+    @PInject
+    public WorldRepository world;
+    @PInject
+    public TerrainRepository terrainRepository;
     @PInject
     public List<Inspectable> repositories;
 
@@ -96,9 +102,9 @@ public class InspectorPanel extends AbstractDockPanel {
                 formPanel.setInspection(currentInspection);
             }
 
-            super.render();
+            formPanel.render();
 
-            if (Objects.equals(currentInspection, editorRepository)) {
+            if (Objects.equals(currentInspection, terrainRepository)) {
                 foliagePanel.render();
             }
         }
@@ -112,12 +118,12 @@ public class InspectorPanel extends AbstractDockPanel {
             selectedId = editorRepository.mainSelection;
 
             if (selectedId != null) {
-                for (var tile : hashGridService.getLoadedTiles()) {
+                for (var tile : worldService.getLoadedTiles()) {
                     if (tile != null) {
-                        selected = selectedId != null ? tile.getWorld().entityMap.get(selectedId) : null;
+                        selected = selectedId != null ? world.entityMap.get(selectedId) : null;
                         if (selected != null) {
                             additionalInspection.add(selected);
-                            tile.getWorld().runByComponent(this::addComponent, selectedId);
+                            world.runByComponent(this::addComponent, selectedId);
                             currentInspection = additionalInspection.getFirst();
                             break;
                         }

@@ -4,9 +4,9 @@ import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.service.grid.HashGridService;
-import com.pine.service.grid.Tile;
+import com.pine.service.grid.WorldService;
 import com.pine.tasks.AbstractTask;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -21,19 +21,23 @@ public class TransformationService extends AbstractTask {
     public RenderingRepository renderingRepository;
 
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
+
+    @PInject
+    public WorldRepository world;
 
     private final Vector3f distanceAux = new Vector3f();
     private final Matrix4f auxMat4 = new Matrix4f();
+    private final Vector3f translation = new Vector3f();
     private final Matrix4f auxMat42 = new Matrix4f();
 
     @Override
     protected void tickInternal() {
         startTracking();
         try {
-            for (var tile : hashGridService.getLoadedTiles()) {
+            for (var tile : worldService.getLoadedTiles()) {
                 if (tile != null) {
-                    traverse(tile, tile.getWorld().rootEntity.id(), false);
+                    traverse(WorldRepository.ROOT_ID, false);
                 }
             }
         } catch (Exception e) {
@@ -42,19 +46,19 @@ public class TransformationService extends AbstractTask {
         endTracking();
     }
 
-    public void traverse(Tile tile, String entityId, boolean parentHasChanged) {
-        TransformationComponent st = tile.getWorld().bagTransformationComponent.get(entityId);
+    public void traverse(String entityId, boolean parentHasChanged) {
+        TransformationComponent st = world.bagTransformationComponent.get(entityId);
         if (st != null && (st.isNotFrozen() || parentHasChanged)) {
-            TransformationComponent parentTransform = findParent(tile, st.getEntityId());
+            TransformationComponent parentTransform = findParent(st.getEntityId());
             transform(st, parentTransform);
             st.freezeVersion();
             parentHasChanged = true;
         }
 
-        var children = tile.getWorld().parentChildren.get(entityId);
+        var children = world.parentChildren.get(entityId);
         if (children != null) {
             for (var child : children) {
-                traverse(tile, child, parentHasChanged);
+                traverse(child, parentHasChanged);
             }
         }
     }
@@ -66,6 +70,9 @@ public class TransformationService extends AbstractTask {
             auxMat4.identity();
         }
 
+        st.modelMatrix.getTranslation(translation);
+        var previousTile = worldService.getHashGrid().getOrCreateTile(translation);
+
         auxMat42.identity();
         auxMat42
                 .translate(st.translation)
@@ -75,16 +82,20 @@ public class TransformationService extends AbstractTask {
         auxMat4.mul(auxMat42);
         st.modelMatrix.set(auxMat4);
         st.freezeVersion();
+
+
+        st.modelMatrix.getTranslation(translation);
+        var newTile = worldService.getHashGrid().getOrCreateTile(translation);
+
+        worldService.getHashGrid().moveBetweenTiles(st.getEntityId(), previousTile, newTile);
     }
 
-    private TransformationComponent findParent(Tile tile, String id) {
-        if (tile != null && tile.getWorld().entityMap.containsKey(id)) {
-            while (id != null && !id.equals(tile.getWorld().rootEntity.id())) {
-                id = tile.getWorld().childParent.get(id);
-                var t = tile.getWorld().bagTransformationComponent.get(id);
-                if (t != null) {
-                    return t;
-                }
+    private TransformationComponent findParent(String id) {
+        while (id != null && !id.equals(WorldRepository.ROOT_ID)) {
+            id = world.childParent.get(id);
+            var t = world.bagTransformationComponent.get(id);
+            if (t != null) {
+                return t;
             }
         }
         return null;

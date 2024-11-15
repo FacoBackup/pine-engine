@@ -5,10 +5,13 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
-import com.pine.service.grid.HashGrid;
+import com.pine.service.grid.WorldGrid;
 import com.pine.theme.Icons;
 
-import static com.pine.service.grid.HashGrid.TILE_SIZE;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.pine.service.grid.WorldGrid.TILE_SIZE;
 
 @PBean
 public class EngineRepository extends Inspectable implements SerializableRepository {
@@ -88,7 +91,6 @@ public class EngineRepository extends Inspectable implements SerializableReposit
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
     public boolean gridOverlay = false;
     public transient boolean isBakingEnvironmentMaps;
-    public final HashGrid hashGrid = new HashGrid();
 
     @Override
     public String getTitle() {

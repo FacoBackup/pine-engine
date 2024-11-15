@@ -3,24 +3,14 @@ package com.pine.panels.viewport;
 import com.pine.core.AbstractView;
 import com.pine.core.UIUtil;
 import com.pine.injection.PInject;
-import com.pine.repository.*;
-import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.StreamingService;
-import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.theme.Icons;
+import com.pine.repository.EditorMode;
+import com.pine.repository.EditorRepository;
 import imgui.ImGui;
 import imgui.ImVec2;
-import imgui.extension.imguizmo.flag.Mode;
-import imgui.extension.imguizmo.flag.Operation;
-import imgui.flag.ImGuiComboFlags;
 import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 
-import static com.pine.core.AbstractWindow.*;
 import static com.pine.core.dock.DockSpacePanel.FRAME_SIZE;
-import static com.pine.panels.viewport.ViewportPanel.INV_X;
-import static com.pine.panels.viewport.ViewportPanel.INV_Y;
-import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class ViewportHeaderPanel extends AbstractView {
     private static final int FLAGS = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;

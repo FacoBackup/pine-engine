@@ -5,7 +5,6 @@ import com.pine.injection.PInject;
 import com.pine.messaging.Message;
 import com.pine.messaging.MessageRepository;
 import com.pine.service.ThemeService;
-import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;

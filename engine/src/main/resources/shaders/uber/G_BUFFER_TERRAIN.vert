@@ -2,9 +2,9 @@
 #include "../util/UTIL.glsl"
 #include "../util/TERRAIN.glsl"
 
-uniform int planeSize;
+uniform vec4 tilesScaleTranslation;
+uniform int textureSize;
 uniform float heightScale;
-uniform vec2 terrainLocation;
 
 layout (binding = 8) uniform sampler2D heightMap;
 
@@ -17,15 +17,11 @@ smooth out vec3 worldSpacePosition;
 
 void main() {
     cameraPlacement = cameraWorldPosition.xyz;
-    renderingIndex = 1;
+    renderingIndex = int(tilesScaleTranslation.z + tilesScaleTranslation.w);
     depthFunc = logDepthFC;
 
-    vec3 position = computePosition(float(planeSize));
-
-    initialUV = vec2(position.x/planeSize, position.z/planeSize);
-
-    position.x += terrainLocation.x;
-    position.z += terrainLocation.y;
+    vec3 position = computePosition(tilesScaleTranslation);
+    initialUV = vec2(position.x/textureSize + .5, position.z/textureSize + .5);
 
     float height = texture(heightMap, initialUV).r;
     normalVec = getNormalFromHeightMap(height, heightMap, initialUV);

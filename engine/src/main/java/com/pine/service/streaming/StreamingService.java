@@ -11,7 +11,6 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.streaming.impl.TextureService;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import com.pine.tasks.StreamingTask;
 import com.pine.tasks.SyncTask;
 
 import java.util.Collections;
@@ -55,14 +54,6 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
         return null;
     }
 
-    public void streamOut(String id, StreamableResourceType type) {
-        if (id == null || !repository.streamed.containsKey(id)) {
-            return;
-        }
-        repository.toStreamOut.put(id, type);
-        getLogger().warn("Streaming out {} of type {}", id, type);
-    }
-
     @Override
     public void sync() {
         for (String resource : repository.streamData.keySet()) {
@@ -80,22 +71,12 @@ public class StreamingService implements Loggable, SyncTask, Disposable {
     private void disposeOfUnusedResources() {
         if ((clock.totalTime - sinceLastCleanup) >= MAX_TIMEOUT) {
             sinceLastCleanup = clock.totalTime;
-            getLogger().warn("Disposing of unused resources");
             for (AbstractResourceRef<?> resource : repository.streamed.values()) {
                 if ((clock.totalTime - resource.lastUse) >= MAX_TIMEOUT) {
                     resource.dispose();
                     repository.streamed.remove(resource.id);
                 }
             }
-
-            for (String resourceId : repository.toStreamOut.keySet()) {
-                var resource = repository.streamed.get(resourceId);
-                if (resource != null) {
-                    resource.dispose();
-                    repository.streamed.remove(resource.id);
-                }
-            }
-            repository.toStreamOut.clear();
         }
     }
 

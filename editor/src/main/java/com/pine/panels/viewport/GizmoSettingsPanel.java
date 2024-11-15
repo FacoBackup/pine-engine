@@ -1,6 +1,5 @@
 package com.pine.panels.viewport;
 
-import com.pine.core.AbstractView;
 import com.pine.core.UIUtil;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -23,25 +22,6 @@ public class GizmoSettingsPanel extends AbstractViewportSettingsPanel {
         gizmoMode();
         gizmoSelection();
         gizmoGrid();
-        cameraMode();
-    }
-
-    private void cameraMode() {
-        UIUtil.largeSpacing();
-
-        if (ImGui.button(Icons.center_focus_strong + "##centerCamera", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            cameraRepository.currentCamera.orbitCenter.zero();
-            cameraRepository.currentCamera.position.zero();
-            cameraRepository.currentCamera.registerChange();
-        }
-
-        UIUtil.dynamicSpacing(75);
-
-        ImGui.text("Camera");
-        ImGui.sameLine();
-        if (ImGui.button(cameraRepository.currentCamera.orbitalMode ? "Orbital " + Icons.trip_origin : "Free " + Icons.outbound + "##cameraMode")) {
-            cameraRepository.currentCamera.orbitalMode = !cameraRepository.currentCamera.orbitalMode;
-        }
     }
 
     private void gizmoGrid() {

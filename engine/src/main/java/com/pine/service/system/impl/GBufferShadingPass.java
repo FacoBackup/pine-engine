@@ -48,15 +48,15 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
     protected void bindUniforms() {
         ssboService.bind(ssboRepository.lightMetadataSSBO);
 
-        shaderService.bindFloat(settingsRepository.ssrFalloff, SSRFalloff);
-        shaderService.bindFloat(settingsRepository.ssrStepSize, stepSizeSSR);
-        shaderService.bindFloat(settingsRepository.sssMaxDistance, maxSSSDistance);
-        shaderService.bindFloat(settingsRepository.sssDepthThickness, SSSDepthThickness);
-        shaderService.bindFloat(settingsRepository.sssEdgeFalloff, SSSEdgeAttenuation);
-        shaderService.bindFloat(settingsRepository.sssDepthDelta, SSSDepthDelta);
-        shaderService.bindFloat(settingsRepository.ssaoFalloffDistance, SSAOFalloff);
-        shaderService.bindInt(settingsRepository.ssrMaxSteps, maxStepsSSR);
-        shaderService.bindInt(settingsRepository.sssMaxSteps, maxStepsSSS);
+        shaderService.bindFloat(engineRepository.ssrFalloff, SSRFalloff);
+        shaderService.bindFloat(engineRepository.ssrStepSize, stepSizeSSR);
+        shaderService.bindFloat(engineRepository.sssMaxDistance, maxSSSDistance);
+        shaderService.bindFloat(engineRepository.sssDepthThickness, SSSDepthThickness);
+        shaderService.bindFloat(engineRepository.sssEdgeFalloff, SSSEdgeAttenuation);
+        shaderService.bindFloat(engineRepository.sssDepthDelta, SSSDepthDelta);
+        shaderService.bindFloat(engineRepository.ssaoFalloffDistance, SSAOFalloff);
+        shaderService.bindInt(engineRepository.ssrMaxSteps, maxStepsSSR);
+        shaderService.bindInt(engineRepository.sssMaxSteps, maxStepsSSS);
         shaderService.bindInt(renderingRepository.lightCount, lightCount);
 
         shaderService.bindBoolean(atmosphere.enabled, sunEnabled);

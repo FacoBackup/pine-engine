@@ -1,13 +1,10 @@
 package com.pine.repository.rendering;
 
-import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
-import com.pine.injection.PInject;
-import com.pine.repository.EngineRepository;
-import com.pine.service.grid.HashGridService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @PBean
 public class RenderingRepository {

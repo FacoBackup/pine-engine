@@ -1,21 +1,22 @@
 package com.pine.panels.viewport;
 
-import com.pine.core.AbstractView;
 import com.pine.core.UIUtil;
+import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
+import com.pine.repository.TerrainRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
 import imgui.ImVec2;
 
-import static com.pine.panels.viewport.ViewportPanel.INV_X;
-import static com.pine.panels.viewport.ViewportPanel.INV_Y;
-
 public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
     private final float[] brushRadius = new float[]{1};
     private final float[] brushDensity = new float[]{1};
     private final ImVec2 maskRes = new ImVec2();
+
+    @PInject
+    public TerrainRepository terrainRepository;
 
     @Override
     public void render() {
@@ -66,10 +67,10 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
     private String getTextureId() {
         switch (editorRepository.editorMode) {
             case TERRAIN -> {
-                return hashGridService.getCurrentTile().terrainHeightMapId;
+                return terrainRepository.heightMapTexture;
             }
             case FOLIAGE -> {
-                return hashGridService.getCurrentTile().terrainFoliageId;
+                return terrainRepository.foliageMask;
             }
         }
         return null;

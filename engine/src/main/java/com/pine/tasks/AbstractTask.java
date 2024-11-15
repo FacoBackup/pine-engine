@@ -24,6 +24,10 @@ public abstract class AbstractTask extends MetricCollector implements Loggable, 
         }
     }
 
+    public void onInitialize(){
+
+    }
+
     final public void start() {
         if (started) {
             getLogger().error("Thread already started");

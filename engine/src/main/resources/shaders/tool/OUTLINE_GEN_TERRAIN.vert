@@ -2,9 +2,9 @@
 #include "../util/UTIL.glsl"
 #include "../util/TERRAIN.glsl"
 
-uniform int planeSize;
+uniform vec4 tilesScaleTranslation;
+uniform int textureSize;
 uniform float heightScale;
-uniform vec2 terrainLocation;
 
 layout (binding = 8) uniform sampler2D heightMap;
 
@@ -13,12 +13,8 @@ flat out int rIndex;
 void main() {
     rIndex = 1;
 
-    vec3 position = computePosition(float(planeSize));
-
-    position.x += terrainLocation.x;
-    position.z += terrainLocation.y;
-
-    vec2 initialUV = vec2(position.x/planeSize, position.z/planeSize);
+    vec3 position = computePosition(tilesScaleTranslation);
+    vec2     initialUV = vec2(position.x/textureSize + .5, position.z/textureSize + .5);
     position.y = texture(heightMap, initialUV).r * heightScale;
 
     gl_Position = viewProjection * vec4(position, 1);

@@ -2,27 +2,27 @@ package com.pine.tasks;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.inspection.Color;
 import com.pine.repository.AtmosphereRepository;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.ClockRepository;
-import com.pine.repository.VoxelRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreBufferRepository;
-import com.pine.repository.rendering.LightUtil;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.grid.HashGridService;
+import com.pine.service.grid.WorldService;
 import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
-import com.pine.service.streaming.ref.VoxelChunkResourceRef;
 import org.joml.Vector3f;
 
 
 @PBean
 public class RenderingTask extends AbstractTask {
+    private static final float MIE_PHASE_G = 0.76f;
 
     @PInject
     public CameraRepository cameraRepository;
@@ -31,7 +31,7 @@ public class RenderingTask extends AbstractTask {
     public RenderingRepository renderingRepository;
 
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
 
     @PInject
     public TransformationService transformationService;
@@ -54,6 +54,9 @@ public class RenderingTask extends AbstractTask {
     @PInject
     public AtmosphereRepository atmosphere;
 
+    @PInject
+    public WorldRepository world;
+
     @Override
     protected void tickInternal() {
         if (renderingRepository.infoUpdated) {
@@ -61,12 +64,11 @@ public class RenderingTask extends AbstractTask {
         }
         startTracking();
         try {
-            defineProbes();
             lightService.packageLights();
             renderingRepository.offset = 0;
             renderingRepository.auxAddedToBufferEntities.clear();
 
-            updateMeshes();
+            updateTiles();
             updateSunInformation();
 
             renderingRepository.infoUpdated = true;
@@ -76,19 +78,29 @@ public class RenderingTask extends AbstractTask {
         endTracking();
     }
 
-    private void updateMeshes() {
+    private void updateTiles() {
         int renderIndex = 0;
-        for (var tile : hashGridService.getLoadedTiles()) {
+        int probeIndex = 0;
+
+        for (var tile : worldService.getLoadedTiles()) {
             if (tile != null) {
-                for (var mesh : tile.getWorld().bagMeshComponent.values()) {
-                    var t = tile.getWorld().bagTransformationComponent.get(mesh.getEntityId());
-                    if (t != null) {
-                        mesh.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
-                        RenderingRequest request = renderingRequestService.prepare(mesh, t);
-                        if (request != null) {
-                            request.renderIndex = renderIndex;
-                            renderIndex++;
+                for (var entity : tile.getEntities()) {
+                    var mesh = world.bagMeshComponent.get(entity);
+                    if (mesh != null) {
+                        var t = world.bagTransformationComponent.get(mesh.getEntityId());
+                        if (t != null) {
+                            mesh.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
+                            RenderingRequest request = renderingRequestService.prepare(mesh, t);
+                            if (request != null) {
+                                request.renderIndex = renderIndex;
+                                renderIndex++;
+                            }
                         }
+                    }
+                    var probe = world.bagEnvironmentProbeComponent.get(entity);
+                    if (probe != null && probeIndex < 3) {
+                        renderingRepository.environmentMaps[probeIndex] = (EnvironmentMapResourceRef) streamingService.streamIn(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
+                        probeIndex++;
                     }
                 }
             }
@@ -96,9 +108,11 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void updateSunInformation() {
-        atmosphere.elapsedTime += .0005f * atmosphere.elapsedTimeSpeed;
+        if (atmosphere.incrementTime) {
+            atmosphere.elapsedTime += .0005f * atmosphere.elapsedTimeSpeed;
+        }
         Vector3f sunLightDirection = new Vector3f((float) Math.sin(atmosphere.elapsedTime), (float) Math.cos(atmosphere.elapsedTime), 0).mul(atmosphere.sunDistance);
-        Vector3f sunLightColor = LightUtil.computeSunlightColor(sunLightDirection, cameraRepository.currentCamera.position);
+        Vector3f sunLightColor = computeSunlightColor(sunLightDirection);
 
         bufferRepository.globalDataBuffer.put(87, atmosphere.elapsedTime);
 
@@ -112,20 +126,31 @@ public class RenderingTask extends AbstractTask {
         bufferRepository.globalDataBuffer.put(94, sunLightColor.z);
     }
 
-    private void defineProbes() {
-        for (var tile : hashGridService.getLoadedTiles()) {
-            if (tile != null) {
-                var probes = tile.getWorld().bagEnvironmentProbeComponent.values();
-                int i = 0;
-                for (var probe : probes) {
-                    if (i == 3) {
-                        break;
-                    }
-                    renderingRepository.environmentMaps[i] = (EnvironmentMapResourceRef) streamingService.streamIn(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
-                    i++;
-                }
-            }
+    private Vector3f computeSunlightColor(Vector3f sunDirection) {
+        return calculateSunColor(sunDirection.y/atmosphere.sunDistance, atmosphere.nightColor, atmosphere.dawnColor, atmosphere.middayColor);
+    }
+
+    public static Vector3f calculateSunColor(double elevation, Vector3f nightColor, Vector3f dawnColor, Vector3f middayColor) {
+        if (elevation <= -0.1) {
+            return nightColor;
+        } else if (elevation <= 0.0) {
+            float t = (float) ((elevation + 0.1) / 0.1);
+            return blendColors(nightColor, dawnColor, t);
+        } else if (elevation <= 0.5) {
+            float t = (float) (elevation / 0.5);
+            return blendColors(dawnColor, middayColor, t);
+        } else {
+            // Full daylight
+            return middayColor;
         }
+    }
+
+    private static Vector3f blendColors(Vector3f c1, Vector3f c2, float t) {
+        return new Vector3f(
+                (c1.x * (1 - t) + c2.x * t),
+                (c1.y * (1 - t) + c2.y * t),
+                (c1.z * (1 - t) + c2.z * t)
+        );
     }
 
     @Override

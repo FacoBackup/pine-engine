@@ -4,35 +4,33 @@ import com.pine.component.MeshComponent;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.EngineRepository;
-import com.pine.repository.rendering.RenderingRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.grid.HashGridService;
-import com.pine.service.streaming.impl.TextureService;
-import com.pine.service.voxelization.VoxelizationService;
+import com.pine.service.grid.WorldService;
+import com.pine.service.streaming.impl.MeshService;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 
 import java.util.Collection;
 
 import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
-import static com.pine.service.grid.HashGrid.TILE_SIZE;
 
 
 public class ResourcesPanel extends AbstractDockPanel {
 
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
 
     @PInject
     public EngineRepository engineRepository;
 
     @PInject
-    public TextureService textureService;
+    public WorldRepository world;
 
     @PInject
-    public VoxelizationService voxelizationService;
+    public MeshService meshService;
 
     @PInject
     public StreamingRepository streamingRepository;
@@ -47,8 +45,6 @@ public class ResourcesPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn("Data", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableHeadersRow();
-
-            computeTerrainData();
 
             render("Individual draw calls", getDrawCallQuantity());
 
@@ -71,7 +67,7 @@ public class ResourcesPanel extends AbstractDockPanel {
     }
 
     public int getVoxelCount() {
-        var svo = hashGridService.getCurrentTile().getSvo();
+        var svo = worldService.getCurrentTile().getSvo();
         if(svo != null){
             return svo.getNodeQuantity();
         }
@@ -96,11 +92,11 @@ public class ResourcesPanel extends AbstractDockPanel {
     public int getDrawCallQuantity() {
         int totalDrawCalls = totalTriangles = 0;
 
-        for (var tile : hashGridService.getLoadedTiles()) {
+        for (var tile : worldService.getLoadedTiles()) {
             if (tile != null) {
-                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
+                Collection<MeshComponent> meshes = world.bagMeshComponent.values();
                 for (var mesh : meshes) {
-                    if (mesh.canRender(engineRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
+                    if (mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
                         totalTriangles += mesh.renderRequest.mesh.triangleCount;
                         totalDrawCalls++;
                     }
@@ -109,16 +105,6 @@ public class ResourcesPanel extends AbstractDockPanel {
         }
 
         return totalDrawCalls;
-    }
-
-    private void computeTerrainData() {
-        totalTerrainTiles = totalTerrainTriangles = 0;
-        for(var tile : hashGridService.getTiles().values()){
-            if(tile.isTerrainPresent && !tile.isCulled()){
-                totalTerrainTriangles += TILE_SIZE * TILE_SIZE * 3;
-                totalTerrainTiles++;
-            }
-        }
     }
 
     private void render(String Resources_to_be_streamed_in, int schedule) {

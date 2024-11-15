@@ -4,7 +4,6 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.streaming.ref.MeshResourceRef;
-import com.pine.service.streaming.ref.TextureResourceRef;
 
 import static com.pine.repository.core.CoreSSBORepository.MAX_INSTANCING;
 
@@ -12,6 +11,11 @@ public class FoliageGBufferPass extends AbstractGBufferPass implements Loggable 
     @Override
     protected Shader getShader() {
         return shaderRepository.gBufferInstanceShader;
+    }
+
+    @Override
+    protected boolean isRenderable() {
+        return terrainRepository.enabled;
     }
 
     @Override

@@ -6,8 +6,9 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreBufferRepository;
-import com.pine.service.grid.HashGridService;
+import com.pine.service.grid.WorldService;
 import imgui.ImGui;
 import imgui.flag.ImGuiKey;
 import org.lwjgl.BufferUtils;
@@ -29,7 +30,7 @@ public class ViewportPickingService implements Loggable {
     public SelectionService selectionService;
 
     @PInject
-    public HashGridService hashGridService;
+    public WorldRepository world;
 
     public void pick() {
         int x = (int) ((runtimeRepository.mouseX - runtimeRepository.viewportX) * (runtimeRepository.getDisplayW() / runtimeRepository.viewportW));
@@ -66,14 +67,10 @@ public class ViewportPickingService implements Loggable {
     }
 
     private TransformationComponent findEntity(int actualIndex) {
-        for (var tile : hashGridService.getLoadedTiles()) {
-            if (tile != null) {
-                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
-                for (var mesh : meshes) {
-                    if (mesh.renderRequest != null && !mesh.renderRequest.isCulled && mesh.renderRequest.renderIndex == actualIndex) {
-                        return tile.getWorld().bagTransformationComponent.get(mesh.getEntityId());
-                    }
-                }
+        Collection<MeshComponent> meshes = world.bagMeshComponent.values();
+        for (var mesh : meshes) {
+            if (mesh.renderRequest != null && !mesh.renderRequest.isCulled && mesh.renderRequest.renderIndex == actualIndex) {
+                return world.bagTransformationComponent.get(mesh.getEntityId());
             }
         }
         return null;

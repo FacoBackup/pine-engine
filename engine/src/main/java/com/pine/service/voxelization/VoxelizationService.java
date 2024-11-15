@@ -6,11 +6,11 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.VoxelRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.grid.HashGridService;
-import com.pine.service.grid.Tile;
-import com.pine.service.grid.TileWorld;
+import com.pine.service.grid.WorldService;
+import com.pine.service.grid.WorldTile;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.importer.data.MeshImportData;
 import com.pine.service.streaming.StreamingService;
@@ -25,12 +25,10 @@ import com.pine.service.voxelization.util.VoxelizerUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.lwjgl.stb.STBImage;
 
-import java.util.*;
-
-import static com.pine.service.grid.HashGrid.TILE_SIZE;
+import java.util.Collections;
+import java.util.HashMap;
 
 @PBean
 public class VoxelizationService implements Loggable {
@@ -54,10 +52,13 @@ public class VoxelizationService implements Loggable {
     public TextureService textureService;
 
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
 
     @PInject
     public MaterialService materialService;
+
+    @PInject
+    public WorldRepository world;
 
     private boolean isVoxelizing;
 
@@ -72,17 +73,19 @@ public class VoxelizationService implements Loggable {
 
     private void voxelize() {
         try {
-            for (var tile : hashGridService.getTiles().values()) {
+            for (var tile : worldService.getTiles().values()) {
                 long start = System.currentTimeMillis();
-                var world = tile.getWorld();
-                createSvo(tile);
-                for (MeshComponent meshComponent : world.bagMeshComponent.values()) {
-                    voxelizeMesh(meshComponent, world, tile);
+                for(var entity : tile.getEntities()){
+                    var meshComponent = world.bagMeshComponent.get(entity);
+                    if(meshComponent != null){
+                        createSvo(tile);
+                        voxelizeMesh(meshComponent, tile);
+                    }
                 }
                 getLogger().warn("Tile voxelization took {}ms", System.currentTimeMillis() - start);
             }
 
-            for (var tile : hashGridService.getTiles().values()) {
+            for (var tile : worldService.getTiles().values()) {
                 writeTileSvo(tile);
             }
         } catch (Exception e) {
@@ -91,7 +94,7 @@ public class VoxelizationService implements Loggable {
         isVoxelizing = false;
     }
 
-    private void voxelizeMesh(MeshComponent meshComponent, TileWorld world, Tile tile) {
+    private void voxelizeMesh(MeshComponent meshComponent, WorldTile worldTile) {
         if (meshComponent.lod0 == null) {
             return;
         }
@@ -101,8 +104,8 @@ public class VoxelizationService implements Loggable {
         var mesh = streamMesh(meshComponent.lod0, globalMatrix, meshComponent);
         TextureStreamData albedoTexture = streamTexture(mesh, meshComponent);
         long startLocal = System.currentTimeMillis();
-        VoxelizerUtil.voxelize(mesh, tile.getSvo(), albedoTexture);
-        processAdjacentTiles(tile, mesh, albedoTexture);
+        VoxelizerUtil.voxelize(mesh, worldTile.getSvo(), albedoTexture);
+        processAdjacentTiles(worldTile, mesh, albedoTexture);
         getLogger().warn("Voxelization of {} took {}ms", meshComponent.lod0, System.currentTimeMillis() - startLocal);
 
         if (albedoTexture != null) {
@@ -112,23 +115,23 @@ public class VoxelizationService implements Loggable {
 
     /**
      * PROCESS ADJACENT TILES SINCE SOME MESHES CAN OVERFLOW THE CURRENT TILE INTO THE ADJACENT ONES
-     * @param tile current tile
+     * @param worldTile current tile
      * @param mesh current mesh
      * @param albedoTexture albedo texture data
      */
-    private void processAdjacentTiles(Tile tile, MeshImportData mesh, TextureStreamData albedoTexture) {
-        for (String adjacentTile : tile.getAdjacentTiles()) {
-            if (adjacentTile != null && hashGridService.getTiles().containsKey(adjacentTile)) {
-                var tileLocal = hashGridService.getTiles().get(adjacentTile);
+    private void processAdjacentTiles(WorldTile worldTile, MeshImportData mesh, TextureStreamData albedoTexture) {
+        for (String adjacentTile : worldTile.getAdjacentTiles()) {
+            if (adjacentTile != null && worldService.getTiles().containsKey(adjacentTile)) {
+                var tileLocal = worldService.getTiles().get(adjacentTile);
                 createSvo(tileLocal);
                 VoxelizerUtil.voxelize(mesh, tileLocal.getSvo(), albedoTexture);
             }
         }
     }
 
-    private void createSvo(Tile tile) {
-        if (tile.getSvo() == null || tile.getSvo().getDepth() != voxelRepository.maxDepth || tile.getSvo().getSize() != voxelRepository.chunkGridSize) {
-            tile.setSvo(new SparseVoxelOctree(tile.getBoundingBox(), voxelRepository.chunkGridSize, voxelRepository.maxDepth));
+    private void createSvo(WorldTile worldTile) {
+        if (worldTile.getSvo() == null || worldTile.getSvo().getDepth() != voxelRepository.maxDepth || worldTile.getSvo().getSize() != voxelRepository.chunkGridSize) {
+            worldTile.setSvo(new SparseVoxelOctree(worldTile.getBoundingBox(), voxelRepository.chunkGridSize, voxelRepository.maxDepth));
         }
     }
 
@@ -154,18 +157,18 @@ public class VoxelizationService implements Loggable {
         return mesh;
     }
 
-    private void writeTileSvo(Tile tile) {
+    private void writeTileSvo(WorldTile worldTile) {
         long startMemory = System.currentTimeMillis();
         try {
-            int[] voxels = tile.getSvo().buildBuffer();
-            tile.getSvo().purgeData();
-            String pathToFile = importerService.getPathToFile(tile.getId(), StreamableResourceType.VOXEL_CHUNK);
+            int[] voxels = worldTile.getSvo().buildBuffer();
+            worldTile.getSvo().purgeData();
+            String pathToFile = importerService.getPathToFile(worldTile.getId(), StreamableResourceType.VOXEL_CHUNK);
             if (!FSUtil.writeBinary(voxels, pathToFile)) {
                 getLogger().error("Could not write chunk to disk");
             }
         } catch (Exception e) {
             getLogger().error("Could not write chunk to disk", e);
         }
-        getLogger().warn("Writing voxels for tile {} took {}ms", tile.getId(), System.currentTimeMillis() - startMemory);
+        getLogger().warn("Writing voxels for tile {} took {}ms", worldTile.getId(), System.currentTimeMillis() - startMemory);
     }
 }

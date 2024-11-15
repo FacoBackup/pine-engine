@@ -64,20 +64,21 @@ public interface SerializableRepository extends Serializable, Loggable {
 
     private void mergeNormalField(Field declaredField, int modifiers, Object value, Object targetValue) throws IllegalAccessException {
         if (Modifier.isFinal(modifiers)) {
-            switch (value) {
-                case Vector3f vector3f -> ((Vector3f) targetValue).set(vector3f);
-                case Map map -> {
-                    ((Map<?, ?>) targetValue).clear();
-                    ((Map<?, ?>) targetValue).putAll(map);
-                }
-                case ImVec4 imVec4 -> ((ImVec4) targetValue).set(imVec4);
-                case ImInt imInt -> ((ImInt) targetValue).set(imInt);
-                case List list -> {
-                    List<?> t = (List<?>) targetValue;
-                    t.clear();
-                    t.addAll(list);
-                }
-                case null, default -> declaredField.set(this, value);
+            if (value instanceof Vector3f vector3f) {
+                ((Vector3f) targetValue).set(vector3f);
+            } else if (Map.class.isAssignableFrom(value.getClass())) {
+                ((Map<?, ?>) targetValue).clear();
+                ((Map<?, ?>) targetValue).putAll((Map) value);
+            } else if (value instanceof ImVec4 imVec4) {
+                ((ImVec4) targetValue).set(imVec4);
+            } else if (value instanceof ImInt imInt) {
+                ((ImInt) targetValue).set(imInt);
+            } else if (List.class.isAssignableFrom(value.getClass())) {
+                List<?> t = (List<?>) targetValue;
+                t.clear();
+                t.addAll((List) value);
+            } else {
+                declaredField.set(this, value);
             }
         } else {
             declaredField.set(this, value);

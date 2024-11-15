@@ -1,12 +1,9 @@
 package com.pine.service.system.impl;
 
-import com.pine.component.MeshComponent;
 import com.pine.repository.rendering.RenderingRequest;
-import com.pine.service.grid.Tile;
+import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-
-import java.util.Collection;
 
 public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO transformationIndex;
@@ -59,11 +56,11 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
         prepareCall();
         meshService.setInstanceCount(0);
 
-        for(Tile tile : hashGridService.getLoadedTiles()) {
-            if (tile != null) {
-                Collection<MeshComponent> meshes = tile.getWorld().bagMeshComponent.values();
-                for (var mesh : meshes) {
-                    if(mesh.canRender(settingsRepository.disableCullingGlobally, tile.getWorld().hiddenEntityMap)) {
+        for (WorldTile worldTile : worldService.getLoadedTiles()) {
+            if (worldTile != null) {
+                for (var entity : worldTile.getEntities()) {
+                    var mesh = world.bagMeshComponent.get(entity);
+                    if (mesh != null && mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
                         var request = mesh.renderRequest;
                         // TODO - SINGLE BUFFER FOR EVERY MESH ATTRIBUTE (Material ID, Model Matrix, Transformation Index); BIND BUFFER INSTEAD OF INDIVIDUAL BINDS
                         shaderService.bindInt(request.renderIndex, transformationIndex);

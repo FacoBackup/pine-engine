@@ -7,10 +7,11 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EngineRepository;
 import com.pine.repository.RuntimeRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.camera.Camera;
-import com.pine.service.grid.HashGridService;
+import com.pine.service.grid.WorldService;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -22,7 +23,7 @@ import org.joml.Vector3f;
 @PBean
 public class EnvironmentMapGenService implements Loggable {
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
 
     @PInject
     public ShaderService shaderService;
@@ -48,6 +49,9 @@ public class EnvironmentMapGenService implements Loggable {
     @PInject
     public RuntimeRepository runtimeRepository;
 
+    @PInject
+    public WorldRepository world;
+
 
     public void bake() {
         engineRepository.isBakingEnvironmentMaps = true;
@@ -55,18 +59,20 @@ public class EnvironmentMapGenService implements Loggable {
         boolean previous = engineRepository.disableCullingGlobally;
         engineRepository.disableCullingGlobally = true;
 
-        for(var tile : hashGridService.getTiles().values()){
-            if(tile != null){
-                for (var probe : tile.getWorld().bagEnvironmentProbeComponent.values()) {
-                    capture(probe.getEntityId(), tile.getWorld().bagTransformationComponent.get(probe.getEntityId()).translation);
-                    var probeOld = streamingRepository.streamed.get(probe.getEntityId());
-                    if (probeOld != null) {
-                        probeOld.dispose();
-                    }
-                    streamingRepository.toStreamIn.remove(probe.getEntityId());
-                    streamingRepository.streamData.remove(probe.getEntityId());
-                    streamingRepository.discardedResources.remove(probe.getEntityId());
+        for (var tile : worldService.getTiles().values()) {
+            for (var entity : tile.getEntities()) {
+                var probe = world.bagEnvironmentProbeComponent.get(entity);
+                if (probe == null) {
+                    continue;
                 }
+                capture(probe.getEntityId(), world.bagTransformationComponent.get(probe.getEntityId()).translation);
+                var probeOld = streamingRepository.streamed.get(probe.getEntityId());
+                if (probeOld != null) {
+                    probeOld.dispose();
+                }
+                streamingRepository.toStreamIn.remove(probe.getEntityId());
+                streamingRepository.streamData.remove(probe.getEntityId());
+                streamingRepository.discardedResources.remove(probe.getEntityId());
             }
         }
 

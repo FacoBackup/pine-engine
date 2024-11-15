@@ -8,9 +8,10 @@ import com.pine.component.light.SpotLightComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.service.grid.HashGridService;
+import com.pine.service.grid.WorldService;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -25,7 +26,9 @@ public class LightService {
     @PInject
     public CoreSSBORepository ssboRepository;
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
+    @PInject
+    public WorldRepository world;
 
     private int offset = 0;
     private int count = 0;
@@ -38,27 +41,24 @@ public class LightService {
 
         FloatBuffer b = ssboRepository.lightSSBOState;
 
-        for (var tile : hashGridService.getLoadedTiles()) {
-            if (tile != null) {
-                for (var l : tile.getWorld().bagPointLightComponent.values()) {
-                    if (!tile.getWorld().hiddenEntityMap.containsKey(l.getEntityId())) {
-                        packagePointLight(tile.getWorld().bagTransformationComponent.get(l.getEntityId()), l, b);
-                    }
-                }
-
-                for (var l : tile.getWorld().bagSphereLightComponent.values()) {
-                    if (!tile.getWorld().hiddenEntityMap.containsKey(l.getEntityId())) {
-                        packageSphereLight(tile.getWorld().bagTransformationComponent.get(l.getEntityId()), l, b);
-                    }
-                }
-
-                for (var l : tile.getWorld().bagSpotLightComponent.values()) {
-                    if (!tile.getWorld().hiddenEntityMap.containsKey(l.getEntityId())) {
-                        packageSpotLight(tile.getWorld().bagTransformationComponent.get(l.getEntityId()), l, b);
-                    }
-                }
+        for (var l : world.bagPointLightComponent.values()) {
+            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packagePointLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
             }
         }
+
+        for (var l : world.bagSphereLightComponent.values()) {
+            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packageSphereLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
+            }
+        }
+
+        for (var l : world.bagSpotLightComponent.values()) {
+            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packageSpotLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
+            }
+        }
+
         renderingRepository.lightCount = count;
     }
 

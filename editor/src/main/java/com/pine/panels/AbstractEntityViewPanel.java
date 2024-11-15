@@ -5,8 +5,9 @@ import com.pine.injection.PInject;
 import com.pine.messaging.MessageRepository;
 import com.pine.messaging.MessageSeverity;
 import com.pine.repository.EditorRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.service.SelectionService;
-import com.pine.service.grid.HashGridService;
+import com.pine.service.grid.WorldService;
 import com.pine.service.rendering.RequestProcessingService;
 import com.pine.service.request.CopyEntitiesRequest;
 import com.pine.service.request.DeleteEntityRequest;
@@ -18,13 +19,15 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
     @PInject
     public SelectionService selectionService;
     @PInject
-    public HashGridService hashGridService;
+    public WorldService worldService;
     @PInject
     public EditorRepository stateRepository;
     @PInject
     public RequestProcessingService requestProcessingService;
     @PInject
     public MessageRepository messageRepository;
+    @PInject
+    public WorldRepository world;
 
     protected void hotKeys() {
         if(!isWindowFocused || ImGuizmo.isUsing()){
@@ -49,9 +52,9 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
         }
 
         if (ctrlDown && ImGui.isKeyPressed(ImGuiKey.A)) {
-            for(var tile : hashGridService.getLoadedTiles()){
+            for(var tile : worldService.getLoadedTiles()){
                 if(tile != null) {
-                    selectionService.addAllSelected(tile.getWorld().entityMap.values());
+                    selectionService.addAllSelected(world.entityMap.values());
                 }
             }
         }

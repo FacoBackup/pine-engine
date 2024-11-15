@@ -42,7 +42,7 @@ public class VoxelVisualizerPass extends AbstractPass {
     protected void renderInternal() {
         bindGlobal();
 
-        var currentSvo = hashGridService.getCurrentTile().getSvo();
+        var currentSvo = worldService.getCurrentTile().getSvo();
         if (currentSvo != null) {
             var chunk = (VoxelChunkResourceRef) streamingService.streamIn(currentSvo.getId(), StreamableResourceType.VOXEL_CHUNK);
             if (chunk != null) {

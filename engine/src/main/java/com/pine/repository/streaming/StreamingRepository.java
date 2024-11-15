@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @PBean
 public class StreamingRepository {
-    public final Map<String, StreamableResourceType> toStreamOut = new ConcurrentHashMap<>();
     public final Map<String, AbstractResourceRef<?>> streamed = new ConcurrentHashMap<>();
     public final Map<String, StreamableResourceType> toStreamIn = new ConcurrentHashMap<>();
 

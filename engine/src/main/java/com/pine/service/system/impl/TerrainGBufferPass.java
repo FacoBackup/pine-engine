@@ -3,27 +3,21 @@ package com.pine.service.system.impl;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import org.joml.Vector2f;
-import org.lwjgl.opengl.GL46;
-
-import static com.pine.service.grid.HashGrid.TILE_SIZE;
 
 public class TerrainGBufferPass extends AbstractGBufferPass {
-    private final Vector2f terrainLocation = new Vector2f();
-    private UniformDTO planeSize;
+    private UniformDTO textureSize;
+    private UniformDTO tilesScaleTranslation;
     private UniformDTO heightScale;
-    private UniformDTO terrainLocationU;
     private UniformDTO fallbackMaterial;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
 
-        planeSize = addUniformDeclaration("planeSize");
+        textureSize = addUniformDeclaration("textureSize");
+        tilesScaleTranslation = addUniformDeclaration("tilesScaleTranslation");
         heightScale = addUniformDeclaration("heightScale");
-        terrainLocationU = addUniformDeclaration("terrainLocation");
         fallbackMaterial = addUniformDeclaration("fallbackMaterial");
     }
 
@@ -33,36 +27,24 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
     }
 
     @Override
-    protected void renderInternal() {
-        boolean isPrepared = false;
-        for (var tile : hashGridService.getTiles().values()) {
-            if ( tile != null && tile.isTerrainPresent && !tile.isCulled()) {
-                if (!isPrepared) {
-                    prepareCall();
-                    isPrepared = true;
-                }
-
-                var foliageMask = (TextureResourceRef) streamingService.streamIn(tile.terrainFoliageId, StreamableResourceType.TEXTURE);
-                var heightMap = (TextureResourceRef) streamingService.streamIn(tile.terrainHeightMapId, StreamableResourceType.TEXTURE);
-                if (heightMap != null && foliageMask != null) {
-                    foliageMask.lastUse = heightMap.lastUse = clockRepository.totalTime;
-                    renderChunk(heightMap, tile.getX(), tile.getZ());
-                }
-            }
-        }
+    protected boolean isRenderable() {
+        return terrainRepository.enabled;
     }
 
-    private void renderChunk(TextureResourceRef heightMap, int x, int z) {
-        shaderService.bindSampler2dDirect(heightMap, 8);
-        shaderService.bindInt(heightMap.width, planeSize);
+    @Override
+    protected void renderInternal() {
+        prepareCall();
 
-        terrainLocation.x = x * TILE_SIZE;
-        terrainLocation.y = z * TILE_SIZE;
-        shaderService.bindVec2(terrainLocation, terrainLocationU);
-        shaderService.bindFloat(terrainRepository.heightScale, heightScale);
-        shaderService.bindBoolean(true, fallbackMaterial);
+        var foliageMask = (TextureResourceRef) streamingService.streamIn(terrainRepository.foliageMask, StreamableResourceType.TEXTURE);
+        if (foliageMask != null) {
+            foliageMask.lastUse = clockRepository.totalTime;
+        }
 
-        meshService.renderTerrain(TILE_SIZE);
+        var heightMap = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
+        if (heightMap != null) {
+            heightMap.lastUse = clockRepository.totalTime;
+            meshService.renderTerrain(heightMap, textureSize, heightScale, tilesScaleTranslation, fallbackMaterial);
+        }
     }
 
     @Override

@@ -67,7 +67,10 @@ public class Engine extends MetricCollector implements IResource {
         targetFBO = bufferRepository.gBufferTarget;
 
         this.modules.addModules(modules);
-        tasks.forEach(AbstractTask::start);
+        tasks.forEach(t -> {
+            t.onInitialize();
+            t.start();
+        });
 
         this.targetDirectory = targetDirectory;
         createDirectories();
