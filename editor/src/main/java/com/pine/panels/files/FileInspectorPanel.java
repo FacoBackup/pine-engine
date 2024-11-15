@@ -1,7 +1,7 @@
 package com.pine.panels.files;
 
 import com.pine.FSUtil;
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
 import com.pine.inspection.FieldDTO;
 import com.pine.panels.component.FormPanel;
@@ -69,15 +69,15 @@ public class FileInspectorPanel extends AbstractView {
 
     private void onChange(FieldDTO dto, Object object, String path, boolean dispose) {
         try {
-            UpdateFieldRequest.process(dto, object, null);
+            UpdateFieldRequest.process(dto, object);
             FSUtil.writeBinary(dto.getInstance(), path);
             if (dispose) {
                 streamingRepository.discardedResources.remove(currentMetadata.id);
-                AbstractResourceRef<?> ref = streamingRepository.loadedResources.get(currentMetadata.id);
+                AbstractResourceRef<?> ref = streamingRepository.streamed.get(currentMetadata.id);
                 if (ref != null) {
                     ref.dispose();
                 }
-                streamingRepository.loadedResources.remove(currentMetadata.id);
+                streamingRepository.streamed.remove(currentMetadata.id);
             }
         } catch (Exception e) {
             getLogger().error("Error while updating metadata file {}", dataForm.getInspectable().getTitle(), e);

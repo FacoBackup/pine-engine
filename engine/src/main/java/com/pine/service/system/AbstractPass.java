@@ -5,8 +5,13 @@ import com.pine.Engine;
 import com.pine.MetricCollector;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
-import com.pine.repository.core.*;
+import com.pine.repository.core.CoreBufferRepository;
+import com.pine.repository.core.CoreMeshRepository;
+import com.pine.repository.core.CoreSSBORepository;
+import com.pine.repository.core.CoreShaderRepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.service.grid.WorldService;
+import com.pine.service.importer.ImporterService;
 import com.pine.service.resource.SSBOService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.UBOService;
@@ -21,13 +26,17 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public AtmosphereRepository atmosphere;
     @PInject
-    public Engine engine;
+    public WorldRepository world;
     @PInject
-    public TerrainRepository terrainRepository;
+    public Engine engine;
     @PInject
     public StreamingService streamingService;
     @PInject
-    public EngineSettingsRepository settingsRepository;
+    public ImporterService importerService;
+    @PInject
+    public EngineRepository engineRepository;
+    @PInject
+    public TerrainRepository terrainRepository;
     @PInject
     public CameraRepository cameraRepository;
     @PInject
@@ -47,7 +56,7 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
-    public WorldRepository worldRepository;
+    public WorldService worldService;
     @PInject
     public RuntimeRepository runtimeRepository;
     @PInject

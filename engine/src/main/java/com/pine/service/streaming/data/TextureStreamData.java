@@ -1,7 +1,6 @@
 package com.pine.service.streaming.data;
 
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.streaming.StreamData;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;

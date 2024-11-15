@@ -5,8 +5,7 @@ import com.pine.injection.PBean;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.data.SceneImportData;
-import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.ref.SceneResourceRef;
 
 import java.util.Map;

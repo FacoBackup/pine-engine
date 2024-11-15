@@ -1,13 +1,17 @@
 package com.pine.service.rendering;
 
-import com.pine.EngineUtils;
-import com.pine.component.light.*;
+import com.pine.component.TransformationComponent;
+import com.pine.component.light.AbstractLightComponent;
+import com.pine.component.light.PointLightComponent;
+import com.pine.component.light.SphereLightComponent;
+import com.pine.component.light.SpotLightComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.service.grid.WorldService;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -22,7 +26,10 @@ public class LightService {
     @PInject
     public CoreSSBORepository ssboRepository;
     @PInject
-    public WorldRepository worldRepository;
+    public WorldService worldService;
+    @PInject
+    public WorldRepository world;
+
     private int offset = 0;
     private int count = 0;
     private final Matrix4f auxMat4 = new Matrix4f();
@@ -31,31 +38,32 @@ public class LightService {
     public void packageLights() {
         offset = 0;
         count = 0;
+
         FloatBuffer b = ssboRepository.lightSSBOState;
-        for (var l : worldRepository.bagPointLightComponent.values()) {
-            if (!worldRepository.hiddenEntityMap.containsKey(l.getEntityId())) {
-                packagePointLight(l, b);
+
+        for (var l : world.bagPointLightComponent.values()) {
+            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packagePointLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
             }
         }
 
-        for (var l : worldRepository.bagSphereLightComponent.values()) {
-            if (!worldRepository.hiddenEntityMap.containsKey(l.getEntityId())) {
-                packageSphereLight(l, b);
+        for (var l : world.bagSphereLightComponent.values()) {
+            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packageSphereLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
             }
         }
 
-        for (var l : worldRepository.bagSpotLightComponent.values()) {
-            if (!worldRepository.hiddenEntityMap.containsKey(l.getEntityId())) {
-                packageSpotLight(l, b);
+        for (var l : world.bagSpotLightComponent.values()) {
+            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+                packageSpotLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
             }
         }
+
         renderingRepository.lightCount = count;
     }
 
-    private void packageSpotLight(SpotLightComponent light, FloatBuffer b) {
-        var transform = worldRepository.bagTransformationComponent.get(light.getEntityId());
-        int internalOffset = fillCommon(b, offset, light);
-
+    private void packageSpotLight(TransformationComponent transform, SpotLightComponent light, FloatBuffer b) {
+        int internalOffset = fillCommon(transform, b, offset, light);
         auxMat4.lookAt(transform.translation, transform.translation, new Vector3f(0, 1, 0));
 
         aux2Mat4.identity();
@@ -72,16 +80,16 @@ public class LightService {
         count++;
     }
 
-    private void packageSphereLight(SphereLightComponent l, FloatBuffer b) {
-        int internalOffset = fillCommon(b, offset, l);
+    private void packageSphereLight(TransformationComponent transform, SphereLightComponent l, FloatBuffer b) {
+        int internalOffset = fillCommon(transform, b, offset, l);
         b.put(internalOffset, l.areaRadius);
 
         offset += l.type.getDataDisplacement();
         count++;
     }
 
-    private void packagePointLight(PointLightComponent l, FloatBuffer b) {
-        int internalOffset = fillCommon(b, offset, l);
+    private void packagePointLight(TransformationComponent transform, PointLightComponent l, FloatBuffer b) {
+        int internalOffset = fillCommon(transform, b, offset, l);
         b.put(internalOffset, l.zFar);
         b.put(internalOffset + 1, l.shadowMap ? 1 : 0);
         b.put(internalOffset + 2, l.shadowAttenuationMinDistance);
@@ -91,9 +99,7 @@ public class LightService {
         count++;
     }
 
-    private int fillCommon(FloatBuffer lightSSBOState, int offset, AbstractLightComponent light) {
-        var transform = worldRepository.bagTransformationComponent.get(light.getEntityId());
-
+    private int fillCommon(TransformationComponent transform, FloatBuffer lightSSBOState, int offset, AbstractLightComponent light) {
         lightSSBOState.put(offset, light.type.getTypeId());
         offset++;
         lightSSBOState.put(offset, light.color.x * light.intensity);

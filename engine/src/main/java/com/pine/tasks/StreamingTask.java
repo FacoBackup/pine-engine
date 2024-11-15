@@ -6,8 +6,8 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.streaming.AbstractStreamableService;
-import com.pine.service.streaming.StreamData;
+import com.pine.service.streaming.data.StreamData;
+import com.pine.service.streaming.impl.AbstractStreamableService;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class StreamingTask extends AbstractTask implements Loggable {
     public void streamAll() {
         startTracking();
         try {
-            for (var scheduled : streamingRepository.scheduleToLoad.entrySet()) {
+            for (var scheduled : streamingRepository.toStreamIn.entrySet()) {
                 stream(scheduled.getKey(), scheduled.getValue());
             }
         } catch (Exception e) {
@@ -46,25 +46,25 @@ public class StreamingTask extends AbstractTask implements Loggable {
         getLogger().warn("Streaming resource {} of type {}", id, type);
         var service = getService(type);
         if(service == null){
-            streamingRepository.scheduleToLoad.remove(id);
+            streamingRepository.toStreamIn.remove(id);
             return;
         }
         StreamData streamData = null;
         try {
-            streamData = service.stream(importerService.getPathToFile(id, type), streamingRepository.scheduleToLoad, streamingRepository.loadedResources);
+            streamData = service.stream(importerService.getPathToFile(id, type), streamingRepository.toStreamIn, streamingRepository.streamed);
         }catch (Exception e){
             getLogger().error("Could not stream resource {}", id, e);
         }
         if (streamData != null) {
-            streamingRepository.toLoadResources.put(id, streamData);
-            if (!streamingRepository.loadedResources.containsKey(id)) {
-                streamingRepository.loadedResources.put(id, service.newInstance(id));
+            streamingRepository.streamData.put(id, streamData);
+            if (!streamingRepository.streamed.containsKey(id)) {
+                streamingRepository.streamed.put(id, service.newInstance(id));
             }
         } else {
             streamingRepository.discardedResources.put(id, type);
-            streamingRepository.toLoadResources.remove(id);
+            streamingRepository.streamData.remove(id);
         }
-        streamingRepository.scheduleToLoad.remove(id);
+        streamingRepository.toStreamIn.remove(id);
     }
 
     private AbstractStreamableService getService(StreamableResourceType resourceType) {

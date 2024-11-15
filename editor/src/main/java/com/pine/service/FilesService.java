@@ -60,9 +60,9 @@ public class FilesService implements Loggable {
                 filesRepository.byType.get(entry.type).remove(id);
 
                 streamingRepository.discardedResources.put(entry.getId(), entry.getType());
-                streamingRepository.loadedResources.remove(entry.getId());
-                streamingRepository.toLoadResources.remove(entry.getId());
-                streamingRepository.scheduleToLoad.remove(entry.getId());
+                streamingRepository.streamed.remove(entry.getId());
+                streamingRepository.streamData.remove(entry.getId());
+                streamingRepository.toStreamIn.remove(entry.getId());
             }
             filesRepository.parentChildren.remove(id);
             filesRepository.entry.remove(id);

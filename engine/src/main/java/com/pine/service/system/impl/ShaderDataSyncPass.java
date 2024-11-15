@@ -2,7 +2,6 @@ package com.pine.service.system.impl;
 
 import com.pine.messaging.Loggable;
 import com.pine.service.system.AbstractPass;
-import org.joml.Vector3f;
 
 public class ShaderDataSyncPass extends AbstractPass implements Loggable {
     @Override
@@ -13,7 +12,6 @@ public class ShaderDataSyncPass extends AbstractPass implements Loggable {
         }
         ssboService.updateBuffer(ssboRepository.lightMetadataSSBO, ssboRepository.lightSSBOState, 0);
         renderingRepository.infoUpdated = false;
-        renderingRepository.sync();
     }
 
     @Override

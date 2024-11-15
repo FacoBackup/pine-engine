@@ -4,10 +4,7 @@ import com.pine.inspection.InspectableField;
 import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
-import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

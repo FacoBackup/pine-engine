@@ -11,7 +11,7 @@
     </Appenders>
     <Loggers>
         <Root level="ALL">
-            <AppenderRef ref="CONSOLE" level="ERROR"/>
+            <AppenderRef ref="CONSOLE" level="ALL"/>
             <AppenderRef ref="MAIN" level="ALL"/>
             <AppenderRef ref="InMemoryAppender" level="WARN"/>
         </Root>

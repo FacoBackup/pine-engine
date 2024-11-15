@@ -6,6 +6,7 @@ import com.pine.component.light.PointLightComponent;
 import com.pine.component.light.SphereLightComponent;
 import com.pine.component.light.SpotLightComponent;
 import com.pine.injection.PBean;
+import com.pine.service.grid.WorldGrid;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,24 +16,23 @@ import java.util.function.Consumer;
 @PBean
 public class WorldRepository implements SerializableRepository {
     public static final String ROOT_ID = Entity.class.getCanonicalName();
-    public final Entity rootEntity = new Entity(ROOT_ID, "World");
-    public final Map<String, Entity> entityMap = new HashMap<>() {{
-        put(rootEntity.id(), rootEntity);
-    }};
-    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>() {{
-        put(rootEntity.id(), new LinkedList<>());
-    }};
-    public final Map<String, String> childParent = new HashMap<>();
+
+    public final WorldGrid worldGrid = new WorldGrid();
 
     public final Map<String, PointLightComponent> bagPointLightComponent = new HashMap<>();
     public final Map<String, SphereLightComponent> bagSphereLightComponent = new HashMap<>();
     public final Map<String, SpotLightComponent> bagSpotLightComponent = new HashMap<>();
-    public final Map<String, DecalComponent> bagDecalComponent = new HashMap<>();
     public final Map<String, EnvironmentProbeComponent> bagEnvironmentProbeComponent = new HashMap<>();
     public final Map<String, MeshComponent> bagMeshComponent = new HashMap<>();
-    public final Map<String, SpriteComponent> bagSpriteComponent = new HashMap<>();
     public final Map<String, TransformationComponent> bagTransformationComponent = new HashMap<>();
 
+    public final Map<String, Entity> entityMap = new HashMap<>(){{
+        put(ROOT_ID, new Entity(ROOT_ID, "World"));
+    }};
+    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>(){{
+        put(ROOT_ID, new LinkedList<>());
+    }};
+    public final Map<String, String> childParent = new HashMap<>();
     public final Map<String, Boolean> hiddenEntityMap = new HashMap<>();
 
     public void registerComponent(AbstractComponent component) {
@@ -40,11 +40,9 @@ public class WorldRepository implements SerializableRepository {
             case POINT_LIGHT -> bagPointLightComponent.put(component.getEntityId(), (PointLightComponent) component);
             case SPHERE_LIGHT -> bagSphereLightComponent.put(component.getEntityId(), (SphereLightComponent) component);
             case SPOT_LIGHT -> bagSpotLightComponent.put(component.getEntityId(), (SpotLightComponent) component);
-            case DECAL -> bagDecalComponent.put(component.getEntityId(), (DecalComponent) component);
             case ENVIRONMENT_PROBE ->
                     bagEnvironmentProbeComponent.put(component.getEntityId(), (EnvironmentProbeComponent) component);
             case MESH -> bagMeshComponent.put(component.getEntityId(), (MeshComponent) component);
-            case SPRITE -> bagSpriteComponent.put(component.getEntityId(), (SpriteComponent) component);
             case TRANSFORMATION ->
                     bagTransformationComponent.put(component.getEntityId(), (TransformationComponent) component);
         }
@@ -54,10 +52,8 @@ public class WorldRepository implements SerializableRepository {
         bagPointLightComponent.remove(entity);
         bagSphereLightComponent.remove(entity);
         bagSpotLightComponent.remove(entity);
-        bagDecalComponent.remove(entity);
         bagEnvironmentProbeComponent.remove(entity);
         bagMeshComponent.remove(entity);
-        bagSpriteComponent.remove(entity);
         bagTransformationComponent.remove(entity);
     }
 
@@ -74,19 +70,11 @@ public class WorldRepository implements SerializableRepository {
         if (bag != null) {
             consumer.accept(bag);
         }
-        bag = bagDecalComponent.get(entityId);
-        if (bag != null) {
-            consumer.accept(bag);
-        }
         bag = bagEnvironmentProbeComponent.get(entityId);
         if (bag != null) {
             consumer.accept(bag);
         }
         bag = bagMeshComponent.get(entityId);
-        if (bag != null) {
-            consumer.accept(bag);
-        }
-        bag = bagSpriteComponent.get(entityId);
         if (bag != null) {
             consumer.accept(bag);
         }
@@ -101,10 +89,8 @@ public class WorldRepository implements SerializableRepository {
             case POINT_LIGHT -> bagPointLightComponent;
             case SPHERE_LIGHT -> bagSphereLightComponent;
             case SPOT_LIGHT -> bagSpotLightComponent;
-            case DECAL -> bagDecalComponent;
             case ENVIRONMENT_PROBE -> bagEnvironmentProbeComponent;
             case MESH -> bagMeshComponent;
-            case SPRITE -> bagSpriteComponent;
             case TRANSFORMATION -> bagTransformationComponent;
         };
     }

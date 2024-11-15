@@ -6,7 +6,6 @@
 uniform int type;
 uniform vec3 rayleighBeta;
 uniform vec3 mieBeta;
-uniform float intensity;
 uniform float atmosphereRadius;
 uniform float planetRadius;
 uniform float rayleighHeight;
@@ -98,8 +97,8 @@ vec3 getSkyColor(vec3 pa, vec3 pb) {
         }
     }
 
-    rayleighColor = intensity * phaseR * rayleighColor;
-    mieColor = intensity * phaseM * mieColor;
+    rayleighColor =  phaseR * rayleighColor;
+    mieColor = phaseM * mieColor;
 
     return rayleighColor + mieColor;
 }

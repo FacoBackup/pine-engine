@@ -12,10 +12,10 @@ import org.joml.Matrix4f;
 @PBean
 public class CameraRepository extends Inspectable implements SerializableRepository {
     @InspectableField(group = "Controls", label = "Camera rotation sensitivity")
-    public float sensitivity = 1;
+    public float rotationSensitivity = 1;
 
     @InspectableField(group = "Controls", label = "Camera Movement speed")
-    public float movementSpeed = 1.0f;
+    public float movementSensitivity = 1.0f;
 
     @InspectableField(group = "Controls", label = "Orbit camera zoom sensitivity")
     public float zoomSensitivity = 1.0f;

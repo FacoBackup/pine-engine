@@ -1,37 +1,43 @@
 package com.pine.panels.resources;
 
+import com.pine.component.MeshComponent;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
+import com.pine.repository.EngineRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.rendering.RenderingRepository;
+import com.pine.repository.streaming.AbstractResourceRef;
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.service.grid.WorldService;
 import com.pine.service.streaming.impl.MeshService;
-import com.pine.service.streaming.impl.TextureService;
-import com.pine.service.voxelization.VoxelizationService;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
+
+import java.util.Collection;
 
 import static com.pine.panels.console.ConsolePanel.TABLE_FLAGS;
 
 
 public class ResourcesPanel extends AbstractDockPanel {
+
     @PInject
-    public RenderingRepository renderingRepository;
+    public WorldService worldService;
+
+    @PInject
+    public EngineRepository engineRepository;
+
+    @PInject
+    public WorldRepository world;
 
     @PInject
     public MeshService meshService;
 
     @PInject
-    public TextureService textureService;
-
-    @PInject
-    public VoxelizationService voxelizationService;
-
-    @PInject
     public StreamingRepository streamingRepository;
 
-    @PInject
-    public WorldRepository worldRepository;
+    private int totalTriangles = 0;
+    private int totalTerrainTiles = 0;
+    private int totalTerrainTriangles = 0;
 
     @Override
     public void render() {
@@ -40,21 +46,65 @@ public class ResourcesPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableHeadersRow();
 
-            render("Individual draw calls", renderingRepository.getDrawCallQuantity());
+            render("Individual draw calls", getDrawCallQuantity());
 
-            render("Triangles being rendered", renderingRepository.getTotalTriangleCount());
+            render("Terrain tiles visible", totalTerrainTiles);
 
-            render("Textures", textureService.getTotalTextureCount());
+            render("Terrain triangles rendered", totalTerrainTriangles);
 
-            render("Voxels", voxelizationService.getVoxelCount());
+            render("Triangles being rendered", getTotalTriangleCount());
 
-            render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
+            render("Textures", getTotalTextureCount());
 
-            render("Resources to be streamed in", streamingRepository.scheduleToLoad.size());
+            render("Voxels", getVoxelCount());
 
+            render("Resources to be streamed in", streamingRepository.toStreamIn.size());
+
+            render("Resources to be streamed in", streamingRepository.toStreamIn.size());
 
             ImGui.endTable();
         }
+    }
+
+    public int getVoxelCount() {
+        var svo = worldService.getCurrentTile().getSvo();
+        if(svo != null){
+            return svo.getNodeQuantity();
+        }
+        return 0;
+    }
+
+    public int getTotalTextureCount() {
+        int total = 0;
+        for (AbstractResourceRef<?> resourceRef : streamingRepository.streamed.values()) {
+            if (resourceRef.isLoaded() && resourceRef.getResourceType() == StreamableResourceType.TEXTURE) {
+                total++;
+            }
+        }
+        return total;
+    }
+
+    public int getTotalTriangleCount() {
+        // TODO - INCLUDE FOLIAGE
+        return totalTriangles;
+    }
+
+    public int getDrawCallQuantity() {
+        int totalDrawCalls = totalTriangles = 0;
+
+        for (var tile : worldService.getLoadedTiles()) {
+            if (tile != null) {
+                Collection<MeshComponent> meshes = world.bagMeshComponent.values();
+                for (var mesh : meshes) {
+                    if (mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
+                        totalTriangles += mesh.renderRequest.mesh.triangleCount;
+                        totalDrawCalls++;
+                    }
+                }
+            }
+        }
+
+        return totalDrawCalls;
     }
 
     private void render(String Resources_to_be_streamed_in, int schedule) {

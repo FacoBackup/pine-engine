@@ -1,6 +1,7 @@
 package com.pine.panels.header;
 
-import com.pine.core.view.AbstractView;
+import com.pine.core.AbstractView;
+import com.pine.core.UIUtil;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.service.ProjectService;
@@ -11,7 +12,6 @@ import imgui.flag.ImGuiInputTextFlags;
 import imgui.flag.ImGuiKey;
 import imgui.type.ImString;
 
-import static com.pine.panels.header.ViewportHeaderPanel.spacing;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class EditorHeaderPanel extends AbstractView {
@@ -27,7 +27,7 @@ public class EditorHeaderPanel extends AbstractView {
     @Override
     public void onInitialize() {
         io = ImGui.getIO();
-        appendChild(new ViewportHeaderPanel());
+        appendChild(new GlobalSettingsPanel());
     }
 
     @Override
@@ -49,18 +49,18 @@ public class EditorHeaderPanel extends AbstractView {
         }
         ImGui.sameLine();
 
-        spacing();
+        UIUtil.spacing();
         if (ImGui.button(Icons.save + "Save##save")) {
             projectService.save();
         }
         ImGui.sameLine();
-        spacing();
+        UIUtil.spacing();
 
         if (ImGui.button(Icons.fullscreen + "##fullscreen", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
             editorRepository.fullScreen = true;
         }
         ImGui.sameLine();
-        spacing();
+        UIUtil.spacing();
 
         if (ImGui.button(Icons.undo, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) { /* Action for Undo */ }
         ImGui.sameLine();
@@ -70,10 +70,8 @@ public class EditorHeaderPanel extends AbstractView {
 
         pathToProject.set(projectService.getProjectDirectory());
         ImGui.sameLine();
-        ImGui.dummy(10, 0);
-        ImGui.sameLine();
-        ImGui.dummy(ImGui.getContentRegionAvailX() - 300, 0);
-        ImGui.sameLine();
+        UIUtil.dynamicSpacing(300);
+
         ImGui.setNextItemWidth(200);
         ImGui.inputText(imguiId + "input", pathToProject, ImGuiInputTextFlags.ReadOnly);
         ImGui.sameLine();

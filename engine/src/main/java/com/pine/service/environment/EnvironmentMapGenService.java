@@ -5,12 +5,13 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
-import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.EngineRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.camera.Camera;
+import com.pine.service.grid.WorldService;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
@@ -22,13 +23,13 @@ import org.joml.Vector3f;
 @PBean
 public class EnvironmentMapGenService implements Loggable {
     @PInject
-    public WorldRepository worldRepository;
+    public WorldService worldService;
 
     @PInject
     public ShaderService shaderService;
 
     @PInject
-    public EngineSettingsRepository engineSettingsRepository;
+    public EngineRepository engineRepository;
 
     @PInject
     public ImporterService importerService;
@@ -48,29 +49,40 @@ public class EnvironmentMapGenService implements Loggable {
     @PInject
     public RuntimeRepository runtimeRepository;
 
+    @PInject
+    public WorldRepository world;
+
 
     public void bake() {
-        engineSettingsRepository.isBaking = true;
+        engineRepository.isBakingEnvironmentMaps = true;
         getLogger().warn("Starting probe baking");
-        boolean previous = engineSettingsRepository.disableCullingGlobally;
-        engineSettingsRepository.disableCullingGlobally = true;
-        for (var probe : worldRepository.bagEnvironmentProbeComponent.values()) {
-            capture(probe.getEntityId(), worldRepository.bagTransformationComponent.get(probe.getEntityId()).translation);
-            var probeOld = streamingRepository.loadedResources.get(probe.getEntityId());
-            if (probeOld != null) {
-                probeOld.dispose();
+        boolean previous = engineRepository.disableCullingGlobally;
+        engineRepository.disableCullingGlobally = true;
+
+        for (var tile : worldService.getTiles().values()) {
+            for (var entity : tile.getEntities()) {
+                var probe = world.bagEnvironmentProbeComponent.get(entity);
+                if (probe == null) {
+                    continue;
+                }
+                capture(probe.getEntityId(), world.bagTransformationComponent.get(probe.getEntityId()).translation);
+                var probeOld = streamingRepository.streamed.get(probe.getEntityId());
+                if (probeOld != null) {
+                    probeOld.dispose();
+                }
+                streamingRepository.toStreamIn.remove(probe.getEntityId());
+                streamingRepository.streamData.remove(probe.getEntityId());
+                streamingRepository.discardedResources.remove(probe.getEntityId());
             }
-            streamingRepository.scheduleToLoad.remove(probe.getEntityId());
-            streamingRepository.toLoadResources.remove(probe.getEntityId());
-            streamingRepository.discardedResources.remove(probe.getEntityId());
         }
-        engineSettingsRepository.disableCullingGlobally = previous;
-        engineSettingsRepository.isBaking = false;
+
+        engineRepository.disableCullingGlobally = previous;
+        engineRepository.isBakingEnvironmentMaps = false;
     }
 
     private void capture(String resourceId, Vector3f cameraPosition) {
         getLogger().warn("Baking probe {} at position X{} Y{} Z{}", resourceId, cameraPosition.x, cameraPosition.y, cameraPosition.z);
-        int baseResolution = engineSettingsRepository.probeCaptureResolution;
+        int baseResolution = engineRepository.probeCaptureResolution;
         var fbo = new FrameBufferObject(baseResolution, baseResolution).addSampler();
         engine.setTargetFBO(fbo);
         for (int i = 0; i < CubeMapFace.values().length; i++) {

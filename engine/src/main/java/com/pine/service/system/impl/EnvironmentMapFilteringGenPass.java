@@ -44,14 +44,14 @@ public class EnvironmentMapFilteringGenPass extends AbstractPass {
 
                 GL46.glBindFramebuffer(GL46.GL_FRAMEBUFFER, captureFBO);
 
-                for (int mip = 0; mip < settingsRepository.probeFiltering; ++mip) {
+                for (int mip = 0; mip < engineRepository.probeFiltering; ++mip) {
                     int mipWidth  = (int) (env.resolution * Math.pow(0.5, mip));
                     int mipHeight = (int) (env.resolution * Math.pow(0.5, mip));
                     GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, captureRBO);
                     GL46.glRenderbufferStorage(GL46.GL_RENDERBUFFER, GL46.GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
                     GL46.glViewport(0, 0, mipWidth, mipHeight);
 
-                    float roughness = (float)mip / (float)(settingsRepository.probeFiltering - 1);
+                    float roughness = (float)mip / (float)(engineRepository.probeFiltering - 1);
                     for (int i = 0; i < CubeMapFace.values().length; ++i) {
                         GL46.glFramebufferTexture2D(GL46.GL_FRAMEBUFFER, GL46.GL_COLOR_ATTACHMENT0, CubeMapFace.values()[i].getGlFace(), texture, mip);
                         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);

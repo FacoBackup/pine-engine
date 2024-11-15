@@ -4,7 +4,7 @@ import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.EngineSettingsRepository;
+import com.pine.repository.EngineRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -22,7 +22,7 @@ public class RenderingRequestService {
     public StreamingService streamingService;
 
     @PInject
-    public EngineSettingsRepository engineSettings;
+    public EngineRepository engineSettings;
 
     @PInject
     public RenderingRepository renderingRepository;
@@ -54,44 +54,44 @@ public class RenderingRequestService {
     }
 
     private void prepareMaterial(MeshComponent scene, RenderingRequest renderRequest) {
-        renderRequest.material = (MaterialResourceRef) streamingService.stream(scene.material, StreamableResourceType.MATERIAL);
+        renderRequest.material = (MaterialResourceRef) streamingService.streamIn(scene.material, StreamableResourceType.MATERIAL);
     }
 
     protected @Nullable MeshResourceRef selectLOD(MeshComponent scene) {
         MeshResourceRef finalResource = null;
 
         if (scene.lod0 != null && scene.distanceFromCamera <= scene.lod0DistanceUntil) {
-            finalResource = (MeshResourceRef) streamingService.stream(scene.lod0, StreamableResourceType.MESH);
+            finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod0, StreamableResourceType.MESH);
         }
 
         if (scene.lod1 != null && scene.distanceFromCamera <= scene.lod1DistanceUntil && scene.distanceFromCamera > scene.lod0DistanceUntil) {
-            finalResource = (MeshResourceRef) streamingService.stream(scene.lod1, StreamableResourceType.MESH);
+            finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod1, StreamableResourceType.MESH);
         }
 
         if (scene.lod2 != null && scene.distanceFromCamera <= scene.lod2DistanceUntil && scene.distanceFromCamera > scene.lod1DistanceUntil) {
-            finalResource = (MeshResourceRef) streamingService.stream(scene.lod2, StreamableResourceType.MESH);
+            finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod2, StreamableResourceType.MESH);
         }
 
         if (scene.lod3 != null && scene.distanceFromCamera <= scene.lod3DistanceUntil && scene.distanceFromCamera > scene.lod2DistanceUntil) {
-            finalResource = (MeshResourceRef) streamingService.stream(scene.lod3, StreamableResourceType.MESH);
+            finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod3, StreamableResourceType.MESH);
         }
 
         if (finalResource == null && scene.lod4 != null) {
-            finalResource = (MeshResourceRef) streamingService.stream(scene.lod4, StreamableResourceType.MESH);
+            finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod4, StreamableResourceType.MESH);
         }
 
         if (finalResource == null) {
             if (scene.lod3 != null) {
-                finalResource = (MeshResourceRef) streamingService.stream(scene.lod3, StreamableResourceType.MESH);
+                finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod3, StreamableResourceType.MESH);
             }
             if (scene.lod2 != null && finalResource == null) {
-                finalResource = (MeshResourceRef) streamingService.stream(scene.lod2, StreamableResourceType.MESH);
+                finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod2, StreamableResourceType.MESH);
             }
             if (scene.lod1 != null && finalResource == null) {
-                finalResource = (MeshResourceRef) streamingService.stream(scene.lod1, StreamableResourceType.MESH);
+                finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod1, StreamableResourceType.MESH);
             }
             if (scene.lod0 != null && finalResource == null) {
-                finalResource = (MeshResourceRef) streamingService.stream(scene.lod0, StreamableResourceType.MESH);
+                finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod0, StreamableResourceType.MESH);
             }
         }
 

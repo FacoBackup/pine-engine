@@ -18,7 +18,8 @@ public enum DebugShadingModel implements SelectableEnum, Serializable {
     UV("UV", 18, 10),
     INDIRECT("Indirect illumination", 19, 11),
     TRIANGLE_ID("Triangle id", 20, 12),
-    LIT("Lit", -1, 12);
+    HEIGHT("Height", 21, 13),
+    LIT("Lit", -1, 14);
 
     private final int index;
     private final int id;

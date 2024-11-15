@@ -5,9 +5,9 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.WorldRepository;
+import com.pine.service.grid.WorldService;
 
 import java.util.Collection;
-import java.util.Objects;
 
 @PBean
 public class SelectionService {
@@ -15,12 +15,15 @@ public class SelectionService {
     public EditorRepository stateRepository;
 
     @PInject
-    public WorldRepository worldRepository;
+    public WorldService worldService;
+
+    @PInject
+    public WorldRepository world;
 
     public void addSelected(String entity) {
         if (stateRepository.selected.isEmpty() || entity == null) {
             stateRepository.mainSelection = entity;
-            if (Objects.equals(stateRepository.mainSelection, worldRepository.rootEntity.id())) {
+            if (stateRepository.mainSelection != null && stateRepository.mainSelection.contains(WorldRepository.ROOT_ID)) {
                 stateRepository.mainSelection = null;
             } else if (stateRepository.mainSelection != null) {
                 updatePrimitiveSelected();
@@ -47,7 +50,11 @@ public class SelectionService {
 
     public void updatePrimitiveSelected() {
         if (stateRepository.mainSelection != null) {
-            stateRepository.primitiveSelected = worldRepository.bagTransformationComponent.get(stateRepository.mainSelection);
+            for (var tile : worldService.getLoadedTiles()) {
+                if (tile != null) {
+                    stateRepository.primitiveSelected = world.bagTransformationComponent.get(stateRepository.mainSelection);
+                }
+            }
         }
     }
 }

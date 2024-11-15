@@ -1,8 +1,8 @@
-layout (local_size_x = 4, local_size_y = 4) in;
+layout (local_size_x = 8, local_size_y = 8) in;
 
-#define TERRAIN 0
-#define FOLIAGE 1
-#define MATERIAL 2
+#define TERRAIN 1
+#define FOLIAGE 2
+#define MATERIAL 3
 
 layout (rgba8, binding = 0) uniform image2D outputImage;
 layout (rgba8, binding = 1) uniform image2D targetImage;
@@ -10,12 +10,10 @@ layout (binding = 2) uniform sampler2D sceneDepth;
 
 uniform int paintMode;
 uniform float heightScale;
-uniform vec3 xyMouse;
+uniform vec2 xyMouse;
 uniform vec3 colorForPainting;
 uniform vec2 targetImageSize;
 uniform vec3 radiusDensityMode;
-uniform vec2 viewportOrigin;
-uniform vec2 viewportSize;
 
 const vec4 NONE = vec4(0, 0, 0, 1);
 #include "../util/SCENE_DEPTH_UTILS.glsl"
@@ -33,14 +31,13 @@ bool randomBoolean(float density) {
 
 void main() {
     // RECONSTRUCT POSITION BASED ON MOUSE POSITION
-    vec2 textureCoord = (xyMouse.xy + viewportOrigin) / viewportSize;
+    vec2 textureCoord = xyMouse.xy;
     float depthData = getLogDepth(textureCoord);
     if (depthData == 1.){
         return;
     }
     vec3 viewSpacePositionMouse = viewSpacePositionFromDepth(depthData, textureCoord);
     vec3 worldSpacePositionMouse = vec3(invViewMatrix * vec4(viewSpacePositionMouse, 1.));
-
 
     // RECONSTRUCT POSITION BASED ON FRAGMENT POSITION
     textureCoord = vec2(gl_GlobalInvocationID.xy / bufferResolution);

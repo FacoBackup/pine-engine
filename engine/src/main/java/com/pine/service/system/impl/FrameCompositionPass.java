@@ -51,11 +51,11 @@ public class FrameCompositionPass extends AbstractQuadPassPass {
     @Override
     protected void bindUniforms() {
         shaderService.bindVec2(runtimeRepository.getInvResolution(), inverseFilterTextureSize);
-        shaderService.bindBoolean(settingsRepository.fxaaEnabled, useFXAA);
+        shaderService.bindBoolean(engineRepository.fxaaEnabled, useFXAA);
         shaderService.bindBoolean(cameraRepository.filmGrain, filmGrainEnabled);
-        shaderService.bindFloat(settingsRepository.fxaaSpanMax, FXAASpanMax);
-        shaderService.bindFloat(settingsRepository.fxaaReduceMin, FXAAReduceMin);
-        shaderService.bindFloat(settingsRepository.fxaaReduceMul, FXAAReduceMul);
+        shaderService.bindFloat(engineRepository.fxaaSpanMax, FXAASpanMax);
+        shaderService.bindFloat(engineRepository.fxaaReduceMin, FXAAReduceMin);
+        shaderService.bindFloat(engineRepository.fxaaReduceMul, FXAAReduceMul);
         shaderService.bindFloat(cameraRepository.filmGrainStrength, filmGrainStrength);
         shaderService.bindSampler2d(bufferRepository.postProcessingSampler, currentFrame);
         shaderService.bindFloat(lookupNoise(), filmGrainSeed);

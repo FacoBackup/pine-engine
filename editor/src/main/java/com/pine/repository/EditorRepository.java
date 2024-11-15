@@ -55,7 +55,8 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public Color outlineColor = new Color(1f, 0.5f, 0f);
 
     public ExecutionEnvironment environment = ExecutionEnvironment.DEVELOPMENT;
-    public GizmoType gizmoType = GizmoType.TRANSLATE;
+    public EditorMode editorMode = EditorMode.TRANSFORM;
+    public int gizmoType = Operation.SCALE;
     public int gizmoMode = Mode.WORLD;
 
     public float[] gizmoSnapTranslate = new float[3];
@@ -81,11 +82,11 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public final Map<String, Camera> viewportCamera = new HashMap<>();
 
     public BrushMode brushMode = BrushMode.ADD;
-    public float brushRadius = 1;
+    public float brushRadius = 10;
     public float brushDensity = .5f;
-    public PaintingType paintingType = PaintingType.TERRAIN;
     public String foliageForPainting;
     public boolean fullScreen;
+    public boolean showPaintingMask = false;
 
     @Override
     public String getIcon() {

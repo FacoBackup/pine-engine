@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public abstract class AbstractImportData extends Inspectable implements Serializable {
-    public final String id = UUID.randomUUID().toString();
+    public String id = UUID.randomUUID().toString();
     public String name;
 
     public AbstractImportData(String name) {

@@ -2,6 +2,7 @@ package com.pine.service.request;
 
 import com.pine.messaging.Loggable;
 import com.pine.repository.WorldRepository;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +11,7 @@ import java.util.Objects;
 
 public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     private final List<String> entities;
+    private final Vector3f translationAux = new Vector3f();
 
     public DeleteEntityRequest(Collection<String> entities) {
         this.entities = new ArrayList<>(entities);
@@ -18,29 +20,40 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     @Override
     public void run() {
         for (String entityId : entities) {
-            if (!Objects.equals(entityId, repository.rootEntity.id())) {
-                String parent = repository.childParent.get(entityId);
-                var parentList = repository.parentChildren.get(parent);
-                if(parentList != null) {
-                    parentList.remove(entityId);
-                }
-                repository.childParent.remove(entityId);
-
-                removeComponentsHierarchically(entityId, repository);
-                repository.parentChildren.remove(entityId);
+            if (!Objects.equals(entityId, WorldRepository.ROOT_ID)) {
+                removeEntity(entityId);
             }
         }
         getLogger().warn("Deleted {} entities", entities.size());
     }
 
-    private void removeComponentsHierarchically(String entity, WorldRepository repository) {
-        repository.unregisterComponents(entity);
-        repository.entityMap.remove(entity);
+    public void removeEntity(String entityId) {
+        var transform = world.bagTransformationComponent.get(entityId);
+        if(transform != null){
+            transform.modelMatrix.getTranslation(translationAux);
+            var tile = worldService.getHashGrid().getOrCreateTile(translationAux);
+            tile.getEntities().remove(entityId);
+        }
 
-        var children = repository.parentChildren.get(entity);
-        if(children != null) {
+        String parent = world.childParent.get(entityId);
+        var parentList = world.parentChildren.get(parent);
+        if (parentList != null) {
+            parentList.remove(entityId);
+        }
+        world.childParent.remove(entityId);
+
+        removeComponentsHierarchically(entityId);
+        world.parentChildren.remove(entityId);
+    }
+
+    private void removeComponentsHierarchically(String entity) {
+        world.unregisterComponents(entity);
+        world.entityMap.remove(entity);
+
+        var children = world.parentChildren.get(entity);
+        if (children != null) {
             for (String c : children) {
-                removeComponentsHierarchically(c, repository);
+                removeComponentsHierarchically(c);
             }
         }
     }

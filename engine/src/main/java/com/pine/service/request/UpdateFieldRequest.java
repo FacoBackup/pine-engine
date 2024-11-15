@@ -3,7 +3,6 @@ package com.pine.service.request;
 import com.pine.Mutable;
 import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
-import com.pine.repository.WorldRepository;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -21,13 +20,13 @@ public class UpdateFieldRequest extends AbstractRequest {
     @Override
     public void run() {
         try {
-            process(fieldDTO, newValue, repository);
+            process(fieldDTO, newValue);
         } catch (Exception e) {
             getLogger().error("Error while updating field", e);
         }
     }
 
-    public static void process(FieldDTO fieldDTO, Object newValue, WorldRepository repository) throws IllegalAccessException {
+    public static void process(FieldDTO fieldDTO, Object newValue) throws IllegalAccessException {
         switch (fieldDTO.getType()) {
             case VECTOR2 -> {
                 var field = (Vector2f) fieldDTO.getValue();

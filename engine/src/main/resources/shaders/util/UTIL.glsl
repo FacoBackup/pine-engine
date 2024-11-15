@@ -14,14 +14,14 @@ mat3 getRotationFromNormal(inout vec3 normal){
     );
 }
 
-vec3 getNormalFromHeightMap(inout float height, sampler2D heightMap, inout vec2 uv){
+vec3 getNormalFromHeightMap(float height, float heightScale, sampler2D heightMap, vec2 uv){
     const float normalOffset = .005;
 
     // Offset texture coordinates to sample neighboring points
-    float heightL = texture(heightMap, uv + vec2(-normalOffset, 0.0)).r;
-    float heightR = texture(heightMap, uv + vec2(normalOffset, 0.0)).r;
-    float heightD = texture(heightMap, uv + vec2(0.0, -normalOffset)).r;
-    float heightU = texture(heightMap, uv + vec2(0.0, normalOffset)).r;
+    float heightL = texture(heightMap, uv + vec2(-normalOffset, 0.0)).r * heightScale;
+    float heightR = texture(heightMap, uv + vec2(normalOffset, 0.0)).r * heightScale;
+    float heightD = texture(heightMap, uv + vec2(0.0, -normalOffset)).r * heightScale;
+    float heightU = texture(heightMap, uv + vec2(0.0, normalOffset)).r * heightScale;
 
     // Compute tangent vectors
     // Compute tangent vectors with height affecting the Y axis

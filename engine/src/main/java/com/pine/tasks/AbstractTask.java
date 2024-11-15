@@ -4,10 +4,6 @@ import com.pine.MetricCollector;
 import com.pine.injection.Disposable;
 import com.pine.messaging.Loggable;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 public abstract class AbstractTask extends MetricCollector implements Loggable, Disposable {
     private boolean started;
     private final Thread thread = new Thread(this::runInternal);
@@ -26,6 +22,10 @@ public abstract class AbstractTask extends MetricCollector implements Loggable, 
                 break;
             }
         }
+    }
+
+    public void onInitialize(){
+
     }
 
     final public void start() {

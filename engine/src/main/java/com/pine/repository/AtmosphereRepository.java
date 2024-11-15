@@ -3,6 +3,7 @@ package com.pine.repository;
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.inspection.Color;
 import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
@@ -17,6 +18,7 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
 
     @PInject
     public transient EnvironmentMapGenService environmentMapGenService;
+
     @ExecutableField(label = "Bake environment maps", icon = Icons.panorama_photosphere)
     public void process() {
         environmentMapGenService.bake();
@@ -26,17 +28,32 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @InspectableField(label = "Render atmosphere")
     public boolean enabled = false;
 
-    @InspectableField(label = "Time of day speed")
+    @InspectableField(group = "Time", label = "Elapsed time")
+    public float elapsedTime = .5f;
+
+    @InspectableField(group = "Time", label = "Increment time")
+    public boolean incrementTime = false;
+
+    @InspectableField(group = "Time", label = "Time of day speed")
     public float elapsedTimeSpeed = 1;
 
-    @InspectableField(label = "Sun distance")
-    public float sunDistance = 1000;
+    @InspectableField(group = "Sun", label = "Sun distance")
+    public float sunDistance = 100_000;
+
+    @InspectableField(group = "Sun", label = "Dawn color")
+    public Color dawnColor = new Color(1, .39f, .19f);
+
+    @InspectableField(group = "Sun", label = "Night color")
+    public Color nightColor = new Color(.1f, .1f, .1f);
+
+    @InspectableField(group = "Sun", label = "Midday color")
+    public Color middayColor = new Color(1, 1, 1);
 
     @InspectableField(label = "Screen space shadows")
     public boolean screenSpaceShadows = false;
 
     @InspectableField(group = "Atmospheric scattering", label = "Max samples", max = 20, min = 1)
-    public int maxSamples = 10;
+    public int maxSamples = 5;
     @InspectableField(group = "Atmospheric scattering", label = "Mie height")
     public int mieHeight = 1000;
     @InspectableField(group = "Atmospheric scattering", label = "Rayleigh Height")
@@ -60,7 +77,7 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @InspectableField(group = "Clouds", label = "Layer height", min = 1)
     public int cloudsHeight = 500;
     @InspectableField(group = "Clouds", label = "Layer width and depth", min = 1)
-    public int cloudsSize = 1000;
+    public int cloudsSize = 100_000;
     @InspectableField(group = "Clouds", label = "Layer altitude")
     public int cloudsAltitude = 1000;
 
@@ -90,7 +107,7 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     public float scale = .2f;
 
     @InspectableField(group = "Clouds", label = "Phase params")
-    public Vector4f phaseParams = new Vector4f(0, 0, .2f, 0);
+    public Vector4f phaseParams = new Vector4f(0, 0, .3f, 1);
     @InspectableField(group = "Clouds", label = "Light step count", max = 10, min = 0)
     public int numStepsLight = 5;
     @InspectableField(group = "Clouds", label = "Ray offset strength", min = 0)

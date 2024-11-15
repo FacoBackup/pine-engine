@@ -5,8 +5,9 @@ import org.joml.Vector3f;
 import java.io.Serializable;
 
 public class BoundingBox implements Serializable {
-    public Vector3f min = new Vector3f(Float.MAX_VALUE);
-    public Vector3f max = new Vector3f(Float.MIN_VALUE);
+    public final Vector3f min = new Vector3f(Float.MAX_VALUE);
+    public final Vector3f max = new Vector3f(Float.MIN_VALUE);
+    public final Vector3f center = new Vector3f();
 
     public boolean intersects(BoundingBox bb) {
         return (min.x < bb.max.x && max.x > bb.min.x &&
