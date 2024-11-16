@@ -56,7 +56,7 @@ public class IconsPass extends AbstractPass {
         shaderService.bindVec3(editorRepository.iconColor, iconColor);
 
         shaderService.bindSampler2dDirect(toolsResourceRepository.icons, 0);
-//        shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 1);
+        shaderService.bindSampler2dDirect(bufferRepository.sceneDepthCopySampler, 1);
 
         meshService.bind(meshRepository.quadMesh);
         meshService.setRenderingMode(RenderingMode.TRIANGLES);
@@ -66,6 +66,10 @@ public class IconsPass extends AbstractPass {
         for (var tile : worldService.getLoadedTiles()) {
             if (tile != null) {
                 for (var entityId : tile.getEntities()) {
+                    if (world.bagDecalComponent.containsKey(entityId)) {
+                        renderIcon(entityId, 6);
+                    }
+
                     if (world.bagEnvironmentProbeComponent.containsKey(entityId)) {
                         renderIcon(entityId, 3, index);
                         index++;
@@ -97,6 +101,15 @@ public class IconsPass extends AbstractPass {
         shaderService.bindFloat(iconIndex, imageIndex);
         var entity = world.entityMap.get(entityId);
         entity.renderIndex = engineRepository.meshesDrawn + index;
+        shaderService.bindInt(entity.renderIndex, renderIndex);
+        shaderService.bindBoolean(editorRepository.selected.containsKey(entityId), isSelected);
+        meshService.draw();
+    }
+
+    private void renderIcon(String entityId, int iconIndex) {
+        var entity = world.entityMap.get(entityId);
+        shaderService.bindMat4(world.bagTransformationComponent.get(entityId).modelMatrix, transformationMatrix);
+        shaderService.bindFloat(iconIndex, imageIndex);
         shaderService.bindInt(entity.renderIndex, renderIndex);
         shaderService.bindBoolean(editorRepository.selected.containsKey(entityId), isSelected);
         meshService.draw();

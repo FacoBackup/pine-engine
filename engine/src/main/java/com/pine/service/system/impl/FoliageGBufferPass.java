@@ -10,7 +10,7 @@ import static com.pine.repository.core.CoreSSBORepository.MAX_INSTANCING;
 public class FoliageGBufferPass extends AbstractGBufferPass implements Loggable {
     @Override
     protected Shader getShader() {
-        return shaderRepository.gBufferInstanceShader;
+        return shaderRepository.gBufferFoliageShader;
     }
 
     @Override

@@ -13,9 +13,6 @@ public class MeshComponent extends AbstractComponent {
     @InspectableField(label = "Casts shadow")
     public boolean castsShadows = true;
 
-    @InspectableField(label = "Contribute to probes")
-    public boolean contributeToProbes = true;
-
     @ResourceTypeField(type = StreamableResourceType.MATERIAL)
     @InspectableField(label = "Material")
     public String material;
@@ -81,5 +78,12 @@ public class MeshComponent extends AbstractComponent {
 
     public boolean canRender(boolean isDisableCulling, Map<String, Boolean> hiddenEntities) {
         return !hiddenEntities.containsKey(getEntityId()) && renderRequest != null && renderRequest.modelMatrix != null && renderRequest.mesh != null && (!renderRequest.isCulled || isDisableCulling);
+    }
+
+    @Override
+    public AbstractComponent cloneComponent(Entity entity) {
+        var clone = (MeshComponent) super.cloneComponent(entity);
+        clone.renderRequest = null;
+        return clone;
     }
 }

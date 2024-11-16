@@ -41,10 +41,5 @@ public abstract class AbstractLightComponent extends AbstractComponent {
     final public String getTitle() {
         return type.getTitle();
     }
-
-    @Override
-    public String getIcon() {
-        return Icons.lightbulb;
-    }
 }
 

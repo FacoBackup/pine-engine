@@ -22,14 +22,15 @@ public class WorldRepository implements SerializableRepository {
     public final Map<String, PointLightComponent> bagPointLightComponent = new HashMap<>();
     public final Map<String, SphereLightComponent> bagSphereLightComponent = new HashMap<>();
     public final Map<String, SpotLightComponent> bagSpotLightComponent = new HashMap<>();
+    public final Map<String, DecalComponent> bagDecalComponent = new HashMap<>();
     public final Map<String, EnvironmentProbeComponent> bagEnvironmentProbeComponent = new HashMap<>();
     public final Map<String, MeshComponent> bagMeshComponent = new HashMap<>();
     public final Map<String, TransformationComponent> bagTransformationComponent = new HashMap<>();
 
-    public final Map<String, Entity> entityMap = new HashMap<>(){{
+    public final Map<String, Entity> entityMap = new HashMap<>() {{
         put(ROOT_ID, new Entity(ROOT_ID, "World"));
     }};
-    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>(){{
+    public final Map<String, LinkedList<String>> parentChildren = new HashMap<>() {{
         put(ROOT_ID, new LinkedList<>());
     }};
     public final Map<String, String> childParent = new HashMap<>();
@@ -40,6 +41,7 @@ public class WorldRepository implements SerializableRepository {
             case POINT_LIGHT -> bagPointLightComponent.put(component.getEntityId(), (PointLightComponent) component);
             case SPHERE_LIGHT -> bagSphereLightComponent.put(component.getEntityId(), (SphereLightComponent) component);
             case SPOT_LIGHT -> bagSpotLightComponent.put(component.getEntityId(), (SpotLightComponent) component);
+            case DECAL -> bagDecalComponent.put(component.getEntityId(), (DecalComponent) component);
             case ENVIRONMENT_PROBE ->
                     bagEnvironmentProbeComponent.put(component.getEntityId(), (EnvironmentProbeComponent) component);
             case MESH -> bagMeshComponent.put(component.getEntityId(), (MeshComponent) component);
@@ -52,17 +54,22 @@ public class WorldRepository implements SerializableRepository {
         bagPointLightComponent.remove(entity);
         bagSphereLightComponent.remove(entity);
         bagSpotLightComponent.remove(entity);
+        bagDecalComponent.remove(entity);
         bagEnvironmentProbeComponent.remove(entity);
         bagMeshComponent.remove(entity);
         bagTransformationComponent.remove(entity);
     }
 
     public void runByComponent(Consumer<AbstractComponent> consumer, String entityId) {
-        AbstractComponent   bag = bagPointLightComponent.get(entityId);
+        AbstractComponent bag = bagPointLightComponent.get(entityId);
         if (bag != null) {
             consumer.accept(bag);
         }
         bag = bagSphereLightComponent.get(entityId);
+        if (bag != null) {
+            consumer.accept(bag);
+        }
+        bag = bagDecalComponent.get(entityId);
         if (bag != null) {
             consumer.accept(bag);
         }
@@ -87,6 +94,7 @@ public class WorldRepository implements SerializableRepository {
     public Map<String, ? extends AbstractComponent> getBagByType(ComponentType type) {
         return switch (type) {
             case POINT_LIGHT -> bagPointLightComponent;
+            case DECAL -> bagDecalComponent;
             case SPHERE_LIGHT -> bagSphereLightComponent;
             case SPOT_LIGHT -> bagSpotLightComponent;
             case ENVIRONMENT_PROBE -> bagEnvironmentProbeComponent;

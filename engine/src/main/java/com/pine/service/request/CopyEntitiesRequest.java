@@ -22,7 +22,7 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
 
     @Override
     public void run() {
-        if (parentId == null || !world.entityMap.containsKey(parentId)) {
+        if (parentId == null || !world.entityMap.containsKey(parentId) || entities.contains(parentId)) {
             parentId = WorldRepository.ROOT_ID;
         }
 
@@ -38,9 +38,7 @@ public class CopyEntitiesRequest extends AbstractRequest implements Loggable {
             try {
                 var cloned = entity.cloneEntity();
                 world.entityMap.put(cloned.id(), cloned);
-
                 linkHierarchy(parent, cloned);
-
                 cloneComponents(entityId, cloned);
                 allCloned.add(cloned);
                 var children = world.parentChildren.get(entityId);

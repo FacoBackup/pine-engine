@@ -1,6 +1,4 @@
 layout (location = 0) in vec3 position;
-layout (location = 1) in vec2 uv;
-layout (location = 2) in vec3 normal;
 
 #include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
@@ -15,14 +13,14 @@ smooth out vec3 normalVec;
 smooth out vec3 worldSpacePosition;
 
 void main() {
-    isDecalPass = 0;
-    invModelMatrix = mat4(0);
+    isDecalPass = 1;
+    invModelMatrix = inverse(modelMatrix);
 
-    renderingIndex = (renderIndex + gl_InstanceID);
+    renderingIndex = renderIndex;
     vec4 wPosition = modelMatrix * vec4(position, 1.0);
     worldSpacePosition = wPosition.xyz;
-    normalVec = normalize(mat3(modelMatrix) * normal);
-    initialUV = uv;
+    normalVec = vec3(0);
+    initialUV = vec2(0);
 
     gl_Position = viewProjection * wPosition;
 }

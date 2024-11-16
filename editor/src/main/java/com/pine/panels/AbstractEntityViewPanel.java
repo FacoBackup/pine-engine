@@ -30,7 +30,7 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
     public WorldRepository world;
 
     protected void hotKeys() {
-        if(!isWindowFocused || ImGuizmo.isUsing()){
+        if((!ImGui.isWindowHovered() && !isWindowFocused) || ImGuizmo.isUsing()){
             return;
         }
         var isNotEmptyOfSelection = !stateRepository.selected.isEmpty();
@@ -63,8 +63,6 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
             messageRepository.pushMessage("Pasting "  + stateRepository.copied.size() + " entities", MessageSeverity.WARN);
             var request = new CopyEntitiesRequest(stateRepository.copied, selectionService.stateRepository.mainSelection);
             requestProcessingService.addRequest(request);
-            selectionService.clearSelection();
-            selectionService.addAllSelected(request.getAllCloned());
         }
 
         hotKeysInternal();

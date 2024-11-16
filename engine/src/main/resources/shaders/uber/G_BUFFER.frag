@@ -1,4 +1,3 @@
-#define PARALLAX_THRESHOLD 200.
 
 #define ALBEDO 0
 #define NORMAL 1
@@ -22,9 +21,12 @@
 #define CLEAR_COAT 4
 #define TRANSPARENCY 5
 
-flat in vec3 cameraPlacement;
+#define DECAL_DEPTH_THRESHOLD 1.
+
+
+in mat4 invModelMatrix;
+flat in int isDecalPass;
 flat in int renderingIndex;
-flat in float depthFunc;
 smooth in vec2 initialUV;
 smooth in vec3 normalVec;
 smooth in vec3 worldSpacePosition;
@@ -38,6 +40,7 @@ layout (binding = 5) uniform sampler2D metallic;
 layout (binding = 6) uniform sampler2D ao;
 layout (binding = 7) uniform sampler2D normal;
 layout (binding = 8) uniform sampler2D heightMap;
+layout (binding = 9) uniform sampler2D sceneDepth;
 
 uniform vec3 albedoColor;
 uniform vec2 roughnessMetallic;
@@ -72,20 +75,48 @@ layout (location = 3) out vec4 gBufferMaterialSampler;
 layout (location = 4) out vec4 gBufferDepthSampler;
 layout (location = 5) out vec4 gBufferIndirect;
 
-#include "../uber/G_BUFFER_UTIL.glsl"
+#include "../util/SCENE_DEPTH_UTILS.glsl"
 
 #include "../uber/MATERIAL_INFO.glsl"
 
+#include "../uber/G_BUFFER_UTIL.glsl"
+
 void main() {
     vec2 UV = initialUV;
-    vec3 V = cameraPlacement.xyz - worldSpacePosition;
-    float distanceFromCamera = length(V);
-    mat3 TBN = computeTBN(worldSpacePosition);
-    if (useParallax){
-        UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
-    }
+    vec3 W = worldSpacePosition;
     vec3 N = normalVec;
-    gBufferDepthSampler = vec4(encode(depthFunc), renderingIndex + 1, UV);
+
+    if(isDecalPass == 1){
+        vec2 quadUV = gl_FragCoord.xy/bufferResolution;
+        float depthData = getLogDepth(quadUV);
+        if (depthData == 1.) discard;
+
+        vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
+        N = normalize(vec3(invViewMatrix * vec4(normalFromDepth(depthData, quadUV), 0.)));
+        W = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
+        vec3 objectSpacePosition = vec3(invModelMatrix * vec4(W, 1.));
+        UV = objectSpacePosition.xz * .5 + .5;
+
+        bool inRange =
+        objectSpacePosition.x >= -DECAL_DEPTH_THRESHOLD &&
+        objectSpacePosition.x <= DECAL_DEPTH_THRESHOLD &&
+
+        objectSpacePosition.y >= -DECAL_DEPTH_THRESHOLD &&
+        objectSpacePosition.y <= DECAL_DEPTH_THRESHOLD &&
+
+        objectSpacePosition.z >= -DECAL_DEPTH_THRESHOLD &&
+        objectSpacePosition.z <= DECAL_DEPTH_THRESHOLD;
+
+        if (!inRange) discard;
+    }
+
+    vec3 V = cameraWorldPosition.xyz - W;
+    float distanceFromCamera = length(V);
+    mat3 TBN = computeTBN(W, UV, N, isDecalPass);
+    if (useParallax){
+        UV = parallaxOcclusionMapping(UV, W, heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
+    }
+    gBufferDepthSampler = vec4(encode(logDepthFC), renderingIndex + 1, UV);
     if (!fallbackMaterial){
         bool useMetallic = useAlbedoRoughnessMetallicAO.b != 0;
         bool useRoughness = useAlbedoRoughnessMetallicAO.g != 0;
@@ -141,7 +172,7 @@ void main() {
             gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.r);
             break;
             case POSITION:
-            gBufferAlbedoSampler.rgb = vec3(worldSpacePosition);
+            gBufferAlbedoSampler.rgb = vec3(W);
             break;
             case UV_FLAG:
             gBufferAlbedoSampler.rgb = vec3(UV, 0);
@@ -153,7 +184,7 @@ void main() {
             gBufferAlbedoSampler.rgb = randomColor(gl_PrimitiveID);
             break;
             case HEIGHT:
-            gBufferAlbedoSampler.rgb = vec3(worldSpacePosition.y/10);
+            gBufferAlbedoSampler.rgb = vec3(W/10);
             break;
         }
 
@@ -161,13 +192,13 @@ void main() {
     }
 
     if (applyGrid && distanceFromCamera < 350){
-        float dx = abs(fract(worldSpacePosition.x) - .5);
-        float dz = abs(fract(worldSpacePosition.z) - .5);
+        float dx = abs(fract(W.x) - .5);
+        float dz = abs(fract(W.z) - .5);
 
         float gridLine = step(.02, min(dx, dz));
 
-        dx = abs(fract(worldSpacePosition.x / 5.) - .5);
-        dz = abs(fract(worldSpacePosition.z / 5.) - .5);
+        dx = abs(fract(W.x / 5.) - .5);
+        dz = abs(fract(W.z / 5.) - .5);
         float gridLine2 = step(.01, min(dx, dz));
 
         vec3 color = mix(vec3(.4), gBufferAlbedoSampler.rgb, gridLine);
