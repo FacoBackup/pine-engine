@@ -5,7 +5,6 @@ import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
@@ -77,6 +76,14 @@ public class PaintGizmoPass extends AbstractPass {
         if (targetTexture != null) {
             targetTexture.bindForBoth(1);
             dispatch();
+        }
+
+        if (editorRepository.editorMode == EditorMode.TERRAIN) {
+            terrainRepository.isHeightMapChanged = true;
+        }
+
+        if (editorRepository.editorMode == EditorMode.FOLIAGE) {
+            terrainRepository.isFoliageMaskChanged = true;
         }
     }
 

@@ -20,13 +20,11 @@ void main() {
     renderingIndex = int(tilesScaleTranslation.z + tilesScaleTranslation.w);
     depthFunc = logDepthFC;
 
-    vec3 position = computePosition(tilesScaleTranslation);
-    initialUV = vec2(position.x/textureSize + .5, position.z/textureSize + .5);
+    TerrainData terrain = computePosition(tilesScaleTranslation, textureSize, heightMap, heightScale);
+    initialUV = terrain.uv;
 
-    float height = texture(heightMap, initialUV).r;
-    normalVec = getNormalFromHeightMap(height, heightMap, initialUV);
+    normalVec = getNormalFromHeightMap(terrain.position.y, heightScale, heightMap, initialUV);
 
-    worldSpacePosition = position;
-    worldSpacePosition.y = height * heightScale;
+    worldSpacePosition = terrain.position;
     gl_Position = viewProjection * vec4(worldSpacePosition, 1);
 }

@@ -15,7 +15,6 @@ uniform vec3 colorForPainting;
 uniform vec2 targetImageSize;
 uniform vec3 radiusDensityMode;
 
-
 const vec4 NONE = vec4(0, 0, 0, 1);
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 #include "../util/UTIL.glsl"

@@ -4,7 +4,6 @@ import com.pine.core.AbstractView;
 import com.pine.core.UIUtil;
 import com.pine.injection.PInject;
 import com.pine.repository.*;
-import com.pine.service.grid.WorldService;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.type.ImInt;
@@ -14,7 +13,9 @@ import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 public class GlobalSettingsPanel extends AbstractView {
     private static final String[] SHADING_MODE_OPTIONS = DebugShadingModel.getLabels();
 
+    private final float[] cameraSensitivity = new float[1];
     private final ImInt editorMode = new ImInt(0);
+
     @PInject
     public EngineRepository engineRepository;
 
@@ -37,17 +38,19 @@ public class GlobalSettingsPanel extends AbstractView {
 
 
     private void cameraMode() {
-        UIUtil.dynamicSpacing(560);
+        UIUtil.dynamicSpacing(575);
         ImGui.text("Camera");
         ImGui.sameLine();
         if (ImGui.button(Icons.center_focus_strong + "##centerCamera", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
-            cameraRepository.currentCamera.orbitCenter.zero();
             cameraRepository.currentCamera.position.zero();
             cameraRepository.currentCamera.registerChange();
         }
+
         ImGui.sameLine();
-        if (ImGui.button(cameraRepository.currentCamera.orbitalMode ? "Orbital " + Icons.trip_origin : "Free " + Icons.outbound + "##cameraMode")) {
-            cameraRepository.currentCamera.orbitalMode = !cameraRepository.currentCamera.orbitalMode;
+        cameraSensitivity[0] = cameraRepository.movementSensitivity;
+        ImGui.setNextItemWidth(75);
+        if (ImGui.dragFloat( "##speedCamera", cameraSensitivity, .1f, .1f)) {
+            cameraRepository.movementSensitivity = Math.max(0, cameraSensitivity[0]);
         }
     }
 

@@ -22,22 +22,13 @@ public class CameraService implements SyncTask {
     public RuntimeRepository runtimeRepository;
 
     @PInject
-    public CameraFirstPersonService cameraFirstPersonService;
+    public CameraMovementService cameraMovementService;
 
-    @PInject
-    public CameraThirdPersonService cameraThirdPersonService;
-
-    private AbstractCameraService cameraService;
     private Camera camera;
 
     @Override
     public void sync() {
         camera = repository.currentCamera;
-        if (camera.orbitalMode) {
-            cameraService = cameraThirdPersonService;
-        } else {
-            cameraService = cameraFirstPersonService;
-        }
         updateAspectRatio();
         if (camera.isNotFrozen()) {
             updateMatrices();
@@ -62,7 +53,7 @@ public class CameraService implements SyncTask {
     }
 
     private void updateView() {
-        cameraService.createViewMatrix(camera);
+        cameraMovementService.createViewMatrix(camera);
         repository.viewMatrix.invert(repository.invViewMatrix);
     }
 

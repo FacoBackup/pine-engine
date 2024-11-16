@@ -141,7 +141,7 @@ public class CoreBufferRepository implements CoreRepository {
                 // Y channel: 16 bits for clearCoat + 16 bits for sheen
                 // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
                 .addSampler(3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
-                .addSampler(4, GL46.GL_RGBA16F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index + UV
+                .addSampler(4, GL46.GL_RGBA32F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index + UV
                 .addSampler(5, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false);
         gBufferAlbedoSampler = gBuffer.getSamplers().get(0);
         gBufferNormalSampler = gBuffer.getSamplers().get(1);

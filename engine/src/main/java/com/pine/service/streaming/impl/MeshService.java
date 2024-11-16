@@ -139,6 +139,13 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO heightScale, UniformDTO tilesScaleTranslation, UniformDTO fallbackMaterial) {
         Vector4f terrainLocation = new Vector4f();
         Vector2f dist = new Vector2f();
+
+        shaderService.bindFloat(terrain.heightScale, heightScale);
+        shaderService.bindInt(heightMap.width, textureSize);
+        if (fallbackMaterial != null) {
+            shaderService.bindBoolean(true, fallbackMaterial);
+        }
+
         var camPos = cameraService.repository.currentCamera.position;
         for (int x = 0; x < terrain.cellsX; x++) {
             for (int z = 0; z < terrain.cellsZ; z++) {
@@ -168,13 +175,6 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
                 terrainLocation.z = locationX;
                 terrainLocation.w = locationZ;
                 shaderService.bindVec4(terrainLocation, tilesScaleTranslation);
-
-                shaderService.bindFloat(terrain.heightScale, heightScale);
-                shaderService.bindInt(heightMap.width, textureSize);
-
-                if (fallbackMaterial != null) {
-                    shaderService.bindBoolean(true, fallbackMaterial);
-                }
 
                 GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, (int) (terrainLocation.x * terrainLocation.x * 6));
             }

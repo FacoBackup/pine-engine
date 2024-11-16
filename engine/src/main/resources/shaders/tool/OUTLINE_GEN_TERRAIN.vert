@@ -13,9 +13,6 @@ flat out int rIndex;
 void main() {
     rIndex = 1;
 
-    vec3 position = computePosition(tilesScaleTranslation);
-    vec2     initialUV = vec2(position.x/textureSize + .5, position.z/textureSize + .5);
-    position.y = texture(heightMap, initialUV).r * heightScale;
-
-    gl_Position = viewProjection * vec4(position, 1);
+    TerrainData terrain = computePosition(tilesScaleTranslation, textureSize, heightMap, heightScale);
+    gl_Position = viewProjection * vec4(terrain.position, 1);
 }

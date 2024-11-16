@@ -46,9 +46,9 @@ void main() {
     if (pixelColor == colorToMatch){
         uint index = atomicCounterIncrement(globalIndex);
         if (index < MAX_INSTANCING){
-            float localHeight = texture(heightMap, scaledTexCoord).r;
-            worldSpaceCoord.y = localHeight * heightScale;
-            vec3 normalVec = normalize(getNormalFromHeightMap(localHeight, heightMap, scaledTexCoord));
+            float localHeight = texture(heightMap, scaledTexCoord).r * heightScale;
+            worldSpaceCoord.y = localHeight;
+            vec3 normalVec = normalize(getNormalFromHeightMap(localHeight, heightScale, heightMap, scaledTexCoord));
             mat3 rotation = getRotationFromNormal(normalVec);
             transformations[index] = createTransformationMatrix(rotation, worldSpaceCoord);
         }

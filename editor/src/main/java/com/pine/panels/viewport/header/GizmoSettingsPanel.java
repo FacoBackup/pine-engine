@@ -1,4 +1,4 @@
-package com.pine.panels.viewport;
+package com.pine.panels.viewport.header;
 
 import com.pine.core.UIUtil;
 import com.pine.theme.Icons;
@@ -8,8 +8,6 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiComboFlags;
 import imgui.flag.ImGuiStyleVar;
-
-import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class GizmoSettingsPanel extends AbstractViewportSettingsPanel {
     private static final ImVec2 SPACING = new ImVec2(0, 0);
