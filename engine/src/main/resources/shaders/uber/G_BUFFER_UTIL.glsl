@@ -6,7 +6,18 @@ float encode(float depthFunc) {
     return log2(clamp_z) * half_co;
 }
 
-mat3 computeTBN(vec3 worldPosition, vec2 initialUV, vec3 normalVec) {
+mat3 computeTBN(vec3 worldPosition, vec2 initialUV, vec3 normalVec, int isDecalPass) {
+    if (isDecalPass == 1) {
+        vec3 N = abs(normalVec);
+        vec3 T = vec3(0., 0., 1.);
+        if (N.z > N.x && N.z > N.y){
+            T = vec3(1., 0., 0.);
+        }
+
+        T = normalize(T - N * dot(T, N));
+        vec3 B = cross(T, N);
+        return mat3(T, B, N);
+    }
     vec3 dp1 = dFdx(worldPosition);
     vec3 dp2 = dFdy(worldPosition);
     vec2 duv1 = dFdx(initialUV);

@@ -79,4 +79,11 @@ public class MeshComponent extends AbstractComponent {
     public boolean canRender(boolean isDisableCulling, Map<String, Boolean> hiddenEntities) {
         return !hiddenEntities.containsKey(getEntityId()) && renderRequest != null && renderRequest.modelMatrix != null && renderRequest.mesh != null && (!renderRequest.isCulled || isDisableCulling);
     }
+
+    @Override
+    public AbstractComponent cloneComponent(Entity entity) {
+        var clone = (MeshComponent) super.cloneComponent(entity);
+        clone.renderRequest = null;
+        return clone;
+    }
 }

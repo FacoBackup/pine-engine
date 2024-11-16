@@ -33,6 +33,7 @@ public class CoreBufferRepository implements CoreRepository {
     public FrameBufferObject ssaoBlurred;
     public FrameBufferObject gBuffer;
     public FrameBufferObject auxBufferQuaterRes;
+    public FrameBufferObject sceneDepthCopy;
     public final List<FrameBufferObject> upscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> downscaleBloom = new ArrayList<>();
     public final List<FrameBufferObject> all = new ArrayList<>();
@@ -40,6 +41,7 @@ public class CoreBufferRepository implements CoreRepository {
     public FrameBufferObject compositingBuffer;
 
     public int auxBufferQuaterResSampler;
+    public int sceneDepthCopySampler;
     public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
     public int gBufferNormalSampler;
@@ -168,6 +170,10 @@ public class CoreBufferRepository implements CoreRepository {
         postProcessingBuffer = new FrameBufferObject(displayW, displayH)
                 .addSampler(0, GL46.GL_RGB, GL46.GL_RGB, GL46.GL_UNSIGNED_BYTE, false, false);
         postProcessingSampler = postProcessingBuffer.getSamplers().getFirst();
+
+        sceneDepthCopy = new FrameBufferObject(displayW, displayH)
+                .addSampler(0, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_FLOAT, false, false);
+        sceneDepthCopySampler = sceneDepthCopy.getSamplers().getFirst();
     }
 
     @Override

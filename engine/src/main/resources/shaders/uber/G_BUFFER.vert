@@ -7,12 +7,17 @@ layout (location = 2) in vec3 normal;
 uniform int renderIndex;
 uniform mat4 modelMatrix;
 
+out mat4 invModelMatrix;
+flat out int isDecalPass;
 flat out int renderingIndex;
 smooth out vec2 initialUV;
 smooth out vec3 normalVec;
 smooth out vec3 worldSpacePosition;
 
 void main() {
+    isDecalPass = 0;
+    invModelMatrix = mat4(0);
+
     renderingIndex = (renderIndex + gl_InstanceID);
     vec4 wPosition = modelMatrix * vec4(position, 1.0);
     worldSpacePosition = wPosition.xyz;

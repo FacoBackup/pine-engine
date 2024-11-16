@@ -101,7 +101,14 @@ public class WorldGrid implements Loggable {
     }
 
     public void moveBetweenTiles(String entityId, WorldTile previousWorldTile, WorldTile newWorldTile) {
-        previousWorldTile.getEntitiesMap().remove(entityId);
-        newWorldTile.getEntitiesMap().put(entityId, true);
+        if (!previousWorldTile.getEntitiesMap().containsKey(entityId) || newWorldTile != previousWorldTile) {
+            var prevCopy = new HashMap<>(previousWorldTile.getEntitiesMap());
+            prevCopy.remove(entityId);
+            previousWorldTile.setEntities(prevCopy);
+
+            var newCopy = new HashMap<>(newWorldTile.getEntitiesMap());
+            newCopy.put(entityId, true);
+            newWorldTile.setEntities(newCopy);
+        }
     }
 }

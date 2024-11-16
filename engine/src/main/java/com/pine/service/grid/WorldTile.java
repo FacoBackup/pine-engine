@@ -16,7 +16,7 @@ public class WorldTile {
     private boolean loaded;
     private boolean culled;
     private SparseVoxelOctree svo;
-    private final Map<String, Boolean> entities = new HashMap<>();
+    private  Map<String, Boolean> entities = new HashMap<>();
     private final BoundingBox boundingBox = new BoundingBox();
     private int normalizedDistance = 0;
 
@@ -37,6 +37,10 @@ public class WorldTile {
 
     public Map<String, Boolean> getEntitiesMap() {
         return entities;
+    }
+
+    public void setEntities(Map<String, Boolean> entities) {
+        this.entities = entities;
     }
 
     public static @NotNull String getId(int x, int z) {

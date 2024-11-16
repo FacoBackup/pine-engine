@@ -1,11 +1,8 @@
 #define IMAGE_QUANTITY 7.
 
-#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
-
-#include "../uber/G_BUFFER_UTIL.glsl"
-
 in vec2 texCoords;
 layout (binding = 0) uniform sampler2D iconSampler;
+layout (binding = 1) uniform sampler2D sceneDepth;
 uniform vec3 iconColor;
 uniform float imageIndex;
 uniform int renderIndex;
@@ -17,6 +14,10 @@ layout (location = 2) out vec4 gBufferRMAOSampler;
 layout (location = 3) out vec4 gBufferMaterialSampler;
 layout (location = 4) out vec4 gBufferDepthSampler;
 layout (location = 5) out vec4 gBufferIndirect;
+
+#include "../util/SCENE_DEPTH_UTILS.glsl"
+
+#include "../uber/G_BUFFER_UTIL.glsl"
 
 void main() {
     vec2 imageSize = vec2(textureSize(iconSampler, 0));
@@ -33,5 +34,10 @@ void main() {
         gBufferAlbedoSampler = vec4(1., .5, 0., 1.);
     } else {
         gBufferAlbedoSampler = vec4(iconColor, 1.);
+        vec2 quadUV = gl_FragCoord.xy / bufferResolution;
+        float currentDepth = getLogDepth(quadUV);
+        if (currentDepth > 0. && currentDepth < gl_FragCoord.z){
+            gBufferAlbedoSampler.rgb *= .5;
+        }
     }
 }

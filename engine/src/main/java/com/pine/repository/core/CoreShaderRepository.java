@@ -11,6 +11,7 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader gBufferShader;
     public Shader gBufferTerrainShader;
     public Shader gBufferDecalShader;
+    public Shader copyQuadShader;
     public Shader gBufferFoliageShader;
     public Shader foliageCullingCompute;
     public Shader toScreenShader;
@@ -73,11 +74,13 @@ public class CoreShaderRepository implements CoreRepository {
         cloudShapeCompute = shaderService.create("compute/CLOUD_SHAPE_COMPUTE.glsl");
         cloudsRaymarcher = shaderService.create("QUAD.vert", "ATMOSPHERE.frag");
         gBufferDecalShader = shaderService.create("uber/G_BUFFER_DECAL.vert", "uber/G_BUFFER.frag");
+        copyQuadShader = shaderService.create("QUAD.vert", "QUAD_COPY.frag");
 
     }
 
     @Override
     public void dispose() {
+        copyQuadShader.dispose();
         gBufferShading.dispose();
         spriteShader.dispose();
         gBufferShader.dispose();
