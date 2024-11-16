@@ -5,7 +5,7 @@ import com.pine.injection.PBean;
 import org.joml.Vector2f;
 
 @PBean
-public class RuntimeRepository  {
+public class RuntimeRepository {
 
     public boolean isFocused;
     private int displayW;
@@ -22,6 +22,8 @@ public class RuntimeRepository  {
     public boolean mousePressed;
     public float mouseX = 0;
     public float mouseY = 0;
+    public float normalizedMouseX = 0;
+    public float normalizedMouseY = 0;
     public float viewportW = 0;
     public float viewportH = 0;
     public float viewportX = 0;

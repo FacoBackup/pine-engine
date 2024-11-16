@@ -6,7 +6,7 @@ import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 
 public class PrimitiveGBufferPass extends AbstractGBufferPass {
-    private UniformDTO transformationIndex;
+    private UniformDTO renderIndex;
     private UniformDTO parallaxHeightScale;
     private UniformDTO parallaxLayers;
     private UniformDTO useParallax;
@@ -32,7 +32,7 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
         roughnessMetallic = addUniformDeclaration("roughnessMetallic");
         useAlbedoRoughnessMetallicAO = addUniformDeclaration("useAlbedoRoughnessMetallicAO");
         useNormalTexture = addUniformDeclaration("useNormalTexture");
-        transformationIndex = addUniformDeclaration("transformationIndex");
+        renderIndex = addUniformDeclaration("renderIndex");
         parallaxHeightScale = addUniformDeclaration("parallaxHeightScale");
         parallaxLayers = addUniformDeclaration("parallaxLayers");
         useParallax = addUniformDeclaration("useParallax");
@@ -56,14 +56,18 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
         prepareCall();
         meshService.setInstanceCount(0);
 
+        engineRepository.meshesDrawn = 0;
         for (WorldTile worldTile : worldService.getLoadedTiles()) {
             if (worldTile != null) {
-                for (var entity : worldTile.getEntities()) {
-                    var mesh = world.bagMeshComponent.get(entity);
+                for (var entityId : worldTile.getEntities()) {
+                    var mesh = world.bagMeshComponent.get(entityId);
                     if (mesh != null && mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
                         var request = mesh.renderRequest;
+                        var entity = world.entityMap.get(entityId);
+                        entity.renderIndex =  engineRepository.meshesDrawn;
+                        engineRepository.meshesDrawn++;
                         // TODO - SINGLE BUFFER FOR EVERY MESH ATTRIBUTE (Material ID, Model Matrix, Transformation Index); BIND BUFFER INSTEAD OF INDIVIDUAL BINDS
-                        shaderService.bindInt(request.renderIndex, transformationIndex);
+                        shaderService.bindInt(entity.renderIndex, renderIndex);
                         shaderService.bindMat4(request.modelMatrix, modelMatrix);
                         if (request.material != null) {
                             bindMaterial(request);

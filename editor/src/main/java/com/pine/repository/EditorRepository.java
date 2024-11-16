@@ -14,6 +14,7 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,6 +22,14 @@ import java.util.Map;
 
 @PBean
 public class EditorRepository extends Inspectable implements SerializableRepository {
+    @InspectableField(group = "Icons", label = "Show")
+    public boolean showIcons = true;
+
+    @InspectableField(group = "Icons", label = "Scale")
+    public float iconScale = 1;
+
+    @InspectableField(group = "Icons", label = "Color")
+    public Color iconColor = new Color(1f, 1f, 1f);
 
     @InspectableField(group = "Editor", label = "Accent color")
     public final Color accentColor = new Color(0.26f, 0.59f, 0.98f);
@@ -28,7 +37,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     @InspectableField(group = "Editor", label = "Dark mode")
     public boolean isDarkMode = true;
 
-    @InspectableField(group = "Grid", label = "Show grid")
+    @InspectableField(group = "Grid", label = "Show")
     public boolean showGrid = true;
 
     @InspectableField(group = "Grid", label = "Grid color", min = 0, max = 1)
@@ -87,6 +96,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public String foliageForPainting;
     public boolean fullScreen;
     public boolean showPaintingMask = false;
+
 
     @Override
     public String getIcon() {

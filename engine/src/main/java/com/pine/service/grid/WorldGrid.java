@@ -1,11 +1,12 @@
 package com.pine.service.grid;
 
+import com.pine.messaging.Loggable;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class WorldGrid {
+public class WorldGrid implements Loggable {
     public static final int TILE_SIZE = 150;
     public static final float TILE_SIZE_SQRT = (float) Math.sqrt(TILE_SIZE);
     private final Map<String, WorldTile> tiles = new HashMap<>();
@@ -100,7 +101,10 @@ public class WorldGrid {
     }
 
     public void moveBetweenTiles(String entityId, WorldTile previousWorldTile, WorldTile newWorldTile) {
-        previousWorldTile.getEntities().remove(entityId);
-        newWorldTile.getEntities().add(entityId);
+        if(previousWorldTile != newWorldTile) {
+            getLogger().warn("Moving entity {} from tile {} to tile {}", entityId, previousWorldTile.getId(), newWorldTile.getId());
+            previousWorldTile.getEntities().remove(entityId);
+            newWorldTile.getEntities().add(entityId);
+        }
     }
 }

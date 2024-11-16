@@ -108,8 +108,9 @@ public class PaintGizmoPass extends AbstractPass {
         radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : -1;
         shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
 
-        xyMouse.x = (runtimeRepository.mouseX + runtimeRepository.viewportX) / runtimeRepository.viewportW;
-        xyMouse.y = (runtimeRepository.viewportH - runtimeRepository.mouseY + runtimeRepository.viewportY) / runtimeRepository.viewportH;
+
+        xyMouse.x = runtimeRepository.normalizedMouseX;
+        xyMouse.y = runtimeRepository.normalizedMouseY;
         shaderService.bindVec2(xyMouse, xyMouseUniform);
 
         targetImageSize.x = targetTexture.width;

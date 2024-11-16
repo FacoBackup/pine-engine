@@ -32,6 +32,9 @@ public class ViewportPickingService implements Loggable {
     @PInject
     public WorldRepository world;
 
+    @PInject
+    public WorldService worldService;
+
     public void pick() {
         int x = (int) ((runtimeRepository.mouseX - runtimeRepository.viewportX) * (runtimeRepository.getDisplayW() / runtimeRepository.viewportW));
         int y = (int) ((runtimeRepository.getDisplayH() - runtimeRepository.mouseY - runtimeRepository.viewportY));
@@ -67,10 +70,14 @@ public class ViewportPickingService implements Loggable {
     }
 
     private TransformationComponent findEntity(int actualIndex) {
-        Collection<MeshComponent> meshes = world.bagMeshComponent.values();
-        for (var mesh : meshes) {
-            if (mesh.renderRequest != null && !mesh.renderRequest.isCulled && mesh.renderRequest.renderIndex == actualIndex) {
-                return world.bagTransformationComponent.get(mesh.getEntityId());
+        for (var tile : worldService.getLoadedTiles()) {
+            if (tile != null) {
+                for (var entityId : tile.getEntities()) {
+                    var entity = world.entityMap.get(entityId);
+                    if (entity.renderIndex == actualIndex) {
+                        return world.bagTransformationComponent.get(entityId);
+                    }
+                }
             }
         }
         return null;

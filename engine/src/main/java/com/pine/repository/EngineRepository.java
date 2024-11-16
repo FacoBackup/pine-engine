@@ -91,6 +91,7 @@ public class EngineRepository extends Inspectable implements SerializableReposit
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
     public boolean gridOverlay = false;
     public transient boolean isBakingEnvironmentMaps;
+    public int meshesDrawn;
 
     @Override
     public String getTitle() {

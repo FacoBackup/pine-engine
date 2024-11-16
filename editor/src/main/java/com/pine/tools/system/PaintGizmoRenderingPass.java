@@ -27,7 +27,6 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
     private UniformDTO viewportSize;
     private UniformDTO viewportOrigin;
     private UniformDTO radiusDensityUniform;
-    private UniformDTO hasSelection;
     private final Vector3f xyDown = new Vector3f();
     private final Vector3f radiusDensityMode = new Vector3f();
     private final Vector2f viewportO = new Vector2f();
@@ -39,7 +38,6 @@ public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
         radiusDensityUniform = addUniformDeclaration("radiusDensityMode");
         viewportOrigin = addUniformDeclaration("viewportOrigin");
         viewportSize = addUniformDeclaration("viewportSize");
-        hasSelection = addUniformDeclaration("hasSelection");
     }
 
     @Override

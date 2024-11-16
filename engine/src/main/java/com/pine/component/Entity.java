@@ -20,6 +20,7 @@ public class Entity extends Inspectable implements Serializable {
 
     @InspectableField(label = "Creation date", disabled = true)
     public final String creationDate = FORMATTER.format(new Date());
+    public int renderIndex;
 
     public Entity(String id, String name) {
         this.id = id;

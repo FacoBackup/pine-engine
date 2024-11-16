@@ -58,14 +58,15 @@ public class OutlineGenPass extends AbstractPass {
             shaderService.bind(toolsResourceRepository.outlineGenShader);
             for (WorldTile worldTile : worldService.getLoadedTiles()) {
                 if (worldTile != null) {
-                    for (var entity : worldTile.getEntities()) {
-                        if (!editorRepository.selected.containsKey(entity)) {
+                    for (var entityId : worldTile.getEntities()) {
+                        if (!editorRepository.selected.containsKey(entityId)) {
                             continue;
                         }
-                        var mesh = world.bagMeshComponent.get(entity);
+                        var mesh = world.bagMeshComponent.get(entityId);
                         if (mesh != null && editorRepository.selected.containsKey(mesh.getEntityId()) && mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
                             var request = mesh.renderRequest;
-                            shaderService.bindInt(request.renderIndex, renderIndex);
+                            var entity = world.entityMap.get(entityId);
+                            shaderService.bindInt(entity.renderIndex, renderIndex);
                             shaderService.bindMat4(request.modelMatrix, modelMatrix);
                             meshService.bind(request.mesh);
                             meshService.draw();

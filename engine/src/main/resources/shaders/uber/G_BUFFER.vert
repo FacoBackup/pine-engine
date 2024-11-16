@@ -4,7 +4,7 @@ layout (location = 2) in vec3 normal;
 
 #include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
-uniform int transformationIndex;
+uniform int renderIndex;
 uniform mat4 modelMatrix;
 
 flat out vec3 cameraPlacement;
@@ -16,7 +16,7 @@ smooth out vec3 worldSpacePosition;
 
 void main() {
     cameraPlacement = cameraWorldPosition.xyz;
-    renderingIndex = (transformationIndex + gl_InstanceID);
+    renderingIndex = (renderIndex + gl_InstanceID);
     vec4 wPosition = modelMatrix * vec4(position, 1.0);
     worldSpacePosition = wPosition.xyz;
     normalVec = normalize(mat3(modelMatrix) * normal);
