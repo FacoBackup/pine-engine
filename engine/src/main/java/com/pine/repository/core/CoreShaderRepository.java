@@ -10,8 +10,9 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader spriteShader;
     public Shader gBufferShader;
     public Shader gBufferTerrainShader;
-    public Shader gBufferInstanceShader;
-    public Shader foliageCullingShader;
+    public Shader gBufferDecalShader;
+    public Shader gBufferFoliageShader;
+    public Shader foliageCullingCompute;
     public Shader toScreenShader;
     public Shader downscaleShader;
     public Shader bilateralBlurShader;
@@ -35,7 +36,6 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader cloudDetailCompute;
     public Shader cloudShapeCompute;
     public Shader cloudsRaymarcher;
-    public Shader meshletCompute;
     public Shader compositingShader;
 
     @PInject
@@ -49,8 +49,8 @@ public class CoreShaderRepository implements CoreRepository {
         spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
         gBufferShader = shaderService.create("uber/G_BUFFER.vert", "uber/G_BUFFER.frag");
         gBufferTerrainShader = shaderService.create("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag");
-        gBufferInstanceShader = shaderService.create("uber/G_BUFFER_FOLIAGE.vert", "uber/G_BUFFER.frag");
-        foliageCullingShader = shaderService.create("compute/FOLIAGE_CULLING_COMPUTE.glsl");
+        gBufferFoliageShader = shaderService.create("uber/G_BUFFER_FOLIAGE.vert", "uber/G_BUFFER.frag");
+        foliageCullingCompute = shaderService.create("compute/FOLIAGE_CULLING_COMPUTE.glsl");
         toScreenShader = shaderService.create("QUAD.vert", "TO_SCREEN.frag");
         downscaleShader = shaderService.create("QUAD.vert", "BILINEAR_DOWNSCALE.glsl");
         bilateralBlurShader = shaderService.create("QUAD.vert", "BILATERAL_BLUR.glsl");
@@ -72,7 +72,8 @@ public class CoreShaderRepository implements CoreRepository {
         cloudDetailCompute = shaderService.create("compute/CLOUD_DETAIL_COMPUTE.glsl");
         cloudShapeCompute = shaderService.create("compute/CLOUD_SHAPE_COMPUTE.glsl");
         cloudsRaymarcher = shaderService.create("QUAD.vert", "ATMOSPHERE.frag");
-        meshletCompute = shaderService.create("compute/MESHLET_COMPUTE.glsl");
+        gBufferDecalShader = shaderService.create("uber/G_BUFFER_DECAL.vert", "uber/G_BUFFER.frag");
+
     }
 
     @Override
@@ -82,8 +83,8 @@ public class CoreShaderRepository implements CoreRepository {
         gBufferShader.dispose();
         gBufferTerrainShader.dispose();
         brdfShader.dispose();
-        gBufferInstanceShader.dispose();
-        foliageCullingShader.dispose();
+        gBufferFoliageShader.dispose();
+        foliageCullingCompute.dispose();
         toScreenShader.dispose();
         downscaleShader.dispose();
         bilateralBlurShader.dispose();
@@ -105,6 +106,7 @@ public class CoreShaderRepository implements CoreRepository {
         cloudDetailCompute.dispose();
         cloudShapeCompute.dispose();
         cloudsRaymarcher.dispose();
-        meshletCompute.dispose();
+        gBufferDecalShader.dispose();
+
     }
 }

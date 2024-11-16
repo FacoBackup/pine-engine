@@ -95,16 +95,13 @@ public class WorldGrid implements Loggable {
     public void removeTile(String id) {
         var tileToRemove = tiles.get(id);
         tiles.remove(id);
-        for(var tile : tiles.values()) {
+        for (var tile : tiles.values()) {
             tile.removeAdjacentTile(tileToRemove);
         }
     }
 
     public void moveBetweenTiles(String entityId, WorldTile previousWorldTile, WorldTile newWorldTile) {
-        if(previousWorldTile != newWorldTile) {
-            getLogger().warn("Moving entity {} from tile {} to tile {}", entityId, previousWorldTile.getId(), newWorldTile.getId());
-            previousWorldTile.getEntities().remove(entityId);
-            newWorldTile.getEntities().add(entityId);
-        }
+        previousWorldTile.getEntitiesMap().remove(entityId);
+        newWorldTile.getEntitiesMap().put(entityId, true);
     }
 }

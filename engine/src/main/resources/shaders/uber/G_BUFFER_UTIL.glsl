@@ -1,3 +1,4 @@
+#define PARALLAX_THRESHOLD 200.
 
 float encode(float depthFunc) {
     float half_co = depthFunc * 0.5;
@@ -5,7 +6,7 @@ float encode(float depthFunc) {
     return log2(clamp_z) * half_co;
 }
 
-mat3 computeTBN(vec3 worldPosition) {
+mat3 computeTBN(vec3 worldPosition, vec2 initialUV, vec3 normalVec) {
     vec3 dp1 = dFdx(worldPosition);
     vec3 dp2 = dFdy(worldPosition);
     vec2 duv1 = dFdx(initialUV);
@@ -20,10 +21,10 @@ mat3 computeTBN(vec3 worldPosition) {
     return mat3(T * invmax, B * invmax, normalVec);
 }
 
-vec2 parallaxOcclusionMapping(sampler2D heightMap, float heightScale, int layers, float distanceFromCamera, mat3 TBN) {
+vec2 parallaxOcclusionMapping(vec2 initialUV, vec3 worldSpacePosition, sampler2D heightMap, float heightScale, int layers, float distanceFromCamera, mat3 TBN) {
     if (distanceFromCamera > PARALLAX_THRESHOLD) return initialUV;
     mat3 transposed = transpose(TBN);
-    vec3 viewDirection = normalize(transposed * (cameraPlacement.xyz - worldSpacePosition.xyz));
+    vec3 viewDirection = normalize(transposed * (cameraWorldPosition.xyz - worldSpacePosition.xyz));
     float fLayers = float(max(layers, 1));
     float layerDepth = 1.0 / fLayers;
     float currentLayerDepth = 0.0;

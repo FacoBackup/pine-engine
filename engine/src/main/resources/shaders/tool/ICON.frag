@@ -1,5 +1,9 @@
 #define IMAGE_QUANTITY 7.
 
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
+
+#include "../uber/G_BUFFER_UTIL.glsl"
+
 in vec2 texCoords;
 layout (binding = 0) uniform sampler2D iconSampler;
 uniform vec3 iconColor;
@@ -17,7 +21,7 @@ layout (location = 5) out vec4 gBufferIndirect;
 void main() {
     vec2 imageSize = vec2(textureSize(iconSampler, 0));
     float color = texture(iconSampler, vec2(texCoords.x / IMAGE_QUANTITY + imageIndex * imageSize.y / imageSize.x, 1. - texCoords.y)).a;
-    gBufferDepthSampler = vec4(1, renderIndex + 1, 1, 1);
+    gBufferDepthSampler = vec4(encode(logDepthFC), renderIndex + 1, 1, 1);
     if (color <= .1) discard;
 
     gBufferNormalSampler = vec4(0);

@@ -22,6 +22,7 @@ public class SystemService implements SyncTask {
             new TerrainGBufferPass(),
             new PrimitiveGBufferPass(),
             new FoliageGBufferPass(),
+            new DecalGBufferPass(),
             new GBufferShadingPass(),
             new AtmospherePass(),
             new CompositingPass(),

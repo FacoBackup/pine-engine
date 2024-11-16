@@ -1,4 +1,3 @@
-#define PARALLAX_THRESHOLD 200.
 
 #define ALBEDO 0
 #define NORMAL 1
@@ -22,9 +21,7 @@
 #define CLEAR_COAT 4
 #define TRANSPARENCY 5
 
-flat in vec3 cameraPlacement;
 flat in int renderingIndex;
-flat in float depthFunc;
 smooth in vec2 initialUV;
 smooth in vec3 normalVec;
 smooth in vec3 worldSpacePosition;
@@ -72,20 +69,23 @@ layout (location = 3) out vec4 gBufferMaterialSampler;
 layout (location = 4) out vec4 gBufferDepthSampler;
 layout (location = 5) out vec4 gBufferIndirect;
 
+#include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
+
 #include "../uber/G_BUFFER_UTIL.glsl"
 
 #include "../uber/MATERIAL_INFO.glsl"
 
+
 void main() {
     vec2 UV = initialUV;
-    vec3 V = cameraPlacement.xyz - worldSpacePosition;
+    vec3 V = cameraWorldPosition.xyz - worldSpacePosition;
     float distanceFromCamera = length(V);
-    mat3 TBN = computeTBN(worldSpacePosition);
+    mat3 TBN = computeTBN(worldSpacePosition, UV, normalVec);
     if (useParallax){
-        UV = parallaxOcclusionMapping(heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
+        UV = parallaxOcclusionMapping(UV, worldSpacePosition.xyz, heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
     vec3 N = normalVec;
-    gBufferDepthSampler = vec4(encode(depthFunc), renderingIndex + 1, UV);
+    gBufferDepthSampler = vec4(encode(logDepthFC), renderingIndex + 1, UV);
     if (!fallbackMaterial){
         bool useMetallic = useAlbedoRoughnessMetallicAO.b != 0;
         bool useRoughness = useAlbedoRoughnessMetallicAO.g != 0;

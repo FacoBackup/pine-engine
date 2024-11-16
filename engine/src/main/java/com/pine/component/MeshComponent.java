@@ -13,9 +13,6 @@ public class MeshComponent extends AbstractComponent {
     @InspectableField(label = "Casts shadow")
     public boolean castsShadows = true;
 
-    @InspectableField(label = "Contribute to probes")
-    public boolean contributeToProbes = true;
-
     @ResourceTypeField(type = StreamableResourceType.MATERIAL)
     @InspectableField(label = "Material")
     public String material;

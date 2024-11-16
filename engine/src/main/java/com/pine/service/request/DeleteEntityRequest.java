@@ -11,7 +11,6 @@ import java.util.Objects;
 
 public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     private final List<String> entities;
-    private final Vector3f translationAux = new Vector3f();
 
     public DeleteEntityRequest(Collection<String> entities) {
         this.entities = new ArrayList<>(entities);
@@ -28,13 +27,6 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     }
 
     public void removeEntity(String entityId) {
-        var transform = world.bagTransformationComponent.get(entityId);
-        if(transform != null){
-            transform.modelMatrix.getTranslation(translationAux);
-            var tile = worldService.getHashGrid().getOrCreateTile(translationAux);
-            tile.getEntities().remove(entityId);
-        }
-
         String parent = world.childParent.get(entityId);
         var parentList = world.parentChildren.get(parent);
         if (parentList != null) {
@@ -47,6 +39,8 @@ public class DeleteEntityRequest extends AbstractRequest implements Loggable {
     }
 
     private void removeComponentsHierarchically(String entity) {
+        worldService.getTiles().values().forEach(t -> t.getEntitiesMap().remove(entity));
+
         world.unregisterComponents(entity);
         world.entityMap.remove(entity);
 

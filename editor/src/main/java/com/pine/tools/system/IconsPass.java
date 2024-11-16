@@ -85,6 +85,11 @@ public class IconsPass extends AbstractPass {
                         renderIcon(entityId, 4, index);
                         index++;
                     }
+
+                    if (world.bagDecalComponent.containsKey(entityId)) {
+                        renderIcon(entityId, 6, index);
+                        index++;
+                    }
                 }
             }
         }

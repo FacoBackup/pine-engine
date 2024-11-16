@@ -4,9 +4,7 @@ import com.pine.service.voxelization.svo.SparseVoxelOctree;
 import com.pine.service.voxelization.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.pine.service.grid.WorldGrid.TILE_SIZE;
 
@@ -18,7 +16,7 @@ public class WorldTile {
     private boolean loaded;
     private boolean culled;
     private SparseVoxelOctree svo;
-    private final List<String> entities = new ArrayList<>();
+    private final Map<String, Boolean> entities = new HashMap<>();
     private final BoundingBox boundingBox = new BoundingBox();
     private int normalizedDistance = 0;
 
@@ -33,7 +31,11 @@ public class WorldTile {
         boundingBox.min.set(boundingBox.center).sub(TILE_SIZE / 2f, TILE_SIZE / 2f, TILE_SIZE / 2f);
     }
 
-    public List<String> getEntities() {
+    public Set<String> getEntities() {
+        return entities.keySet();
+    }
+
+    public Map<String, Boolean> getEntitiesMap() {
         return entities;
     }
 

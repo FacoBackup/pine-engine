@@ -30,7 +30,7 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
     public WorldRepository world;
 
     protected void hotKeys() {
-        if(!isWindowFocused || ImGuizmo.isUsing()){
+        if((!ImGui.isWindowHovered() && !isWindowFocused) || ImGuizmo.isUsing()){
             return;
         }
         var isNotEmptyOfSelection = !stateRepository.selected.isEmpty();

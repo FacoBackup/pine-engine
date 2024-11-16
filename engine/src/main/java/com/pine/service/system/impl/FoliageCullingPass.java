@@ -52,7 +52,7 @@ public class FoliageCullingPass extends AbstractPass {
 
     @Override
     protected Shader getShader() {
-        return shaderRepository.foliageCullingShader;
+        return shaderRepository.foliageCullingCompute;
     }
 
     @Override

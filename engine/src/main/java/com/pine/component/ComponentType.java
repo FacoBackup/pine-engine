@@ -10,10 +10,11 @@ import java.io.Serializable;
 
 public enum ComponentType implements Serializable {
     POINT_LIGHT(LightType.POINT.getTitle(), Icons.lightbulb, PointLightComponent.class),
-    SPHERE_LIGHT(LightType.SPHERE.getTitle(), Icons.circle, SphereLightComponent.class),
+    SPHERE_LIGHT(LightType.SPHERE.getTitle(), Icons.sunny, SphereLightComponent.class),
     SPOT_LIGHT(LightType.SPOT.getTitle(), Icons.highlight, SpotLightComponent.class),
     ENVIRONMENT_PROBE("Environment Probe", Icons.blur_on, EnvironmentProbeComponent.class),
     MESH("Mesh", Icons.category, MeshComponent.class),
+    DECAL("Decal", Icons.layers, DecalComponent.class),
     TRANSFORMATION("Transformation", Icons.transform, TransformationComponent.class);
 
     private final String title;
