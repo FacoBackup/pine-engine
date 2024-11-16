@@ -79,7 +79,6 @@ public class RenderingTask extends AbstractTask {
     }
 
     private void updateTiles() {
-        int renderIndex = 0;
         int probeIndex = 0;
 
         for (var tile : worldService.getLoadedTiles()) {
@@ -90,11 +89,7 @@ public class RenderingTask extends AbstractTask {
                         var t = world.bagTransformationComponent.get(mesh.getEntityId());
                         if (t != null) {
                             mesh.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
-                            RenderingRequest request = renderingRequestService.prepare(mesh, t);
-                            if (request != null) {
-                                request.renderIndex = renderIndex;
-                                renderIndex++;
-                            }
+                            renderingRequestService.prepare(mesh, t);
                         }
                     }
                     var probe = world.bagEnvironmentProbeComponent.get(entity);

@@ -22,14 +22,11 @@ public class RenderingRequestService {
     public StreamingService streamingService;
 
     @PInject
-    public EngineRepository engineSettings;
-
-    @PInject
     public RenderingRepository renderingRepository;
 
-    public RenderingRequest prepare(MeshComponent scene, TransformationComponent transform) {
+    public void prepare(MeshComponent scene, TransformationComponent transform) {
         MeshResourceRef mesh = selectLOD(scene);
-        if (mesh == null) return null;
+        if (mesh == null) return;
 
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest();
@@ -48,9 +45,7 @@ public class RenderingRequestService {
 
             scene.renderRequest.mesh = mesh;
             scene.renderRequest.modelMatrix = transform.modelMatrix;
-            return scene.renderRequest;
         }
-        return null;
     }
 
     private void prepareMaterial(MeshComponent scene, RenderingRequest renderRequest) {

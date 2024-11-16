@@ -12,7 +12,7 @@ public enum ComponentType implements Serializable {
     POINT_LIGHT(LightType.POINT.getTitle(), Icons.lightbulb, PointLightComponent.class),
     SPHERE_LIGHT(LightType.SPHERE.getTitle(), Icons.circle, SphereLightComponent.class),
     SPOT_LIGHT(LightType.SPOT.getTitle(), Icons.highlight, SpotLightComponent.class),
-    ENVIRONMENT_PROBE("Environment Probe", Icons.panorama_photosphere, EnvironmentProbeComponent.class),
+    ENVIRONMENT_PROBE("Environment Probe", Icons.blur_on, EnvironmentProbeComponent.class),
     MESH("Mesh", Icons.category, MeshComponent.class),
     TRANSFORMATION("Transformation", Icons.transform, TransformationComponent.class);
 

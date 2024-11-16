@@ -10,7 +10,6 @@ public class RenderingRequest implements Serializable {
     public transient MeshResourceRef mesh;
     public transient MaterialResourceRef material;
     public boolean isCulled;
-    public int renderIndex;
     public String entity;
     public Matrix4f modelMatrix;
 }

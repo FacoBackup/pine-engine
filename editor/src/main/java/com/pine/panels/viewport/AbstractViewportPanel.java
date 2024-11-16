@@ -96,6 +96,9 @@ public abstract class AbstractViewportPanel extends AbstractEntityViewPanel {
         repo.mousePressed = ImGui.isWindowFocused() && ImGui.isWindowHovered() && ImGui.isMouseDown(ImGuiMouseButton.Left);
         repo.mouseX = ImGui.getMousePosX();
         repo.mouseY = ImGui.getMousePosY();
+
+        repo.normalizedMouseX = (repo.mouseX + repo.viewportX) / repo.viewportW;
+        repo.normalizedMouseY = (repo.viewportH - repo.mouseY + repo.viewportY) / repo.viewportH;
     }
 
     @Override
