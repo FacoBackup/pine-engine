@@ -35,6 +35,7 @@ public abstract class AbstractComponent extends Inspectable implements Cloneable
         try {
             var clone = (AbstractComponent) super.clone();
             clone.entityId = entity.id;
+            clone.registerChange();
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();

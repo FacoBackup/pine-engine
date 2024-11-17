@@ -6,7 +6,6 @@ import com.pine.injection.PInject;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.core.CoreMeshRepository;
-import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.core.CoreShaderRepository;
 import com.pine.service.module.EngineModulesService;
 import com.pine.service.resource.IResource;
@@ -36,8 +35,6 @@ public class Engine extends MetricCollector implements IResource {
     @PInject
     public CoreShaderRepository shaderRepository;
     @PInject
-    public CoreSSBORepository ssboRepository;
-    @PInject
     public CoreBufferRepository bufferRepository;
     @PInject
     public CoreMeshRepository primitiveRepository;
@@ -59,7 +56,6 @@ public class Engine extends MetricCollector implements IResource {
         setupGL();
 
         primitiveRepository.initialize();
-        ssboRepository.initialize();
         bufferRepository.initialize();
         shaderRepository.initialize();
         systemsService.initialize();
@@ -148,7 +144,6 @@ public class Engine extends MetricCollector implements IResource {
     @Override
     public void dispose() {
         shaderRepository.dispose();
-        ssboRepository.dispose();
         bufferRepository.dispose();
         primitiveRepository.dispose();
     }

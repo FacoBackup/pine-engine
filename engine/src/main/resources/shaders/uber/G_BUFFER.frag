@@ -131,7 +131,7 @@ void main() {
         gBufferMaterialSampler = vec4(packValues(anisotropicRotation, anisotropy, clearCoat, sheen, sheenTint, renderingMode, ssrEnabled), 1);
     } else {
         gBufferAlbedoSampler = vec4(vec3(1), 0);
-        gBufferRMAOSampler = vec4(.5, .5, 1, 1);
+        gBufferRMAOSampler = vec4(1, 0, 0, 1);
         gBufferMaterialSampler = vec4(packValues(0, 0, 0, 0, 0, ISOTROPIC, false), 1);
     }
     gBufferNormalSampler = vec4(N, 1);
@@ -184,7 +184,7 @@ void main() {
             gBufferAlbedoSampler.rgb = randomColor(gl_PrimitiveID);
             break;
             case HEIGHT:
-            gBufferAlbedoSampler.rgb = vec3(W/10);
+            gBufferAlbedoSampler.rgb = vec3(W.y/10);
             break;
         }
 

@@ -3,6 +3,7 @@
 #include "../util/TERRAIN.glsl"
 
 uniform vec4 tilesScaleTranslation;
+uniform vec2 terrainOffset;
 uniform int textureSize;
 uniform float heightScale;
 
@@ -21,7 +22,7 @@ void main() {
 
     renderingIndex = int(tilesScaleTranslation.z + tilesScaleTranslation.w);
 
-    TerrainData terrain = computePosition(tilesScaleTranslation, textureSize, heightMap, heightScale);
+    TerrainData terrain = computeTerrainData(tilesScaleTranslation, terrainOffset, textureSize, heightMap, heightScale);
     initialUV = terrain.uv;
 
     normalVec = getNormalFromHeightMap(terrain.position.y, heightScale, heightMap, initialUV);

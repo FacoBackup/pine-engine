@@ -2,8 +2,10 @@ package com.pine.service.system.impl;
 
 import com.pine.repository.DebugShadingModel;
 import com.pine.repository.rendering.RenderingMode;
+import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
@@ -13,12 +15,42 @@ public abstract class AbstractGBufferPass extends AbstractPass {
     private UniformDTO debugShadingMode;
     private UniformDTO applyGrid;
     private UniformDTO probeFilteringLevels;
+    private UniformDTO parallaxHeightScale;
+    private UniformDTO parallaxLayers;
+    private UniformDTO useParallax;
+    private UniformDTO anisotropicRotation;
+    private UniformDTO anisotropy;
+    private UniformDTO clearCoat;
+    private UniformDTO sheen;
+    private UniformDTO sheenTint;
+    private UniformDTO renderingMode;
+    private UniformDTO ssrEnabled;
+    private UniformDTO albedoColor;
+    private UniformDTO roughnessMetallic;
+    private UniformDTO useAlbedoRoughnessMetallicAO;
+    private UniformDTO useNormalTexture;
+    private UniformDTO fallbackMaterial;
 
     @Override
     public void onInitialize() {
         debugShadingMode = addUniformDeclaration("debugShadingMode");
         applyGrid = addUniformDeclaration("applyGrid");
         probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
+        albedoColor = addUniformDeclaration("albedoColor");
+        roughnessMetallic = addUniformDeclaration("roughnessMetallic");
+        useAlbedoRoughnessMetallicAO = addUniformDeclaration("useAlbedoRoughnessMetallicAO");
+        useNormalTexture = addUniformDeclaration("useNormalTexture");
+        parallaxHeightScale = addUniformDeclaration("parallaxHeightScale");
+        parallaxLayers = addUniformDeclaration("parallaxLayers");
+        useParallax = addUniformDeclaration("useParallax");
+        anisotropicRotation = addUniformDeclaration("anisotropicRotation");
+        anisotropy = addUniformDeclaration("anisotropy");
+        clearCoat = addUniformDeclaration("clearCoat");
+        sheen = addUniformDeclaration("sheen");
+        sheenTint = addUniformDeclaration("sheenTint");
+        renderingMode = addUniformDeclaration("renderingMode");
+        ssrEnabled = addUniformDeclaration("ssrEnabled");
+        fallbackMaterial = addUniformDeclaration("fallbackMaterial");
     }
 
     @Override
@@ -38,10 +70,10 @@ public abstract class AbstractGBufferPass extends AbstractPass {
             meshService.setRenderingMode(RenderingMode.TRIANGLES);
         }
 
-        if(engineRepository.isBakingEnvironmentMaps){
+        if (engineRepository.isBakingEnvironmentMaps) {
             shaderService.bindInt(DebugShadingModel.LIT.getId(), debugShadingMode);
             shaderService.bindBoolean(false, applyGrid);
-        }else {
+        } else {
             shaderService.bindInt(engineRepository.debugShadingModel.getId(), debugShadingMode);
             shaderService.bindBoolean(engineRepository.gridOverlay, applyGrid);
             shaderService.bindFloat(engineRepository.probeFiltering, probeFilteringLevels);
@@ -68,5 +100,38 @@ public abstract class AbstractGBufferPass extends AbstractPass {
                 isFirst = false;
             }
         }
+    }
+
+    protected void bindMaterial(MaterialResourceRef material) {
+        if (material == null) {
+            shaderService.bindBoolean(true, fallbackMaterial);
+            return;
+        }
+        shaderService.bindBoolean(false, fallbackMaterial);
+
+        material.anisotropicRotationUniform = anisotropicRotation;
+        material.anisotropyUniform = anisotropy;
+        material.clearCoatUniform = clearCoat;
+        material.sheenUniform = sheen;
+        material.sheenTintUniform = sheenTint;
+        material.renderingModeUniform = renderingMode;
+        material.ssrEnabledUniform = ssrEnabled;
+        material.parallaxHeightScaleUniform = parallaxHeightScale;
+        material.parallaxLayersUniform = parallaxLayers;
+        material.useParallaxUniform = useParallax;
+
+        material.albedoColorLocation = albedoColor;
+        material.roughnessMetallicLocation = roughnessMetallic;
+        material.useAlbedoRoughnessMetallicAO = useAlbedoRoughnessMetallicAO;
+        material.useNormalTexture = useNormalTexture;
+
+        material.albedoLocation = 3;
+        material.roughnessLocation = 4;
+        material.metallicLocation = 5;
+        material.aoLocation = 6;
+        material.normalLocation = 7;
+        material.heightMapLocation = 8;
+
+        materialService.bindMaterial(material);
     }
 }

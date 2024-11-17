@@ -7,6 +7,8 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.system.AbstractPass;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -21,17 +23,20 @@ public class FoliageCullingPass extends AbstractPass {
     private TextureResourceRef heightMap;
     private TextureResourceRef foliageMask;
     private UniformDTO imageSizeU;
+    private UniformDTO settingsU;
     private UniformDTO terrainOffsetU;
     private UniformDTO heightScale;
     private UniformDTO colorToMatchU;
     private long sinceLastRun;
     private final Vector2f imageSize = new Vector2f();
+    private final Vector4f settings = new Vector4f();
     private final Vector2f terrainSize = new Vector2f();
     private final IntBuffer atomicCountValue = MemoryUtil.memAllocInt(1);
 
     @Override
     public void onInitialize() {
         imageSizeU = addUniformDeclaration("imageSize");
+        settingsU = addUniformDeclaration("settings");
         heightScale = addUniformDeclaration("heightScale");
         colorToMatchU = addUniformDeclaration("colorToMatch");
         terrainOffsetU = addUniformDeclaration("terrainOffset");
@@ -59,14 +64,14 @@ public class FoliageCullingPass extends AbstractPass {
     protected void renderInternal() {
         sinceLastRun = clockRepository.totalTime;
 
-        ssboRepository.foliageTransformationSSBO.setBindingPoint(3);
-        ssboService.bind(ssboRepository.foliageTransformationSSBO);
+        bufferRepository.foliageTransformationSSBO.setBindingPoint(3);
+        ssboService.bind(bufferRepository.foliageTransformationSSBO);
 
         GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 2, bufferRepository.atomicCounterBuffer);
         GL46.glBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, CoreBufferRepository.ZERO);
 
-        COMPUTE_RUNTIME_DATA.groupX = (foliageMask.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
-        COMPUTE_RUNTIME_DATA.groupY = (foliageMask.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
+        COMPUTE_RUNTIME_DATA.groupX = (heightMap.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;
+        COMPUTE_RUNTIME_DATA.groupY = (heightMap.height + LOCAL_SIZE_Y - 1) / LOCAL_SIZE_Y;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_BUFFER_UPDATE_BARRIER_BIT | GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 
@@ -74,13 +79,17 @@ public class FoliageCullingPass extends AbstractPass {
         shaderService.bindSampler2dDirect(heightMap, 1);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
-        terrainSize.x = terrainRepository.offsetX;
-        terrainSize.y = terrainRepository.offsetZ;
-        shaderService.bindVec2(terrainSize, terrainOffsetU);
+        shaderService.bindVec2(terrainRepository.offset, terrainOffsetU);
 
-        imageSize.x = foliageMask.width;
-        imageSize.y = foliageMask.height;
+        imageSize.x = heightMap.width;
+        imageSize.y = heightMap.height;
         shaderService.bindVec2(imageSize, imageSizeU);
+
+        settings.x = terrainRepository.maxDistanceFromCamera;
+        settings.y = terrainRepository.maxIterations;
+        settings.z = terrainRepository.instanceOffset.x;
+        settings.w = terrainRepository.instanceOffset.y;
+        shaderService.bindVec4(settings, settingsU);
 
         int offset = 0;
         for (var foliage : terrainRepository.foliage.values()) {

@@ -14,6 +14,7 @@ import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.impl.TextureService;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.theme.Icons;
+import org.joml.Vector2f;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
+    private static final int FOLIAGE_IMAGE_SCALE = 4;
     public String foliageMask = UUID.randomUUID().toString();
     public String heightMapTexture = UUID.randomUUID().toString();
 
@@ -41,7 +43,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
             String foliageMaskLocal = UUID.randomUUID().toString();
             String heightMapTextureLocal = UUID.randomUUID().toString();
 
-            ImageUtil.generateTexture(width, height, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
+            ImageUtil.generateTexture(width / FOLIAGE_IMAGE_SCALE, height / FOLIAGE_IMAGE_SCALE, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
             ImageUtil.generateTexture(width, height, importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE));
             if (heightMapTextureToImport != null) {
                 var targetPath = importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE);
@@ -62,6 +64,24 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
         }
     }
 
+    @InspectableField(group = "Foliage", label = "Max distance from camera", min = 1)
+    public int maxDistanceFromCamera = 100;
+
+    @InspectableField(group = "Foliage", label = "Max instances per cell (squared) ", min = 1, max = 15)
+    public int maxIterations = 5;
+
+    @InspectableField(group = "Foliage", label = "Instance offset scale")
+    public Vector2f instanceOffset = new Vector2f(5);
+
+    @InspectableField(group = "Wind", label = "Frequency", min = 1)
+    public float windFrequency = 20;
+
+    @InspectableField(group = "Wind", label = "Strength", min = 0, max = 1)
+    public float windStrength = .5f;
+
+    @InspectableField(group = "Wind", label = "Amplitude", min = 0)
+    public float windAmplitude = .15f;
+
     @InspectableField(label = "Render terrain")
     public boolean enabled = false;
 
@@ -69,26 +89,27 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @InspectableField(label = "Height map to import")
     public String heightMapTextureToImport;
 
-    @InspectableField(label = "Casts shadows")
+    @ResourceTypeField(type = StreamableResourceType.MATERIAL)
+    @InspectableField(label = "Material")
+    public String material;
+
+    @InspectableField(group = "Terrain", label = "Casts shadows")
     public boolean castsShadows = true;
 
-    @InspectableField(label = "Cells X axis", min = 1)
+    @InspectableField(group = "Terrain", label = "Cells X axis", min = 1)
     public int cellsX = 2;
 
-    @InspectableField(label = "Cells Z axis", min = 1)
+    @InspectableField(group = "Terrain", label = "Cells Z axis", min = 1)
     public int cellsZ = 2;
 
-    @InspectableField(label = "Quads per cell (X by X)", min = 1)
+    @InspectableField(group = "Terrain", label = "Quads per cell (X by X)", min = 1)
     public int quads = 150;
 
-    @InspectableField(label = "Height scale")
+    @InspectableField(group = "Terrain", label = "Height scale")
     public float heightScale = 1;
 
-    @InspectableField(label = "Offset X")
-    public int offsetX = 10;
-
-    @InspectableField(label = "Offset Z")
-    public int offsetZ = 10;
+    @InspectableField(group = "Terrain", label = "Offset")
+    public Vector2f offset = new Vector2f(0);
 
     public final Map<String, FoliageInstance> foliage = new HashMap<>();
 
@@ -122,7 +143,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
 
     @Override
     public String getTitle() {
-        return "Terrain";
+        return "Terrain & Foliage";
     }
 
     @Override

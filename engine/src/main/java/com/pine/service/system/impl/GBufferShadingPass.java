@@ -46,7 +46,7 @@ public class GBufferShadingPass extends AbstractQuadPassPass {
 
     @Override
     protected void bindUniforms() {
-        ssboService.bind(ssboRepository.lightMetadataSSBO);
+        ssboService.bind(bufferRepository.lightMetadataSSBO);
 
         shaderService.bindFloat(engineRepository.ssrFalloff, SSRFalloff);
         shaderService.bindFloat(engineRepository.ssrStepSize, stepSizeSSR);

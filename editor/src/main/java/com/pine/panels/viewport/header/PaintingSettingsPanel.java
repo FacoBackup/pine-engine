@@ -5,6 +5,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
 import com.pine.repository.TerrainRepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
@@ -17,6 +18,9 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
 
     @PInject
     public TerrainRepository terrainRepository;
+
+    @PInject
+    public CoreBufferRepository bufferRepository;
 
     @Override
     public void render() {
@@ -35,7 +39,7 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
         }
         UIUtil.spacing();
         ImGui.setNextItemWidth(150);
-        if (ImGui.dragFloat("Brush radius", brushRadius, .1f, 0)) {
+        if (ImGui.dragFloat("Brush radius", brushRadius, .1f, 0, 250)) {
             editorRepository.brushRadius = brushRadius[0];
         }
         UIUtil.spacing();

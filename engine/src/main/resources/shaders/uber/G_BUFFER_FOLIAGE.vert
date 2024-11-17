@@ -5,8 +5,11 @@ layout (location = 2) in vec3 normal;
 #include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
 layout(std430, binding = 3) buffer TransformationBuffer {
-    mat4 transformations[];
+    vec3 transformations[];
 };
+
+layout(binding = 10) uniform sampler2D noise;
+uniform vec2 terrainOffset;
 
 out mat4 invModelMatrix;
 flat out int isDecalPass;
@@ -20,11 +23,16 @@ void main() {
     invModelMatrix = mat4(0);
 
     renderingIndex = gl_InstanceID + 1;
-    mat4 modelMatrix = transformations[renderingIndex];
-    vec4 wPosition = modelMatrix * vec4(position , 1.0);
-    worldSpacePosition = wPosition.xyz;
-    normalVec = normalize(mat3(modelMatrix) * normal);
+    vec3 translation = transformations[renderingIndex];
+    vec3 updatedPosition = position + translation;
+    vec2 normPos = normalize(terrainOffset + translation.xz);
+
+    vec2 noiseVal = texture(noise, normPos).rg * position.y;
+
+    updatedPosition += vec3(noiseVal.x, 0, noiseVal.y);
+    worldSpacePosition = updatedPosition.xyz;
+    normalVec = normalize(normal);
     initialUV = uv;
 
-    gl_Position = viewProjection * wPosition;
+    gl_Position = viewProjection * vec4(updatedPosition, 1);
 }

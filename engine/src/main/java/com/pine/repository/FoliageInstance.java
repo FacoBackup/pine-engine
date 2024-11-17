@@ -4,6 +4,7 @@ import com.pine.inspection.Color;
 
 public class FoliageInstance {
     public final String id;
+    public String material;
     public final Color color = new Color();
     public int count = 0;
     public int offset = 0;

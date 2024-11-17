@@ -136,21 +136,21 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
         return new MeshResourceRef(key);
     }
 
-    public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO heightScale, UniformDTO tilesScaleTranslation, UniformDTO fallbackMaterial) {
+    public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO terrainOffset, UniformDTO heightScale, UniformDTO tilesScaleTranslation) {
         Vector4f terrainLocation = new Vector4f();
         Vector2f dist = new Vector2f();
 
         shaderService.bindFloat(terrain.heightScale, heightScale);
         shaderService.bindInt(heightMap.width, textureSize);
-        if (fallbackMaterial != null) {
-            shaderService.bindBoolean(true, fallbackMaterial);
-        }
+        shaderService.bindVec2(terrain.offset, terrainOffset);
+
+        shaderService.bindInt(heightMap.width, textureSize);
 
         var camPos = cameraService.repository.currentCamera.position;
         for (int x = 0; x < terrain.cellsX; x++) {
             for (int z = 0; z < terrain.cellsZ; z++) {
-                float locationX = x * terrain.quads - terrain.offsetX;
-                float locationZ = z * terrain.quads - terrain.offsetZ;
+                float locationX = x * terrain.quads - terrain.offset.x;
+                float locationZ = z * terrain.quads - terrain.offset.y;
 
                 int distance = (int) dist.set((float) Math.floor(locationX / terrain.quads), (float) Math.floor(locationZ / terrain.quads))
                         .sub((float) Math.floor(camPos.x / terrain.quads), (float) Math.floor(camPos.z / terrain.quads))
@@ -172,8 +172,8 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
 
                 terrainLocation.x = (float) terrain.quads / divider;
                 terrainLocation.y = divider;
-                terrainLocation.z = locationX;
-                terrainLocation.w = locationZ;
+                terrainLocation.z =  x * terrain.quads;
+                terrainLocation.w =  z * terrain.quads;
                 shaderService.bindVec4(terrainLocation, tilesScaleTranslation);
 
                 GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, (int) (terrainLocation.x * terrainLocation.x * 6));

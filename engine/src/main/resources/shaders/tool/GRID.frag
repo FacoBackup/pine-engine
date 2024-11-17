@@ -30,7 +30,7 @@ void main() {
     float threshold = max(10., settings.z);
     float opacityScale = clamp(settings.w / 2., 0., 1.);
 
-    float distanceFromCamera = length(cameraPosition - worldPosition);
+    float distanceFromCamera = length(cameraPosition.xz - worldPosition.xz);
     if (distanceFromCamera > threshold)
     discard;
     float opacity = distanceFromCamera >= threshold/2. ? abs(distanceFromCamera - threshold) / ((distanceFromCamera + threshold) / 2.) : 1.;

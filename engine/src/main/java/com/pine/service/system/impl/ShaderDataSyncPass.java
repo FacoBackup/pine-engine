@@ -10,7 +10,7 @@ public class ShaderDataSyncPass extends AbstractPass implements Loggable {
         if (!renderingRepository.infoUpdated) {
             return;
         }
-        ssboService.updateBuffer(ssboRepository.lightMetadataSSBO, ssboRepository.lightSSBOState, 0);
+        ssboService.updateBuffer(bufferRepository.lightMetadataSSBO, bufferRepository.lightSSBOState, 0);
         renderingRepository.infoUpdated = false;
     }
 

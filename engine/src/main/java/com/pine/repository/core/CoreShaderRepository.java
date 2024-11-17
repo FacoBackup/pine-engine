@@ -38,6 +38,7 @@ public class CoreShaderRepository implements CoreRepository {
     public Shader cloudShapeCompute;
     public Shader cloudsRaymarcher;
     public Shader compositingShader;
+    public Shader noiseShader;
 
     @PInject
     public ShaderService shaderService;
@@ -45,6 +46,7 @@ public class CoreShaderRepository implements CoreRepository {
     @Override
     public void initialize() {
         compositingShader = shaderService.create("QUAD.vert", "COMPOSITE.frag");
+        noiseShader = shaderService.create("QUAD.vert", "NOISE.frag");
         gBufferShading = shaderService.create("QUAD.vert", "uber/G_BUFFER_SHADING.frag");
         brdfShader = shaderService.create("QUAD.vert", "BRDF_GEN.frag");
         spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
