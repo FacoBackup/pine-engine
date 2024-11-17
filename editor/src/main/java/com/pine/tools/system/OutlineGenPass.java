@@ -80,7 +80,7 @@ public class OutlineGenPass extends AbstractPass {
             shaderService.bind(toolsResourceRepository.outlineTerrainGenShader);
             var heightMap = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
             if (heightMap != null) {
-                meshService.renderTerrain(heightMap, textureSize, terrainOffset, heightScale, tilesScaleTranslation, null);
+                meshService.renderTerrain(heightMap, textureSize, terrainOffset, heightScale, tilesScaleTranslation);
             }
         }
     }

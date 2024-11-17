@@ -30,6 +30,12 @@ public class FoliagePanel extends AbstractView {
     public TerrainRepository terrainRepository;
 
     private final Map<String, Boolean> toRemove = new HashMap<>();
+    private MaterialField materialField;
+
+    @Override
+    public void onInitialize() {
+        materialField = appendChild(new MaterialField());
+    }
 
     @Override
     public void render() {
@@ -56,10 +62,9 @@ public class FoliagePanel extends AbstractView {
     }
 
     private void renderSelected() {
-        if (ImGui.beginTable("##foliage" + imguiId, 3, TABLE_FLAGS)) {
+        if (ImGui.beginTable("##foliage" + imguiId, 2, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.tableSetupColumn("Select", ImGuiTableColumnFlags.WidthFixed, 30);
-            ImGui.tableSetupColumn("Remove", ImGuiTableColumnFlags.WidthFixed, 30);
+            ImGui.tableSetupColumn("Material", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableHeadersRow();
 
             for (FoliageInstance m : terrainRepository.foliage.values()) {
@@ -73,15 +78,18 @@ public class FoliagePanel extends AbstractView {
                 ImGui.tableNextRow();
                 ImGui.tableNextColumn();
                 ImGui.text(Icons.forest + entry.name);
-                ImGui.tableNextColumn();
+                ImGui.sameLine();
                 boolean isSelected = Objects.equals(editorRepository.foliageForPainting, m.id);
                 if (ImGui.button((!isSelected ? Icons.check_box_outline_blank : Icons.check_box) + "##" + m.id, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                     editorRepository.foliageForPainting = isSelected ? null : m.id;
                 }
-                ImGui.tableNextColumn();
+                ImGui.sameLine();
                 if (ImGui.button(Icons.remove + "##" + m.id, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                     toRemove.put(m.id, true);
                 }
+                ImGui.tableNextColumn();
+                materialField.setFoliage(m);
+                materialField.render();
             }
             remove();
             ImGui.endTable();

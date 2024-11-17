@@ -24,6 +24,7 @@ import java.util.UUID;
 
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
+    private static final int FOLIAGE_IMAGE_SCALE = 4;
     public String foliageMask = UUID.randomUUID().toString();
     public String heightMapTexture = UUID.randomUUID().toString();
 
@@ -42,7 +43,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
             String foliageMaskLocal = UUID.randomUUID().toString();
             String heightMapTextureLocal = UUID.randomUUID().toString();
 
-            ImageUtil.generateTexture(width / 4, height / 4, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
+            ImageUtil.generateTexture(width / FOLIAGE_IMAGE_SCALE, height / FOLIAGE_IMAGE_SCALE, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
             ImageUtil.generateTexture(width, height, importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE));
             if (heightMapTextureToImport != null) {
                 var targetPath = importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE);
@@ -87,6 +88,10 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @ResourceTypeField(type = StreamableResourceType.TEXTURE)
     @InspectableField(label = "Height map to import")
     public String heightMapTextureToImport;
+
+    @ResourceTypeField(type = StreamableResourceType.MATERIAL)
+    @InspectableField(label = "Material")
+    public String material;
 
     @InspectableField(group = "Terrain", label = "Casts shadows")
     public boolean castsShadows = true;

@@ -136,7 +136,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
         return new MeshResourceRef(key);
     }
 
-    public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO terrainOffset, UniformDTO heightScale, UniformDTO tilesScaleTranslation, UniformDTO fallbackMaterial) {
+    public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO terrainOffset, UniformDTO heightScale, UniformDTO tilesScaleTranslation) {
         Vector4f terrainLocation = new Vector4f();
         Vector2f dist = new Vector2f();
 
@@ -145,9 +145,6 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
         shaderService.bindVec2(terrain.offset, terrainOffset);
 
         shaderService.bindInt(heightMap.width, textureSize);
-        if (fallbackMaterial != null) {
-            shaderService.bindBoolean(true, fallbackMaterial);
-        }
 
         var camPos = cameraService.repository.currentCamera.position;
         for (int x = 0; x < terrain.cellsX; x++) {

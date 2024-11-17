@@ -3,13 +3,13 @@ package com.pine.service.system.impl;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
 
 public class TerrainGBufferPass extends AbstractGBufferPass {
     private UniformDTO textureSize;
     private UniformDTO tilesScaleTranslation;
     private UniformDTO heightScale;
-    private UniformDTO fallbackMaterial;
     private UniformDTO terrainOffset;
 
     @Override
@@ -20,7 +20,6 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
         terrainOffset = addUniformDeclaration("terrainOffset");
         tilesScaleTranslation = addUniformDeclaration("tilesScaleTranslation");
         heightScale = addUniformDeclaration("heightScale");
-        fallbackMaterial = addUniformDeclaration("fallbackMaterial");
     }
 
     @Override
@@ -45,7 +44,9 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
         var heightMap = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
         if (heightMap != null) {
             heightMap.lastUse = clockRepository.totalTime;
-            meshService.renderTerrain(heightMap, textureSize, terrainOffset, heightScale, tilesScaleTranslation, fallbackMaterial);
+            MaterialResourceRef material = (MaterialResourceRef) streamingService.streamIn(terrainRepository.material, StreamableResourceType.MATERIAL);
+            bindMaterial(material);
+            meshService.renderTerrain(heightMap, textureSize, terrainOffset, heightScale, tilesScaleTranslation);
         }
     }
 

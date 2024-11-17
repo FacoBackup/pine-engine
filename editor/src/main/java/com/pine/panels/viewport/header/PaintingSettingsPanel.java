@@ -61,7 +61,7 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
                 if (ImGui.begin(imguiId, UIUtil.OPEN, UIUtil.FIXED_WINDOW_FLAGS)) {
                     maskRes.x = ImGui.getWindowSizeX();
                     maskRes.y = ImGui.getWindowSizeX();
-                    ImGui.image(bufferRepository.noiseSampler, maskRes);
+                    ImGui.image(targetTexture.texture, maskRes);
                 }
                 ImGui.end();
             }
