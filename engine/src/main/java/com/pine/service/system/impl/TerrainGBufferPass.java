@@ -10,12 +10,14 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
     private UniformDTO tilesScaleTranslation;
     private UniformDTO heightScale;
     private UniformDTO fallbackMaterial;
+    private UniformDTO terrainOffset;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
 
         textureSize = addUniformDeclaration("textureSize");
+        terrainOffset = addUniformDeclaration("terrainOffset");
         tilesScaleTranslation = addUniformDeclaration("tilesScaleTranslation");
         heightScale = addUniformDeclaration("heightScale");
         fallbackMaterial = addUniformDeclaration("fallbackMaterial");
@@ -43,7 +45,7 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
         var heightMap = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
         if (heightMap != null) {
             heightMap.lastUse = clockRepository.totalTime;
-            meshService.renderTerrain(heightMap, textureSize, heightScale, tilesScaleTranslation, fallbackMaterial);
+            meshService.renderTerrain(heightMap, textureSize, terrainOffset, heightScale, tilesScaleTranslation, fallbackMaterial);
         }
     }
 

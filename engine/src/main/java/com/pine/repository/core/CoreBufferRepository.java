@@ -7,9 +7,13 @@ import com.pine.repository.RuntimeRepository;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.GLSLType;
+import com.pine.service.resource.ssbo.SSBOCreationData;
+import com.pine.service.resource.ssbo.ShaderStorageBufferObject;
 import com.pine.service.resource.ubo.UBOCreationData;
 import com.pine.service.resource.ubo.UBOData;
 import com.pine.service.resource.ubo.UniformBufferObject;
+import com.pine.service.streaming.ref.TextureResourceRef;
+import com.pine.service.voxelization.util.TextureUtil;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
@@ -17,15 +21,25 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.pine.Engine.MAX_LIGHTS;
+
 @PBean
 public class CoreBufferRepository implements CoreRepository {
     public static final int[] ZERO = new int[]{0};
+    public static final int MAX_INSTANCING = 500_000;
+    public static final int MAX_INFO_PER_LIGHT = 16;
+    private static final int LIGHT_BUFFER_SIZE = MAX_LIGHTS * MAX_INFO_PER_LIGHT;
+
     @PInject
     public Engine engine;
     @PInject
     public ShaderService shaderService;
     @PInject
     public RuntimeRepository runtimeRepository;
+
+    public final FloatBuffer lightSSBOState = MemoryUtil.memAllocFloat(LIGHT_BUFFER_SIZE);
+    public ShaderStorageBufferObject lightMetadataSSBO;
+    public ShaderStorageBufferObject foliageTransformationSSBO;
 
     public FrameBufferObject gBufferTarget;
     public FrameBufferObject postProcessingBuffer;
@@ -39,8 +53,13 @@ public class CoreBufferRepository implements CoreRepository {
     public final List<FrameBufferObject> all = new ArrayList<>();
     public FrameBufferObject brdfFBO;
     public FrameBufferObject compositingBuffer;
+    public FrameBufferObject noiseBuffer;
+
+    public TextureResourceRef cloudNoiseTexture;
+    public TextureResourceRef cloudShapeTexture;
 
     public int auxBufferQuaterResSampler;
+    public int noiseSampler;
     public int sceneDepthCopySampler;
     public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
@@ -64,6 +83,9 @@ public class CoreBufferRepository implements CoreRepository {
 
     @Override
     public void initialize() {
+        cloudShapeTexture = TextureUtil.create3DTexture(128, 128, 128, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_HALF_FLOAT);
+        cloudNoiseTexture = TextureUtil.create3DTexture(32, 32, 32, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_HALF_FLOAT);
+
         atomicCounterBuffer = GL46.glGenBuffers();
         GL46.glBindBuffer(GL46.GL_ATOMIC_COUNTER_BUFFER, atomicCounterBuffer);
         GL46.glBufferData(GL46.GL_ATOMIC_COUNTER_BUFFER, Integer.BYTES, GL46.GL_DYNAMIC_DRAW);
@@ -94,6 +116,10 @@ public class CoreBufferRepository implements CoreRepository {
 
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
+
+        noiseBuffer = new FrameBufferObject(256, 256)
+                .addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, true);
+        noiseSampler = noiseBuffer.getSamplers().getFirst();
 
         brdfFBO = new FrameBufferObject(512, 512).addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false);
         brdfSampler = brdfFBO.getSamplers().getFirst();
@@ -130,6 +156,20 @@ public class CoreBufferRepository implements CoreRepository {
         all.addAll(downscaleBloom);
         all.add(auxBufferQuaterRes);
         all.add(compositingBuffer);
+
+        createSSBOs();
+    }
+
+    private void createSSBOs() {
+        foliageTransformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
+                13,
+                (long) MAX_INSTANCING * GLSLType.FLOAT.getSize() * 3
+        ));
+
+        lightMetadataSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
+                11,
+                (long) LIGHT_BUFFER_SIZE * GLSLType.FLOAT.getSize()
+        ));
     }
 
     private void createGBuffer(int displayW, int displayH) {
@@ -178,6 +218,8 @@ public class CoreBufferRepository implements CoreRepository {
 
     @Override
     public void dispose() {
+        lightMetadataSSBO.dispose();
+        foliageTransformationSSBO.dispose();
         globalDataUBO.dispose();
         auxBufferQuaterRes.dispose();
         gBufferTarget.dispose();

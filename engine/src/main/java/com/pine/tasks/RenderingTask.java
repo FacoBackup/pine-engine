@@ -22,7 +22,6 @@ import org.joml.Vector3f;
 
 @PBean
 public class RenderingTask extends AbstractTask {
-    private static final float MIE_PHASE_G = 0.76f;
 
     @PInject
     public CameraRepository cameraRepository;
@@ -114,7 +113,7 @@ public class RenderingTask extends AbstractTask {
         bufferRepository.globalDataBuffer.put(88, sunLightDirection.x);
         bufferRepository.globalDataBuffer.put(89, sunLightDirection.y);
         bufferRepository.globalDataBuffer.put(90, sunLightDirection.z);
-        bufferRepository.globalDataBuffer.put(91, 0);
+        bufferRepository.globalDataBuffer.put(91, clockRepository.totalTime - clockRepository.start);
 
         bufferRepository.globalDataBuffer.put(92, sunLightColor.x);
         bufferRepository.globalDataBuffer.put(93, sunLightColor.y);

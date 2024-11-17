@@ -9,7 +9,7 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.repository.core.CoreSSBORepository;
+import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.service.grid.WorldService;
 import org.joml.Matrix4f;
@@ -24,7 +24,7 @@ public class LightService {
     @PInject
     public RenderingRepository renderingRepository;
     @PInject
-    public CoreSSBORepository ssboRepository;
+    public CoreBufferRepository bufferRepository;
     @PInject
     public WorldService worldService;
     @PInject
@@ -39,7 +39,7 @@ public class LightService {
         offset = 0;
         count = 0;
 
-        FloatBuffer b = ssboRepository.lightSSBOState;
+        FloatBuffer b = bufferRepository.lightSSBOState;
 
         for (var l : world.bagPointLightComponent.values()) {
             if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {

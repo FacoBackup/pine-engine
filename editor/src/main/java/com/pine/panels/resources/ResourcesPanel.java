@@ -4,6 +4,8 @@ import com.pine.component.MeshComponent;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.EngineRepository;
+import com.pine.repository.FoliageInstance;
+import com.pine.repository.TerrainRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -27,10 +29,10 @@ public class ResourcesPanel extends AbstractDockPanel {
     public EngineRepository engineRepository;
 
     @PInject
-    public WorldRepository world;
+    public TerrainRepository terrainRepository;
 
     @PInject
-    public MeshService meshService;
+    public WorldRepository world;
 
     @PInject
     public StreamingRepository streamingRepository;
@@ -52,6 +54,12 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Terrain triangles rendered", totalTerrainTriangles);
 
+            int total = 0;
+            for (FoliageInstance f : terrainRepository.foliage.values()) {
+                total += f.count;
+            }
+            render("Foliage instances", total);
+
             render("Triangles being rendered", getTotalTriangleCount());
 
             render("Textures", getTotalTextureCount());
@@ -68,7 +76,7 @@ public class ResourcesPanel extends AbstractDockPanel {
 
     public int getVoxelCount() {
         var svo = worldService.getCurrentTile().getSvo();
-        if(svo != null){
+        if (svo != null) {
             return svo.getNodeQuantity();
         }
         return 0;

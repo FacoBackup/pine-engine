@@ -3,6 +3,7 @@
 #include "../util/TERRAIN.glsl"
 
 uniform vec4 tilesScaleTranslation;
+uniform vec2 terrainOffset;
 uniform int textureSize;
 uniform float heightScale;
 
@@ -13,6 +14,6 @@ flat out int rIndex;
 void main() {
     rIndex = 1;
 
-    TerrainData terrain = computePosition(tilesScaleTranslation, textureSize, heightMap, heightScale);
+    TerrainData terrain = computeTerrainData(tilesScaleTranslation, terrainOffset, textureSize, heightMap, heightScale);
     gl_Position = viewProjection * vec4(terrain.position, 1);
 }

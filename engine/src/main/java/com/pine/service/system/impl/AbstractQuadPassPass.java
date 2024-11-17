@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL46;
 
 public abstract class AbstractQuadPassPass extends AbstractPass implements Loggable {
 
-    protected abstract void bindUniforms();
+    protected void bindUniforms(){}
 
     @Override
     final protected void renderInternal() {

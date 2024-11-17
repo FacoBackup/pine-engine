@@ -3,7 +3,7 @@ struct TerrainData{
     vec2 uv;
 };
 
-TerrainData computePosition(vec4 tilesScaleTranslation, int textureSize, sampler2D heightMap, float heightScale){
+TerrainData computeTerrainData(vec4 tilesScaleTranslation, vec2 terrainOffset, int textureSize, sampler2D heightMap, float heightScale){
     const float VERTICES_PER_TILE = 6.0;
     const float TILES_PER_RUN = tilesScaleTranslation.x;
     const float VERTICES_PER_CHUNK = TILES_PER_RUN * TILES_PER_RUN * VERTICES_PER_TILE;
@@ -27,8 +27,11 @@ TerrainData computePosition(vec4 tilesScaleTranslation, int textureSize, sampler
     position.x += tilesScaleTranslation.z;
     position.z += tilesScaleTranslation.w;
 
-    vec2 uv = vec2(position.x/textureSize + .5, position.z/textureSize + .5);
+    vec2 uv = vec2(position.x/textureSize, position.z/textureSize);
     position.y = texture(heightMap, uv).r * heightScale;
+
+    position.x += terrainOffset.x;
+    position.z += terrainOffset.y;
 
     return TerrainData(position, uv);
 }

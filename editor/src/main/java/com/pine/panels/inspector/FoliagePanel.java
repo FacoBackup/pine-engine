@@ -27,16 +27,12 @@ public class FoliagePanel extends AbstractView {
     public FilesRepository filesRepository;
 
     @PInject
-    public EngineRepository engineRepository;
-
-    @PInject
     public TerrainRepository terrainRepository;
 
     private final Map<String, Boolean> toRemove = new HashMap<>();
 
     @Override
     public void render() {
-        if (ImGui.collapsingHeader("Foliage" + imguiId)) {
             if (ImGui.beginChild(imguiId, ImGui.getWindowSizeX(), 50, true)) {
                 for (String m : filesRepository.byType.get(StreamableResourceType.MESH)) {
                     if (terrainRepository.foliage.containsKey(m)) {
@@ -44,6 +40,10 @@ public class FoliagePanel extends AbstractView {
                     }
 
                     FSEntry entry = filesRepository.entry.get(m);
+
+                    if(ImGui.getContentRegionAvailX() > 35){
+                        ImGui.sameLine();
+                    }
                     if (ImGui.button(entry.name)) {
                         var instance = new FoliageInstance(m, terrainRepository.foliage.size() + 1);
                         terrainRepository.foliage.put(m, instance);
@@ -53,14 +53,13 @@ public class FoliagePanel extends AbstractView {
             ImGui.endChild();
             ImGui.dummy(0, 8);
             renderSelected();
-        }
     }
 
     private void renderSelected() {
         if (ImGui.beginTable("##foliage" + imguiId, 3, TABLE_FLAGS)) {
             ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.tableSetupColumn("Select for painting", ImGuiTableColumnFlags.WidthFixed, ONLY_ICON_BUTTON_SIZE);
-            ImGui.tableSetupColumn("Remove", ImGuiTableColumnFlags.WidthFixed, ONLY_ICON_BUTTON_SIZE);
+            ImGui.tableSetupColumn("Select", ImGuiTableColumnFlags.WidthFixed, 30);
+            ImGui.tableSetupColumn("Remove", ImGuiTableColumnFlags.WidthFixed, 30);
             ImGui.tableHeadersRow();
 
             for (FoliageInstance m : terrainRepository.foliage.values()) {

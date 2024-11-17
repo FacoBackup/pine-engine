@@ -7,7 +7,6 @@ import com.pine.injection.PInject;
 import com.pine.repository.*;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.core.CoreMeshRepository;
-import com.pine.repository.core.CoreSSBORepository;
 import com.pine.repository.core.CoreShaderRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.service.grid.WorldService;
@@ -60,8 +59,6 @@ public abstract class AbstractPass extends MetricCollector {
     @PInject
     public RuntimeRepository runtimeRepository;
     @PInject
-    public CoreSSBORepository ssboRepository;
-    @PInject
     public CoreBufferRepository bufferRepository;
     @PInject
     public CoreMeshRepository meshRepository;
@@ -73,11 +70,12 @@ public abstract class AbstractPass extends MetricCollector {
     protected void onAfterRender(){}
 
     final public void render() {
-        if (!isRenderable()) {
-            return;
-        }
         startTracking();
         onBeforeRender();
+        if (!isRenderable()) {
+            endTracking();
+            return;
+        }
         FrameBufferObject fbo = getTargetFBO();
         shaderService.bind(getShader());
         if (fbo != null) {

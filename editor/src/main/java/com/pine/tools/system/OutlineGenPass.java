@@ -25,12 +25,14 @@ public class OutlineGenPass extends AbstractPass {
     private UniformDTO tilesScaleTranslation;
     private UniformDTO textureSize;
     private UniformDTO heightScale;
+    private UniformDTO terrainOffset;
 
     @Override
     public void onInitialize() {
         renderIndex = toolsResourceRepository.outlineGenShader.addUniformDeclaration("renderIndex");
         modelMatrix = toolsResourceRepository.outlineGenShader.addUniformDeclaration("modelMatrix");
 
+        terrainOffset = toolsResourceRepository.outlineTerrainGenShader.addUniformDeclaration("terrainOffset");
         textureSize = toolsResourceRepository.outlineTerrainGenShader.addUniformDeclaration("textureSize");
         tilesScaleTranslation = toolsResourceRepository.outlineTerrainGenShader.addUniformDeclaration("tilesScaleTranslation");
         heightScale = toolsResourceRepository.outlineTerrainGenShader.addUniformDeclaration("heightScale");
@@ -78,7 +80,7 @@ public class OutlineGenPass extends AbstractPass {
             shaderService.bind(toolsResourceRepository.outlineTerrainGenShader);
             var heightMap = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
             if (heightMap != null) {
-                meshService.renderTerrain(heightMap, textureSize, heightScale, tilesScaleTranslation, null);
+                meshService.renderTerrain(heightMap, textureSize, terrainOffset, heightScale, tilesScaleTranslation, null);
             }
         }
     }

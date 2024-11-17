@@ -13,8 +13,6 @@ import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 public class AtmospherePass extends AbstractQuadPassPass {
     private static final int NUM_THREADS = 8;
     private boolean hasSamplersComputed = false;
-    private TextureResourceRef cloudNoiseTexture;
-    private TextureResourceRef cloudShapeTexture;
 
     private UniformDTO densityMultiplier;
     private UniformDTO densityOffset;
@@ -96,11 +94,8 @@ public class AtmospherePass extends AbstractQuadPassPass {
     @Override
     protected void onBeforeRender() {
         if (!hasSamplersComputed) {
-            cloudShapeTexture = TextureUtil.create3DTexture(128, 128, 128, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_HALF_FLOAT);
-            cloudNoiseTexture = TextureUtil.create3DTexture(32, 32, 32, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_HALF_FLOAT);
-
-            dispatch(cloudNoiseTexture, shaderRepository.cloudDetailCompute);
-            dispatch(cloudShapeTexture, shaderRepository.cloudShapeCompute);
+            dispatch(bufferRepository.cloudNoiseTexture, shaderRepository.cloudDetailCompute);
+            dispatch(bufferRepository.cloudShapeTexture, shaderRepository.cloudShapeCompute);
 
             hasSamplersComputed = true;
         }
@@ -118,12 +113,7 @@ public class AtmospherePass extends AbstractQuadPassPass {
         COMPUTE_RUNTIME_DATA.groupZ = texture.depth / NUM_THREADS;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT;
 
-
         shaderService.dispatch(COMPUTE_RUNTIME_DATA);
-
-//        GL46.glBindTexture(GL46.GL_TEXTURE_3D, texture.texture);
-//        GL46.glGenerateMipmap(GL46.GL_TEXTURE_3D);
-//        GL46.glBindTexture(GL46.GL_TEXTURE_3D, GL11.GL_NONE);
     }
 
     @Override
@@ -133,8 +123,8 @@ public class AtmospherePass extends AbstractQuadPassPass {
 
     @Override
     protected void bindUniforms() {
-        shaderService.bindSampler3dDirect(cloudShapeTexture, 0);
-        shaderService.bindSampler3dDirect(cloudNoiseTexture, 1);
+        shaderService.bindSampler3dDirect(bufferRepository.cloudShapeTexture, 0);
+        shaderService.bindSampler3dDirect(bufferRepository.cloudNoiseTexture, 1);
         shaderService.bindFloat(atmosphere.densityMultiplier, densityMultiplier);
         shaderService.bindFloat(atmosphere.densityOffset, densityOffset);
         shaderService.bindFloat(atmosphere.scale, scale);

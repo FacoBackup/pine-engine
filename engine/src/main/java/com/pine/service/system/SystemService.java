@@ -14,6 +14,7 @@ public class SystemService implements SyncTask {
     public PInjector pInjector;
 
     private List<AbstractPass> systems = List.of(
+            new NoiseGenPass(),
             new BRDFGenPass(),
             new IrradianceGenPass(),
             new EnvironmentMapFilteringGenPass(),
