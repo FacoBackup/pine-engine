@@ -1,4 +1,4 @@
-package com.pine.repository;
+package com.pine.repository.terrain;
 
 import com.pine.SerializableRepository;
 import com.pine.injection.PBean;
@@ -7,6 +7,7 @@ import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 import com.pine.inspection.ResourceTypeField;
+import com.pine.repository.FoliageInstance;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.ImageUtil;
 import com.pine.service.importer.ImporterService;
@@ -27,6 +28,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     private static final int FOLIAGE_IMAGE_SCALE = 4;
     public String foliageMask = UUID.randomUUID().toString();
     public String heightMapTexture = UUID.randomUUID().toString();
+    public TerrainChunk[] chunks = null;
 
     @PInject
     public transient ImporterService importer;
@@ -51,6 +53,16 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
                 ImageUtil.copyInto(originPath, targetPath, 1);
             }
 
+            chunks = new TerrainChunk[cellsX * cellsZ];
+            int index = 0;
+            for (int x = 0; x < cellsX; x++) {
+                for (int z = 0; z < cellsZ; z++) {
+                    float locationX = x * quads - offset.x;
+                    float locationZ = z * quads - offset.y;
+                    chunks[index] = new TerrainChunk(locationX, locationZ, (float) Math.floor(locationX / quads), (float) Math.floor(locationZ / quads), x, z);
+                    index++;
+                }
+            }
             foliageMask = foliageMaskLocal;
             heightMapTexture = heightMapTextureLocal;
             heightMapTextureToImport = null;

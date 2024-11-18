@@ -15,25 +15,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MaterialField extends AbstractView {
+public abstract class AbstractResourceField extends AbstractView {
     @PInject
     public StreamingRepository repository;
 
     @PInject
     public FilesRepository filesRepository;
 
-    private final ImInt selected = new ImInt(-1);
+    private final ImInt selected = new ImInt(0);
     private String[] itemsArr = new String[0];
     private int previousSize = -1;
     private final List<FSEntry> allByType = new ArrayList<>();
-    private FoliageInstance foliage;
+    protected FoliageInstance foliage;
 
     public void setFoliage(FoliageInstance foliage) {
         this.foliage = foliage;
     }
 
+    public abstract String getSelected();
+
+    public abstract void setSelected(String selected);
+
+    public abstract StreamableResourceType getType();
+
     private void refresh() {
-        List<String> byType = filesRepository.byType.get(StreamableResourceType.MATERIAL);
+        List<String> byType = filesRepository.byType.get(getType());
         if (byType.size() != allByType.size()) {
             allByType.clear();
             for (var f : byType) {
@@ -41,15 +47,16 @@ public class MaterialField extends AbstractView {
             }
             if (previousSize != allByType.size()) {
                 previousSize = allByType.size();
-                itemsArr = new String[allByType.size()];
-                for (int i = 0, allByTypeSize = itemsArr.length; i < allByTypeSize; i++) {
+                itemsArr = new String[allByType.size() + 1];
+                itemsArr[0] = "None";
+                for (int i = 0, allByTypeSize = allByType.size(); i < allByTypeSize; i++) {
                     var file = allByType.get(i);
-                    itemsArr[i] = file.name;
+                    itemsArr[i + 1] = file.name;
                 }
 
-                if (foliage.material != null) {
+                if (getSelected() != null) {
                     for (int i = 0; i < allByType.size(); i++) {
-                        if (Objects.equals(allByType.get(i).getId(), foliage.material)) {
+                        if (Objects.equals(allByType.get(i).getId(), getSelected())) {
                             selected.set(i);
                         }
                     }
@@ -62,12 +69,11 @@ public class MaterialField extends AbstractView {
     public void render() {
         refresh();
         if (ImGui.combo(imguiId + foliage.id, selected, itemsArr)) {
-            foliage.material = allByType.get(selected.get()).getId();
-        }
-        ImGui.sameLine();
-        if (ImGui.button(Icons.close + "Remove" + imguiId + foliage.id)) {
-            selected.set(-1);
-            foliage.material = null;
+            if(selected.get() == 0){
+                setSelected(null);
+            }else {
+                setSelected(allByType.get(selected.get() - 1).getId());
+            }
         }
     }
 }

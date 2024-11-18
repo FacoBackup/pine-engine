@@ -74,7 +74,8 @@ public class ViewportPickingService implements Loggable {
             if (tile != null) {
                 for (var entityId : tile.getEntities()) {
                     var entity = world.entityMap.get(entityId);
-                    if (entity != null) {
+                    var mesh = world.bagMeshComponent.get(entityId);
+                    if (entity != null && (mesh == null || mesh.renderRequest == null || !mesh.renderRequest.isCulled)) {
                         if (entity.renderIndex == actualIndex) {
                             return world.bagTransformationComponent.get(entityId);
                         }

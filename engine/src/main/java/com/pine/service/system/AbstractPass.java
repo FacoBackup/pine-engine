@@ -9,6 +9,7 @@ import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.core.CoreMeshRepository;
 import com.pine.repository.core.CoreShaderRepository;
 import com.pine.repository.rendering.RenderingRepository;
+import com.pine.repository.terrain.TerrainRepository;
 import com.pine.service.grid.WorldService;
 import com.pine.service.importer.ImporterService;
 import com.pine.service.resource.SSBOService;

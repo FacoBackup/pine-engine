@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 public class Frustum implements Serializable {
     private final Vector4f[] planes = new Vector4f[6];
-    private final Matrix4f transpose = new Matrix4f();
 
     public Frustum() {
         for (int i = 0; i < 6; i++) {
@@ -16,10 +15,9 @@ public class Frustum implements Serializable {
         }
     }
 
-    public void extractFrustumPlanes(Matrix4f viewProjectionMatrix) {
-        transpose.set(viewProjectionMatrix);
+    public void extractFrustumPlanes(Matrix4f m) {
         for (int i = 0; i < planes.length; i++) {
-            transpose.frustumPlane(i, planes[i]);
+            m.frustumPlane(i, planes[i]);
         }
     }
 
@@ -31,15 +29,5 @@ public class Frustum implements Serializable {
             }
         }
         return true;
-    }
-
-    public boolean isPointInsideFrustum(Vector3f center) {
-        Vector4f p4D = new Vector4f(center, 1.0f);
-        return (planes[0].dot(p4D) >= 0) &&
-                (planes[1].dot(p4D) <= 0) &&
-                (planes[2].dot(p4D) >= 0) &&
-                (planes[3].dot(p4D) <= 0) &&
-                (planes[4].dot(p4D) >= 0) &&
-                (planes[5].dot(p4D) <= 0);
     }
 }

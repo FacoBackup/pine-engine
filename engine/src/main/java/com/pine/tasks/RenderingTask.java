@@ -11,12 +11,15 @@ import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.repository.terrain.TerrainChunk;
+import com.pine.repository.terrain.TerrainRepository;
 import com.pine.service.grid.WorldService;
 import com.pine.service.rendering.LightService;
 import com.pine.service.rendering.RenderingRequestService;
 import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 
@@ -56,6 +59,9 @@ public class RenderingTask extends AbstractTask {
     @PInject
     public WorldRepository world;
 
+    @PInject
+    public TerrainRepository terrainRepository;
+
     @Override
     protected void tickInternal() {
         if (renderingRepository.infoUpdated) {
@@ -69,12 +75,49 @@ public class RenderingTask extends AbstractTask {
 
             updateTiles();
             updateSunInformation();
-
+            updateTerrainChunks();
             renderingRepository.infoUpdated = true;
         } catch (Exception e) {
             getLogger().error(e.getMessage(), e);
         }
         endTracking();
+    }
+
+    private void updateTerrainChunks() {
+        if (terrainRepository.chunks == null) {
+            return;
+        }
+
+        Vector2f dist = new Vector2f();
+        Vector3f translation = new Vector3f();
+        for (TerrainChunk chunk : terrainRepository.chunks) {
+            var camPos = cameraRepository.currentCamera.position;
+            int distance = (int) dist.set(chunk.normalizedX, chunk.normalizedZ)
+                    .sub((float) Math.floor(camPos.x / terrainRepository.quads), (float) Math.floor(camPos.z / terrainRepository.quads))
+                    .length();
+
+            int divider = 1;
+            if (distance >= 2) {
+                divider = 2;
+            }
+
+            if (distance >= 3) {
+                divider = 4;
+            }
+
+            if (distance >= 4) {
+                divider = 8;
+            }
+
+            float tiles = (float) terrainRepository.quads / divider;
+            int triangles = (int) (tiles * tiles * 6);
+            chunk.setDivider(divider);
+            chunk.setTriangles(triangles);
+            chunk.setTiles(tiles);
+            translation.set(chunk.locationX, 0, chunk.locationZ);
+
+            chunk.setCulled(!cameraRepository.frustum.isSphereInsideFrustum(translation, terrainRepository.quads * 2));
+        }
     }
 
     private void updateTiles() {
@@ -121,7 +164,7 @@ public class RenderingTask extends AbstractTask {
     }
 
     private Vector3f computeSunlightColor(Vector3f sunDirection) {
-        return calculateSunColor(sunDirection.y/atmosphere.sunDistance, atmosphere.nightColor, atmosphere.dawnColor, atmosphere.middayColor);
+        return calculateSunColor(sunDirection.y / atmosphere.sunDistance, atmosphere.nightColor, atmosphere.dawnColor, atmosphere.middayColor);
     }
 
     public static Vector3f calculateSunColor(double elevation, Vector3f nightColor, Vector3f dawnColor, Vector3f middayColor) {
