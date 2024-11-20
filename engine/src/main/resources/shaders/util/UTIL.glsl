@@ -14,20 +14,15 @@ mat3 getRotationFromNormal(inout vec3 normal){
     );
 }
 
-vec3 getNormalFromHeightMap(float height, float heightScale, sampler2D heightMap, vec2 uv){
-    const float normalOffset = .005;
+vec3 getNormalFromHeightMap(float heightScale, sampler2D heightMap, vec2 texCoords){
+    vec2 texelSize = 1./vec2(textureSize(heightMap, 0));
+    float hL = texture(heightMap, texCoords - vec2(texelSize.x, 0.0)).r;
+    float hR = texture(heightMap, texCoords + vec2(texelSize.x, 0.0)).r;
+    float hD = texture(heightMap, texCoords - vec2(0.0, texelSize.y)).r;
+    float hU = texture(heightMap, texCoords + vec2(0.0, texelSize.y)).r;
 
-    // Offset texture coordinates to sample neighboring points
-    float heightL = texture(heightMap, uv + vec2(-normalOffset, 0.0)).r * heightScale;
-    float heightR = texture(heightMap, uv + vec2(normalOffset, 0.0)).r * heightScale;
-    float heightD = texture(heightMap, uv + vec2(0.0, -normalOffset)).r * heightScale;
-    float heightU = texture(heightMap, uv + vec2(0.0, normalOffset)).r * heightScale;
+    float dx = (hR - hL) * heightScale;
+    float dz = (hU - hD) * heightScale;
 
-    // Compute tangent vectors
-    // Compute tangent vectors with height affecting the Y axis
-    vec3 dx = vec3(2.0 * normalOffset, heightR - heightL, 0.0);
-    vec3 dz = vec3(0.0, heightU - heightD, 2.0 * normalOffset);
-
-    // Compute the normal as the cross product of dx and dz
-    return normalize(cross(dz, dx));
+    return normalize(vec3(-dx, heightScale * heightScale * texelSize.x/2., -dz));
 }

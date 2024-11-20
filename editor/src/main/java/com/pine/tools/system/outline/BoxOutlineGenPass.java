@@ -12,6 +12,7 @@ import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.system.AbstractPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
+import org.lwjgl.opengl.GL46;
 
 
 public class BoxOutlineGenPass extends AbstractPass {
@@ -48,6 +49,8 @@ public class BoxOutlineGenPass extends AbstractPass {
 
     @Override
     protected void renderInternal() {
+        GL46.glDisable(GL46.GL_CULL_FACE);
+        GL46.glDisable(GL46.GL_DEPTH_TEST);
         meshService.setInstanceCount(0);
         for (WorldTile worldTile : worldService.getLoadedTiles()) {
             if (worldTile != null) {
@@ -68,6 +71,8 @@ public class BoxOutlineGenPass extends AbstractPass {
                 }
             }
         }
+        GL46.glEnable(GL46.GL_DEPTH_TEST);
+        GL46.glEnable(GL46.GL_CULL_FACE);
     }
 
     @Override

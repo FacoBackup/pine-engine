@@ -4,7 +4,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 
-public class CompositingPass extends AbstractQuadPassPass {
+public class CompositingPass extends AbstractQuadPass {
 
     private UniformDTO backgroundColor;
 

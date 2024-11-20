@@ -19,28 +19,28 @@ public class EngineRepository extends Inspectable implements SerializableReposit
     @InspectableField(label = "Background color")
     public Color backgroundColor = new Color(0.23f, 0.23f, 0.23f);
 
-    @InspectableField(label = "Disable culling")
+    @InspectableField(group = "World", label = "Number of tiles (X by X)")
+    public int numberOfTiles = 10;
+
+    @InspectableField(group = "World", label = "Disable culling")
     public boolean disableCullingGlobally = false;
 
-    @InspectableField(label = "Tile max distance")
-    public float tileCullingMaxDistance = TILE_SIZE * 3;
-
-    @InspectableField(label = "Probe capture resolution")
+    @InspectableField(group = "World", label = "Probe capture resolution")
     public int probeCaptureResolution = 128;
 
-    @InspectableField(label = "Probe filtering levels", min = 1, max = 10)
+    @InspectableField(group = "World", label = "Probe filtering levels", min = 1, max = 10)
     public int probeFiltering = 5;
 
-    @InspectableField(group = "Anti aliasing",label = "FXAA Enabled")
+    @InspectableField(group = "Anti aliasing", label = "FXAA Enabled")
     public boolean fxaaEnabled = true;
 
-    @InspectableField(group = "Anti aliasing",label = "FXAA Span Max")
+    @InspectableField(group = "Anti aliasing", label = "FXAA Span Max")
     public float fxaaSpanMax = 8f;
 
-    @InspectableField(group = "Anti aliasing",label = "FXAA Reduce Min")
+    @InspectableField(group = "Anti aliasing", label = "FXAA Reduce Min")
     public float fxaaReduceMin = 1 / 128f;
 
-    @InspectableField(group = "Anti aliasing",label = "FXAA Reduce Multiplier")
+    @InspectableField(group = "Anti aliasing", label = "FXAA Reduce Multiplier")
     public float fxaaReduceMul = 1 / 8f;
 
     @InspectableField(group = "Screen space reflections", label = "Falloff")

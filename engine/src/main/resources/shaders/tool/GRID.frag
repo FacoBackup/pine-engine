@@ -1,64 +1,82 @@
-in vec3 worldPosition;
-in vec3 cameraPosition;
+in vec2 texCoords;
 uniform vec4 settings;
 
 uniform sampler2D sceneDepth;
 
 #include "../util/SCENE_DEPTH_UTILS.glsl"
+#define OVERLAY_OBJECTS settings.x == 1.
+#define SCALE settings.y
+#define THREASHOLD settings.z
+#define THICKNESS settings.w
 
 out vec4 finalColor;
-vec2 quadUV;
 
-
-float grid(float space, float gridWidth, float scale) {
-    vec2 p = worldPosition.xz * scale - vec2(.5);
-    vec2 size = vec2(gridWidth);
-
-    vec2 a1 = mod(p - size, space);
-    vec2 a2 = mod(p + size, space);
-    vec2 a = a2 - a1;
-
-    float g = min(a.x, a.y);
-    return clamp(g, 0., 1.0);
+vec3 createRay() {
+    vec2 pxNDS = texCoords * 2. - 1.;
+    vec3 pointNDS = vec3(pxNDS, -1.);
+    vec4 pointNDSH = vec4(pointNDS, 1.0);
+    vec4 dirEye = invProjectionMatrix * pointNDSH;
+    dirEye.w = 0.;
+    vec3 dirWorld = (invViewMatrix * dirEye).xyz;
+    return normalize(dirWorld);
 }
 
+vec3 p = vec3(0);
+bool rayMarch(vec3 ro, vec3 rd, float width) {
+    float t = 0.0;
+    for (int i = 0; i < 256; i++) {
+        p = ro + t * rd;
+        float d = p.y;
+        if (d < 0.001) return true;
+        if (t > THREASHOLD) break;
+        t += d;
+    }
+    return false;
+}
+
+float getGridLine(float gridScale){
+    float scale = gridScale * SCALE;
+    float dx = abs(fract(p.x / scale) * scale);
+    float dz = abs(fract(p.z / scale) * scale);
+    return step(THICKNESS, min(dx, dz));
+}
 
 void main() {
-    quadUV = gl_FragCoord.xy / bufferResolution;
-    float color = settings.x;
-    float scale = settings.y * 4.5;
-    float threshold = max(10., settings.z);
-    float opacityScale = clamp(settings.w / 2., 0., 1.);
+    float depthData = getLogDepth(texCoords);
 
-    float distanceFromCamera = length(cameraPosition.xz - worldPosition.xz);
-    if (distanceFromCamera > threshold)
-    discard;
-    float opacity = distanceFromCamera >= threshold/2. ? abs(distanceFromCamera - threshold) / ((distanceFromCamera + threshold) / 2.) : 1.;
+    bool hasData = false;
+    bool isOverlay = false;
+    if (depthData != 1){
+        hasData = OVERLAY_OBJECTS;
+        isOverlay = true;
+        vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, texCoords);
+        p = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
+    } else {
+        vec3 rayDir = createRay();
+        hasData = rayMarch(cameraWorldPosition.xyz, rayDir, 1);
+    }
 
-    float smallerGrid = grid(10., .2, scale);
-    float biggerGrid = grid(50., .2, scale);
-    float gridValue = clamp(biggerGrid * smallerGrid, .1, 1.0);
-    if (gridValue != .1) discard;
+    if (hasData){
+        vec3 baseColor = vec3(0.3);
+        vec3 xAxisColor = vec3(1.0, 0.0, 0.0);
+        vec3 zAxisColor = vec3(0.0, 0.0, 1.0);
 
-    float depth = getLogDepth(quadUV);
-    if (depth - gl_FragCoord.z <= .001) discard;
+        float isXAxis = step(abs(p.z/ SCALE), isOverlay ? 0 : THICKNESS);
+        float isZAxis = step(abs(p.x/ SCALE), isOverlay ? 0 : THICKNESS);
 
-    float lineScale = .2 / scale;
-    float offset =lineScale * 2.5;
-    float Z = worldPosition.z - offset;
-    float X = worldPosition.x - offset;
+        vec3 axisColor = mix(zAxisColor, xAxisColor, isXAxis);
+        vec4 centerLineColor = vec4(axisColor, 1.0) * max(isXAxis, isZAxis);
 
-    if (Z < lineScale && Z > -lineScale)
-    finalColor = vec4(1., 0., 0., opacity * opacityScale);
-    else if (X < lineScale && X > -lineScale)
-    finalColor = vec4(0., 0., 1., opacity * opacityScale);
-    else {
-        float s = abs(abs(biggerGrid) - abs(smallerGrid));
-        if (s < .1 && s >= .0){
-            finalColor = vec4(vec3(color * .1), opacity * opacityScale);
-        } else {
-            finalColor = vec4(vec3(color), opacity * opacityScale);
+        vec4 gridColor = mix(vec4(baseColor, 1.0), vec4(0), getGridLine(1));
+        gridColor = mix(vec4(baseColor/2., 1.0), gridColor, getGridLine(5));
+        finalColor = mix(gridColor, centerLineColor, max(isXAxis, isZAxis));
+
+        if (finalColor.a > 0){
+            float distanceFromCamera = length(cameraWorldPosition.xyz - p.xyz);
+            float opacity = abs(distanceFromCamera - THREASHOLD) / ((distanceFromCamera + THREASHOLD) / 2.);
+            finalColor.a = opacity;
         }
-
+    } else {
+        discard;
     }
 }

@@ -3,12 +3,10 @@ package com.pine.tools.system.outline;
 import com.pine.injection.PInject;
 import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.system.AbstractPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
@@ -60,7 +58,7 @@ public class OutlineGenPass extends AbstractPass {
                         continue;
                     }
                     var mesh = world.bagMeshComponent.get(entityId);
-                    if (mesh != null && mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
+                    if (worldService.isMeshReady(mesh)) {
                         var request = mesh.renderRequest;
                         var entity = world.entityMap.get(entityId);
                         shaderService.bindInt(entity.renderIndex, renderIndex);

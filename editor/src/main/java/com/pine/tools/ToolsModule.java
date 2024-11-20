@@ -34,13 +34,14 @@ public class ToolsModule implements EngineExternalModule {
                 new AtmospherePass(),
                 new CompositingPass(),
                 new PostProcessingPass(),
+                new GridPass(),
+
                 new OutlineGenPass(),
                 new TerrainOutlineGenPass(),
                 new BoxOutlineGenPass(),
                 new OutlineRenderingPass(),
                 new PaintGizmoRenderingPass(),
                 new VoxelVisualizerPass(),
-                new GridPass(),
                 new FrameCompositionPass()
         };
     }

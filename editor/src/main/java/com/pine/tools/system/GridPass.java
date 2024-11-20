@@ -2,25 +2,25 @@ package com.pine.tools.system;
 
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.AbstractPass;
+import com.pine.service.system.impl.AbstractQuadPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
 
-public class GridPass extends AbstractPass {
+public class GridPass extends AbstractQuadPass {
     @PInject
     public EditorRepository editorRepository;
 
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
 
-    private final Vector4f buffer = new Vector4f();
+    private final Vector4f settings = new Vector4f();
     private UniformDTO depthUniform;
     private UniformDTO settingsUniform;
 
@@ -41,25 +41,18 @@ public class GridPass extends AbstractPass {
     }
 
     @Override
-    protected void renderInternal() {
+    protected void bindUniforms() {
         GL46.glEnable(GL46.GL_BLEND);
         GL46.glDisable(GL46.GL_CULL_FACE);
-        buffer.set(
-                editorRepository.gridColor,
+        settings.set(
+                editorRepository.gridOverlayObjects ? 1 : 0,
                 editorRepository.gridScale,
                 editorRepository.gridThreshold,
-                editorRepository.gridOpacity
+                editorRepository.gridThickness/100
         );
 
-        shaderService.bindVec4(buffer, settingsUniform);
+        shaderService.bindVec4(settings, settingsUniform);
         shaderService.bindSampler2d(bufferRepository.gBufferDepthIndexSampler, depthUniform);
-
-        meshService.bind(meshRepository.planeMesh);
-        meshService.setRenderingMode(RenderingMode.TRIANGLES);
-        meshService.setInstanceCount(0);
-
-        meshService.draw();
-        GL46.glEnable(GL46.GL_CULL_FACE);
     }
 
     @Override

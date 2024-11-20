@@ -117,7 +117,7 @@ public class ResourcesPanel extends AbstractDockPanel {
             if (tile != null) {
                 Collection<MeshComponent> meshes = world.bagMeshComponent.values();
                 for (var mesh : meshes) {
-                    if (mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
+                    if (worldService.isMeshReady(mesh)) {
                         totalTriangles += mesh.renderRequest.mesh.triangleCount;
                         totalDrawCalls++;
                     }

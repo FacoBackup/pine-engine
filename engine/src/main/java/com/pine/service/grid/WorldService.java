@@ -1,5 +1,6 @@
 package com.pine.service.grid;
 
+import com.pine.component.MeshComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
@@ -11,6 +12,7 @@ import com.pine.service.streaming.StreamingService;
 import com.pine.tasks.AbstractTask;
 import com.pine.tasks.SyncTask;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -33,11 +35,9 @@ public class WorldService extends AbstractTask implements SyncTask, Loggable {
     @PInject
     public StreamingService streamingService;
 
-    @PInject
-    public TransformationService transformationService;
-
     private WorldTile[] loadedWorldTiles;
     private WorldTile currentWorldTile;
+    private WorldTile prevCurrentTile;
 
     public WorldTile[] getLoadedTiles() {
         if (loadedWorldTiles == null) {
@@ -70,22 +70,56 @@ public class WorldService extends AbstractTask implements SyncTask, Loggable {
     }
 
     @Override
-    public void onInitialize() {
-        try {
-            for (WorldTile worldTile : getTiles().values()) {
-                if (worldTile.getEntities().isEmpty()) {
-                    getHashGrid().removeTile(worldTile.getId());
-                }
-            }
-        } catch (Exception e) {
-            getLogger().error("Could not clean up tiles", e);
+    public void sync() {
+        updateTileLayout();
+        updateCurrentTile();
+        if (prevCurrentTile != currentWorldTile) {
+            long start = System.currentTimeMillis();
+            updateLoadedTiles();
+            prevCurrentTile = currentWorldTile;
+            getLogger().warn("Loaded tiles query took {}ms", System.currentTimeMillis() - start);
         }
     }
 
-    @Override
-    public void sync() {
-        updateLoadedTiles();
-        updateCurrentTile();
+    private void updateTileLayout() {
+        int squared = engineRepository.numberOfTiles * engineRepository.numberOfTiles;
+        boolean isSizeSmaller = getTiles().size() < squared;
+        boolean isSizeBigger = getTiles().size() > squared;
+        if (isSizeSmaller || isSizeBigger) {
+            int before = getTiles().size();
+            long start = System.currentTimeMillis();
+            if (isSizeSmaller) { // Number of tiles increased
+                addMissingTiles();
+            } else { // Number of tiles reduced
+                removeExtraTiles();
+            }
+            for (var tile : getTiles().values()) {
+                getHashGrid().updateAdjacentTiles(tile);
+            }
+            getLogger().warn("Tile layout update: Before {} | After {} | Total processing {}ms", before, getTiles().size(), System.currentTimeMillis() - start);
+        }
+    }
+
+    private void addMissingTiles() {
+        int half = engineRepository.numberOfTiles / 2;
+        for (int x = -half; x < half; x++) {
+            for (int z = -half; z < half; z++) {
+                repo.worldGrid.createIfAbsent(x, z);
+            }
+        }
+    }
+
+    private void removeExtraTiles() {
+        int min = -engineRepository.numberOfTiles / 2;
+        int max = engineRepository.numberOfTiles / 2;
+        var tiles = new ArrayList<>(getTiles().values());
+        for (var tile : tiles) {
+            if (tile.getZ() > max || tile.getZ() < min || tile.getX() > max || tile.getX() < min) {
+                if (currentWorldTile != tile) {
+                    getHashGrid().removeTile(tile.getId());
+                }
+            }
+        }
     }
 
     @Override
@@ -109,7 +143,6 @@ public class WorldService extends AbstractTask implements SyncTask, Loggable {
             return;
         }
 
-        worldTile.setCulled(transformationService.isCulled(worldTile.getBoundingBox().center, engineRepository.tileCullingMaxDistance, TILE_SIZE * 2));
         aux.set(worldTile.getX(), worldTile.getZ());
         worldTile.setNormalizedDistance((int) aux.sub(origin).length());
         for (var adjacent : currentWorldTile.getAdjacentTiles()) {
@@ -124,5 +157,16 @@ public class WorldService extends AbstractTask implements SyncTask, Loggable {
     @Override
     public String getTitle() {
         return "Grid processing";
+    }
+
+    public boolean isEntityVisible(String entityId) {
+        return (!repo.culled.containsKey(entityId) || engineRepository.disableCullingGlobally) && !repo.hiddenEntities.containsKey(entityId);
+    }
+
+    public boolean isMeshReady(MeshComponent mesh) {
+        if (mesh != null && isEntityVisible(mesh.getEntityId())) {
+            return mesh.renderRequest != null && mesh.renderRequest.modelMatrix != null && mesh.renderRequest.mesh != null;
+        }
+        return false;
     }
 }

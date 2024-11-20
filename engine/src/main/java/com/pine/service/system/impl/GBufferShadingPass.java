@@ -4,7 +4,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 
-public class GBufferShadingPass extends AbstractQuadPassPass {
+public class GBufferShadingPass extends AbstractQuadPass {
     private UniformDTO SSRFalloff;
     private UniformDTO stepSizeSSR;
     private UniformDTO maxSSSDistance;

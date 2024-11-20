@@ -4,7 +4,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 
-public class PostProcessingPass extends AbstractQuadPassPass {
+public class PostProcessingPass extends AbstractQuadPass {
     private UniformDTO distortionIntensity;
     private UniformDTO chromaticAberrationIntensity;
     private UniformDTO distortionEnabled;

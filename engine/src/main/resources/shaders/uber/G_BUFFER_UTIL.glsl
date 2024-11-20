@@ -1,8 +1,8 @@
 #define PARALLAX_THRESHOLD 200.
 
-float encode(float depthFunc) {
+float encode(float depthFunc, float val) {
     float half_co = depthFunc * 0.5;
-    float clamp_z = max(0.000001, gl_FragCoord.z);
+    float clamp_z = max(0.000001, val);
     return log2(clamp_z) * half_co;
 }
 

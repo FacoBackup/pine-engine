@@ -15,7 +15,6 @@ public class WorldTile {
     private final int z;
     private final String id;
     private boolean loaded;
-    private boolean culled;
     private SparseVoxelOctree svo;
     private Map<String, Boolean> entities = new HashMap<>();
     private final BoundingBox boundingBox = new BoundingBox();
@@ -98,14 +97,6 @@ public class WorldTile {
 
     public void setLoaded(boolean loaded) {
         this.loaded = loaded;
-    }
-
-    public void setCulled(boolean culled) {
-        this.culled = culled;
-    }
-
-    public boolean isCulled() {
-        return culled;
     }
 
     private void updateTiles(WorldTile adjacentWorldTile, String key) {

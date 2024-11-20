@@ -5,12 +5,12 @@ import com.pine.repository.EditorRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.impl.AbstractQuadPassPass;
+import com.pine.service.system.impl.AbstractQuadPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
 
 
-public class OutlineRenderingPass extends AbstractQuadPassPass {
+public class OutlineRenderingPass extends AbstractQuadPass {
     @PInject
     public EditorRepository editorRepository;
 

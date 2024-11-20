@@ -65,7 +65,6 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
             }
             foliageMask = foliageMaskLocal;
             heightMapTexture = heightMapTextureLocal;
-            heightMapTextureToImport = null;
         }).start();
     }
 

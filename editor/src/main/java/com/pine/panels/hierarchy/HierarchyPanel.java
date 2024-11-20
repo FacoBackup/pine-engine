@@ -2,8 +2,10 @@ package com.pine.panels.hierarchy;
 
 import com.pine.component.AbstractComponent;
 import com.pine.component.Entity;
+import com.pine.injection.PInject;
 import com.pine.panels.AbstractEntityViewPanel;
 import com.pine.repository.WorldRepository;
+import com.pine.service.ThemeService;
 import com.pine.service.request.HierarchyRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
@@ -32,6 +34,9 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     private final Map<String, String> searchMatchWith = new HashMap<>();
     private final Map<String, Byte> searchMatch = new HashMap<>();
     private final Map<String, Integer> opened = new HashMap<>();
+
+    @PInject
+    public ThemeService theme;
 
     @Override
     public void onInitialize() {
@@ -79,12 +84,21 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         ImGui.tableNextRow();
         ImGui.tableNextColumn();
         int flags = getFlags(entity);
-        boolean open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
+        boolean open;
+
+        if(world.culled.containsKey(entityId)) {
+            ImGui.pushStyleColor(ImGuiCol.Text, theme.textDisabled);
+            open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
+            ImGui.popStyleColor();
+        }else{
+            open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
+        }
 
         if (!Objects.equals(entity.id(), WorldRepository.ROOT_ID)) {
             handleDragDrop(entity);
             renderEntityColumns(entity, false);
         }
+
         if (open) {
             opened.put(entity.id(), ImGuiTreeNodeFlags.DefaultOpen);
             renderEntityChildren(entity);
@@ -176,7 +190,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         ImGui.pushStyleVar(ImGuiStyleVar.FramePadding, PADDING);
         ImGui.pushStyleVar(ImGuiStyleVar.FrameBorderSize, 0);
 
-        boolean isVisible = !world.hiddenEntityMap.containsKey(node.id());
+        boolean isVisible = !world.hiddenEntities.containsKey(node.id());
         if (ImGui.button((isVisible ? Icons.visibility : Icons.visibility_off) + (isPinned ? "##vpinned" : "##v") + node.id() + imguiId, 20, 15)) {
             changeVisibilityRecursively(node.id(), !isVisible);
         }
@@ -195,9 +209,9 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private void changeVisibilityRecursively(String node, boolean isVisible) {
         if (isVisible) {
-            world.hiddenEntityMap.remove(node);
+            world.hiddenEntities.remove(node);
         } else {
-            world.hiddenEntityMap.put(node, true);
+            world.hiddenEntities.put(node, true);
         }
         var children = world.parentChildren.get(node);
 

@@ -42,8 +42,8 @@ bool rayMarch(vec3 ro, vec3 rd, vec3 halfSize, float width) {
 void main(){
     vec2 texCoords = gl_FragCoord.xy / bufferResolution;
     vec3 rayDir = createRay(texCoords);
-//    if (!rayMarch(cameraWorldPosition.xyz, rayDir, scale, .025)){
-//        discard;
-//    }
+    if (!rayMarch(cameraWorldPosition.xyz, rayDir, scale, .025)){
+        discard;
+    }
     finalColor = vec4(vec3(rIndex), 1);
 }

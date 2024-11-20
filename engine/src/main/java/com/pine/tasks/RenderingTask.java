@@ -2,14 +2,12 @@ package com.pine.tasks;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.inspection.Color;
 import com.pine.repository.AtmosphereRepository;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.ClockRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.RenderingRepository;
-import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.terrain.TerrainChunk;
 import com.pine.repository.terrain.TerrainRepository;
@@ -21,6 +19,8 @@ import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+
+import static com.pine.service.system.impl.AbstractGBufferPass.MAX_CUBE_MAPS;
 
 
 @PBean
@@ -114,8 +114,10 @@ public class RenderingTask extends AbstractTask {
             chunk.setDivider(divider);
             chunk.setTriangles(triangles);
             chunk.setTiles(tiles);
-            translation.set(chunk.locationX, 0, chunk.locationZ);
-
+            translation.set(
+                    chunk.locationX - terrainRepository.quads / 2f,
+                    -terrainRepository.heightScale / 2,
+                    chunk.locationZ - terrainRepository.quads / 2f);
             chunk.setCulled(!cameraRepository.frustum.isSphereInsideFrustum(translation, terrainRepository.quads * 2));
         }
     }
@@ -125,17 +127,14 @@ public class RenderingTask extends AbstractTask {
 
         for (var tile : worldService.getLoadedTiles()) {
             if (tile != null) {
-                for (var entity : tile.getEntities()) {
-                    var mesh = world.bagMeshComponent.get(entity);
-                    if (mesh != null) {
-                        var t = world.bagTransformationComponent.get(mesh.getEntityId());
-                        if (t != null) {
-                            mesh.distanceFromCamera = transformationService.getDistanceFromCamera(t.translation);
-                            renderingRequestService.prepare(mesh, t);
-                        }
-                    }
-                    var probe = world.bagEnvironmentProbeComponent.get(entity);
-                    if (probe != null && probeIndex < 3) {
+                for (var entityId : tile.getEntities()) {
+                    var culling = world.bagCullingComponent.get(entityId);
+                    var transform = world.bagTransformationComponent.get(entityId);
+                    renderingRequestService.updateCullingStatus(culling, transform);
+                    renderingRequestService.prepareMesh(world.bagMeshComponent.get(entityId), culling, transform);
+
+                    var probe = world.bagEnvironmentProbeComponent.get(entityId);
+                    if (probe != null && probeIndex < MAX_CUBE_MAPS) {
                         renderingRepository.environmentMaps[probeIndex] = (EnvironmentMapResourceRef) streamingService.streamIn(probe.getEntityId(), StreamableResourceType.ENVIRONMENT_MAP);
                         probeIndex++;
                     }

@@ -51,33 +51,18 @@ public class MeshComponent extends AbstractComponent {
 
     public RenderingRequest renderRequest;
 
-    // CULLING
-    @InspectableField(group = "Culling", label = "Enable culling")
-    public boolean isCullingEnabled = true;
-    @InspectableField(group = "Culling", label = "Max distance from camera", min = 1)
-    public int maxDistanceFromCamera = 200;
-    @InspectableField(group = "Culling", label = "Sphere radius")
-    public final float cullingSphereRadius = 1;
-
-
-    public float distanceFromCamera = 0f;
-
     public MeshComponent(String entity) {
         super(entity);
     }
 
     @Override
     public Set<ComponentType> getDependencies() {
-        return Set.of(ComponentType.TRANSFORMATION);
+        return Set.of(ComponentType.TRANSFORMATION, ComponentType.CULLING);
     }
 
     @Override
     public ComponentType getType() {
         return ComponentType.MESH;
-    }
-
-    public boolean canRender(boolean isDisableCulling, Map<String, Boolean> hiddenEntities) {
-        return !hiddenEntities.containsKey(getEntityId()) && renderRequest != null && renderRequest.modelMatrix != null && renderRequest.mesh != null && (!renderRequest.isCulled || isDisableCulling);
     }
 
     @Override

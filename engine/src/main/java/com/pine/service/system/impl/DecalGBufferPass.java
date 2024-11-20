@@ -1,6 +1,5 @@
 package com.pine.service.system.impl;
 
-import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.shader.Shader;
@@ -33,7 +32,7 @@ public class DecalGBufferPass extends AbstractGBufferPass {
             if (worldTile != null) {
                 for (var entityId : worldTile.getEntities()) {
                     var decal = world.bagDecalComponent.get(entityId);
-                    if (decal != null) {
+                    if (decal != null && worldService.isEntityVisible(entityId)) {
                         MaterialResourceRef material = (MaterialResourceRef) streamingService.streamIn(decal.material, StreamableResourceType.MATERIAL);
                         if (material != null) {
                             world.entityMap.get(entityId).renderIndex = engineRepository.meshesDrawn;

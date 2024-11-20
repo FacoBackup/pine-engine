@@ -14,7 +14,6 @@ import imgui.extension.imguizmo.flag.Mode;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.type.ImFloat;
 import imgui.type.ImInt;
-import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,14 +35,14 @@ public class EditorRepository extends Inspectable implements SerializableReposit
 
     @InspectableField(group = "Grid", label = "Show")
     public boolean showGrid = true;
-    @InspectableField(group = "Grid", label = "Grid color", min = 0, max = 1)
-    public float gridColor = 0.3f;
+    @InspectableField(group = "Grid", label = "Overlay objects")
+    public boolean gridOverlayObjects = true;
     @InspectableField(group = "Grid", label = "Grid scale", min = 1, max = 10)
     public float gridScale = 1f;
     @InspectableField(group = "Grid", label = "Grid threshold", max = 500, min = 100)
     public int gridThreshold = 100;
-    @InspectableField(group = "Grid", label = "Grid opacity")
-    public float gridOpacity = 1f;
+    @InspectableField(group = "Grid", label = "Line thickness", min = 1)
+    public float gridThickness = 2;
 
     public transient final ImVec4 accent = new ImVec4();
     public int accentU32 = 0;
@@ -51,8 +50,6 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     // Outline settings
     @InspectableField(group = "Outline", label = "Show outline")
     public boolean showOutline = true;
-    @InspectableField(group = "Outline", label = "Show tile outline")
-    public boolean showTileOutline = false;
     @InspectableField(group = "Outline", label = "width")
     public float outlineWidth = 2f;
     @InspectableField(group = "Outline", label = "Color")

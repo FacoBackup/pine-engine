@@ -60,8 +60,8 @@ public class GlobalSettingsPanel extends AbstractView {
         ImGui.text("Shading");
 
         ImGui.sameLine();
-        if (UIUtil.renderOption(Icons.grid_on + "##grid", editorRepository.showGrid, true, editorRepository.accent)) {
-            editorRepository.showGrid = !editorRepository.showGrid;
+        if (UIUtil.renderOption(Icons.grid_on + "##grid", editorRepository.gridOverlayObjects, true, editorRepository.accent)) {
+            editorRepository.gridOverlayObjects = !editorRepository.gridOverlayObjects;
         }
 
         ImGui.sameLine();

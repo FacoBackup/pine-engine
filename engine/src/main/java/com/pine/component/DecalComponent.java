@@ -20,7 +20,7 @@ public class DecalComponent extends AbstractComponent {
 
     @Override
     public Set<ComponentType> getDependencies() {
-        return Set.of(ComponentType.TRANSFORMATION);
+        return Set.of(ComponentType.TRANSFORMATION, ComponentType.CULLING);
     }
 
     @Override

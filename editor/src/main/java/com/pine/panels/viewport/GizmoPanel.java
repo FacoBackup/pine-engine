@@ -37,6 +37,8 @@ public class GizmoPanel extends AbstractView {
     private TransformationComponent localSelected;
     private int localChangeId;
 
+    public boolean isGizmoOver = false;
+
     public GizmoPanel(ImVec2 position, ImVec2 size) {
         this.size = size;
         this.position = position;
@@ -45,6 +47,7 @@ public class GizmoPanel extends AbstractView {
     @Override
     public void render() {
         if (stateRepository.primitiveSelected == null) {
+            isGizmoOver = false;
             localSelected = null;
             localChangeId = 0;
             if(stateRepository.mainSelection != null){
@@ -76,6 +79,7 @@ public class GizmoPanel extends AbstractView {
         if (ImGuizmo.isUsing()) {
             decomposeMatrix();
         }
+        isGizmoOver = ImGuizmo.isOver();
     }
 
     private float @Nullable [] getSnapValues() {
