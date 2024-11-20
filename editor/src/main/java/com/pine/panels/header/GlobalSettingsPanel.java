@@ -11,7 +11,7 @@ import imgui.type.ImInt;
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class GlobalSettingsPanel extends AbstractView {
-    private static final String[] SHADING_MODE_OPTIONS = DebugShadingModel.getLabels();
+    private static final String[] SHADING_MODE_OPTIONS = ShadingMode.getLabels();
 
     private final float[] cameraSensitivity = new float[1];
     private final ImInt editorMode = new ImInt(0);
@@ -65,21 +65,21 @@ public class GlobalSettingsPanel extends AbstractView {
         }
 
         ImGui.sameLine();
-        if (UIUtil.renderOption(Icons.details + "Wireframe##wireframeShading", engineRepository.debugShadingModel == DebugShadingModel.WIREFRAME, false, editorRepository.accent)) {
-            engineRepository.debugShadingModel = DebugShadingModel.WIREFRAME;
-            editorRepository.shadingModelOption.set(DebugShadingModel.WIREFRAME.getIndex());
+        if (UIUtil.renderOption(Icons.details + "Wireframe##wireframeShading", engineRepository.shadingMode == ShadingMode.WIREFRAME, false, editorRepository.accent)) {
+            engineRepository.shadingMode = ShadingMode.WIREFRAME;
+            editorRepository.shadingModelOption.set(ShadingMode.WIREFRAME.getIndex());
         }
 
         ImGui.sameLine();
-        if (UIUtil.renderOption(Icons.palette + "Random##randomShading", engineRepository.debugShadingModel == DebugShadingModel.RANDOM, false, editorRepository.accent)) {
-            engineRepository.debugShadingModel = DebugShadingModel.RANDOM;
-            editorRepository.shadingModelOption.set(DebugShadingModel.RANDOM.getIndex());
+        if (UIUtil.renderOption(Icons.palette + "Random##randomShading", engineRepository.shadingMode == ShadingMode.RANDOM, false, editorRepository.accent)) {
+            engineRepository.shadingMode = ShadingMode.RANDOM;
+            editorRepository.shadingModelOption.set(ShadingMode.RANDOM.getIndex());
         }
 
         ImGui.sameLine();
         ImGui.setNextItemWidth(150);
         if (ImGui.combo("##shadingMode", editorRepository.shadingModelOption, SHADING_MODE_OPTIONS)) {
-            engineRepository.debugShadingModel = DebugShadingModel.values()[editorRepository.shadingModelOption.get()];
+            engineRepository.shadingMode = ShadingMode.values()[editorRepository.shadingModelOption.get()];
         }
     }
 

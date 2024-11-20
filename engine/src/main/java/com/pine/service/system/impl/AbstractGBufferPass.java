@@ -1,8 +1,7 @@
 package com.pine.service.system.impl;
 
-import com.pine.repository.DebugShadingModel;
+import com.pine.repository.ShadingMode;
 import com.pine.repository.rendering.RenderingMode;
-import com.pine.repository.rendering.RenderingRequest;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MaterialResourceRef;
@@ -60,7 +59,7 @@ public abstract class AbstractGBufferPass extends AbstractPass {
         GL46.glEnable(GL11.GL_DEPTH_TEST);
         GL46.glDisable(GL11.GL_BLEND);
 
-        if (!engineRepository.isBakingEnvironmentMaps && engineRepository.debugShadingModel == DebugShadingModel.WIREFRAME) {
+        if (!engineRepository.isBakingEnvironmentMaps && engineRepository.shadingMode == ShadingMode.WIREFRAME) {
             meshService.setRenderingMode(RenderingMode.WIREFRAME);
             GL46.glDisable(GL11.GL_CULL_FACE);
         } else {
@@ -69,9 +68,9 @@ public abstract class AbstractGBufferPass extends AbstractPass {
         }
 
         if (engineRepository.isBakingEnvironmentMaps) {
-            shaderService.bindInt(DebugShadingModel.LIT.getId(), debugShadingMode);
+            shaderService.bindInt(ShadingMode.LIT.getId(), debugShadingMode);
         } else {
-            shaderService.bindInt(engineRepository.debugShadingModel.getId(), debugShadingMode);
+            shaderService.bindInt(engineRepository.shadingMode.getId(), debugShadingMode);
             shaderService.bindFloat(engineRepository.probeFiltering, probeFilteringLevels);
             bindEnvironmentMaps();
         }

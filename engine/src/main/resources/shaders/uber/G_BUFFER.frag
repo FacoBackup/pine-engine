@@ -1,4 +1,3 @@
-
 #define ALBEDO 0
 #define NORMAL 1
 #define DEPTH 3
@@ -13,6 +12,7 @@
 #define INDIRECT 19
 #define TRIANGLE_ID 20
 #define HEIGHT 21
+#define MATERIAL_MASK 22
 #define LIT -1
 
 #define ISOTROPIC 1
@@ -41,6 +41,7 @@ layout (binding = 6) uniform sampler2D ao;
 layout (binding = 7) uniform sampler2D normal;
 layout (binding = 8) uniform sampler2D heightMap;
 layout (binding = 9) uniform sampler2D sceneDepth;
+layout (binding = 10) uniform sampler2D materialMask;
 
 uniform vec3 albedoColor;
 uniform vec2 roughnessMetallic;
@@ -85,7 +86,7 @@ void main() {
     vec3 W = worldSpacePosition;
     vec3 N = normalVec;
     float depth = encode(logDepthFC, gl_FragCoord.z);
-    if(isDecalPass == 1){
+    if (isDecalPass == 1){
         vec2 quadUV = gl_FragCoord.xy/bufferResolution;
         depth = getLogDepth(quadUV);
         if (depth == 1.) discard;
@@ -184,6 +185,9 @@ void main() {
             break;
             case HEIGHT:
             gBufferAlbedoSampler.rgb = vec3(W.y/10);
+            break;
+            case MATERIAL_MASK:
+            gBufferAlbedoSampler.rgb = texture(materialMask, UV).rgb;
             break;
         }
 

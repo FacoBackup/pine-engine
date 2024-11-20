@@ -10,6 +10,7 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
 import imgui.ImVec2;
+import imgui.flag.ImGuiWindowFlags;
 
 public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
     private final float[] brushRadius = new float[]{1};
@@ -58,7 +59,7 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
                 float maskSize = ImGui.getWindowSizeX() * .15f;
                 ImGui.setNextWindowSize(maskSize, maskSize);
                 ImGui.setNextWindowPos(ImGui.getWindowPosX() + ImGui.getWindowSizeX() - maskSize, ImGui.getWindowPosY() + ImGui.getWindowSizeY() - maskSize);
-                if (ImGui.begin(imguiId, UIUtil.OPEN, UIUtil.FIXED_WINDOW_FLAGS)) {
+                if (ImGui.begin(imguiId, UIUtil.OPEN, ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse)) {
                     maskRes.x = ImGui.getWindowSizeX();
                     maskRes.y = ImGui.getWindowSizeX();
                     ImGui.image(targetTexture.texture, maskRes);
@@ -75,6 +76,9 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
             }
             case FOLIAGE -> {
                 return terrainRepository.foliageMask;
+            }
+            case MATERIAL -> {
+                return editorRepository.mainSelection;
             }
         }
         return null;

@@ -21,6 +21,7 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.impl.MaterialService;
 import com.pine.service.streaming.impl.MeshService;
+import com.pine.service.streaming.impl.TextureService;
 
 public abstract class AbstractPass extends MetricCollector {
     @PInject
@@ -29,6 +30,8 @@ public abstract class AbstractPass extends MetricCollector {
     public WorldRepository world;
     @PInject
     public Engine engine;
+    @PInject
+    public TextureService textureService;
     @PInject
     public StreamingService streamingService;
     @PInject

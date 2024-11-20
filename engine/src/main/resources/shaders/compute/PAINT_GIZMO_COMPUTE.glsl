@@ -32,7 +32,8 @@ bool randomBoolean(float density) {
 void main() {
     // RECONSTRUCT POSITION BASED ON MOUSE POSITION
     vec2 textureCoord = xyMouse.xy;
-    float depthData = getLogDepth(textureCoord);
+    vec4 mousePixelData = texture(sceneDepth, textureCoord);
+    float depthData = getLogDepthFromSampler(mousePixelData);
     if (depthData == 1.){
         return;
     }
@@ -41,8 +42,8 @@ void main() {
 
     // RECONSTRUCT POSITION BASED ON FRAGMENT POSITION
     textureCoord = vec2(gl_GlobalInvocationID.xy / bufferResolution);
-    vec4 depthIdUVData = texture(sceneDepth, textureCoord);
-    depthData = getLogDepthFromSampler(depthIdUVData);
+    vec4 currentPixelData = texture(sceneDepth, textureCoord);
+    depthData = getLogDepthFromSampler(currentPixelData);
     if (depthData == 1.){
         return;
     }
@@ -58,11 +59,13 @@ void main() {
         return;
     }
 
-    ivec2 uvScaled = ivec2(targetImageSize * depthIdUVData.ba);
+    ivec2 uvScaled = ivec2(targetImageSize * currentPixelData.ba);
     if (paintMode == TERRAIN){
         float scale =  (distToCenter/radiusDensityMode.x) * radiusDensityMode.y;
         imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(vec3(originalYPosition - scale) / heightScale, 1) : vec4(vec3(originalYPosition + .1 * scale)/heightScale, 1));
     } else if (paintMode == FOLIAGE && randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
         imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(colorForPainting, 1));
+    }else if(paintMode == MATERIAL){
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(1, 0, 1, 1));
     }
 }

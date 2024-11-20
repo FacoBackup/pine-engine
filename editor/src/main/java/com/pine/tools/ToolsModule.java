@@ -24,8 +24,9 @@ public class ToolsModule implements EngineExternalModule {
                 new ShaderDataSyncPass(),
                 new FoliageCullingPass(),
                 new TerrainGBufferPass(),
-                new PaintGizmoPass(),
+                new TerrainPaintGizmoPass(),
                 new PrimitiveGBufferPass(),
+                new MaterialPaintGizmoPass(),
                 new FoliageGBufferPass(),
                 new CopyDepthPass(),
                 new DecalGBufferPass(),
@@ -35,7 +36,6 @@ public class ToolsModule implements EngineExternalModule {
                 new CompositingPass(),
                 new PostProcessingPass(),
                 new GridPass(),
-
                 new OutlineGenPass(),
                 new TerrainOutlineGenPass(),
                 new BoxOutlineGenPass(),

@@ -30,7 +30,6 @@ public class FoliageCullingPass extends AbstractPass {
     private long sinceLastRun;
     private final Vector2f imageSize = new Vector2f();
     private final Vector4f settings = new Vector4f();
-    private final Vector2f terrainSize = new Vector2f();
     private final IntBuffer atomicCountValue = MemoryUtil.memAllocInt(1);
 
     @Override

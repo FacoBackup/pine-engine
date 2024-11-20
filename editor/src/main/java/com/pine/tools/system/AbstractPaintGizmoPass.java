@@ -1,10 +1,13 @@
 package com.pine.tools.system;
 
+import com.pine.component.MeshComponent;
 import com.pine.injection.PInject;
+import com.pine.messaging.Loggable;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.streaming.StreamableResourceType;
+import com.pine.service.ImageUtil;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
@@ -17,9 +20,10 @@ import org.lwjgl.opengl.GL46;
 
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
-public class PaintGizmoPass extends AbstractPass {
+public abstract class AbstractPaintGizmoPass extends AbstractPass implements Loggable {
     private static final int LOCAL_SIZE_X = 8;
     private static final int LOCAL_SIZE_Y = 8;
+    private static final long TIMEOUT = 250;
 
     @PInject
     public EditorRepository editorRepository;
@@ -37,6 +41,8 @@ public class PaintGizmoPass extends AbstractPass {
     private final Vector3f radiusDensityMode = new Vector3f();
     private final Vector2f targetImageSize = new Vector2f();
     private TextureResourceRef targetTexture;
+    private TextureResourceRef lastChangedTexture;
+    private long sinceLastChange = 0;
 
     @Override
     public void onInitialize() {
@@ -55,37 +61,36 @@ public class PaintGizmoPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return runtimeRepository.mousePressed && editorRepository.editorMode != EditorMode.TRANSFORM && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        if ((clockRepository.totalTime - sinceLastChange) >= TIMEOUT && lastChangedTexture != null) {
+            writeTextureToFile();
+            sinceLastChange = clockRepository.totalTime;
+            lastChangedTexture = null;
+        }
+        return runtimeRepository.mousePressed && isValidType() && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+    }
+
+    protected abstract boolean isValidType();
+
+    private void writeTextureToFile() {
+        getLogger().warn("Writing modified texture {}", lastChangedTexture.id);
+        textureService.writeTexture(importerService.getPathToFile(lastChangedTexture.id, StreamableResourceType.TEXTURE), lastChangedTexture.width, lastChangedTexture.height, lastChangedTexture.texture);
     }
 
     @Override
     protected void renderInternal() {
-        switch (editorRepository.editorMode) {
-            case FOLIAGE: {
-                if (editorRepository.foliageForPainting != null) {
-                    targetTexture = (TextureResourceRef) streamingService.streamIn(terrainRepository.foliageMask, StreamableResourceType.TEXTURE);
-                }
-                break;
-            }
-            case TERRAIN: {
-                targetTexture = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
-                break;
-            }
-        }
-
+        targetTexture = updateTargetTexture();
         if (targetTexture != null) {
             targetTexture.bindForBoth(1);
             dispatch();
-        }
-
-        if (editorRepository.editorMode == EditorMode.TERRAIN) {
-            terrainRepository.isHeightMapChanged = true;
-        }
-
-        if (editorRepository.editorMode == EditorMode.FOLIAGE) {
-            terrainRepository.isFoliageMaskChanged = true;
+            if (lastChangedTexture != null && lastChangedTexture != targetTexture) {
+                writeTextureToFile();
+            }
+            lastChangedTexture = targetTexture;
+            sinceLastChange = clockRepository.totalTime;
         }
     }
+
+    protected abstract TextureResourceRef updateTargetTexture();
 
     private void dispatch() {
         bindUniforms();
@@ -121,10 +126,5 @@ public class PaintGizmoPass extends AbstractPass {
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 2);
-    }
-
-    @Override
-    public String getTitle() {
-        return "Paint gizmo";
     }
 }

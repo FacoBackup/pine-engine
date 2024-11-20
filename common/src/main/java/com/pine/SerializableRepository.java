@@ -13,13 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface SerializableRepository extends Serializable, Loggable {
-    // TODO - MANUAL SERIALIZATION AND DE-SERIALIZATION
-//    void deserialize(){
-//
-//    }
-
-    default void onSave(){}
-
     default void merge(Object data) {
         if (data == null) {
             return;

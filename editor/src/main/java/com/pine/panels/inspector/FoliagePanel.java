@@ -22,9 +22,6 @@ public class FoliagePanel extends AbstractView {
     public EditorRepository editorRepository;
 
     @PInject
-    public FilesRepository filesRepository;
-
-    @PInject
     public TerrainRepository terrainRepository;
 
     private final Map<String, Boolean> toRemove = new HashMap<>();
@@ -49,23 +46,14 @@ public class FoliagePanel extends AbstractView {
 
     private void renderSelected() {
         if (ImGui.beginTable("##foliage" + imguiId, 3, TABLE_FLAGS)) {
-            ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
+            ImGui.tableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableSetupColumn("Material", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableSetupColumn("Mesh", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableHeadersRow();
 
             for (FoliageInstance m : terrainRepository.foliage.values()) {
-                FSEntry entry = filesRepository.entry.get(m.id);
-
-                if (entry == null) {
-                    toRemove.put(m.id, true);
-                    continue;
-                }
-
                 ImGui.tableNextRow();
                 ImGui.tableNextColumn();
-                ImGui.text(entry.name);
-                ImGui.sameLine();
                 boolean isSelected = Objects.equals(editorRepository.foliageForPainting, m.id);
                 if (ImGui.button((!isSelected ? Icons.check_box_outline_blank : Icons.check_box) + "##" + m.id, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                     editorRepository.foliageForPainting = isSelected ? null : m.id;

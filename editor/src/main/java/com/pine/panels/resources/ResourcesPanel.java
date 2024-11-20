@@ -11,6 +11,8 @@ import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.grid.WorldService;
+import com.pine.service.streaming.StreamingService;
+import com.pine.service.streaming.ref.MeshResourceRef;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 
@@ -25,7 +27,7 @@ public class ResourcesPanel extends AbstractDockPanel {
     public WorldService worldService;
 
     @PInject
-    public EngineRepository engineRepository;
+    public StreamingService streamingService;
 
     @PInject
     public TerrainRepository terrainRepository;
@@ -39,6 +41,7 @@ public class ResourcesPanel extends AbstractDockPanel {
     private int totalTriangles = 0;
     private int totalTerrainTiles = 0;
     private int totalTerrainTriangles = 0;
+    private int totalDrawCalls = 0;
 
     @Override
     public void render() {
@@ -47,9 +50,10 @@ public class ResourcesPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableHeadersRow();
 
+            computeDrawCallQuantity();
             computeTerrainData();
 
-            render("Individual draw calls", getDrawCallQuantity());
+            render("Individual draw calls", totalDrawCalls);
 
             render("Terrain tiles visible", totalTerrainTiles);
 
@@ -58,10 +62,17 @@ public class ResourcesPanel extends AbstractDockPanel {
             int total = 0;
             for (FoliageInstance f : terrainRepository.foliage.values()) {
                 total += f.count;
+                if (f.mesh != null) {
+                    var mesh = (MeshResourceRef) streamingService.streamIn(f.mesh, StreamableResourceType.MESH);
+                    if (mesh != null) {
+                        totalTriangles += mesh.triangleCount * f.count;
+                    }
+                }
             }
+            totalTriangles += totalTerrainTiles;
             render("Foliage instances", total);
 
-            render("Triangles being rendered", getTotalTriangleCount());
+            render("Triangles being rendered", totalTriangles);
 
             render("Textures", getTotalTextureCount());
 
@@ -105,13 +116,8 @@ public class ResourcesPanel extends AbstractDockPanel {
         return total;
     }
 
-    public int getTotalTriangleCount() {
-        // TODO - INCLUDE FOLIAGE
-        return totalTriangles;
-    }
-
-    public int getDrawCallQuantity() {
-        int totalDrawCalls = totalTriangles = 0;
+    public int computeDrawCallQuantity() {
+        totalDrawCalls = totalTriangles = 0;
 
         for (var tile : worldService.getLoadedTiles()) {
             if (tile != null) {

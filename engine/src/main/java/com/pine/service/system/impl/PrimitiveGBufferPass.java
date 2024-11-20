@@ -1,8 +1,10 @@
 package com.pine.service.system.impl;
 
+import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.ref.TextureResourceRef;
 
 public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO renderIndex;
@@ -37,6 +39,11 @@ public class PrimitiveGBufferPass extends AbstractGBufferPass {
                         entity.renderIndex = engineRepository.meshesDrawn;
                         engineRepository.meshesDrawn++;
                         shaderService.bindInt(entity.renderIndex, renderIndex);
+
+                        var texture = streamingService.streamIn(entityId, StreamableResourceType.TEXTURE);
+                        if(texture != null){
+                            shaderService.bindSampler2dDirect((TextureResourceRef) texture, 10);
+                        }
                         shaderService.bindMat4(request.modelMatrix, modelMatrix);
                         bindMaterial(request.material);
                         meshService.bind(request.mesh);

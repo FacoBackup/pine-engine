@@ -42,11 +42,6 @@ public class SerializationService implements Loggable {
     public void serialize(String projectDirectory, boolean silent) {
         getLogger().info("Beginning project serialization to {}", projectDirectory);
         long start = System.currentTimeMillis();
-
-        for (SerializableRepository r : serializableRepositories) {
-            r.onSave();
-        }
-
         new Thread(() -> {
             boolean success = true;
             for (SerializableRepository r : serializableRepositories) {

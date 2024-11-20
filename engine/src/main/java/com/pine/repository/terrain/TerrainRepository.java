@@ -130,28 +130,6 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @PInject
     public transient ImporterService importerService;
 
-    @PInject
-    public transient TextureService textureService;
-
-    public transient boolean isHeightMapChanged = false;
-    public transient boolean isFoliageMaskChanged = false;
-
-    @Override
-    public void onSave() {
-        if (isFoliageMaskChanged) {
-            var mask = (TextureResourceRef) streamingService.streamIn(foliageMask, StreamableResourceType.TEXTURE);
-            if (mask != null && mask.isLoaded()) {
-                textureService.writeTexture(importerService.getPathToFile(mask.id, StreamableResourceType.TEXTURE), mask.width, mask.height, mask.texture);
-            }
-        }
-        if (isHeightMapChanged) {
-            var heightMap = (TextureResourceRef) streamingService.streamIn(heightMapTexture, StreamableResourceType.TEXTURE);
-            if (heightMap != null && heightMap.isLoaded()) {
-                textureService.writeTexture(importerService.getPathToFile(heightMap.id, StreamableResourceType.TEXTURE), heightMap.width, heightMap.height, heightMap.texture);
-            }
-        }
-    }
-
     @Override
     public String getTitle() {
         return "Terrain & Foliage";

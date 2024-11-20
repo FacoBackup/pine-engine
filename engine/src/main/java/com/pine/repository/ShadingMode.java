@@ -4,7 +4,7 @@ import com.pine.inspection.SelectableEnum;
 
 import java.io.Serializable;
 
-public enum DebugShadingModel implements SelectableEnum, Serializable {
+public enum ShadingMode implements SelectableEnum, Serializable {
     ALBEDO("Albedo", 0, 0),
     NORMAL("Normal", 1, 1),
     DEPTH("Depth", 3, 2),
@@ -19,14 +19,15 @@ public enum DebugShadingModel implements SelectableEnum, Serializable {
     INDIRECT("Indirect illumination", 19, 11),
     TRIANGLE_ID("Triangle id", 20, 12),
     HEIGHT("Height", 21, 13),
-    LIT("Lit", -1, 14);
+    MATERIAL_MASK("Material mask", 22, 14),
+    LIT("Lit", -1, 15);
 
     private final int index;
     private final int id;
     private final String label;
     private static final String[] labels = new String[values().length];
 
-    DebugShadingModel(String label, int id, int index) {
+    ShadingMode(String label, int id, int index) {
         this.id = id;
         this.label = label;
         this.index = index;
@@ -42,7 +43,7 @@ public enum DebugShadingModel implements SelectableEnum, Serializable {
 
     public static String[] getLabels() {
         if (labels[0] == null) {
-            DebugShadingModel[] values = values();
+            ShadingMode[] values = values();
             for (int i = 0, valuesLength = values.length; i < valuesLength; i++) {
                 var value = values[i];
                 labels[i] = value.label;

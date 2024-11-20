@@ -73,7 +73,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public boolean gizmoUseSnapRotate;
     public boolean gizmoUseSnapScale;
 
-    public final ImInt shadingModelOption = new ImInt(DebugShadingModel.LIT.getIndex());
+    public final ImInt shadingModelOption = new ImInt(ShadingMode.LIT.getIndex());
     public boolean showOnlyEntitiesHierarchy = false;
 
     public Map<String, Boolean> pinnedEntities = new HashMap<>();

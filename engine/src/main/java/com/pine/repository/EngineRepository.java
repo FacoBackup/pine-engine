@@ -5,13 +5,7 @@ import com.pine.injection.PBean;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
-import com.pine.service.grid.WorldGrid;
 import com.pine.theme.Icons;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.pine.service.grid.WorldGrid.TILE_SIZE;
 
 @PBean
 public class EngineRepository extends Inspectable implements SerializableRepository {
@@ -88,7 +82,7 @@ public class EngineRepository extends Inspectable implements SerializableReposit
     @InspectableField(group = "Ambient occlusion", label = "Max Samples")
     public int ssaoMaxSamples = 64;
 
-    public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
+    public ShadingMode shadingMode = ShadingMode.LIT;
     public transient boolean isBakingEnvironmentMaps;
     public int meshesDrawn;
 

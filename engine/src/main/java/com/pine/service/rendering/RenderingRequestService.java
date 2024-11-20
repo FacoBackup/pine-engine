@@ -5,6 +5,7 @@ import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.repository.EngineRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
@@ -28,9 +29,12 @@ public class RenderingRequestService {
     @PInject
     public RenderingRepository renderingRepository;
 
+    @PInject
+    public EngineRepository engineRepository;
+
     public void updateCullingStatus(CullingComponent component, TransformationComponent transform) {
         if (component != null) {
-            if (transformationService.isCulled(transform, component)) {
+            if (component.isCullingEnabled && !engineRepository.disableCullingGlobally && transformationService.isCulled(transform, component)) {
                 worldRepository.culled.put(component.getEntityId(), true);
             } else {
                 worldRepository.culled.remove(component.getEntityId());

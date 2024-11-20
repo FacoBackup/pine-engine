@@ -35,7 +35,7 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return !editorRepository.selected.isEmpty() && editorRepository.editorMode == EditorMode.TRANSFORM && editorRepository.showOutline && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return !editorRepository.selected.isEmpty() && (editorRepository.editorMode == EditorMode.TRANSFORM || editorRepository.editorMode == EditorMode.MATERIAL) && editorRepository.showOutline && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override

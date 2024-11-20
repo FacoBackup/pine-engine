@@ -33,7 +33,7 @@ public class TerrainOutlineGenPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        return terrainRepository.enabled && editorRepository.editorMode != EditorMode.TRANSFORM && editorRepository.showOutline && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return terrainRepository.enabled && editorRepository.editorMode != EditorMode.TRANSFORM && editorRepository.editorMode != EditorMode.MATERIAL && editorRepository.showOutline && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
 
     @Override

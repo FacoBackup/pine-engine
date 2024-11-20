@@ -17,36 +17,41 @@ public class MeshComponent extends AbstractComponent {
     @InspectableField(label = "Material")
     public String material;
 
+    @InspectableField(label = "Material mask texture resolution")
+    public int materialTextureSize = 512;
+
+    public int writtenMaterialTextureSize = 0;
+
     @ResourceTypeField(type = StreamableResourceType.MESH)
-    @InspectableField(group = "Mesh", label = "Mesh LOD 0")
+    @InspectableField(label = "Mesh LOD 0")
     public String lod0;
 
-    @InspectableField(group = "Mesh", label = "Use LOD 0 when distance")
+    @InspectableField(label = "Use LOD 0 when distance")
     public float lod0DistanceUntil = 50;
 
     @ResourceTypeField(type = StreamableResourceType.MESH)
-    @InspectableField(group = "Mesh", label = "Mesh LOD 1")
+    @InspectableField(label = "Mesh LOD 1")
     public String lod1;
 
-    @InspectableField(group = "Mesh", label = "Use LOD 1 when distance")
+    @InspectableField(label = "Use LOD 1 when distance")
     public float lod1DistanceUntil = 100;
 
     @ResourceTypeField(type = StreamableResourceType.MESH)
-    @InspectableField(group = "Mesh", label = "Mesh LOD 2")
+    @InspectableField(label = "Mesh LOD 2")
     public String lod2;
 
-    @InspectableField(group = "Mesh", label = "Use LOD 2 when distance")
+    @InspectableField(label = "Use LOD 2 when distance")
     public float lod2DistanceUntil = 150;
 
     @ResourceTypeField(type = StreamableResourceType.MESH)
-    @InspectableField(group = "Mesh", label = "Mesh LOD 3")
+    @InspectableField(label = "Mesh LOD 3")
     public String lod3;
 
-    @InspectableField(group = "Mesh", label = "Use LOD 3 when distance")
+    @InspectableField(label = "Use LOD 3 when distance")
     public float lod3DistanceUntil = 200;
 
     @ResourceTypeField(type = StreamableResourceType.MESH)
-    @InspectableField(group = "Mesh", label = "Mesh LOD 4")
+    @InspectableField(label = "Mesh LOD 4")
     public String lod4;
 
     public RenderingRequest renderRequest;
