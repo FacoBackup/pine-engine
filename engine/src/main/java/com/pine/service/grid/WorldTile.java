@@ -3,6 +3,7 @@ package com.pine.service.grid;
 import com.pine.service.voxelization.svo.SparseVoxelOctree;
 import com.pine.service.voxelization.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4f;
 
 import java.util.*;
 
@@ -16,7 +17,7 @@ public class WorldTile {
     private boolean loaded;
     private boolean culled;
     private SparseVoxelOctree svo;
-    private  Map<String, Boolean> entities = new HashMap<>();
+    private Map<String, Boolean> entities = new HashMap<>();
     private final BoundingBox boundingBox = new BoundingBox();
     private int normalizedDistance = 0;
 
@@ -150,5 +151,4 @@ public class WorldTile {
             adjacentTiles[7] = key;
         }
     }
-
 }

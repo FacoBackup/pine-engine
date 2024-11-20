@@ -89,7 +89,6 @@ public class EngineRepository extends Inspectable implements SerializableReposit
     public int ssaoMaxSamples = 64;
 
     public DebugShadingModel debugShadingModel = DebugShadingModel.LIT;
-    public boolean gridOverlay = false;
     public transient boolean isBakingEnvironmentMaps;
     public int meshesDrawn;
 

@@ -20,7 +20,6 @@ public class GridPass extends AbstractPass {
     @PInject
     public ToolsResourceRepository toolsResourceRepository;
 
-
     private final Vector4f buffer = new Vector4f();
     private UniformDTO depthUniform;
     private UniformDTO settingsUniform;

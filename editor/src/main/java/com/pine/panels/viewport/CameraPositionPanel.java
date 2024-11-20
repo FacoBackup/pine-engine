@@ -1,8 +1,11 @@
 package com.pine.panels.viewport;
 
 import com.pine.core.AbstractView;
+import com.pine.core.UIUtil;
 import com.pine.injection.PInject;
 import com.pine.repository.CameraRepository;
+import com.pine.repository.WorldRepository;
+import com.pine.service.grid.WorldService;
 import imgui.ImGui;
 import imgui.ImVec4;
 import org.joml.Vector3f;
@@ -18,17 +21,22 @@ public class CameraPositionPanel extends AbstractView {
     @PInject
     public CameraRepository cameraRepository;
 
+    @PInject
+    public WorldService worldService;
+
     @Override
     public void render() {
         ImGui.setNextWindowPos(ImGui.getWindowPosX() + 8, ImGui.getWindowPosY() + ImGui.getWindowSizeY() - 25);
         ImGui.setNextWindowSize(ImGui.getWindowSizeX() - 16, 16);
         if (ImGui.begin(imguiId + "cameraPos", OPEN, FIXED_WINDOW_FLAGS)) {
             Vector3f positionCamera = cameraRepository.currentCamera.position;
-            ImGui.textColored(RED, "X: " + positionCamera.x);
+            ImGui.text("Current tile: " + worldService.getCurrentTile().getX() + " " + worldService.getCurrentTile().getZ());
             ImGui.sameLine();
-            ImGui.textColored(GREEN, "Y: " + positionCamera.y);
+            ImGui.textColored(RED, "X: " + (int) positionCamera.x);
             ImGui.sameLine();
-            ImGui.textColored(BLUE, "Z: " + positionCamera.z);
+            ImGui.textColored(GREEN, "Y: " + (int) positionCamera.y);
+            ImGui.sameLine();
+            ImGui.textColored(BLUE, "Z: " + (int) positionCamera.z);
         }
         ImGui.end();
     }

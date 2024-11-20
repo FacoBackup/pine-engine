@@ -25,9 +25,6 @@ public class RenderingRequestService {
     public RenderingRepository renderingRepository;
 
     public void prepare(MeshComponent scene, TransformationComponent transform) {
-        MeshResourceRef mesh = selectLOD(scene);
-        if (mesh == null) return;
-
         if (scene.renderRequest == null) {
             scene.renderRequest = new RenderingRequest();
         }
@@ -39,6 +36,9 @@ public class RenderingRequestService {
         }
 
         if (!scene.renderRequest.isCulled) {
+            MeshResourceRef mesh = selectLOD(scene);
+            if (mesh == null) return;
+
             scene.renderRequest.mesh = mesh;
             scene.renderRequest.entity = scene.getEntityId();
             prepareMaterial(scene, scene.renderRequest);

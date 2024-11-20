@@ -10,13 +10,12 @@ import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.camera.CameraService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
@@ -38,7 +37,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     public TerrainRepository terrain;
 
     @PInject
-    public CameraService cameraService;
+    public StreamingService streamingService;
 
     @PInject
     public ShaderService shaderService;
@@ -137,10 +136,17 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
         return new MeshResourceRef(key);
     }
 
-    public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO terrainOffset, UniformDTO heightScale, UniformDTO tilesScaleTranslation) {
+    public void renderTerrain(UniformDTO textureSize, UniformDTO terrainOffset, UniformDTO heightScale, UniformDTO tilesScaleTranslation) {
         if (terrain.chunks == null) {
             return;
         }
+
+        TextureResourceRef heightMap = (TextureResourceRef) streamingService.streamIn(terrain.heightMapTexture, StreamableResourceType.TEXTURE);
+        if(heightMap == null){
+            return;
+        }
+        heightMap.lastUse = clockRepository.totalTime;
+
         Vector4f terrainLocation = new Vector4f();
 
         shaderService.bindFloat(terrain.heightScale, heightScale);

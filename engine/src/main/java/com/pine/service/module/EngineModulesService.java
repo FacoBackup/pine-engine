@@ -34,7 +34,7 @@ public class EngineModulesService {
         }
 
         for (var m : modules) {
-            systemService.setSystems(m.getExternalSystems(new ArrayList<>(systemService.getSystems())));
+            systemService.setSystems(m.getExternalSystems());
         }
     }
 

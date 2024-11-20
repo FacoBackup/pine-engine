@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WorldGrid implements Loggable {
-    public static final int TILE_SIZE = 150;
-    public static final float TILE_SIZE_SQRT = (float) Math.sqrt(TILE_SIZE);
+    public static final int TILE_SIZE = 64;
     private final Map<String, WorldTile> tiles = new HashMap<>();
     private transient WorldTile[] loadedWorldTiles = new WorldTile[9];
 

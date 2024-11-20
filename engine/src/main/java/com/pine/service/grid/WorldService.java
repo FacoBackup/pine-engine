@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.pine.service.grid.WorldGrid.TILE_SIZE_SQRT;
+import static com.pine.service.grid.WorldGrid.TILE_SIZE;
 
 @PBean
 public class WorldService extends AbstractTask implements SyncTask, Loggable {
@@ -105,12 +105,11 @@ public class WorldService extends AbstractTask implements SyncTask, Loggable {
     private void processTile(WorldTile currentWorldTile, WorldTile worldTile, Vector2f aux, Vector2f origin) {
         if (worldTile == currentWorldTile) {
             worldTile.setLoaded(true);
-            worldTile.setCulled(false);
             worldTile.setNormalizedDistance(0);
             return;
         }
 
-        worldTile.setCulled(transformationService.isCulled(worldTile.getBoundingBox().center, engineRepository.tileCullingMaxDistance, TILE_SIZE_SQRT));
+        worldTile.setCulled(transformationService.isCulled(worldTile.getBoundingBox().center, engineRepository.tileCullingMaxDistance, TILE_SIZE * 2));
         aux.set(worldTile.getX(), worldTile.getZ());
         worldTile.setNormalizedDistance((int) aux.sub(origin).length());
         for (var adjacent : currentWorldTile.getAdjacentTiles()) {
