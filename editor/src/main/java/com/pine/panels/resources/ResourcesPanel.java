@@ -3,13 +3,12 @@ package com.pine.panels.resources;
 import com.pine.component.MeshComponent;
 import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
-import com.pine.repository.EngineRepository;
 import com.pine.repository.FoliageInstance;
-import com.pine.repository.terrain.TerrainRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
+import com.pine.repository.terrain.TerrainRepository;
 import com.pine.service.grid.WorldService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.ref.MeshResourceRef;
@@ -116,7 +115,7 @@ public class ResourcesPanel extends AbstractDockPanel {
         return total;
     }
 
-    public int computeDrawCallQuantity() {
+    public void computeDrawCallQuantity() {
         totalDrawCalls = totalTriangles = 0;
 
         for (var tile : worldService.getLoadedTiles()) {
@@ -131,7 +130,6 @@ public class ResourcesPanel extends AbstractDockPanel {
             }
         }
 
-        return totalDrawCalls;
     }
 
     private void render(String Resources_to_be_streamed_in, int schedule) {

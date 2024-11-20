@@ -6,8 +6,6 @@ import com.pine.injection.PInjector;
 import com.pine.service.system.impl.*;
 import com.pine.tasks.SyncTask;
 
-import java.util.List;
-
 @PBean
 public class SystemService implements SyncTask {
     @PInject

@@ -4,26 +4,33 @@ import com.pine.inspection.Color;
 import com.pine.inspection.FieldDTO;
 import com.pine.panels.component.AbstractFormField;
 import imgui.ImGui;
+import imgui.ImVec4;
 import imgui.flag.ImGuiColorEditFlags;
 
 import java.util.function.BiConsumer;
 
 public class ColorField extends AbstractFormField {
-    private final float[] values = new float[4];
+    private final ImVec4 values = new ImVec4();
+    private final float[] valuesV = new float[3];
 
     public ColorField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
         super(dto, changerHandler);
         var cast = (Color) dto.getValue();
-        values[0] = cast.x;
-        values[1] = cast.y;
-        values[2] = cast.z;
+        valuesV[0] = values.x = cast.x;
+        valuesV[1] = values.y = cast.y;
+        valuesV[2] = values.z = cast.z;
+        values.w = 1;
     }
 
     @Override
     public void render() {
-        ImGui.text(dto.getLabel());
-        if (ImGui.colorPicker3(dto.getId(), values, ImGuiColorEditFlags.NoSidePreview | ImGuiColorEditFlags.DisplayRGB | ImGuiColorEditFlags.NoAlpha)) {
-            changerHandler.accept(dto, values);
+        if(dto.isDisabled()){
+            ImGui.colorButton(dto.getId(), values);
+        }else {
+            ImGui.text(dto.getLabel());
+            if (ImGui.colorPicker3(dto.getId(), valuesV, ImGuiColorEditFlags.NoSidePreview | ImGuiColorEditFlags.DisplayRGB | ImGuiColorEditFlags.NoAlpha)) {
+                changerHandler.accept(dto, valuesV);
+            }
         }
     }
 }

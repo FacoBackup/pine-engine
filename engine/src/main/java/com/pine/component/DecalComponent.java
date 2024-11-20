@@ -2,10 +2,8 @@ package com.pine.component;
 
 import com.pine.inspection.InspectableField;
 import com.pine.inspection.ResourceTypeField;
-import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
 
-import java.util.Map;
 import java.util.Set;
 
 

@@ -10,11 +10,13 @@ import com.pine.service.streaming.ref.MeshResourceRef;
 
 public class FoliageGBufferPass extends AbstractGBufferPass {
     private UniformDTO terrainOffsetU;
+    private UniformDTO transformOffset;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
         terrainOffsetU = addUniformDeclaration("terrainOffset");
+        transformOffset = addUniformDeclaration("transformOffset");
     }
 
     @Override
@@ -34,12 +36,13 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
         ssboService.bind(bufferRepository.foliageTransformationSSBO);
         shaderService.bindVec2(terrainRepository.offset, terrainOffsetU);
         shaderService.bindSampler2dDirect(bufferRepository.noiseSampler, 10);
-        for(var foliage : terrainRepository.foliage.values()) {
-            if(foliage.count < CoreBufferRepository.MAX_INSTANCING && foliage.count > 0) {
+        for (var foliage : terrainRepository.foliage.values()) {
+            if (foliage.count < CoreBufferRepository.MAX_INSTANCING && foliage.count > 0) {
                 var mesh = (MeshResourceRef) streamingService.streamIn(foliage.mesh, StreamableResourceType.MESH);
                 var material = (MaterialResourceRef) streamingService.streamIn(foliage.material, StreamableResourceType.MATERIAL);
                 bindMaterial(material);
-                if(mesh != null) {
+                if (mesh != null) {
+                    shaderService.bindInt(foliage.offset, transformOffset);
                     meshService.bind(mesh);
                     meshService.setInstanceCount(foliage.count);
                     meshService.draw();

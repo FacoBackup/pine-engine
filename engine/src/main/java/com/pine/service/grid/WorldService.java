@@ -7,18 +7,14 @@ import com.pine.messaging.Loggable;
 import com.pine.repository.CameraRepository;
 import com.pine.repository.EngineRepository;
 import com.pine.repository.WorldRepository;
-import com.pine.service.rendering.TransformationService;
 import com.pine.service.streaming.StreamingService;
 import com.pine.tasks.AbstractTask;
 import com.pine.tasks.SyncTask;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
-
-import static com.pine.service.grid.WorldGrid.TILE_SIZE;
 
 @PBean
 public class WorldService extends AbstractTask implements SyncTask, Loggable {

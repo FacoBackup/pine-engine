@@ -1,27 +1,16 @@
 package com.pine.panels.viewport;
 
-import com.pine.Engine;
 import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.panels.AbstractEntityViewPanel;
 import com.pine.panels.viewport.header.ViewportHeaderPanel;
-import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.RuntimeRepository;
 import com.pine.service.ViewportPickingService;
-import com.pine.service.camera.Camera;
-import com.pine.service.camera.CameraMovementService;
-import com.pine.service.resource.fbo.FrameBufferObject;
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import imgui.ImVec2;
-import imgui.extension.imguizmo.ImGuizmo;
 import imgui.extension.imguizmo.flag.Operation;
 import imgui.flag.ImGuiKey;
 import imgui.flag.ImGuiMouseButton;
-
-import static com.pine.core.dock.DockSpacePanel.FRAME_SIZE;
 
 public class ViewportPanel extends AbstractViewportPanel {
 

@@ -1,20 +1,9 @@
 package com.pine.panels.viewport;
 
-import com.pine.Engine;
-import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.repository.CameraRepository;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.RuntimeRepository;
-import com.pine.service.camera.CameraMovementService;
-import com.pine.service.camera.Camera;
-import com.pine.service.resource.fbo.FrameBufferObject;
 import imgui.ImGui;
-import imgui.ImGuiIO;
 import imgui.ImVec2;
-import imgui.extension.imguizmo.ImGuizmo;
-import imgui.flag.ImGuiKey;
-import imgui.flag.ImGuiMouseButton;
 import imgui.flag.ImGuiStyleVar;
 
 import static com.pine.core.AbstractWindow.FLAGS;

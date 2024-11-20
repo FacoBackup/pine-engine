@@ -8,7 +8,6 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.impl.AbstractQuadPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 

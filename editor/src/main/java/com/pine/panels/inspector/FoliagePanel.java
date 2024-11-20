@@ -2,8 +2,12 @@ package com.pine.panels.inspector;
 
 import com.pine.core.AbstractView;
 import com.pine.injection.PInject;
-import com.pine.repository.*;
+import com.pine.panels.component.FormPanel;
+import com.pine.repository.EditorRepository;
+import com.pine.repository.FoliageInstance;
 import com.pine.repository.terrain.TerrainRepository;
+import com.pine.service.rendering.RequestProcessingService;
+import com.pine.service.request.UpdateFieldRequest;
 import com.pine.theme.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
@@ -24,35 +28,47 @@ public class FoliagePanel extends AbstractView {
     @PInject
     public TerrainRepository terrainRepository;
 
+    @PInject
+    public RequestProcessingService requestProcessingService;
+
     private final Map<String, Boolean> toRemove = new HashMap<>();
-    private AbstractResourceField materialField;
-    private AbstractResourceField meshField;
+    private FormPanel form;
 
     @Override
     public void onInitialize() {
-        materialField = appendChild(new MaterialResourceField());
-        meshField = appendChild(new MeshResourceField());
+        form = appendChild(new FormPanel((field, value) -> {
+            requestProcessingService.addRequest(new UpdateFieldRequest(field, value));
+        }));
     }
 
     @Override
     public void render() {
+        ImGui.dummy(0, 8);
         if (ImGui.button(Icons.add + "Add foliage" + imguiId)) {
             var instance = new FoliageInstance(terrainRepository.foliage.size() + 1);
             terrainRepository.foliage.put(instance.id, instance);
         }
         ImGui.dummy(0, 8);
         renderSelected();
+        ImGui.dummy(0, 8);
+        if (editorRepository.foliageForPainting != null) {
+            form.setInspection(terrainRepository.foliage.get(editorRepository.foliageForPainting));
+        } else {
+            form.setInspection(null);
+        }
+        form.render();
     }
 
     private void renderSelected() {
-        if (ImGui.beginTable("##foliage" + imguiId, 3, TABLE_FLAGS)) {
+        if (ImGui.beginTable("##foliage" + imguiId, 2, TABLE_FLAGS)) {
+            ImGui.tableSetupColumn("Name", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableSetupColumn("Actions", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.tableSetupColumn("Material", ImGuiTableColumnFlags.WidthStretch);
-            ImGui.tableSetupColumn("Mesh", ImGuiTableColumnFlags.WidthStretch);
             ImGui.tableHeadersRow();
 
             for (FoliageInstance m : terrainRepository.foliage.values()) {
                 ImGui.tableNextRow();
+                ImGui.tableNextColumn();
+                ImGui.text(Icons.forest + m.name);
                 ImGui.tableNextColumn();
                 boolean isSelected = Objects.equals(editorRepository.foliageForPainting, m.id);
                 if (ImGui.button((!isSelected ? Icons.check_box_outline_blank : Icons.check_box) + "##" + m.id, ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
@@ -65,14 +81,6 @@ public class FoliagePanel extends AbstractView {
                         editorRepository.foliageForPainting = null;
                     }
                 }
-
-                ImGui.tableNextColumn();
-                materialField.setFoliage(m);
-                materialField.render();
-
-                ImGui.tableNextColumn();
-                meshField.setFoliage(m);
-                meshField.render();
             }
             remove();
             ImGui.endTable();

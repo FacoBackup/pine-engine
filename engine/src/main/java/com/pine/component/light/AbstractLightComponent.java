@@ -4,7 +4,6 @@ import com.pine.component.AbstractComponent;
 import com.pine.component.ComponentType;
 import com.pine.inspection.Color;
 import com.pine.inspection.InspectableField;
-import com.pine.theme.Icons;
 import com.pine.type.LightType;
 
 import java.util.Set;

@@ -7,7 +7,6 @@ import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.service.system.AbstractPass;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
@@ -84,15 +83,14 @@ public class FoliageCullingPass extends AbstractPass {
         imageSize.y = heightMap.height;
         shaderService.bindVec2(imageSize, imageSizeU);
 
-        settings.x = terrainRepository.maxDistanceFromCamera;
-        settings.y = terrainRepository.maxIterations;
-        settings.z = terrainRepository.instanceOffset.x;
-        settings.w = terrainRepository.instanceOffset.y;
-        shaderService.bindVec4(settings, settingsU);
-
         int offset = 0;
         for (var foliage : terrainRepository.foliage.values()) {
-            // TODO - ONE RUN PER FRAME INSTEAD OF EVERYTHING ALL AT ONCE
+
+            settings.x = foliage.maxDistanceFromCamera;
+            settings.y = foliage.maxIterations;
+            settings.z = foliage.instanceOffset.x;
+            settings.w = foliage.instanceOffset.y;
+            shaderService.bindVec4(settings, settingsU);
             shaderService.bindVec3(foliage.color, colorToMatchU);
 
             shaderService.dispatch(COMPUTE_RUNTIME_DATA);

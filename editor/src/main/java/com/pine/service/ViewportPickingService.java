@@ -1,6 +1,5 @@
 package com.pine.service;
 
-import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -16,7 +15,6 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
-import java.util.Collection;
 
 @PBean
 public class ViewportPickingService implements Loggable {

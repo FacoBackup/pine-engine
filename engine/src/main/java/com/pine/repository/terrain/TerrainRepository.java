@@ -11,9 +11,6 @@ import com.pine.repository.FoliageInstance;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.ImageUtil;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.streaming.StreamingService;
-import com.pine.service.streaming.impl.TextureService;
-import com.pine.service.streaming.ref.TextureResourceRef;
 import com.pine.theme.Icons;
 import org.joml.Vector2f;
 
@@ -75,15 +72,6 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
         }
     }
 
-    @InspectableField(group = "Foliage", label = "Max distance from camera", min = 1)
-    public int maxDistanceFromCamera = 100;
-
-    @InspectableField(group = "Foliage", label = "Max instances per cell (squared) ", min = 1, max = 15)
-    public int maxIterations = 5;
-
-    @InspectableField(group = "Foliage", label = "Instance offset scale")
-    public Vector2f instanceOffset = new Vector2f(5);
-
     @InspectableField(group = "Wind", label = "Frequency", min = 1)
     public float windFrequency = 20;
 
@@ -124,11 +112,6 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
 
     public final Map<String, FoliageInstance> foliage = new HashMap<>();
 
-    @PInject
-    public transient StreamingService streamingService;
-
-    @PInject
-    public transient ImporterService importerService;
 
     @Override
     public String getTitle() {
