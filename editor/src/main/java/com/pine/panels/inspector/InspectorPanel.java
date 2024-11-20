@@ -10,7 +10,7 @@ import com.pine.injection.PInject;
 import com.pine.inspection.Inspectable;
 import com.pine.panels.component.FormPanel;
 import com.pine.repository.EditorRepository;
-import com.pine.repository.TerrainRepository;
+import com.pine.repository.terrain.TerrainRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.service.grid.WorldService;
 import com.pine.service.rendering.RequestProcessingService;

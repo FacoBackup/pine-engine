@@ -5,13 +5,12 @@ import com.pine.core.dock.AbstractDockPanel;
 import com.pine.injection.PInject;
 import com.pine.repository.EngineRepository;
 import com.pine.repository.FoliageInstance;
-import com.pine.repository.TerrainRepository;
+import com.pine.repository.terrain.TerrainRepository;
 import com.pine.repository.WorldRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.grid.WorldService;
-import com.pine.service.streaming.impl.MeshService;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 
@@ -48,6 +47,8 @@ public class ResourcesPanel extends AbstractDockPanel {
             ImGui.tableSetupColumn("Quantity", ImGuiTableColumnFlags.WidthFixed, 120f);
             ImGui.tableHeadersRow();
 
+            computeTerrainData();
+
             render("Individual draw calls", getDrawCallQuantity());
 
             render("Terrain tiles visible", totalTerrainTiles);
@@ -71,6 +72,18 @@ public class ResourcesPanel extends AbstractDockPanel {
             render("Resources to be streamed in", streamingRepository.toStreamIn.size());
 
             ImGui.endTable();
+        }
+    }
+
+    private void computeTerrainData() {
+        totalTerrainTriangles = totalTerrainTiles = 0;
+        if (terrainRepository.chunks != null) {
+            for (var chunk : terrainRepository.chunks) {
+                if (!chunk.isCulled()) {
+                    totalTerrainTriangles += chunk.getTriangles();
+                    totalTerrainTiles++;
+                }
+            }
         }
     }
 
@@ -104,7 +117,7 @@ public class ResourcesPanel extends AbstractDockPanel {
             if (tile != null) {
                 Collection<MeshComponent> meshes = world.bagMeshComponent.values();
                 for (var mesh : meshes) {
-                    if (mesh.canRender(engineRepository.disableCullingGlobally, world.hiddenEntityMap)) {
+                    if (worldService.isMeshReady(mesh)) {
                         totalTriangles += mesh.renderRequest.mesh.triangleCount;
                         totalDrawCalls++;
                     }

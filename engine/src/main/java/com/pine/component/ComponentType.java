@@ -15,6 +15,7 @@ public enum ComponentType implements Serializable {
     ENVIRONMENT_PROBE("Environment Probe", Icons.blur_on, EnvironmentProbeComponent.class),
     MESH("Mesh", Icons.category, MeshComponent.class),
     DECAL("Decal", Icons.layers, DecalComponent.class),
+    CULLING("Culling", Icons.visibility_off, CullingComponent.class),
     TRANSFORMATION("Transformation", Icons.transform, TransformationComponent.class);
 
     private final String title;

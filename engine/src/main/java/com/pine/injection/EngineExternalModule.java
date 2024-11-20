@@ -6,15 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 public interface EngineExternalModule {
-    /**
-     * Should return a list containing the previous registered systems and the new ones included
-     *
-     * @param systems: currently instantiated systems
-     * @return instantiated systems + additional systems
-     */
-    default List<AbstractPass> getExternalSystems(List<AbstractPass> systems) {
-        return systems;
-    }
+    AbstractPass[] getExternalSystems();
 
     default void onInitialize() {
     }

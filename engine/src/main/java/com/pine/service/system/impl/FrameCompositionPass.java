@@ -4,7 +4,7 @@ import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 
-public class FrameCompositionPass extends AbstractQuadPassPass {
+public class FrameCompositionPass extends AbstractQuadPass {
     private UniformDTO inverseFilterTextureSize;
     private UniformDTO useFXAA;
     private UniformDTO filmGrainEnabled;

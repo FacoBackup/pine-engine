@@ -19,13 +19,12 @@ smooth out vec3 worldSpacePosition;
 void main() {
     isDecalPass = 0;
     invModelMatrix = mat4(0);
-
     renderingIndex = int(tilesScaleTranslation.z + tilesScaleTranslation.w);
 
     TerrainData terrain = computeTerrainData(tilesScaleTranslation, terrainOffset, textureSize, heightMap, heightScale);
     initialUV = terrain.uv;
 
-    normalVec = getNormalFromHeightMap(terrain.position.y, heightScale, heightMap, initialUV);
+    normalVec = getNormalFromHeightMap(heightScale, heightMap, initialUV);
 
     worldSpacePosition = terrain.position;
     gl_Position = viewProjection * vec4(worldSpacePosition, 1);

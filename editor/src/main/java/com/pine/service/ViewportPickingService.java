@@ -36,8 +36,11 @@ public class ViewportPickingService implements Loggable {
     public WorldService worldService;
 
     public void pick() {
-        int x = (int) ((runtimeRepository.mouseX - runtimeRepository.viewportX) * (runtimeRepository.getDisplayW() / runtimeRepository.viewportW));
-        int y = (int) ((runtimeRepository.getDisplayH() - runtimeRepository.mouseY - runtimeRepository.viewportY));
+        float multiplierX = runtimeRepository.getDisplayW() / runtimeRepository.viewportW;
+        float multiplierY = runtimeRepository.getDisplayH() / runtimeRepository.viewportH;
+
+        int x = (int) (runtimeRepository.mouseX * multiplierX - runtimeRepository.viewportX * multiplierX);
+        int y = (int) (runtimeRepository.getDisplayH() - runtimeRepository.mouseY * multiplierY + runtimeRepository.viewportY * multiplierY - 1);
 
         getLogger().warn("X: {} Y: {} OX: {} OY: {}", x, y, runtimeRepository.mouseX, runtimeRepository.mouseY);
         FloatBuffer pixelBuffer = BufferUtils.createFloatBuffer(2);
@@ -74,7 +77,8 @@ public class ViewportPickingService implements Loggable {
             if (tile != null) {
                 for (var entityId : tile.getEntities()) {
                     var entity = world.entityMap.get(entityId);
-                    if (entity != null) {
+                    var mesh = world.bagMeshComponent.get(entityId);
+                    if (entity != null && (mesh == null || worldService.isMeshReady(mesh))) {
                         if (entity.renderIndex == actualIndex) {
                             return world.bagTransformationComponent.get(entityId);
                         }

@@ -1,10 +1,11 @@
 package com.pine.service.rendering;
 
+import com.pine.component.CullingComponent;
 import com.pine.component.MeshComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.EngineRepository;
+import com.pine.repository.WorldRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.rendering.RenderingRequest;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -19,26 +20,32 @@ public class RenderingRequestService {
     public TransformationService transformationService;
 
     @PInject
+    public WorldRepository worldRepository;
+
+    @PInject
     public StreamingService streamingService;
 
     @PInject
     public RenderingRepository renderingRepository;
 
-    public void prepare(MeshComponent scene, TransformationComponent transform) {
-        MeshResourceRef mesh = selectLOD(scene);
-        if (mesh == null) return;
-
-        if (scene.renderRequest == null) {
-            scene.renderRequest = new RenderingRequest();
+    public void updateCullingStatus(CullingComponent component, TransformationComponent transform) {
+        if (component != null) {
+            if (transformationService.isCulled(transform, component)) {
+                worldRepository.culled.put(component.getEntityId(), true);
+            } else {
+                worldRepository.culled.remove(component.getEntityId());
+            }
         }
+    }
 
-        if (scene.isCullingEnabled) {
-            scene.renderRequest.isCulled = transformationService.isCulled(transform.translation, scene.maxDistanceFromCamera, scene.cullingSphereRadius);
-        } else {
-            scene.renderRequest.isCulled = false;
-        }
+    public void prepareMesh(MeshComponent scene, CullingComponent culling, TransformationComponent transform) {
+        if (scene != null && !worldRepository.culled.containsKey(scene.getEntityId())) {
+            if (scene.renderRequest == null) {
+                scene.renderRequest = new RenderingRequest();
+            }
+            MeshResourceRef mesh = selectLOD(scene, culling);
+            if (mesh == null) return;
 
-        if (!scene.renderRequest.isCulled) {
             scene.renderRequest.mesh = mesh;
             scene.renderRequest.entity = scene.getEntityId();
             prepareMaterial(scene, scene.renderRequest);
@@ -52,22 +59,22 @@ public class RenderingRequestService {
         renderRequest.material = (MaterialResourceRef) streamingService.streamIn(scene.material, StreamableResourceType.MATERIAL);
     }
 
-    protected @Nullable MeshResourceRef selectLOD(MeshComponent scene) {
+    protected @Nullable MeshResourceRef selectLOD(MeshComponent scene, CullingComponent culling) {
         MeshResourceRef finalResource = null;
 
-        if (scene.lod0 != null && scene.distanceFromCamera <= scene.lod0DistanceUntil) {
+        if (scene.lod0 != null && culling.distanceFromCamera <= scene.lod0DistanceUntil) {
             finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod0, StreamableResourceType.MESH);
         }
 
-        if (scene.lod1 != null && scene.distanceFromCamera <= scene.lod1DistanceUntil && scene.distanceFromCamera > scene.lod0DistanceUntil) {
+        if (scene.lod1 != null && culling.distanceFromCamera <= scene.lod1DistanceUntil && culling.distanceFromCamera > scene.lod0DistanceUntil) {
             finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod1, StreamableResourceType.MESH);
         }
 
-        if (scene.lod2 != null && scene.distanceFromCamera <= scene.lod2DistanceUntil && scene.distanceFromCamera > scene.lod1DistanceUntil) {
+        if (scene.lod2 != null && culling.distanceFromCamera <= scene.lod2DistanceUntil && culling.distanceFromCamera > scene.lod1DistanceUntil) {
             finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod2, StreamableResourceType.MESH);
         }
 
-        if (scene.lod3 != null && scene.distanceFromCamera <= scene.lod3DistanceUntil && scene.distanceFromCamera > scene.lod2DistanceUntil) {
+        if (scene.lod3 != null && culling.distanceFromCamera <= scene.lod3DistanceUntil && culling.distanceFromCamera > scene.lod2DistanceUntil) {
             finalResource = (MeshResourceRef) streamingService.streamIn(scene.lod3, StreamableResourceType.MESH);
         }
 

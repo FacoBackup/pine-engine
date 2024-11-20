@@ -4,11 +4,10 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
-import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.impl.AbstractQuadPassPass;
+import com.pine.service.system.impl.AbstractQuadPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
 import org.joml.Vector2f;
@@ -16,7 +15,7 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
-public class PaintGizmoRenderingPass extends AbstractQuadPassPass {
+public class PaintGizmoRenderingPass extends AbstractQuadPass {
     @PInject
     public EditorRepository editorRepository;
 

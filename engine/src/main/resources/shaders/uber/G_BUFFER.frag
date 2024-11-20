@@ -52,7 +52,6 @@ uniform float parallaxHeightScale;
 uniform int parallaxLayers;
 uniform int debugShadingMode;
 uniform bool useParallax;
-uniform bool applyGrid;
 
 uniform bool fallbackMaterial;
 uniform float anisotropicRotation;
@@ -85,14 +84,14 @@ void main() {
     vec2 UV = initialUV;
     vec3 W = worldSpacePosition;
     vec3 N = normalVec;
-
+    float depth = encode(logDepthFC, gl_FragCoord.z);
     if(isDecalPass == 1){
         vec2 quadUV = gl_FragCoord.xy/bufferResolution;
-        float depthData = getLogDepth(quadUV);
-        if (depthData == 1.) discard;
+        depth = getLogDepth(quadUV);
+        if (depth == 1.) discard;
 
-        vec3 viewSpacePosition = viewSpacePositionFromDepth(depthData, quadUV);
-        N = normalize(vec3(invViewMatrix * vec4(normalFromDepth(depthData, quadUV), 0.)));
+        vec3 viewSpacePosition = viewSpacePositionFromDepth(depth, quadUV);
+        N = normalize(vec3(invViewMatrix * vec4(normalFromDepth(depth, quadUV), 0.)));
         W = vec3(invViewMatrix * vec4(viewSpacePosition, 1.));
         vec3 objectSpacePosition = vec3(invModelMatrix * vec4(W, 1.));
         UV = objectSpacePosition.xz * .5 + .5;
@@ -106,7 +105,7 @@ void main() {
 
         objectSpacePosition.z >= -DECAL_DEPTH_THRESHOLD &&
         objectSpacePosition.z <= DECAL_DEPTH_THRESHOLD;
-
+        depth = encode(logDepthFC, depth);
         if (!inRange) discard;
     }
 
@@ -116,7 +115,7 @@ void main() {
     if (useParallax){
         UV = parallaxOcclusionMapping(UV, W, heightMap, parallaxHeightScale, parallaxLayers, distanceFromCamera, TBN);
     }
-    gBufferDepthSampler = vec4(encode(logDepthFC), renderingIndex + 1, UV);
+    gBufferDepthSampler = vec4(depth, renderingIndex + 1, UV);
     if (!fallbackMaterial){
         bool useMetallic = useAlbedoRoughnessMetallicAO.b != 0;
         bool useRoughness = useAlbedoRoughnessMetallicAO.g != 0;
@@ -160,7 +159,7 @@ void main() {
             gBufferAlbedoSampler = gBufferNormalSampler;
             break;
             case DEPTH:
-            gBufferAlbedoSampler.rgb = vec3(gl_FragCoord.z);
+            gBufferAlbedoSampler.rgb = vec3(distanceFromCamera) / 10;
             break;
             case AO:
             gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.b);
@@ -189,21 +188,5 @@ void main() {
         }
 
         gBufferAlbedoSampler.a = debugShadingMode != LIGHT_ONLY ? 1 : 0;
-    }
-
-    if (applyGrid && distanceFromCamera < 350){
-        float dx = abs(fract(W.x) - .5);
-        float dz = abs(fract(W.z) - .5);
-
-        float gridLine = step(.02, min(dx, dz));
-
-        dx = abs(fract(W.x / 5.) - .5);
-        dz = abs(fract(W.z / 5.) - .5);
-        float gridLine2 = step(.01, min(dx, dz));
-
-        vec3 color = mix(vec3(.4), gBufferAlbedoSampler.rgb, gridLine);
-        color = mix(vec3(.25), color, gridLine2);
-
-        gBufferAlbedoSampler.rgb = color;
     }
 }

@@ -13,7 +13,7 @@ public class SystemService implements SyncTask {
     @PInject
     public PInjector pInjector;
 
-    private List<AbstractPass> systems = List.of(
+    private AbstractPass[] systems = new AbstractPass[]{
             new NoiseGenPass(),
             new BRDFGenPass(),
             new IrradianceGenPass(),
@@ -31,18 +31,12 @@ public class SystemService implements SyncTask {
             new PostProcessingPass(),
             new VoxelVisualizerPass(),
             new FrameCompositionPass()
-    );
+    };
 
-    public List<AbstractPass> getSystems() {
-        return systems;
-    }
-
-    public void setSystems(List<AbstractPass> systems) {
+    public void setSystems(AbstractPass[] systems) {
         for (var sys : systems) {
-            if (!this.systems.contains(sys)) {
-                pInjector.inject(sys);
-                sys.onInitialize();
-            }
+            pInjector.inject(sys);
+            sys.onInitialize();
         }
         this.systems = systems;
     }

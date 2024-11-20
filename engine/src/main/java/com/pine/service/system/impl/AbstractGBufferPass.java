@@ -11,9 +11,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 
 public abstract class AbstractGBufferPass extends AbstractPass {
-    private static final int MAX_CUBE_MAPS = 3;
+    public static final int MAX_CUBE_MAPS = 3;
     private UniformDTO debugShadingMode;
-    private UniformDTO applyGrid;
     private UniformDTO probeFilteringLevels;
     private UniformDTO parallaxHeightScale;
     private UniformDTO parallaxLayers;
@@ -34,7 +33,6 @@ public abstract class AbstractGBufferPass extends AbstractPass {
     @Override
     public void onInitialize() {
         debugShadingMode = addUniformDeclaration("debugShadingMode");
-        applyGrid = addUniformDeclaration("applyGrid");
         probeFilteringLevels = addUniformDeclaration("probeFilteringLevels");
         albedoColor = addUniformDeclaration("albedoColor");
         roughnessMetallic = addUniformDeclaration("roughnessMetallic");
@@ -72,10 +70,8 @@ public abstract class AbstractGBufferPass extends AbstractPass {
 
         if (engineRepository.isBakingEnvironmentMaps) {
             shaderService.bindInt(DebugShadingModel.LIT.getId(), debugShadingMode);
-            shaderService.bindBoolean(false, applyGrid);
         } else {
             shaderService.bindInt(engineRepository.debugShadingModel.getId(), debugShadingMode);
-            shaderService.bindBoolean(engineRepository.gridOverlay, applyGrid);
             shaderService.bindFloat(engineRepository.probeFiltering, probeFilteringLevels);
             bindEnvironmentMaps();
         }

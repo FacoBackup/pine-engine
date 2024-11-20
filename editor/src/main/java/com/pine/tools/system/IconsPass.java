@@ -67,7 +67,8 @@ public class IconsPass extends AbstractPass {
             if (tile != null) {
                 for (var entityId : tile.getEntities()) {
                     if (world.bagDecalComponent.containsKey(entityId)) {
-                        renderIcon(entityId, 6);
+                        renderIcon(entityId, 6, index);
+                        index++;
                     }
 
                     if (world.bagEnvironmentProbeComponent.containsKey(entityId)) {
@@ -101,15 +102,6 @@ public class IconsPass extends AbstractPass {
         shaderService.bindFloat(iconIndex, imageIndex);
         var entity = world.entityMap.get(entityId);
         entity.renderIndex = engineRepository.meshesDrawn + index;
-        shaderService.bindInt(entity.renderIndex, renderIndex);
-        shaderService.bindBoolean(editorRepository.selected.containsKey(entityId), isSelected);
-        meshService.draw();
-    }
-
-    private void renderIcon(String entityId, int iconIndex) {
-        var entity = world.entityMap.get(entityId);
-        shaderService.bindMat4(world.bagTransformationComponent.get(entityId).modelMatrix, transformationMatrix);
-        shaderService.bindFloat(iconIndex, imageIndex);
         shaderService.bindInt(entity.renderIndex, renderIndex);
         shaderService.bindBoolean(editorRepository.selected.containsKey(entityId), isSelected);
         meshService.draw();

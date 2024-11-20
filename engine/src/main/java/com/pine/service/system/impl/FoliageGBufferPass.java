@@ -36,7 +36,7 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
         shaderService.bindSampler2dDirect(bufferRepository.noiseSampler, 10);
         for(var foliage : terrainRepository.foliage.values()) {
             if(foliage.count < CoreBufferRepository.MAX_INSTANCING && foliage.count > 0) {
-                var mesh = (MeshResourceRef) streamingService.streamIn(foliage.id, StreamableResourceType.MESH);
+                var mesh = (MeshResourceRef) streamingService.streamIn(foliage.mesh, StreamableResourceType.MESH);
                 var material = (MaterialResourceRef) streamingService.streamIn(foliage.material, StreamableResourceType.MATERIAL);
                 bindMaterial(material);
                 if(mesh != null) {

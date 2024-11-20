@@ -3,10 +3,9 @@ package com.pine.service.system.impl;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-public class NoiseGenPass extends AbstractQuadPassPass {
+public class NoiseGenPass extends AbstractQuadPass {
 
     private UniformDTO settingsU;
     private final Vector3f settings = new Vector3f();

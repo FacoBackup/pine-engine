@@ -7,20 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WorldGrid implements Loggable {
-    public static final int TILE_SIZE = 150;
-    public static final float TILE_SIZE_SQRT = (float) Math.sqrt(TILE_SIZE);
+    public static final int TILE_SIZE = 64;
     private final Map<String, WorldTile> tiles = new HashMap<>();
     private transient WorldTile[] loadedWorldTiles = new WorldTile[9];
-
-    public WorldTile getOrCreateTile(Vector3f point) {
-        int tileX = getTileLocation(point.x);
-        int tileZ = getTileLocation(point.z);
-        String id = WorldTile.getId(tileX, tileZ);
-        if (!tiles.containsKey(id)) {
-            addTile(point);
-        }
-        return tiles.get(id);
-    }
 
     public static int getTileLocation(float v) {
         return (int) Math.floor(v / TILE_SIZE);
@@ -44,6 +33,24 @@ public class WorldGrid implements Loggable {
         return loadedWorldTiles;
     }
 
+    public WorldTile getOrCreateTile(Vector3f point) {
+        int tileX = getTileLocation(point.x);
+        int tileZ = getTileLocation(point.z);
+        String id = WorldTile.getId(tileX, tileZ);
+        if (!tiles.containsKey(id)) {
+            addTile(point);
+        }
+        return tiles.get(id);
+    }
+
+    public void createIfAbsent(int x, int z) {
+        String id = WorldTile.getId(x, z);
+        if (!tiles.containsKey(id)) {
+            var newTile = new WorldTile(x, z, id);
+            tiles.put(newTile.getId(), newTile);
+        }
+    }
+
     /**
      * Adds tile that includes point if none is present
      *
@@ -60,31 +67,37 @@ public class WorldGrid implements Loggable {
         var newTile = new WorldTile(x, z, id);
         tiles.put(newTile.getId(), newTile);
 
-        String westTileId = WorldTile.getId(x, z - 1);
-        String eastTileId = WorldTile.getId(x, z + 1);
-        String northTileId = WorldTile.getId(x + 1, z);
-        String southTileId = WorldTile.getId(x - 1, z);
-        String northEastTileId = WorldTile.getId(x + 1, z + 1);
-        String northWestTileId = WorldTile.getId(x + 1, z - 1);
-        String southEastTileId = WorldTile.getId(x - 1, z + 1);
-        String southWestTileId = WorldTile.getId(x - 1, z - 1);
-
-        putTile(westTileId, newTile);
-        putTile(eastTileId, newTile);
-        putTile(northTileId, newTile);
-        putTile(southTileId, newTile);
-        putTile(northEastTileId, newTile);
-        putTile(northWestTileId, newTile);
-        putTile(southEastTileId, newTile);
-        putTile(southWestTileId, newTile);
-
+        updateAdjacentTiles(newTile);
     }
 
-    private void putTile(String tileId, WorldTile newWorldTile) {
-        var tile = tiles.get(tileId);
-        if (tile != null) {
-            tile.putAdjacentTile(newWorldTile);
-            newWorldTile.putAdjacentTile(tile);
+    public void updateAdjacentTiles(WorldTile newTile) {
+        int x = newTile.getX();
+        int z = newTile.getZ();
+        int[] westTile = new int[]{x, z - 1};
+        int[] eastTile = new int[]{x, z + 1};
+        int[] northTile = new int[]{x + 1, z};
+        int[] southTile = new int[]{x - 1, z};
+        int[] northEastTile = new int[]{x + 1, z + 1};
+        int[] northWestTile = new int[]{x + 1, z - 1};
+        int[] southEastTile = new int[]{x - 1, z + 1};
+        int[] southWestTile = new int[]{x - 1, z - 1};
+
+        putAdjacentTile(westTile, newTile);
+        putAdjacentTile(eastTile, newTile);
+        putAdjacentTile(northTile, newTile);
+        putAdjacentTile(southTile, newTile);
+        putAdjacentTile(northEastTile, newTile);
+        putAdjacentTile(northWestTile, newTile);
+        putAdjacentTile(southEastTile, newTile);
+        putAdjacentTile(southWestTile, newTile);
+    }
+
+    private void putAdjacentTile(int[] tileLocation, WorldTile newTile) {
+        String tileId = WorldTile.getId(tileLocation[0], tileLocation[1]);
+        if(tiles.containsKey(tileId)) {
+            var tile = tiles.get(tileId);
+            tile.putAdjacentTile(newTile);
+            newTile.putAdjacentTile(tile);
         }
     }
 

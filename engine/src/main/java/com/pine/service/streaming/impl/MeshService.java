@@ -4,18 +4,18 @@ import com.pine.FSUtil;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.repository.ClockRepository;
-import com.pine.repository.TerrainRepository;
+import com.pine.repository.terrain.TerrainChunk;
+import com.pine.repository.terrain.TerrainRepository;
 import com.pine.repository.rendering.RenderingMode;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
-import com.pine.service.camera.CameraService;
 import com.pine.service.resource.ShaderService;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.ref.MeshResourceRef;
 import com.pine.service.streaming.ref.TextureResourceRef;
-import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
@@ -37,7 +37,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
     public TerrainRepository terrain;
 
     @PInject
-    public CameraService cameraService;
+    public StreamingService streamingService;
 
     @PInject
     public ShaderService shaderService;
@@ -136,48 +136,37 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
         return new MeshResourceRef(key);
     }
 
-    public void renderTerrain(TextureResourceRef heightMap, UniformDTO textureSize, UniformDTO terrainOffset, UniformDTO heightScale, UniformDTO tilesScaleTranslation) {
+    public void renderTerrain(UniformDTO textureSize, UniformDTO terrainOffset, UniformDTO heightScale, UniformDTO tilesScaleTranslation) {
+        if (terrain.chunks == null) {
+            return;
+        }
+
+        TextureResourceRef heightMap = (TextureResourceRef) streamingService.streamIn(terrain.heightMapTexture, StreamableResourceType.TEXTURE);
+        if(heightMap == null){
+            return;
+        }
+        heightMap.lastUse = clockRepository.totalTime;
+
         Vector4f terrainLocation = new Vector4f();
-        Vector2f dist = new Vector2f();
 
         shaderService.bindFloat(terrain.heightScale, heightScale);
         shaderService.bindInt(heightMap.width, textureSize);
         shaderService.bindVec2(terrain.offset, terrainOffset);
 
         shaderService.bindInt(heightMap.width, textureSize);
+        shaderService.bindSampler2dDirect(heightMap, 8);
 
-        var camPos = cameraService.repository.currentCamera.position;
-        for (int x = 0; x < terrain.cellsX; x++) {
-            for (int z = 0; z < terrain.cellsZ; z++) {
-                float locationX = x * terrain.quads - terrain.offset.x;
-                float locationZ = z * terrain.quads - terrain.offset.y;
-
-                int distance = (int) dist.set((float) Math.floor(locationX / terrain.quads), (float) Math.floor(locationZ / terrain.quads))
-                        .sub((float) Math.floor(camPos.x / terrain.quads), (float) Math.floor(camPos.z / terrain.quads))
-                        .length();
-                shaderService.bindSampler2dDirect(heightMap, 8);
-
-                int divider = 1;
-                if (distance >= 2) {
-                    divider = 2;
-                }
-
-                if (distance >= 3) {
-                    divider = 4;
-                }
-
-                if (distance >= 4) {
-                    divider = 8;
-                }
-
-                terrainLocation.x = (float) terrain.quads / divider;
-                terrainLocation.y = divider;
-                terrainLocation.z =  x * terrain.quads;
-                terrainLocation.w =  z * terrain.quads;
-                shaderService.bindVec4(terrainLocation, tilesScaleTranslation);
-
-                GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, (int) (terrainLocation.x * terrainLocation.x * 6));
+        for (TerrainChunk chunk : terrain.chunks) {
+            if (chunk.isCulled()) {
+                continue;
             }
+            terrainLocation.x = chunk.getTiles();
+            terrainLocation.y = chunk.getDivider();
+            terrainLocation.z = chunk.x * terrain.quads;
+            terrainLocation.w = chunk.z * terrain.quads;
+            shaderService.bindVec4(terrainLocation, tilesScaleTranslation);
+
+            GL46.glDrawArrays(GL46.GL_TRIANGLES, 0, chunk.getTriangles());
         }
     }
 }

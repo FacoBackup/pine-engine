@@ -4,7 +4,7 @@ import com.pine.core.UIUtil;
 import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
-import com.pine.repository.TerrainRepository;
+import com.pine.repository.terrain.TerrainRepository;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.streaming.ref.TextureResourceRef;

@@ -36,7 +36,7 @@ public class ViewportPanel extends AbstractViewportPanel {
 
     private AbstractView headerPanel;
     private AbstractView cameraPanel;
-    private AbstractView gizmoPanel;
+    private GizmoPanel gizmoPanel;
 
     @Override
     public void onInitialize() {
@@ -70,7 +70,7 @@ public class ViewportPanel extends AbstractViewportPanel {
         if (ImGui.isKeyPressed(ImGuiKey.Y))
             editorRepository.gizmoType = Operation.SCALE;
 
-        if (editorRepository.editorMode == EditorMode.TRANSFORM && ImGui.isWindowHovered() && !ImGuizmo.isOver() && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
+        if (editorRepository.editorMode == EditorMode.TRANSFORM && !gizmoPanel.isGizmoOver && ImGui.isMouseClicked(ImGuiMouseButton.Left)) {
             viewportPickingService.pick();
         }
     }

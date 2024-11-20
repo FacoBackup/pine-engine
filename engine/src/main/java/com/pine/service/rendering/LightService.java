@@ -42,19 +42,19 @@ public class LightService {
         FloatBuffer b = bufferRepository.lightSSBOState;
 
         for (var l : world.bagPointLightComponent.values()) {
-            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+            if (!world.hiddenEntities.containsKey(l.getEntityId())) {
                 packagePointLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
             }
         }
 
         for (var l : world.bagSphereLightComponent.values()) {
-            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+            if (!world.hiddenEntities.containsKey(l.getEntityId())) {
                 packageSphereLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
             }
         }
 
         for (var l : world.bagSpotLightComponent.values()) {
-            if (!world.hiddenEntityMap.containsKey(l.getEntityId())) {
+            if (!world.hiddenEntities.containsKey(l.getEntityId())) {
                 packageSpotLight(world.bagTransformationComponent.get(l.getEntityId()), l, b);
             }
         }

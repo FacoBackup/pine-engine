@@ -5,7 +5,7 @@ import com.pine.repository.rendering.RenderingMode;
 import com.pine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL46;
 
-public abstract class AbstractQuadPassPass extends AbstractPass implements Loggable {
+public abstract class AbstractQuadPass extends AbstractPass implements Loggable {
 
     protected void bindUniforms(){}
 

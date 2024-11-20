@@ -41,13 +41,9 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
             foliageMask.lastUse = clockRepository.totalTime;
         }
 
-        var heightMap = (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
-        if (heightMap != null) {
-            heightMap.lastUse = clockRepository.totalTime;
-            MaterialResourceRef material = (MaterialResourceRef) streamingService.streamIn(terrainRepository.material, StreamableResourceType.MATERIAL);
-            bindMaterial(material);
-            meshService.renderTerrain(heightMap, textureSize, terrainOffset, heightScale, tilesScaleTranslation);
-        }
+        MaterialResourceRef material = (MaterialResourceRef) streamingService.streamIn(terrainRepository.material, StreamableResourceType.MATERIAL);
+        bindMaterial(material);
+        meshService.renderTerrain(textureSize, terrainOffset, heightScale, tilesScaleTranslation);
     }
 
     @Override

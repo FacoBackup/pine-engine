@@ -1,5 +1,6 @@
 package com.pine.service.rendering;
 
+import com.pine.component.CullingComponent;
 import com.pine.component.TransformationComponent;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
@@ -106,15 +107,16 @@ public class TransformationService extends AbstractTask {
         return distanceAux.sub(translation).length();
     }
 
-    public boolean isCulled(Vector3f translation, float maxDistanceFromCamera, float cullingSphereRadius) {
-        if (getDistanceFromCamera(translation) > maxDistanceFromCamera) {
-            return true;
-        }
-        return !cameraRepository.frustum.isSphereInsideFrustum(translation, cullingSphereRadius);
-    }
-
     @Override
     public String getTitle() {
         return "Transformation";
+    }
+
+    public boolean isCulled(TransformationComponent transform, CullingComponent component) {
+        component.distanceFromCamera = getDistanceFromCamera(transform.translation);
+        if (component.distanceFromCamera > component.maxDistanceFromCamera) {
+            return true;
+        }
+        return !cameraRepository.frustum.isSphereInsideFrustum(translation, component.cullingSphereRadius);
     }
 }

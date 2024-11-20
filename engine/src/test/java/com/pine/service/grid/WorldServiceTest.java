@@ -1,8 +1,6 @@
 package com.pine.service.grid;
 
 import com.pine.repository.CameraRepository;
-import com.pine.repository.EngineRepository;
-import com.pine.repository.TerrainRepository;
 import com.pine.repository.WorldRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

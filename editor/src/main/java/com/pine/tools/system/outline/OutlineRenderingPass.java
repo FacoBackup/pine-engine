@@ -1,16 +1,16 @@
-package com.pine.tools.system;
+package com.pine.tools.system.outline;
 
 import com.pine.injection.PInject;
 import com.pine.repository.EditorRepository;
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
-import com.pine.service.system.impl.AbstractQuadPassPass;
+import com.pine.service.system.impl.AbstractQuadPass;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.types.ExecutionEnvironment;
 
 
-public class OutlinePass extends AbstractQuadPassPass {
+public class OutlineRenderingPass extends AbstractQuadPass {
     @PInject
     public EditorRepository editorRepository;
 
@@ -50,6 +50,6 @@ public class OutlinePass extends AbstractQuadPassPass {
 
     @Override
     public String getTitle() {
-        return "Outline";
+        return "Outline Rendering";
     }
 }

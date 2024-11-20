@@ -22,7 +22,7 @@ layout (location = 5) out vec4 gBufferIndirect;
 void main() {
     vec2 imageSize = vec2(textureSize(iconSampler, 0));
     float color = texture(iconSampler, vec2(texCoords.x / IMAGE_QUANTITY + imageIndex * imageSize.y / imageSize.x, 1. - texCoords.y)).a;
-    gBufferDepthSampler = vec4(encode(logDepthFC), renderIndex + 1, 1, 1);
+    gBufferDepthSampler = vec4(encode(logDepthFC, gl_FragCoord.z), renderIndex + 1, 1, 1);
     if (color <= .1) discard;
 
     gBufferNormalSampler = vec4(0);

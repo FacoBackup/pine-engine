@@ -19,6 +19,7 @@ public class ThemeService {
     public ImVec4 palette4;
     public ImVec4 palette5;
     public ImVec4 palette6;
+    public ImVec4 textDisabled;
     public final float[] BACKGROUND_COLOR = new float[]{.0f, .0f, .0f};
     private boolean previousTheme = false;
     private float prevLength;
@@ -44,8 +45,9 @@ public class ThemeService {
             setDarkMode();
         }
 
+        textDisabled = new ImVec4(palette6.x / 2f, palette6.y / 2f, palette6.z / 2f, 1);
         colors[ImGuiCol.Text] = palette6;
-        colors[ImGuiCol.TextDisabled] = new ImVec4(palette6.x / 2f, palette6.y / 2f, palette6.z / 2f, 1);
+        colors[ImGuiCol.TextDisabled] = textDisabled;
         colors[ImGuiCol.WindowBg] = palette1;
         colors[ImGuiCol.ChildBg] = palette1;
         colors[ImGuiCol.PopupBg] = palette1;
