@@ -4,11 +4,13 @@ import com.pine.injection.EngineExternalModule;
 import com.pine.service.system.AbstractPass;
 import com.pine.service.system.impl.*;
 import com.pine.tools.repository.ToolsResourceRepository;
-import com.pine.tools.system.*;
+import com.pine.tools.system.GridPass;
+import com.pine.tools.system.IconsPass;
+import com.pine.tools.system.PaintGizmoPass;
+import com.pine.tools.system.PaintGizmoRenderingPass;
 import com.pine.tools.system.outline.BoxOutlineGenPass;
 import com.pine.tools.system.outline.OutlineGenPass;
 import com.pine.tools.system.outline.OutlineRenderingPass;
-import com.pine.tools.system.outline.TerrainOutlineGenPass;
 
 import java.util.List;
 
@@ -24,9 +26,8 @@ public class ToolsModule implements EngineExternalModule {
                 new ShaderDataSyncPass(),
                 new FoliageCullingPass(),
                 new TerrainGBufferPass(),
-                new TerrainPaintGizmoPass(),
+                new PaintGizmoPass(),
                 new PrimitiveGBufferPass(),
-                new MaterialPaintGizmoPass(),
                 new FoliageGBufferPass(),
                 new CopyDepthPass(),
                 new DecalGBufferPass(),
@@ -37,7 +38,6 @@ public class ToolsModule implements EngineExternalModule {
                 new PostProcessingPass(),
                 new GridPass(),
                 new OutlineGenPass(),
-                new TerrainOutlineGenPass(),
                 new BoxOutlineGenPass(),
                 new OutlineRenderingPass(),
                 new PaintGizmoRenderingPass(),

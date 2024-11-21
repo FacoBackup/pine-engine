@@ -7,7 +7,6 @@ import com.pine.inspection.ExecutableField;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 import com.pine.inspection.ResourceTypeField;
-import com.pine.repository.FoliageInstance;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.ImageUtil;
 import com.pine.service.importer.ImporterService;
@@ -23,6 +22,7 @@ import java.util.UUID;
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
     private static final int FOLIAGE_IMAGE_SCALE = 4;
+    public String materialMask = UUID.randomUUID().toString();
     public String foliageMask = UUID.randomUUID().toString();
     public String heightMapTexture = UUID.randomUUID().toString();
     public TerrainChunk[] chunks = null;
@@ -33,6 +33,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @ExecutableField(label = Icons.calculate + "Import data")
     public void reGenFoliage() {
         new Thread(() -> {
+            tryDelete(materialMask);
             tryDelete(foliageMask);
             tryDelete(heightMapTexture);
 
@@ -41,9 +42,12 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
 
             String foliageMaskLocal = UUID.randomUUID().toString();
             String heightMapTextureLocal = UUID.randomUUID().toString();
+            String materialMaskLocal = UUID.randomUUID().toString();
 
             ImageUtil.generateTexture(width / FOLIAGE_IMAGE_SCALE, height / FOLIAGE_IMAGE_SCALE, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
             ImageUtil.generateTexture(width, height, importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE));
+            ImageUtil.generateTexture(width, height, importer.getPathToFile(materialMaskLocal, StreamableResourceType.TEXTURE));
+
             if (heightMapTextureToImport != null) {
                 var targetPath = importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE);
                 var originPath = importer.getPathToFile(heightMapTextureToImport, StreamableResourceType.TEXTURE);
@@ -62,6 +66,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
             }
             foliageMask = foliageMaskLocal;
             heightMapTexture = heightMapTextureLocal;
+            materialMask = materialMaskLocal;
         }).start();
     }
 
@@ -111,6 +116,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     public Vector2f offset = new Vector2f(0);
 
     public final Map<String, FoliageInstance> foliage = new HashMap<>();
+    public final Map<String, MaterialInstance> materials = new HashMap<>();
 
 
     @Override

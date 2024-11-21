@@ -41,7 +41,6 @@ layout (binding = 6) uniform sampler2D ao;
 layout (binding = 7) uniform sampler2D normal;
 layout (binding = 8) uniform sampler2D heightMap;
 layout (binding = 9) uniform sampler2D sceneDepth;
-layout (binding = 10) uniform sampler2D materialMask;
 
 uniform vec3 albedoColor;
 uniform vec2 roughnessMetallic;
@@ -184,10 +183,7 @@ void main() {
             gBufferAlbedoSampler.rgb = randomColor(gl_PrimitiveID);
             break;
             case HEIGHT:
-            gBufferAlbedoSampler.rgb = vec3(W.y/10);
-            break;
-            case MATERIAL_MASK:
-            gBufferAlbedoSampler.rgb = texture(materialMask, UV).rgb;
+            gBufferAlbedoSampler.rgb = vec3(texture(heightMap, UV).r);
             break;
         }
 

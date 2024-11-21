@@ -78,7 +78,7 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
                 return terrainRepository.foliageMask;
             }
             case MATERIAL -> {
-                return editorRepository.mainSelection;
+                return terrainRepository.materialMask;
             }
         }
         return null;

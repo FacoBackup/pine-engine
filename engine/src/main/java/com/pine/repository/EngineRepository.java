@@ -14,7 +14,7 @@ public class EngineRepository extends Inspectable implements SerializableReposit
     public Color backgroundColor = new Color(0.23f, 0.23f, 0.23f);
 
     @InspectableField(group = "World", label = "Number of tiles (X by X)")
-    public int numberOfTiles = 10;
+    public int numberOfTiles = 24;
 
     @InspectableField(group = "World", label = "Disable culling")
     public boolean disableCullingGlobally = false;

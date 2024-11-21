@@ -3,6 +3,7 @@ package com.pine.tools.system;
 import com.pine.injection.PInject;
 import com.pine.messaging.Loggable;
 import com.pine.repository.BrushMode;
+import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.Shader;
@@ -17,7 +18,7 @@ import org.lwjgl.opengl.GL46;
 
 import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
 
-public abstract class AbstractPaintGizmoPass extends AbstractPass implements Loggable {
+public class PaintGizmoPass extends AbstractPass implements Loggable {
     private static final int LOCAL_SIZE_X = 8;
     private static final int LOCAL_SIZE_Y = 8;
     private static final long TIMEOUT = 250;
@@ -63,10 +64,8 @@ public abstract class AbstractPaintGizmoPass extends AbstractPass implements Log
             sinceLastChange = clockRepository.totalTime;
             lastChangedTexture = null;
         }
-        return runtimeRepository.mousePressed && isValidType() && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
+        return runtimeRepository.mousePressed && editorRepository.editorMode != EditorMode.TRANSFORM && editorRepository.environment == ExecutionEnvironment.DEVELOPMENT;
     }
-
-    protected abstract boolean isValidType();
 
     private void writeTextureToFile() {
         getLogger().warn("Writing modified texture {}", lastChangedTexture.id);
@@ -77,6 +76,7 @@ public abstract class AbstractPaintGizmoPass extends AbstractPass implements Log
     protected void renderInternal() {
         targetTexture = updateTargetTexture();
         if (targetTexture != null) {
+            targetTexture.lastUse = clockRepository.totalTime;
             targetTexture.bindForBoth(1);
             dispatch();
             if (lastChangedTexture != null && lastChangedTexture != targetTexture) {
@@ -86,8 +86,6 @@ public abstract class AbstractPaintGizmoPass extends AbstractPass implements Log
             sinceLastChange = clockRepository.totalTime;
         }
     }
-
-    protected abstract TextureResourceRef updateTargetTexture();
 
     private void dispatch() {
         bindUniforms();
@@ -101,15 +99,24 @@ public abstract class AbstractPaintGizmoPass extends AbstractPass implements Log
     }
 
     private void bindUniforms() {
-        if (editorRepository.foliageForPainting != null && terrainRepository.foliage.containsKey(editorRepository.foliageForPainting)) {
-            shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
+        switch (editorRepository.editorMode){
+            case FOLIAGE ->{
+                if (editorRepository.foliageForPainting != null && terrainRepository.foliage.containsKey(editorRepository.foliageForPainting)) {
+                    shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
+                }
+            }
+            case MATERIAL -> {
+                if (editorRepository.materialForPainting != null && terrainRepository.materials.containsKey(editorRepository.materialForPainting)) {
+                    shaderService.bindVec3(terrainRepository.materials.get(editorRepository.materialForPainting).color, colorForPainting);
+                }
+            }
         }
+
 
         radiusDensityMode.x = editorRepository.brushRadius;
         radiusDensityMode.y = editorRepository.brushDensity;
         radiusDensityMode.z = editorRepository.brushMode == BrushMode.ADD ? 1 : -1;
         shaderService.bindVec3(radiusDensityMode, radiusDensityUniform);
-
 
         xyMouse.x = runtimeRepository.normalizedMouseX;
         xyMouse.y = runtimeRepository.normalizedMouseY;
@@ -123,5 +130,27 @@ public abstract class AbstractPaintGizmoPass extends AbstractPass implements Log
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 2);
+    }
+
+    @Override
+    public String getTitle() {
+        return "Terrain painting";
+    }
+
+    private TextureResourceRef updateTargetTexture() {
+        switch (editorRepository.editorMode) {
+            case FOLIAGE: {
+                if (editorRepository.foliageForPainting != null) {
+                    return (TextureResourceRef) streamingService.streamIn(terrainRepository.foliageMask, StreamableResourceType.TEXTURE);
+                }
+            }
+            case TERRAIN: {
+                return (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
+            }
+            case MATERIAL: {
+                return (TextureResourceRef) streamingService.streamIn(terrainRepository.materialMask, StreamableResourceType.TEXTURE);
+            }
+        }
+        return null;
     }
 }

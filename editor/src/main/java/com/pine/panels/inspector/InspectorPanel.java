@@ -46,6 +46,7 @@ public class InspectorPanel extends AbstractDockPanel {
     private final List<String> types = new ArrayList<>();
     private FormPanel formPanel;
     private AbstractView foliagePanel;
+    private AbstractView materialPanel;
 
     @Override
     public void onInitialize() {
@@ -53,6 +54,7 @@ public class InspectorPanel extends AbstractDockPanel {
         types.addAll(Stream.of(ComponentType.values()).map(a -> a.getIcon() + a.getTitle()).toList());
         formPanel = appendChild(new FormPanel((dto, newValue) -> requestProcessingService.addRequest(new UpdateFieldRequest(dto, newValue))));
         foliagePanel = appendChild(new FoliagePanel());
+        materialPanel = appendChild(new MaterialPanel());
         currentInspection = repositories.getFirst();
     }
 
@@ -106,6 +108,7 @@ public class InspectorPanel extends AbstractDockPanel {
 
             if (Objects.equals(currentInspection, terrainRepository)) {
                 foliagePanel.render();
+                materialPanel.render();
             }
         }
         ImGui.endChild();
