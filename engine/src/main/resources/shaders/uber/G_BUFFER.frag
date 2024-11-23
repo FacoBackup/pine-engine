@@ -122,7 +122,11 @@ void main() {
         bool useAlbedo = useAlbedoRoughnessMetallicAO.r != 0;
         bool useAO = useAlbedoRoughnessMetallicAO.a != 0;
 
-        gBufferAlbedoSampler = vec4(useAlbedo ? texture(albedo, UV).rgb : albedoColor, 0);
+        vec4 al = texture(albedo, UV);
+        if(al.a < 0.1){
+            discard;
+        }
+        gBufferAlbedoSampler = vec4(useAlbedo ? al.rgb : albedoColor, 0);
         if (useNormalTexture){
             N = vec3(normalize(TBN * ((texture(normal, UV).rgb * 2.0)- 1.0)));
         }

@@ -11,12 +11,14 @@ import com.pine.service.streaming.ref.MeshResourceRef;
 public class FoliageGBufferPass extends AbstractGBufferPass {
     private UniformDTO terrainOffsetU;
     private UniformDTO transformOffset;
+    private UniformDTO objectScale;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
         terrainOffsetU = addUniformDeclaration("terrainOffset");
         transformOffset = addUniformDeclaration("transformOffset");
+        objectScale = addUniformDeclaration("objectScale");
     }
 
     @Override
@@ -42,6 +44,7 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
                 var material = (MaterialResourceRef) streamingService.streamIn(foliage.material, StreamableResourceType.MATERIAL);
                 bindMaterial(material);
                 if (mesh != null) {
+                    shaderService.bindVec3(foliage.objectScale, objectScale);
                     shaderService.bindInt(foliage.offset, transformOffset);
                     meshService.bind(mesh);
                     meshService.setInstanceCount(foliage.count);
@@ -53,6 +56,6 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
 
     @Override
     public String getTitle() {
-        return "Foliage";
+        return "Foliage rendering";
     }
 }

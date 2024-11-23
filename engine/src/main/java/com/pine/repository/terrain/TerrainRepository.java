@@ -21,7 +21,6 @@ import java.util.UUID;
 
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
-    private static final int FOLIAGE_IMAGE_SCALE = 4;
     public String materialMask = UUID.randomUUID().toString();
     public String foliageMask = UUID.randomUUID().toString();
     public String heightMapTexture = UUID.randomUUID().toString();
@@ -44,7 +43,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
             String heightMapTextureLocal = UUID.randomUUID().toString();
             String materialMaskLocal = UUID.randomUUID().toString();
 
-            ImageUtil.generateTexture(width / FOLIAGE_IMAGE_SCALE, height / FOLIAGE_IMAGE_SCALE, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
+            ImageUtil.generateTexture(width, height, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
             ImageUtil.generateTexture(width, height, importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE));
             ImageUtil.generateTexture(width, height, importer.getPathToFile(materialMaskLocal, StreamableResourceType.TEXTURE));
 
@@ -54,19 +53,20 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
                 ImageUtil.copyInto(originPath, targetPath, 1);
             }
 
-            chunks = new TerrainChunk[cellsX * cellsZ];
+            var newChunks = new TerrainChunk[cellsX * cellsZ];
             int index = 0;
             for (int x = 0; x < cellsX; x++) {
                 for (int z = 0; z < cellsZ; z++) {
-                    float locationX = x * quads - offset.x;
-                    float locationZ = z * quads - offset.y;
-                    chunks[index] = new TerrainChunk(locationX, locationZ, (float) Math.floor(locationX / quads), (float) Math.floor(locationZ / quads), x, z);
+                    float locationX = x * quads + offset.x;
+                    float locationZ = z * quads + offset.y;
+                    newChunks[index] = new TerrainChunk(locationX, locationZ, (float) Math.floor(locationX / quads), (float) Math.floor(locationZ / quads), x, z);
                     index++;
                 }
             }
             foliageMask = foliageMaskLocal;
             heightMapTexture = heightMapTextureLocal;
             materialMask = materialMaskLocal;
+            chunks = newChunks;
         }).start();
     }
 

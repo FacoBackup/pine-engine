@@ -77,7 +77,7 @@ public class PaintGizmoPass extends AbstractPass implements Loggable {
         targetTexture = updateTargetTexture();
         if (targetTexture != null) {
             targetTexture.lastUse = clockRepository.totalTime;
-            targetTexture.bindForBoth(1);
+            targetTexture.bindForBoth(0);
             dispatch();
             if (lastChangedTexture != null && lastChangedTexture != targetTexture) {
                 writeTextureToFile();

@@ -17,9 +17,9 @@ public abstract class AbstractDataInstance extends Inspectable {
     public final Color color = new Color();
 
     public AbstractDataInstance(int i) {
-        color.x = (i >> 16) & 0xFF;
-        color.y = (i >> 8) & 0xFF;
-        color.z = i & 0xFF;
+        color.x = ((i >> 16) & 0xFF )/255f;
+        color.y = ((i >> 8) & 0xFF)/255f;
+        color.z = (i & 0xFF)/255f;
     }
 
     @Override

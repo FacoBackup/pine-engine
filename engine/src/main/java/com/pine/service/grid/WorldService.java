@@ -112,7 +112,7 @@ public class WorldService implements SyncTask, Loggable {
             return;
         }
         for (var tile : tiles) {
-            if (isTileOutsideBounds(tile, half, min)) {
+            if (tile != null && isTileOutsideBounds(tile, half, min)) {
                 getLogger().warn("Removing tile {}", tile.getId());
                 getHashGrid().removeTile(tile.getId());
             }

@@ -10,6 +10,7 @@ layout(std430, binding = 3) buffer TransformationBuffer {
 
 layout(binding = 10) uniform sampler2D noise;
 uniform vec2 terrainOffset;
+uniform vec3 objectScale;
 uniform int transformOffset;
 
 out mat4 invModelMatrix;
@@ -25,15 +26,12 @@ void main() {
 
     vec3 translation = transformations[gl_InstanceID + transformOffset];
     renderingIndex = int(length(translation));
-    vec3 updatedPosition = position + translation;
     vec2 normPos = normalize(terrainOffset + translation.xz);
 
     vec2 noiseVal = texture(noise, normPos).rg * position.y;
-
-    updatedPosition += vec3(noiseVal.x, 0, noiseVal.y);
-    worldSpacePosition = updatedPosition.xyz;
+    worldSpacePosition = position * objectScale + translation + vec3(noiseVal.x, 0, noiseVal.y);
     normalVec = normalize(normal);
     initialUV = uv;
 
-    gl_Position = viewProjection * vec4(updatedPosition, 1);
+    gl_Position = viewProjection * vec4(worldSpacePosition, 1);
 }

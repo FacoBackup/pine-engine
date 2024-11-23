@@ -5,6 +5,7 @@ import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.theme.Icons;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class FoliageInstance extends AbstractDataInstance {
     public int count = 0;
@@ -24,6 +25,9 @@ public class FoliageInstance extends AbstractDataInstance {
     public int maxIterations = 5;
     @InspectableField(label = "Instance offset scale")
     public Vector2f instanceOffset = new Vector2f(5);
+
+    @InspectableField(label = "Object Scale")
+    public Vector3f objectScale = new Vector3f(1);
 
     public FoliageInstance(int i) {
         super(i);
