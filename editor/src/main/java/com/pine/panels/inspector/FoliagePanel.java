@@ -16,7 +16,6 @@ public class FoliagePanel extends AbstractTerrainDataPanel {
     @PInject
     public TerrainRepository terrainRepository;
 
-
     @Override
     protected Map<String, ? extends AbstractDataInstance> getDataMap() {
         return terrainRepository.foliage;

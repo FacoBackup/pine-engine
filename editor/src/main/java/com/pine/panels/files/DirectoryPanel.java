@@ -130,7 +130,6 @@ public class DirectoryPanel extends AbstractView {
         if (!isSomethingHovered) {
             return;
         }
-
         if (ImGui.isKeyPressed(ImGuiKey.Enter) && !selected.isEmpty()) {
             openSelected();
         }

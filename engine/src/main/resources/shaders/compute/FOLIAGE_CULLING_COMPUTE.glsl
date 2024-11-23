@@ -8,6 +8,14 @@ layout(std430, binding = 3) writeonly buffer TransformationBuffer {
     vec3 transformations[];
 };
 
+layout(std430, binding = 4) writeonly buffer IndirectBuffer {
+    uint count;// Number of indices
+    uint instanceCount;// Number of instances
+    uint firstIndex;// First index
+    uint baseVertex;// Base vertex
+    uint baseInstance;// Base instance ID
+} drawCommand;
+
 uniform vec2 terrainOffset;
 uniform vec3 colorToMatch;
 uniform vec4 settings;
@@ -15,14 +23,8 @@ uniform vec2 imageSize;
 uniform float heightScale;
 
 #define MAX_DISTANCE_FROM_CAMERA settings.x
-#define MAX_ITERATIONS settings.y
-#define INSTANCE_OFFSET_X settings.z
-#define INSTANCE_OFFSET_Y settings.w
-#define MAX_INSTANCING  500000
 
 #include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
-
-#include "../util/UTIL.glsl"
 
 shared vec4 l;
 shared vec4 r;
@@ -33,6 +35,7 @@ shared vec4 f;
 shared int rows_per_thread;
 shared int cols_per_thread;
 const int N = 1024;
+const ivec2 total_threads = ivec2(1024);
 
 vec3 getWorlPosition(vec2 uv, vec2 planeSize) {
     float worldX = uv.x * planeSize.x + terrainOffset.x;
@@ -61,9 +64,11 @@ void doWork(int col, int row){
         if (pixelColor == colorToMatch){
             vec3 worldSpaceCoord = getWorlPosition(scaledTexCoord, imageSize);
             worldSpaceCoord.y = texture(heightMap, scaledTexCoord).r * heightScale;
-            if (isPointInsideFrustum(worldSpaceCoord) && atomicCounter(globalIndex) + 1 < MAX_INSTANCING){
+            if (isPointInsideFrustum(worldSpaceCoord)){
                 uint index = atomicCounterIncrement(globalIndex);
-                transformations[index] = worldSpaceCoord;
+                if (index < uint(settings.y)){
+                    transformations[index] = worldSpaceCoord;
+                }
             }
         }
     }
@@ -84,7 +89,6 @@ void main() {
         n = Row3 + Row4;
         f = Row3 - Row4;
 
-        ivec2 total_threads = ivec2(512);
         rows_per_thread = (N + total_threads.y - 1) / total_threads.y;
         cols_per_thread = (N + total_threads.x - 1) / total_threads.x;
     }
@@ -97,5 +101,13 @@ void main() {
         for (int col = start_col; col < min(start_col + cols_per_thread, N); ++col) {
             doWork(col, row);
         }
+    }
+
+    if (ivec2(gl_GlobalInvocationID.xy) == (total_threads - 1)){
+        drawCommand.instanceCount = atomicCounter(globalIndex);
+        drawCommand.count = uint(settings.z);
+        drawCommand.firstIndex= 0;
+        drawCommand.baseVertex= 0;
+        drawCommand.baseInstance = 0;
     }
 }

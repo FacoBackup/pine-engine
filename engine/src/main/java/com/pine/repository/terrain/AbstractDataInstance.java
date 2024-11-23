@@ -1,12 +1,13 @@
 package com.pine.repository.terrain;
 
+import com.pine.injection.Disposable;
 import com.pine.inspection.Color;
 import com.pine.inspection.Inspectable;
 import com.pine.inspection.InspectableField;
 
 import java.util.UUID;
 
-public abstract class AbstractDataInstance extends Inspectable {
+public abstract class AbstractDataInstance extends Inspectable implements Disposable {
 
     @InspectableField(label = "id", disabled = true)
     public final String id = UUID.randomUUID().toString();
@@ -25,5 +26,9 @@ public abstract class AbstractDataInstance extends Inspectable {
     @Override
     public String getTitle() {
         return name;
+    }
+
+    @Override
+    public void dispose() {
     }
 }

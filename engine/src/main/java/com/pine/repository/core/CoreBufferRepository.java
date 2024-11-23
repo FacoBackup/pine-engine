@@ -39,7 +39,6 @@ public class CoreBufferRepository implements CoreRepository {
 
     public final FloatBuffer lightSSBOState = MemoryUtil.memAllocFloat(LIGHT_BUFFER_SIZE);
     public ShaderStorageBufferObject lightMetadataSSBO;
-    public ShaderStorageBufferObject foliageTransformationSSBO;
 
     public FrameBufferObject gBufferTarget;
     public FrameBufferObject postProcessingBuffer;
@@ -61,7 +60,6 @@ public class CoreBufferRepository implements CoreRepository {
     public int auxBufferQuaterResSampler;
     public int noiseSampler;
     public int sceneDepthCopySampler;
-    public int atomicCounterBuffer;
     public int gBufferAlbedoSampler;
     public int gBufferNormalSampler;
     public int gBufferRMAOSampler;
@@ -75,21 +73,13 @@ public class CoreBufferRepository implements CoreRepository {
     public int brdfSampler;
     public int compositingSampler;
 
-
     public UniformBufferObject globalDataUBO;
     public final FloatBuffer globalDataBuffer = MemoryUtil.memAllocFloat(95);
-
-
 
     @Override
     public void initialize() {
         cloudShapeTexture = TextureUtil.create3DTexture(128, 128, 128, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_HALF_FLOAT);
         cloudNoiseTexture = TextureUtil.create3DTexture(32, 32, 32, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_HALF_FLOAT);
-
-        atomicCounterBuffer = GL46.glGenBuffers();
-        GL46.glBindBuffer(GL46.GL_ATOMIC_COUNTER_BUFFER, atomicCounterBuffer);
-        GL46.glBufferData(GL46.GL_ATOMIC_COUNTER_BUFFER, Integer.BYTES, GL46.GL_DYNAMIC_DRAW);
-        GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, atomicCounterBuffer);
 
         globalDataUBO = new UniformBufferObject(new UBOCreationData(
                 "GlobalData",
@@ -157,15 +147,6 @@ public class CoreBufferRepository implements CoreRepository {
         all.add(auxBufferQuaterRes);
         all.add(compositingBuffer);
 
-        createSSBOs();
-    }
-
-    private void createSSBOs() {
-        foliageTransformationSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
-                13,
-                (long) MAX_INSTANCING * GLSLType.FLOAT.getSize() * 3
-        ));
-
         lightMetadataSSBO = new ShaderStorageBufferObject(new SSBOCreationData(
                 11,
                 (long) LIGHT_BUFFER_SIZE * GLSLType.FLOAT.getSize()
@@ -219,7 +200,6 @@ public class CoreBufferRepository implements CoreRepository {
     @Override
     public void dispose() {
         lightMetadataSSBO.dispose();
-        foliageTransformationSSBO.dispose();
         globalDataUBO.dispose();
         auxBufferQuaterRes.dispose();
         gBufferTarget.dispose();

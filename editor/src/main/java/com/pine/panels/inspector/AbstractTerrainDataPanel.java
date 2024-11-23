@@ -96,6 +96,7 @@ public abstract class AbstractTerrainDataPanel extends AbstractView {
                 if (Objects.equals(e, getSelectedId())) {
                     setSelectedId(null);
                 }
+                getDataMap().get(e).dispose();
                 getDataMap().remove(e);
             }
             toRemove.clear();

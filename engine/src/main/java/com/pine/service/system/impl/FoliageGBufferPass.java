@@ -6,6 +6,7 @@ import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.MeshResourceRef;
+import org.lwjgl.opengl.GL46;
 
 
 public class FoliageGBufferPass extends AbstractGBufferPass {
@@ -34,22 +35,23 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
     @Override
     protected void renderInternal() {
         prepareCall();
-        bufferRepository.foliageTransformationSSBO.setBindingPoint(3);
-        ssboService.bind(bufferRepository.foliageTransformationSSBO);
         shaderService.bindVec2(terrainRepository.offset, terrainOffsetU);
         shaderService.bindSampler2dDirect(bufferRepository.noiseSampler, 10);
         for (var foliage : terrainRepository.foliage.values()) {
-            if (foliage.count < CoreBufferRepository.MAX_INSTANCING && foliage.count > 0) {
-                var mesh = (MeshResourceRef) streamingService.streamIn(foliage.mesh, StreamableResourceType.MESH);
-                var material = (MaterialResourceRef) streamingService.streamIn(foliage.material, StreamableResourceType.MATERIAL);
-                bindMaterial(material);
-                if (mesh != null) {
-                    shaderService.bindVec3(foliage.objectScale, objectScale);
-                    shaderService.bindInt(foliage.offset, transformOffset);
-                    meshService.bind(mesh);
-                    meshService.setInstanceCount(foliage.count);
-                    meshService.draw();
-                }
+            if(FoliageCullingPass.isFoliageNotReady(foliage)){
+                continue;
+            }
+
+            var mesh = (MeshResourceRef) streamingService.streamIn(foliage.mesh, StreamableResourceType.MESH);
+            var material = (MaterialResourceRef) streamingService.streamIn(foliage.material, StreamableResourceType.MATERIAL);
+            bindMaterial(material);
+            if (mesh != null) {
+                shaderService.bindVec3(foliage.objectScale, objectScale);
+                shaderService.bindInt(foliage.offset, transformOffset);
+                meshService.bind(mesh);
+                GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, foliage.indirectDrawBuffer);
+                GL46.glBindBufferBase(GL46.GL_SHADER_STORAGE_BUFFER, 3, foliage.transformationsBuffer);
+                GL46.glDrawElementsIndirect(GL46.GL_TRIANGLES, GL46.GL_UNSIGNED_INT, GL46.GL_NONE);
             }
         }
     }

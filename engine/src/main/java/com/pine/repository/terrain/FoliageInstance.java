@@ -4,8 +4,8 @@ import com.pine.inspection.InspectableField;
 import com.pine.inspection.ResourceTypeField;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.theme.Icons;
-import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.opengl.GL46;
 
 public class FoliageInstance extends AbstractDataInstance {
     public int count = 0;
@@ -19,15 +19,20 @@ public class FoliageInstance extends AbstractDataInstance {
     @InspectableField(label = "Mesh")
     public String mesh;
 
+    @InspectableField(label = "Max instances", min = 10)
+    public int maximumNumberOfInstances = 10_000;
+    public int prevMaximumNumberOfInstances = -1;
+
     @InspectableField(label = "Max distance from camera", min = 1)
     public int maxDistanceFromCamera = 100;
-    @InspectableField(label = "Max instances per cell (squared) ", min = 1, max = 15)
-    public int maxIterations = 5;
-    @InspectableField(label = "Instance offset scale")
-    public Vector2f instanceOffset = new Vector2f(5);
+
 
     @InspectableField(label = "Object Scale")
     public Vector3f objectScale = new Vector3f(1);
+
+    public transient Integer indirectDrawBuffer;
+    public transient Integer atomicCounterBuffer;
+    public transient Integer transformationsBuffer;
 
     public FoliageInstance(int i) {
         super(i);
@@ -37,5 +42,14 @@ public class FoliageInstance extends AbstractDataInstance {
     @Override
     public String getIcon() {
         return Icons.forest;
+    }
+
+    @Override
+    public void dispose() {
+        if (transformationsBuffer != null) {
+            GL46.glDeleteBuffers(indirectDrawBuffer);
+            GL46.glDeleteBuffers(atomicCounterBuffer);
+            GL46.glDeleteBuffers(transformationsBuffer);
+        }
     }
 }
