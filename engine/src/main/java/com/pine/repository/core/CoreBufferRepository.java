@@ -52,13 +52,15 @@ public class CoreBufferRepository implements CoreRepository {
     public final List<FrameBufferObject> all = new ArrayList<>();
     public FrameBufferObject brdfFBO;
     public FrameBufferObject compositingBuffer;
-    public FrameBufferObject noiseBuffer;
+    public FrameBufferObject windNoiseBuffer;
+    public FrameBufferObject shadowsBuffer;
 
     public TextureResourceRef cloudNoiseTexture;
     public TextureResourceRef cloudShapeTexture;
 
+    public int shadowsSampler;
     public int auxBufferQuaterResSampler;
-    public int noiseSampler;
+    public int windNoiseSampler;
     public int sceneDepthCopySampler;
     public int gBufferAlbedoSampler;
     public int gBufferNormalSampler;
@@ -107,9 +109,9 @@ public class CoreBufferRepository implements CoreRepository {
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
 
-        noiseBuffer = new FrameBufferObject(256, 256)
+        windNoiseBuffer = new FrameBufferObject(256, 256)
                 .addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, true);
-        noiseSampler = noiseBuffer.getSamplers().getFirst();
+        windNoiseSampler = windNoiseBuffer.getSamplers().getFirst();
 
         brdfFBO = new FrameBufferObject(512, 512).addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false);
         brdfSampler = brdfFBO.getSamplers().getFirst();

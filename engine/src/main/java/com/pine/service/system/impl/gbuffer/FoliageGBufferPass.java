@@ -1,11 +1,11 @@
-package com.pine.service.system.impl;
+package com.pine.service.system.impl.gbuffer;
 
-import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.streaming.ref.MeshResourceRef;
+import com.pine.service.system.impl.FoliageCullingPass;
 import org.lwjgl.opengl.GL46;
 
 
@@ -36,7 +36,7 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
     protected void renderInternal() {
         prepareCall();
         shaderService.bindVec2(terrainRepository.offset, terrainOffsetU);
-        shaderService.bindSampler2dDirect(bufferRepository.noiseSampler, 10);
+        shaderService.bindSampler2dDirect(bufferRepository.windNoiseSampler, 10);
         for (var foliage : terrainRepository.foliage.values()) {
             if(FoliageCullingPass.isFoliageNotReady(foliage)){
                 continue;

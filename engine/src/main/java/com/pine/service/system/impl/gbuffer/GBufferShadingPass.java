@@ -1,8 +1,9 @@
-package com.pine.service.system.impl;
+package com.pine.service.system.impl.gbuffer;
 
 import com.pine.service.resource.fbo.FrameBufferObject;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
+import com.pine.service.system.impl.AbstractQuadPass;
 
 public class GBufferShadingPass extends AbstractQuadPass {
     private UniformDTO SSRFalloff;

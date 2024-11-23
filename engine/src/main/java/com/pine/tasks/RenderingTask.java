@@ -20,7 +20,7 @@ import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
-import static com.pine.service.system.impl.AbstractGBufferPass.MAX_CUBE_MAPS;
+import static com.pine.service.system.impl.gbuffer.AbstractGBufferPass.MAX_CUBE_MAPS;
 
 
 @PBean

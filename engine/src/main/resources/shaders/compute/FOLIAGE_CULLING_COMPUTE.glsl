@@ -63,11 +63,13 @@ void doWork(int col, int row){
         vec3 pixelColor = texture(foliageMask, scaledTexCoord).rgb;
         if (pixelColor == colorToMatch){
             vec3 worldSpaceCoord = getWorlPosition(scaledTexCoord, imageSize);
-            worldSpaceCoord.y = texture(heightMap, scaledTexCoord).r * heightScale;
-            if (isPointInsideFrustum(worldSpaceCoord)){
-                uint index = atomicCounterIncrement(globalIndex);
-                if (index < uint(settings.y)){
-                    transformations[index] = worldSpaceCoord;
+            if (length(worldSpaceCoord.xz - cameraWorldPosition.xz) < MAX_DISTANCE_FROM_CAMERA){
+                worldSpaceCoord.y = texture(heightMap, scaledTexCoord).r * heightScale;
+                if (isPointInsideFrustum(worldSpaceCoord)){
+                    uint index = atomicCounterIncrement(globalIndex);
+                    if (index < uint(settings.y)){
+                        transformations[index] = worldSpaceCoord;
+                    }
                 }
             }
         }

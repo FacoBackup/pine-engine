@@ -10,6 +10,7 @@ import com.pine.inspection.InspectableField;
 import com.pine.service.environment.EnvironmentMapGenService;
 import com.pine.theme.Icons;
 import com.pine.type.AtmosphereType;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -24,9 +25,11 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
         environmentMapGenService.bake();
     }
 
-
     @InspectableField(label = "Render atmosphere")
     public boolean enabled = false;
+
+    @InspectableField(label = "Render shadows")
+    public boolean shadows;
 
     @InspectableField(group = "Time", label = "Elapsed time")
     public float elapsedTime = .5f;
@@ -119,6 +122,10 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     public float lightAbsorptionThroughCloud = .5f;
     @InspectableField(group = "Clouds", label = "Darkness threshold", min = 0, max = 1)
     public float darknessThreshold = 0;
+
+    public final Matrix4f lightSpaceMatrix = new Matrix4f();
+    public final Matrix4f lightViewMatrix = new Matrix4f();
+    public final Matrix4f lightProjectionMatrix = new Matrix4f();
 
     @Override
     public String getTitle() {

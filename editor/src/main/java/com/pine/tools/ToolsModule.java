@@ -3,6 +3,7 @@ package com.pine.tools;
 import com.pine.injection.EngineExternalModule;
 import com.pine.service.system.AbstractPass;
 import com.pine.service.system.impl.*;
+import com.pine.service.system.impl.gbuffer.*;
 import com.pine.tools.repository.ToolsResourceRepository;
 import com.pine.tools.system.GridPass;
 import com.pine.tools.system.IconsPass;

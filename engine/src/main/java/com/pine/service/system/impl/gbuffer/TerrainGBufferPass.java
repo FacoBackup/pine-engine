@@ -1,4 +1,4 @@
-package com.pine.service.system.impl;
+package com.pine.service.system.impl.gbuffer;
 
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.resource.shader.Shader;

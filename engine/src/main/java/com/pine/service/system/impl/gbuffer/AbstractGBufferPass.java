@@ -1,4 +1,4 @@
-package com.pine.service.system.impl;
+package com.pine.service.system.impl.gbuffer;
 
 import com.pine.repository.ShadingMode;
 import com.pine.repository.rendering.RenderingMode;

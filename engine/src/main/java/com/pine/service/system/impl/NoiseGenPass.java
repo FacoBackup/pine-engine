@@ -17,7 +17,7 @@ public class NoiseGenPass extends AbstractQuadPass {
 
     @Override
     protected FrameBufferObject getTargetFBO() {
-        return bufferRepository.noiseBuffer;
+        return bufferRepository.windNoiseBuffer;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.pine.service.system.impl;
+package com.pine.service.system.impl.gbuffer;
 
 import com.pine.service.grid.WorldTile;
 import com.pine.service.resource.shader.Shader;

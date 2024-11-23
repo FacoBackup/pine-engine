@@ -82,6 +82,12 @@ public class EngineRepository extends Inspectable implements SerializableReposit
     @InspectableField(group = "Ambient occlusion", label = "Max Samples")
     public int ssaoMaxSamples = 64;
 
+    @InspectableField(group = "Shadows", label = "Update every X(ms)")
+    public long shadowsEveryMs = 16;
+
+    @InspectableField(group = "Shadows", label = "Resolution")
+    public int worldShadowsResolution = 512;
+
     public ShadingMode shadingMode = ShadingMode.LIT;
     public transient boolean isBakingEnvironmentMaps;
     public int meshesDrawn;

@@ -57,7 +57,7 @@ public class FrameBufferObject implements IResource {
         return samplers;
     }
 
-    public void depthTexture() {
+    public FrameBufferObject depthTexture() {
         use();
         this.depthSampler = EngineUtils.createTexture(
                 this.width,
@@ -81,6 +81,9 @@ public class FrameBufferObject implements IResource {
                 this.depthSampler,
                 0
         );
+
+        stop();
+        return this;
     }
 
     public FrameBufferObject depthTest() {

@@ -4,6 +4,7 @@ import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
 import com.pine.service.system.impl.*;
+import com.pine.service.system.impl.gbuffer.*;
 import com.pine.tasks.SyncTask;
 
 @PBean

@@ -6,7 +6,7 @@ import com.pine.service.streaming.ref.EnvironmentMapResourceRef;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.pine.service.system.impl.AbstractGBufferPass.MAX_CUBE_MAPS;
+import static com.pine.service.system.impl.gbuffer.AbstractGBufferPass.MAX_CUBE_MAPS;
 
 @PBean
 public class RenderingRepository {
