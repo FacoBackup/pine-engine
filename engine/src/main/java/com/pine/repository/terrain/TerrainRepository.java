@@ -118,7 +118,6 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     public final Map<String, FoliageInstance> foliage = new HashMap<>();
     public final Map<String, MaterialInstance> materials = new HashMap<>();
 
-
     @Override
     public String getTitle() {
         return "Terrain & Foliage";

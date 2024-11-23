@@ -17,6 +17,7 @@ public class FSEntry {
     public final String sizeText;
     public String creationDateString;
     public final boolean isDirectory;
+    public boolean isHovered = false;
 
     public FSEntry(File file, StreamableResourceType type, String id, String name) {
         creationDateString = FORMATTER.format(new Date(file.lastModified()));

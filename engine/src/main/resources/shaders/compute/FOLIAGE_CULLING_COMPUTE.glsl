@@ -24,29 +24,6 @@ uniform float heightScale;
 
 #include "../util/UTIL.glsl"
 
-vec3 heightMapToWorldSpace(vec2 uv, vec2 planeSize) {
-    float worldX = uv.x * planeSize.x + terrainOffset.x;
-    float worldZ = uv.y * planeSize.y + terrainOffset.y;
-    return vec3(worldX, 0, worldZ);
-}
-
-float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
-}
-
-vec2 randomOffset(vec2 inputV, float rangeX, float rangeY) {
-    float randomX = hash(inputV.xy / rangeX);
-    float randomY = hash(inputV.yx / rangeY);
-    return vec2(randomX* rangeX, randomY* rangeY);
-}
-
-void addTransform(vec3 pos){
-    if (atomicCounter(globalIndex) + 1 < MAX_INSTANCING){
-        uint index = atomicCounterIncrement(globalIndex);
-        transformations[index] = pos;
-    }
-}
-
 shared vec4 l;
 shared vec4 r;
 shared vec4 b;
@@ -56,6 +33,12 @@ shared vec4 f;
 shared int rows_per_thread;
 shared int cols_per_thread;
 const int N = 1024;
+
+vec3 getWorlPosition(vec2 uv, vec2 planeSize) {
+    float worldX = uv.x * planeSize.x + terrainOffset.x;
+    float worldZ = uv.y * planeSize.y + terrainOffset.y;
+    return vec3(worldX, 0, worldZ);
+}
 
 bool isPointInsideFrustum(vec3 point) {
     vec4 p4D = vec4(point, 1.);
@@ -76,10 +59,11 @@ void doWork(int col, int row){
     if (scaledTexCoord.x <= 1 && scaledTexCoord.x >= 0 && scaledTexCoord.y <= 1 && scaledTexCoord.y >= 0){
         vec3 pixelColor = texture(foliageMask, scaledTexCoord).rgb;
         if (pixelColor == colorToMatch){
-            vec3 worldSpaceCoord = heightMapToWorldSpace(scaledTexCoord, imageSize);
+            vec3 worldSpaceCoord = getWorlPosition(scaledTexCoord, imageSize);
             worldSpaceCoord.y = texture(heightMap, scaledTexCoord).r * heightScale;
-            if(isPointInsideFrustum(worldSpaceCoord)){
-                addTransform(worldSpaceCoord);
+            if (isPointInsideFrustum(worldSpaceCoord) && atomicCounter(globalIndex) + 1 < MAX_INSTANCING){
+                uint index = atomicCounterIncrement(globalIndex);
+                transformations[index] = worldSpaceCoord;
             }
         }
     }
@@ -100,7 +84,7 @@ void main() {
         n = Row3 + Row4;
         f = Row3 - Row4;
 
-        ivec2 total_threads = ivec2(1024);
+        ivec2 total_threads = ivec2(512);
         rows_per_thread = (N + total_threads.y - 1) / total_threads.y;
         cols_per_thread = (N + total_threads.x - 1) / total_threads.x;
     }

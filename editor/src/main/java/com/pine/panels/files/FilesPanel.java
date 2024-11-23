@@ -17,7 +17,7 @@ import java.util.*;
 
 import static com.pine.theme.Icons.ONLY_ICON_BUTTON_SIZE;
 
-public class ContentBrowser extends AbstractDockPanel {
+public class FilesPanel extends AbstractDockPanel {
     @PInject
     public ImporterService importerService;
     @PInject
@@ -64,9 +64,9 @@ public class ContentBrowser extends AbstractDockPanel {
         fileInspector.setInspection(inspection);
         directoryPanel.selected = selected;
         directoryPanel.toCut = toCut;
-        directoryPanel.currentDirectory = currentDirectory;
 
         renderHeader();
+        directoryPanel.currentDirectory = currentDirectory;
         directoryPanel.isWindowFocused = isWindowFocused;
         ImGui.columns(2, "##filesColumns" + imguiId);
         if (!isFirstRender) {
@@ -77,8 +77,8 @@ public class ContentBrowser extends AbstractDockPanel {
         directoryPanel.render();
         inspection = directoryPanel.inspection;
         if(!Objects.equals(currentDirectory, directoryPanel.currentDirectory)){
-            updateDirectoryPath();
             currentDirectory = directoryPanel.currentDirectory;
+            updateDirectoryPath();
         }
 
         ImGui.nextColumn();
@@ -93,14 +93,15 @@ public class ContentBrowser extends AbstractDockPanel {
             String id = UUID.randomUUID().toString();
             var d = new FSEntry("New Directory (" + id.substring(0, 4) + ")", id);
             filesRepository.childParent.put(id, currentDirectory);
-            filesRepository.parentChildren.get(id).add(id);
             filesRepository.parentChildren.put(id, new ArrayList<>());
+            filesRepository.parentChildren.get(currentDirectory).add(id);
             filesRepository.entry.put(id, d);
         }
         if (!Objects.equals(currentDirectory, FilesRepository.ROOT_DIRECTORY_ID)) {
             ImGui.sameLine();
             if (ImGui.button(Icons.arrow_upward + "##goUpDir", ONLY_ICON_BUTTON_SIZE, ONLY_ICON_BUTTON_SIZE)) {
                 currentDirectory = filesRepository.childParent.get(currentDirectory);
+                updateDirectoryPath();
             }
         }
         ImGui.sameLine();

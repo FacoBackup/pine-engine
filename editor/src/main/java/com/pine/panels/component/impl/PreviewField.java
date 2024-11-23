@@ -18,7 +18,7 @@ import static com.pine.panels.viewport.ViewportPanel.INV_Y;
 import static com.pine.service.importer.impl.TextureImporter.PREVIEW_EXT;
 
 public class PreviewField extends AbstractFormField {
-    private static final ImVec2 INV_X_L = new ImVec2(-1, 0);
+    public static final ImVec2 INV_X_L = new ImVec2(-1, 0);
     private String value;
     private TextureResourceRef textureRef;
     private final ImVec2 sizeVec = new ImVec2();

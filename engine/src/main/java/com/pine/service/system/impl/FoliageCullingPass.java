@@ -25,7 +25,6 @@ public class FoliageCullingPass extends AbstractPass {
     private UniformDTO colorToMatchU;
     private final Vector2f imageSize = new Vector2f();
     private final Vector4f settings = new Vector4f();
-    private final IntBuffer atomicCountValue = MemoryUtil.memAllocInt(1);
 
     @Override
     public void onInitialize() {
@@ -59,10 +58,10 @@ public class FoliageCullingPass extends AbstractPass {
         GL46.glBindBufferBase(GL46.GL_ATOMIC_COUNTER_BUFFER, 2, bufferRepository.atomicCounterBuffer);
         GL46.glBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, CoreBufferRepository.ZERO);
 
-        COMPUTE_RUNTIME_DATA.groupX = 256;
-        COMPUTE_RUNTIME_DATA.groupY = 256;
+        COMPUTE_RUNTIME_DATA.groupX = 128;
+        COMPUTE_RUNTIME_DATA.groupY = 128;
         COMPUTE_RUNTIME_DATA.groupZ = 1;
-        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_ALL_BARRIER_BITS;
+        COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_SHADER_STORAGE_BARRIER_BIT;
 
         shaderService.bindSampler2dDirect(foliageMask, 0);
         shaderService.bindSampler2dDirect(heightMap, 1);
@@ -74,9 +73,7 @@ public class FoliageCullingPass extends AbstractPass {
         imageSize.y = heightMap.height;
         shaderService.bindVec2(imageSize, imageSizeU);
 
-        int offset = 0;
         for (var foliage : terrainRepository.foliage.values()) {
-
             settings.x = foliage.maxDistanceFromCamera;
             settings.y = foliage.maxIterations;
             settings.z = foliage.instanceOffset.x;
@@ -86,11 +83,11 @@ public class FoliageCullingPass extends AbstractPass {
 
             shaderService.dispatch(COMPUTE_RUNTIME_DATA);
 
-            GL46.glGetBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, atomicCountValue);
-
-            foliage.count = atomicCountValue.get(0) - offset;
-            foliage.offset = offset;
-            offset = atomicCountValue.get(0);
+//            GL46.glGetBufferSubData(GL46.GL_ATOMIC_COUNTER_BUFFER, 0, atomicCountValue);
+//
+//            foliage.count = atomicCountValue.get(0) - offset;
+//            foliage.offset = offset;
+//            offset = atomicCountValue.get(0);
         }
     }
 

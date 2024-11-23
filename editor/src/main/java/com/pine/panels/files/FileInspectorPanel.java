@@ -89,7 +89,7 @@ public class FileInspectorPanel extends AbstractView {
         if (ImGui.beginChild(imguiId)) {
             if (inspection != null) {
                 ImGui.textDisabled(inspection.id);
-                if (ImGui.inputText("##name" + imguiId, inspectionName, ImGuiInputTextFlags.EnterReturnsTrue)) {
+                if (ImGui.inputText("##name" + imguiId, inspectionName)) {
                     inspection.name = inspectionName.get();
                 }
             }
