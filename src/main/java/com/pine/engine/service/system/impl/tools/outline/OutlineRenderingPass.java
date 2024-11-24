@@ -1,4 +1,4 @@
-package com.pine.editor.tools.system.outline;
+package com.pine.engine.service.system.impl.tools.outline;
 
 import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorRepository;
@@ -6,16 +6,12 @@ import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.system.impl.AbstractQuadPass;
-import com.pine.editor.tools.repository.ToolsResourceRepository;
-import com.pine.editor.tools.types.ExecutionEnvironment;
+import com.pine.engine.type.ExecutionEnvironment;
 
 
 public class OutlineRenderingPass extends AbstractQuadPass {
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO color;
     private UniformDTO width;
@@ -38,12 +34,12 @@ public class OutlineRenderingPass extends AbstractQuadPass {
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.outlineShader;
+        return shaderRepository.outlineShader;
     }
 
     @Override
     protected void bindUniforms() {
-        shaderService.bindSampler2dDirect(toolsResourceRepository.outlineSampler, 0);
+        shaderService.bindSampler2dDirect(bufferRepository.outlineSampler, 0);
         shaderService.bindFloat(editorRepository.outlineWidth, width);
         shaderService.bindVec3(editorRepository.outlineColor, color);
     }

@@ -1,9 +1,9 @@
 package com.pine.engine.component;
 
+import com.pine.common.Icons;
 import com.pine.engine.component.light.PointLightComponent;
 import com.pine.engine.component.light.SphereLightComponent;
 import com.pine.engine.component.light.SpotLightComponent;
-import com.pine.common.Icons;
 import com.pine.engine.type.LightType;
 
 import java.io.Serializable;

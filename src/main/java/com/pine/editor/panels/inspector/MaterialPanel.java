@@ -1,11 +1,11 @@
 package com.pine.editor.panels.inspector;
 
+import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorRepository;
 import com.pine.engine.repository.terrain.AbstractDataInstance;
 import com.pine.engine.repository.terrain.MaterialInstance;
 import com.pine.engine.repository.terrain.TerrainRepository;
-import com.pine.common.Icons;
 
 import java.util.Map;
 

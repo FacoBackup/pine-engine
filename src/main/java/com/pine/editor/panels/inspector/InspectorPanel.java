@@ -1,22 +1,22 @@
 package com.pine.editor.panels.inspector;
 
-import com.pine.engine.component.AbstractComponent;
-import com.pine.engine.component.ComponentType;
-import com.pine.engine.component.Entity;
+import com.pine.common.Icons;
+import com.pine.common.injection.PInject;
+import com.pine.common.inspection.Inspectable;
 import com.pine.editor.core.AbstractView;
 import com.pine.editor.core.UIUtil;
 import com.pine.editor.core.dock.AbstractDockPanel;
-import com.pine.common.injection.PInject;
-import com.pine.common.inspection.Inspectable;
 import com.pine.editor.panels.component.FormPanel;
 import com.pine.editor.repository.EditorRepository;
+import com.pine.engine.component.AbstractComponent;
+import com.pine.engine.component.ComponentType;
+import com.pine.engine.component.Entity;
 import com.pine.engine.repository.WorldRepository;
 import com.pine.engine.repository.terrain.TerrainRepository;
-import com.pine.engine.service.world.WorldService;
 import com.pine.engine.service.rendering.RequestProcessingService;
 import com.pine.engine.service.request.AddComponentRequest;
 import com.pine.engine.service.request.UpdateFieldRequest;
-import com.pine.common.Icons;
+import com.pine.engine.service.world.WorldService;
 import imgui.ImGui;
 
 import java.util.ArrayList;

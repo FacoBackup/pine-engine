@@ -1,10 +1,9 @@
 package com.pine.editor;
 
-import com.pine.engine.Engine;
+import com.pine.common.injection.PInject;
 import com.pine.editor.core.AbstractView;
 import com.pine.editor.core.AbstractWindow;
 import com.pine.editor.core.WindowService;
-import com.pine.common.injection.PInject;
 import com.pine.editor.panels.ToasterPanel;
 import com.pine.editor.panels.header.EditorHeaderPanel;
 import com.pine.editor.panels.viewport.FullScreenViewportPanel;
@@ -12,12 +11,10 @@ import com.pine.editor.repository.EditorRepository;
 import com.pine.editor.service.ProjectService;
 import com.pine.editor.service.ThemeService;
 import com.pine.editor.service.serialization.SerializationService;
-import com.pine.editor.tools.ToolsModule;
+import com.pine.engine.Engine;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiKey;
-
-import java.util.List;
 
 
 public class EditorWindow extends AbstractWindow {
@@ -70,7 +67,7 @@ public class EditorWindow extends AbstractWindow {
         if (serializationRepository.isDeserializationDone()) {
             if (!isInitialized) {
                 windowService.maximize();
-                engine.start(windowService.getDisplayW(), windowService.getDisplayH(), List.of(new ToolsModule()), projectService.getProjectDirectory());
+                engine.start(windowService.getDisplayW(), windowService.getDisplayH(), projectService.getProjectDirectory());
                 appendChild(fullscreen = new FullScreenViewportPanel());
                 removeChild(fullscreen);
                 isInitialized = true;

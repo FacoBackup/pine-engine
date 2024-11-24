@@ -1,11 +1,11 @@
 package com.pine.editor.core.dock;
 
-import com.pine.editor.core.AbstractView;
+import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.Loggable;
 import com.pine.common.messaging.MessageRepository;
 import com.pine.common.messaging.MessageSeverity;
-import com.pine.common.Icons;
+import com.pine.editor.core.AbstractView;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.*;
@@ -14,8 +14,8 @@ import org.joml.Vector2f;
 
 import java.io.Serializable;
 
-import static com.pine.editor.core.UIUtil.OPEN;
 import static com.pine.common.Icons.ONLY_ICON_BUTTON_SIZE;
+import static com.pine.editor.core.UIUtil.OPEN;
 
 public final class DockSpacePanel extends AbstractView implements Loggable, Serializable {
     private static final int FLAGS = ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.MenuBar;

@@ -1,24 +1,20 @@
-package com.pine.editor.tools.system.outline;
+package com.pine.engine.service.system.impl.tools.outline;
 
-import com.pine.editor.tools.repository.ToolsResourceRepository;
 import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorMode;
 import com.pine.editor.repository.EditorRepository;
-import com.pine.engine.service.world.WorldTile;
 import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.system.AbstractPass;
-import com.pine.editor.tools.types.ExecutionEnvironment;
+import com.pine.engine.service.world.WorldTile;
+import com.pine.engine.type.ExecutionEnvironment;
 import org.lwjgl.opengl.GL46;
 
 
 public class BoxOutlineGenPass extends AbstractPass {
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO renderIndex;
     private UniformDTO modelMatrix;
@@ -37,12 +33,12 @@ public class BoxOutlineGenPass extends AbstractPass {
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.outlineBoxGenShader;
+        return shaderRepository.outlineBoxGenShader;
     }
 
     @Override
     protected FBO getTargetFBO() {
-        return toolsResourceRepository.outlineBuffer;
+        return bufferRepository.outlineBuffer;
     }
 
     @Override

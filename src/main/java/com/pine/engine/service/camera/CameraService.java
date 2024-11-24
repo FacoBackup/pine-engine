@@ -1,12 +1,12 @@
 package com.pine.engine.service.camera;
 
-import com.pine.engine.EngineUtils;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
 import com.pine.engine.repository.CameraRepository;
 import com.pine.engine.repository.RuntimeRepository;
 import com.pine.engine.repository.core.CoreBufferRepository;
 import com.pine.engine.tasks.SyncTask;
+import com.pine.engine.util.EngineUtils;
 
 @PBean
 public class CameraService implements SyncTask {

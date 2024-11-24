@@ -5,11 +5,11 @@ import com.pine.common.injection.PInject;
 import com.pine.engine.repository.streaming.AbstractResourceRef;
 import com.pine.engine.repository.streaming.StreamableResourceType;
 import com.pine.engine.repository.streaming.StreamingRepository;
+import com.pine.engine.service.environment.EnvironmentMapGenService;
 import com.pine.engine.service.streaming.data.EnvironmentMapStreamData;
 import com.pine.engine.service.streaming.data.StreamData;
 import com.pine.engine.service.streaming.data.TextureStreamData;
 import com.pine.engine.service.streaming.ref.EnvironmentMapResourceRef;
-import com.pine.engine.service.environment.EnvironmentMapGenService;
 
 import java.nio.ByteBuffer;
 import java.util.Collections;

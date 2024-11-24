@@ -1,9 +1,9 @@
 package com.pine.editor.panels.files;
 
 import com.pine.FSUtil;
-import com.pine.editor.core.AbstractView;
 import com.pine.common.injection.PInject;
 import com.pine.common.inspection.FieldDTO;
+import com.pine.editor.core.AbstractView;
 import com.pine.editor.panels.component.FormPanel;
 import com.pine.editor.repository.FSEntry;
 import com.pine.engine.repository.streaming.AbstractResourceRef;

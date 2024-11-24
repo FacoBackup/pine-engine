@@ -1,14 +1,14 @@
 package com.pine.editor.panels.header;
 
+import com.pine.common.Icons;
+import com.pine.common.injection.PInject;
 import com.pine.editor.core.AbstractView;
 import com.pine.editor.core.UIUtil;
 import com.pine.editor.repository.EditorMode;
 import com.pine.editor.repository.EditorRepository;
-import com.pine.common.injection.PInject;
 import com.pine.engine.repository.CameraRepository;
 import com.pine.engine.repository.EngineRepository;
 import com.pine.engine.repository.ShadingMode;
-import com.pine.common.Icons;
 import imgui.ImGui;
 import imgui.type.ImInt;
 

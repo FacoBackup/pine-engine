@@ -1,10 +1,10 @@
 package com.pine.engine.repository.core;
 
-import com.pine.engine.Engine;
+import com.pine.common.Initializable;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
+import com.pine.engine.Engine;
 import com.pine.engine.service.importer.data.MeshImportData;
-import com.pine.engine.service.module.Initializable;
 import com.pine.engine.service.streaming.ref.MeshResourceRef;
 
 @PBean

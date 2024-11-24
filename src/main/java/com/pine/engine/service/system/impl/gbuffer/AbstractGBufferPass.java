@@ -2,10 +2,10 @@ package com.pine.engine.service.system.impl.gbuffer;
 
 import com.pine.engine.repository.ShadingMode;
 import com.pine.engine.repository.rendering.RenderingMode;
-import com.pine.engine.service.system.AbstractPass;
 import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.streaming.ref.MaterialResourceRef;
+import com.pine.engine.service.system.AbstractPass;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL46;
 

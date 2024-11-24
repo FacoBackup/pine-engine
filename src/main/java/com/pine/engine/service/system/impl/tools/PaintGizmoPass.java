@@ -1,4 +1,4 @@
-package com.pine.editor.tools.system;
+package com.pine.engine.service.system.impl.tools;
 
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.Loggable;
@@ -10,8 +10,7 @@ import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.streaming.ref.TextureResourceRef;
 import com.pine.engine.service.system.AbstractPass;
-import com.pine.editor.tools.repository.ToolsResourceRepository;
-import com.pine.editor.tools.types.ExecutionEnvironment;
+import com.pine.engine.type.ExecutionEnvironment;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
@@ -25,9 +24,6 @@ public class PaintGizmoPass extends AbstractPass implements Loggable {
 
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO xyMouseUniform;
     private UniformDTO paintMode;
@@ -54,7 +50,7 @@ public class PaintGizmoPass extends AbstractPass implements Loggable {
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.paintGizmoCompute;
+        return shaderRepository.paintGizmoCompute;
     }
 
     @Override

@@ -1,14 +1,24 @@
 package com.pine.engine.repository.core;
 
+import com.pine.common.Initializable;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
-import com.pine.engine.service.module.Initializable;
+import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.ShaderCreationData;
 import com.pine.engine.service.resource.shader.ShaderService;
-import com.pine.engine.service.resource.shader.Shader;
 
 @PBean
 public class CoreShaderRepository implements Initializable {
+    // TOOLS
+    public Shader outlineShader;
+    public Shader gridShader;
+    public Shader outlineBoxGenShader;
+    public Shader paintGizmoCompute;
+    public Shader paintGizmoRenderingShader;
+    public Shader outlineGenShader;
+    public Shader iconShader;
+    // TOOLS
+
     public Shader spriteShader;
     public Shader gBufferShader;
     public Shader gBufferTerrainShader;
@@ -49,6 +59,16 @@ public class CoreShaderRepository implements Initializable {
 
     @Override
     public void onInitialize() {
+        // TOOLS
+        outlineShader = shaderService.create(new ShaderCreationData("QUAD.vert", "tool/OUTLINE.frag"));
+        paintGizmoRenderingShader = shaderService.create(new ShaderCreationData("QUAD.vert", "tool/PAINT_GIZMO.frag"));
+        outlineGenShader = shaderService.create(new ShaderCreationData("tool/OUTLINE_GEN.vert", "tool/OUTLINE_GEN.frag"));
+        outlineBoxGenShader = shaderService.create(new ShaderCreationData("tool/OUTLINE_GEN.vert", "tool/OUTLINE_GEN_BOX.frag"));
+        gridShader = shaderService.create(new ShaderCreationData("QUAD.vert", "tool/GRID.frag"));
+        iconShader = shaderService.create(new ShaderCreationData("tool/ICON.vert", "tool/ICON.frag"));
+        paintGizmoCompute = shaderService.create(new ShaderCreationData("compute/PAINT_GIZMO_COMPUTE.glsl"));
+
+
         compositingShader = shaderService.create(new ShaderCreationData("QUAD.vert", "COMPOSITE.frag"));
         noiseShader = shaderService.create(new ShaderCreationData("QUAD.vert", "NOISE.frag"));
         gBufferShading = shaderService.create(new ShaderCreationData("QUAD.vert", "uber/G_BUFFER_SHADING.frag"));

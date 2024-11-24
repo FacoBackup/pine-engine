@@ -1,4 +1,4 @@
-package com.pine.engine;
+package com.pine.engine.util;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;

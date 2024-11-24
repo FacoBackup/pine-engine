@@ -1,8 +1,8 @@
 package com.pine.engine.service.resource.ubo;
 
 import com.pine.common.injection.PBean;
-import com.pine.engine.service.resource.shader.GLSLType;
 import com.pine.engine.service.resource.AbstractResourceService;
+import com.pine.engine.service.resource.shader.GLSLType;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;

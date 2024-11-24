@@ -1,20 +1,20 @@
 package com.pine.engine.repository.core;
 
-import com.pine.engine.Engine;
+import com.pine.common.Initializable;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
+import com.pine.engine.Engine;
 import com.pine.engine.repository.RuntimeRepository;
-import com.pine.engine.service.module.Initializable;
+import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.fbo.FBOCreationData;
 import com.pine.engine.service.resource.fbo.FBOService;
-import com.pine.engine.service.resource.shader.ShaderService;
-import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.GLSLType;
-import com.pine.engine.service.resource.ssbo.SSBOCreationData;
+import com.pine.engine.service.resource.shader.ShaderService;
 import com.pine.engine.service.resource.ssbo.SSBO;
+import com.pine.engine.service.resource.ssbo.SSBOCreationData;
+import com.pine.engine.service.resource.ubo.UBO;
 import com.pine.engine.service.resource.ubo.UBOCreationData;
 import com.pine.engine.service.resource.ubo.UBOData;
-import com.pine.engine.service.resource.ubo.UBO;
 import com.pine.engine.service.resource.ubo.UBOService;
 import com.pine.engine.service.streaming.ref.TextureResourceRef;
 import com.pine.engine.service.voxelization.util.TextureUtil;
@@ -85,6 +85,12 @@ public class CoreBufferRepository implements Initializable {
     public UBO globalDataUBO;
     public final FloatBuffer globalDataBuffer = MemoryUtil.memAllocFloat(112);
 
+    // TOOLS
+    public FBO outlineBuffer;
+    public int outlineSampler;
+    public TextureResourceRef icons;
+    // TOOLS
+
     @Override
     public void onInitialize() {
         cloudShapeTexture = TextureUtil.create3DTexture(128, 128, 128, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_HALF_FLOAT);
@@ -112,11 +118,18 @@ public class CoreBufferRepository implements Initializable {
     }
 
     private void createFrameBuffers() {
+
         final int displayW = runtimeRepository.getDisplayW();
         final int displayH = runtimeRepository.getDisplayH();
 
         final int halfResW = runtimeRepository.getDisplayW() / 2;
         final int halfResH = runtimeRepository.getDisplayH() / 2;
+
+        // TOOLS
+        outlineBuffer = fboService.create(new FBOCreationData(displayW, displayH, false, false).addSampler(0, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false));
+        outlineSampler = outlineBuffer.getSamplers().getFirst();
+        icons = TextureUtil.loadTextureFromResource("/textures/icons.png");
+        // TOOLS
 
         windNoiseBuffer = fboService.create(new FBOCreationData(256, 256, false, false)
                 .addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, true));

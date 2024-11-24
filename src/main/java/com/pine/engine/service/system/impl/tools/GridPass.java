@@ -1,4 +1,4 @@
-package com.pine.editor.tools.system;
+package com.pine.engine.service.system.impl.tools;
 
 import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorRepository;
@@ -6,8 +6,7 @@ import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.system.impl.AbstractQuadPass;
-import com.pine.editor.tools.repository.ToolsResourceRepository;
-import com.pine.editor.tools.types.ExecutionEnvironment;
+import com.pine.engine.type.ExecutionEnvironment;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
@@ -16,17 +15,14 @@ public class GridPass extends AbstractQuadPass {
     @PInject
     public EditorRepository editorRepository;
 
-    @PInject
-    public ToolsResourceRepository toolsResourceRepository;
-
     private final Vector4f settings = new Vector4f();
     private UniformDTO depthUniform;
     private UniformDTO settingsUniform;
 
     @Override
     public void onInitialize() {
-        settingsUniform = toolsResourceRepository.gridShader.addUniformDeclaration("settings");
-        depthUniform = toolsResourceRepository.gridShader.addUniformDeclaration("sceneDepth");
+        settingsUniform = addUniformDeclaration("settings");
+        depthUniform = addUniformDeclaration("sceneDepth");
     }
 
     @Override
@@ -56,7 +52,7 @@ public class GridPass extends AbstractQuadPass {
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.gridShader;
+        return shaderRepository.gridShader;
     }
 
     @Override

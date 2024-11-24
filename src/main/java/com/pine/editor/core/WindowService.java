@@ -2,11 +2,11 @@ package com.pine.editor.core;
 
 import com.pine.FSUtil;
 import com.pine.common.GLSLVersion;
+import com.pine.common.Icons;
 import com.pine.common.injection.*;
 import com.pine.common.messaging.Loggable;
-import com.pine.editor.repository.EditorRepository;
-import com.pine.common.Icons;
 import com.pine.editor.EditorWindow;
+import com.pine.editor.repository.EditorRepository;
 import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;

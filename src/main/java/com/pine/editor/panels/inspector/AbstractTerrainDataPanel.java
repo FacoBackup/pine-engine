@@ -1,12 +1,12 @@
 package com.pine.editor.panels.inspector;
 
-import com.pine.editor.core.AbstractView;
+import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
+import com.pine.editor.core.AbstractView;
 import com.pine.editor.panels.component.FormPanel;
 import com.pine.engine.repository.terrain.AbstractDataInstance;
 import com.pine.engine.service.rendering.RequestProcessingService;
 import com.pine.engine.service.request.UpdateFieldRequest;
-import com.pine.common.Icons;
 import imgui.ImGui;
 import imgui.flag.ImGuiTableColumnFlags;
 import imgui.flag.ImGuiTableFlags;

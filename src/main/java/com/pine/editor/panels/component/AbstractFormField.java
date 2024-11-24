@@ -1,7 +1,7 @@
 package com.pine.editor.panels.component;
 
-import com.pine.editor.core.AbstractView;
 import com.pine.common.inspection.FieldDTO;
+import com.pine.editor.core.AbstractView;
 
 import java.util.function.BiConsumer;
 

@@ -1,4 +1,4 @@
-package com.pine.engine.service.module;
+package com.pine.common;
 
 public interface Initializable {
     void onInitialize();

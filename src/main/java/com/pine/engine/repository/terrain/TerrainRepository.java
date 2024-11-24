@@ -1,5 +1,6 @@
 package com.pine.engine.repository.terrain;
 
+import com.pine.common.Icons;
 import com.pine.common.SerializableRepository;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
@@ -8,9 +9,8 @@ import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.InspectableField;
 import com.pine.engine.inspection.ResourceTypeField;
 import com.pine.engine.repository.streaming.StreamableResourceType;
-import com.pine.engine.ImageUtil;
 import com.pine.engine.service.importer.ImporterService;
-import com.pine.common.Icons;
+import com.pine.engine.util.ImageUtil;
 import org.joml.Vector2f;
 
 import java.nio.file.Files;

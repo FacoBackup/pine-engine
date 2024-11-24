@@ -1,16 +1,16 @@
 package com.pine.editor.panels.files;
 
-import com.pine.editor.core.UIUtil;
-import com.pine.editor.core.dock.AbstractDockPanel;
+import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.MessageRepository;
 import com.pine.common.messaging.MessageSeverity;
+import com.pine.editor.core.UIUtil;
+import com.pine.editor.core.dock.AbstractDockPanel;
 import com.pine.editor.repository.FSEntry;
 import com.pine.editor.repository.FilesRepository;
-import com.pine.engine.repository.streaming.StreamableResourceType;
 import com.pine.editor.service.FilesService;
+import com.pine.engine.repository.streaming.StreamableResourceType;
 import com.pine.engine.service.importer.ImporterService;
-import com.pine.common.Icons;
 import imgui.ImGui;
 
 import java.util.*;

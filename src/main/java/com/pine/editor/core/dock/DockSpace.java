@@ -1,5 +1,6 @@
 package com.pine.editor.core.dock;
 
+import com.pine.common.Icons;
 import com.pine.editor.panels.console.ConsolePanel;
 import com.pine.editor.panels.files.FilesPanel;
 import com.pine.editor.panels.hierarchy.HierarchyPanel;
@@ -7,7 +8,6 @@ import com.pine.editor.panels.inspector.InspectorPanel;
 import com.pine.editor.panels.metrics.MetricsPanel;
 import com.pine.editor.panels.resources.ResourcesPanel;
 import com.pine.editor.panels.viewport.ViewportPanel;
-import com.pine.common.Icons;
 
 import java.util.Arrays;
 

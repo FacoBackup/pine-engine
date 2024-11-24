@@ -1,11 +1,11 @@
 package com.pine.engine.repository;
 
 import com.pine.common.SerializableRepository;
+import com.pine.common.injection.PBean;
 import com.pine.engine.component.*;
 import com.pine.engine.component.light.PointLightComponent;
 import com.pine.engine.component.light.SphereLightComponent;
 import com.pine.engine.component.light.SpotLightComponent;
-import com.pine.common.injection.PBean;
 import com.pine.engine.service.world.WorldGrid;
 
 import java.util.HashMap;

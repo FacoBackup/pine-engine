@@ -1,6 +1,5 @@
-package com.pine.editor.tools.system;
+package com.pine.engine.service.system.impl.tools;
 
-import com.pine.editor.tools.repository.ToolsResourceRepository;
 import com.pine.common.injection.PInject;
 import com.pine.editor.repository.BrushMode;
 import com.pine.editor.repository.EditorMode;
@@ -9,7 +8,7 @@ import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.system.impl.AbstractQuadPass;
-import com.pine.editor.tools.types.ExecutionEnvironment;
+import com.pine.engine.type.ExecutionEnvironment;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -18,9 +17,6 @@ import org.lwjgl.opengl.GL46;
 public class PaintGizmoRenderingPass extends AbstractQuadPass {
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO xyMouseUniform;
     private UniformDTO viewportSize;
@@ -41,7 +37,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPass {
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.paintGizmoRenderingShader;
+        return shaderRepository.paintGizmoRenderingShader;
     }
 
     @Override

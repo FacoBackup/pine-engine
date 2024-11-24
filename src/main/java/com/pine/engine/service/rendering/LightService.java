@@ -1,12 +1,12 @@
 package com.pine.engine.service.rendering;
 
+import com.pine.common.injection.PBean;
+import com.pine.common.injection.PInject;
 import com.pine.engine.component.TransformationComponent;
 import com.pine.engine.component.light.AbstractLightComponent;
 import com.pine.engine.component.light.PointLightComponent;
 import com.pine.engine.component.light.SphereLightComponent;
 import com.pine.engine.component.light.SpotLightComponent;
-import com.pine.common.injection.PBean;
-import com.pine.common.injection.PInject;
 import com.pine.engine.repository.CameraRepository;
 import com.pine.engine.repository.WorldRepository;
 import com.pine.engine.repository.core.CoreBufferRepository;

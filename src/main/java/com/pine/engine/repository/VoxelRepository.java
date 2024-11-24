@@ -1,5 +1,6 @@
 package com.pine.engine.repository;
 
+import com.pine.common.Icons;
 import com.pine.common.SerializableRepository;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
@@ -7,7 +8,6 @@ import com.pine.common.inspection.ExecutableField;
 import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.InspectableField;
 import com.pine.engine.service.voxelization.VoxelizationService;
-import com.pine.common.Icons;
 
 @PBean
 public class VoxelRepository extends Inspectable implements SerializableRepository {

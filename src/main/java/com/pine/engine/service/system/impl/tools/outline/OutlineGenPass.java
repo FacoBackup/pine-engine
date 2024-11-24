@@ -1,23 +1,19 @@
-package com.pine.editor.tools.system.outline;
+package com.pine.engine.service.system.impl.tools.outline;
 
-import com.pine.editor.tools.repository.ToolsResourceRepository;
-import com.pine.editor.tools.types.ExecutionEnvironment;
 import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorMode;
 import com.pine.editor.repository.EditorRepository;
-import com.pine.engine.service.world.WorldTile;
 import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.system.AbstractPass;
+import com.pine.engine.service.world.WorldTile;
+import com.pine.engine.type.ExecutionEnvironment;
 
 
 public class OutlineGenPass extends AbstractPass {
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO renderIndex;
     private UniformDTO modelMatrix;
@@ -30,7 +26,7 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.outlineGenShader;
+        return shaderRepository.outlineGenShader;
     }
 
     @Override
@@ -40,7 +36,7 @@ public class OutlineGenPass extends AbstractPass {
 
     @Override
     protected FBO getTargetFBO() {
-        return toolsResourceRepository.outlineBuffer;
+        return bufferRepository.outlineBuffer;
     }
 
     @Override

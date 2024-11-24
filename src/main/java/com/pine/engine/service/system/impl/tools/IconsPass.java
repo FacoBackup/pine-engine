@@ -1,4 +1,4 @@
-package com.pine.editor.tools.system;
+package com.pine.engine.service.system.impl.tools;
 
 import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorRepository;
@@ -7,17 +7,13 @@ import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
 import com.pine.engine.service.system.AbstractPass;
-import com.pine.editor.tools.repository.ToolsResourceRepository;
-import com.pine.editor.tools.types.ExecutionEnvironment;
+import com.pine.engine.type.ExecutionEnvironment;
 import org.lwjgl.opengl.GL46;
 
 
 public class IconsPass extends AbstractPass {
     @PInject
     public EditorRepository editorRepository;
-
-    @PInject
-    public ToolsResourceRepository toolsResourceRepository;
 
     private UniformDTO transformationMatrix;
     private UniformDTO iconScale;
@@ -55,7 +51,7 @@ public class IconsPass extends AbstractPass {
         shaderService.bindFloat(editorRepository.iconScale, iconScale);
         shaderService.bindVec3(editorRepository.iconColor, iconColor);
 
-        shaderService.bindSampler2dDirect(toolsResourceRepository.icons, 0);
+        shaderService.bindSampler2dDirect(bufferRepository.icons, 0);
         shaderService.bindSampler2dDirect(bufferRepository.sceneDepthCopySampler, 1);
 
         meshService.bind(meshRepository.quadMesh);
@@ -109,7 +105,7 @@ public class IconsPass extends AbstractPass {
 
     @Override
     protected Shader getShader() {
-        return toolsResourceRepository.iconShader;
+        return shaderRepository.iconShader;
     }
 
     @Override

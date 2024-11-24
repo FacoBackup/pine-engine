@@ -2,9 +2,9 @@ package com.pine.engine.service.streaming.ref;
 
 import com.pine.engine.repository.streaming.AbstractResourceRef;
 import com.pine.engine.repository.streaming.StreamableResourceType;
-import com.pine.engine.service.streaming.data.VoxelChunkStreamData;
-import com.pine.engine.service.resource.ssbo.SSBOCreationData;
 import com.pine.engine.service.resource.ssbo.SSBO;
+import com.pine.engine.service.resource.ssbo.SSBOCreationData;
+import com.pine.engine.service.streaming.data.VoxelChunkStreamData;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 

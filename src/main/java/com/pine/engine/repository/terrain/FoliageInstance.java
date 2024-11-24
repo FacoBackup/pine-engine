@@ -1,9 +1,9 @@
 package com.pine.engine.repository.terrain;
 
+import com.pine.common.Icons;
 import com.pine.common.inspection.InspectableField;
 import com.pine.engine.inspection.ResourceTypeField;
 import com.pine.engine.repository.streaming.StreamableResourceType;
-import com.pine.common.Icons;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 

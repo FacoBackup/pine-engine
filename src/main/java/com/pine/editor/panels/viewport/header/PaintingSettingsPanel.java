@@ -1,7 +1,7 @@
 package com.pine.editor.panels.viewport.header;
 
-import com.pine.editor.core.UIUtil;
 import com.pine.common.injection.PInject;
+import com.pine.editor.core.UIUtil;
 import com.pine.editor.repository.BrushMode;
 import com.pine.editor.repository.EditorMode;
 import com.pine.engine.repository.core.CoreBufferRepository;

@@ -1,9 +1,9 @@
 package com.pine.editor.core.dock;
 
-import com.pine.editor.core.AbstractView;
-import com.pine.editor.core.AbstractWindow;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
+import com.pine.editor.core.AbstractView;
+import com.pine.editor.core.AbstractWindow;
 import imgui.ImGui;
 import imgui.flag.ImGuiDir;
 import imgui.internal.ImGuiDockNode;

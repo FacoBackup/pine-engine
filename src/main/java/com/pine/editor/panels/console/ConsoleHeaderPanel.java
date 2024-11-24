@@ -1,7 +1,7 @@
 package com.pine.editor.panels.console;
 
-import com.pine.editor.core.AbstractView;
 import com.pine.common.Icons;
+import com.pine.editor.core.AbstractView;
 import com.pine.editor.util.InMemoryAppender;
 import imgui.ImGui;
 import imgui.type.ImString;

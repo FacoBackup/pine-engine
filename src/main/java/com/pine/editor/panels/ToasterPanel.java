@@ -1,17 +1,17 @@
 package com.pine.editor.panels;
 
-import com.pine.editor.core.AbstractView;
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.Message;
 import com.pine.common.messaging.MessageRepository;
+import com.pine.editor.core.AbstractView;
 import com.pine.editor.service.ThemeService;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiWindowFlags;
 
-import static com.pine.editor.core.UIUtil.OPEN;
 import static com.pine.common.messaging.MessageRepository.MESSAGE_DURATION;
+import static com.pine.editor.core.UIUtil.OPEN;
 
 public class ToasterPanel extends AbstractView {
     private static final int FLAGS = ImGuiWindowFlags.NoDecoration | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings;

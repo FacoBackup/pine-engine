@@ -1,9 +1,9 @@
 package com.pine.engine.service.world;
 
-import com.pine.engine.component.MeshComponent;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.Loggable;
+import com.pine.engine.component.MeshComponent;
 import com.pine.engine.repository.CameraRepository;
 import com.pine.engine.repository.EngineRepository;
 import com.pine.engine.repository.WorldRepository;

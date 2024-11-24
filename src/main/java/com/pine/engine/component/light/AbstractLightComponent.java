@@ -1,9 +1,9 @@
 package com.pine.engine.component.light;
 
-import com.pine.engine.component.AbstractComponent;
-import com.pine.engine.component.ComponentType;
 import com.pine.common.inspection.Color;
 import com.pine.common.inspection.InspectableField;
+import com.pine.engine.component.AbstractComponent;
+import com.pine.engine.component.ComponentType;
 import com.pine.engine.type.LightType;
 
 import java.util.Set;

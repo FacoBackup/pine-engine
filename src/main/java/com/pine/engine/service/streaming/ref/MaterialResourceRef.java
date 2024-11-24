@@ -3,8 +3,8 @@ package com.pine.engine.service.streaming.ref;
 import com.pine.common.inspection.Color;
 import com.pine.engine.repository.streaming.AbstractResourceRef;
 import com.pine.engine.repository.streaming.StreamableResourceType;
-import com.pine.engine.service.streaming.data.MaterialStreamData;
 import com.pine.engine.service.resource.shader.UniformDTO;
+import com.pine.engine.service.streaming.data.MaterialStreamData;
 import com.pine.engine.type.MaterialRenderingMode;
 
 

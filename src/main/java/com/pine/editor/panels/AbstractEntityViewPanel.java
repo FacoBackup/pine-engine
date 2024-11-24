@@ -1,16 +1,16 @@
 package com.pine.editor.panels;
 
-import com.pine.editor.core.dock.AbstractDockPanel;
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.MessageRepository;
 import com.pine.common.messaging.MessageSeverity;
+import com.pine.editor.core.dock.AbstractDockPanel;
 import com.pine.editor.repository.EditorRepository;
-import com.pine.engine.repository.WorldRepository;
 import com.pine.editor.service.SelectionService;
-import com.pine.engine.service.world.WorldService;
+import com.pine.engine.repository.WorldRepository;
 import com.pine.engine.service.rendering.RequestProcessingService;
 import com.pine.engine.service.request.CopyEntitiesRequest;
 import com.pine.engine.service.request.DeleteEntityRequest;
+import com.pine.engine.service.world.WorldService;
 import imgui.ImGui;
 import imgui.extension.imguizmo.ImGuizmo;
 import imgui.flag.ImGuiKey;

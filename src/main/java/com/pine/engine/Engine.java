@@ -2,7 +2,6 @@ package com.pine.engine;
 
 import com.pine.common.MetricCollector;
 import com.pine.common.injection.Disposable;
-import com.pine.engine.injection.EngineExternalModule;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.Loggable;
@@ -10,7 +9,6 @@ import com.pine.engine.repository.RuntimeRepository;
 import com.pine.engine.repository.core.CoreBufferRepository;
 import com.pine.engine.repository.core.CoreMeshRepository;
 import com.pine.engine.repository.core.CoreShaderRepository;
-import com.pine.engine.service.module.EngineModulesService;
 import com.pine.engine.service.resource.fbo.FBO;
 import com.pine.engine.service.system.SystemService;
 import com.pine.engine.tasks.AbstractTask;
@@ -31,8 +29,6 @@ public class Engine extends MetricCollector implements Disposable, Loggable {
     private FBO targetFBO;
 
     @PInject
-    public EngineModulesService modules;
-    @PInject
     public SystemService systemsService;
     @PInject
     public CoreShaderRepository shaderRepository;
@@ -51,7 +47,7 @@ public class Engine extends MetricCollector implements Disposable, Loggable {
     private boolean ready = false;
     private String targetDirectory;
 
-    public void start(int displayW, int displayH, List<EngineExternalModule> modules, String targetDirectory) {
+    public void start(int displayW, int displayH, String targetDirectory) {
         runtimeRepository.setDisplayW(displayW);
         runtimeRepository.setDisplayH(displayH);
         runtimeRepository.setInvDisplayW(1f / displayW);
@@ -66,7 +62,6 @@ public class Engine extends MetricCollector implements Disposable, Loggable {
 
         targetFBO = bufferRepository.gBufferTarget;
 
-        this.modules.addModules(modules);
         tasks.forEach(t -> {
             t.onInitialize();
             t.start();

@@ -1,7 +1,7 @@
 package com.pine.editor.panels.component.impl;
 
-import com.pine.editor.panels.component.AbstractFormField;
 import com.pine.common.inspection.FieldDTO;
+import com.pine.editor.panels.component.AbstractFormField;
 import imgui.ImGui;
 import org.joml.Vector2f;
 

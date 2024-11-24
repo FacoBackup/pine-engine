@@ -1,8 +1,8 @@
 package com.pine.editor.panels.viewport;
 
+import com.pine.common.injection.PInject;
 import com.pine.editor.core.AbstractView;
 import com.pine.editor.panels.viewport.header.ViewportHeaderPanel;
-import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorMode;
 import com.pine.editor.repository.EditorRepository;
 import com.pine.editor.service.ViewportPickingService;

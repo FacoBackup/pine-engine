@@ -1,8 +1,8 @@
 package com.pine.engine.service.system.impl.gbuffer;
 
-import com.pine.engine.service.world.WorldTile;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
+import com.pine.engine.service.world.WorldTile;
 
 public class PrimitiveGBufferPass extends AbstractGBufferPass {
     private UniformDTO renderIndex;

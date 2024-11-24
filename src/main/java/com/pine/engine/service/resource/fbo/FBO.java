@@ -1,7 +1,7 @@
 package com.pine.engine.service.resource.fbo;
 
-import com.pine.engine.EngineUtils;
 import com.pine.engine.service.resource.AbstractEngineResource;
+import com.pine.engine.util.EngineUtils;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;

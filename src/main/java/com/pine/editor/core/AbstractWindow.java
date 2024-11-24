@@ -1,7 +1,7 @@
 package com.pine.editor.core;
 
-import com.pine.editor.core.dock.DockService;
 import com.pine.common.injection.PInject;
+import com.pine.editor.core.dock.DockService;
 import imgui.ImGui;
 import imgui.ImGuiViewport;
 import imgui.ImVec2;

@@ -1,14 +1,14 @@
 package com.pine.editor.panels.component.impl;
 
+import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
 import com.pine.common.inspection.FieldDTO;
-import com.pine.engine.inspection.ResourceTypeField;
 import com.pine.editor.panels.component.AbstractFormField;
 import com.pine.editor.repository.FSEntry;
 import com.pine.editor.repository.FilesRepository;
+import com.pine.engine.inspection.ResourceTypeField;
 import com.pine.engine.repository.streaming.StreamableResourceType;
 import com.pine.engine.repository.streaming.StreamingRepository;
-import com.pine.common.Icons;
 import imgui.ImGui;
 import imgui.type.ImInt;
 

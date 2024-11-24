@@ -1,11 +1,11 @@
 package com.pine.editor.panels.header;
 
+import com.pine.common.Icons;
+import com.pine.common.injection.PInject;
 import com.pine.editor.core.AbstractView;
 import com.pine.editor.core.UIUtil;
-import com.pine.common.injection.PInject;
 import com.pine.editor.repository.EditorRepository;
 import com.pine.editor.service.ProjectService;
-import com.pine.common.Icons;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiInputTextFlags;

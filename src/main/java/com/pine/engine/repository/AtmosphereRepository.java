@@ -1,5 +1,6 @@
 package com.pine.engine.repository;
 
+import com.pine.common.Icons;
 import com.pine.common.SerializableRepository;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
@@ -8,7 +9,6 @@ import com.pine.common.inspection.ExecutableField;
 import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.InspectableField;
 import com.pine.engine.service.environment.EnvironmentMapGenService;
-import com.pine.common.Icons;
 import com.pine.engine.type.AtmosphereType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

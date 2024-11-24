@@ -1,16 +1,16 @@
 package com.pine.engine.service.streaming;
 
-import com.pine.engine.Engine;
 import com.pine.common.injection.Disposable;
 import com.pine.common.injection.PBean;
 import com.pine.common.injection.PInject;
 import com.pine.common.messaging.Loggable;
+import com.pine.engine.Engine;
 import com.pine.engine.repository.ClockRepository;
 import com.pine.engine.repository.streaming.AbstractResourceRef;
 import com.pine.engine.repository.streaming.StreamableResourceType;
 import com.pine.engine.repository.streaming.StreamingRepository;
-import com.pine.engine.service.streaming.ref.TextureResourceRef;
 import com.pine.engine.service.streaming.impl.TextureService;
+import com.pine.engine.service.streaming.ref.TextureResourceRef;
 import com.pine.engine.tasks.SyncTask;
 
 import java.util.Collections;
