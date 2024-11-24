@@ -1,7 +1,7 @@
 package com.pine.service.system.impl;
 
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.VoxelChunkResourceRef;
@@ -10,7 +10,7 @@ import org.joml.Vector3i;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
-import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
+import static com.pine.service.resource.shader.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class VoxelVisualizerPass extends AbstractPass {
     private static final int LOCAL_SIZE_X = 8;
@@ -66,7 +66,7 @@ public class VoxelVisualizerPass extends AbstractPass {
     }
 
     private void bindGlobal() {
-        FrameBufferObject fbo = bufferRepository.postProcessingBuffer;
+        FBO fbo = bufferRepository.postProcessingBuffer;
         fbo.bindForWriting();
 
         COMPUTE_RUNTIME_DATA.groupX = (fbo.width + LOCAL_SIZE_X - 1) / LOCAL_SIZE_X;

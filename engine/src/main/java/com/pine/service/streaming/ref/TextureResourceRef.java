@@ -2,7 +2,7 @@ package com.pine.service.streaming.ref;
 
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.streaming.data.TextureStreamData;
 import org.lwjgl.opengl.GL46;
 import org.lwjgl.opengl.GL46C;
@@ -16,7 +16,7 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
     public int internalFormat;
     public int format;
     public int type;
-    public FrameBufferObject frameBuffer;
+    public FBO frameBuffer;
 
     public TextureResourceRef(String id) {
         super(id);

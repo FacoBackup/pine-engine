@@ -1,28 +1,20 @@
 package com.pine.service.resource.ubo;
 
-import com.pine.service.resource.IResource;
-import com.pine.service.resource.UBOService;
+import com.pine.service.resource.AbstractEngineResource;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class UniformBufferObject implements IResource {
+public class UBO extends AbstractEngineResource {
     private static int blockPointIncrement = 0;
 
-    private final List<UBOItem> items = new ArrayList<>();
-    private final List<String> keys = new ArrayList<>();
     private final int buffer;
     private final String blockName;
     private final int blockPoint;
 
-    public UniformBufferObject(UBOCreationData dto) {
+    public UBO(UBOCreationData dto) {
         int bufferSize = UBOService.calculateAllocation(dto.data());
-        for (int i = 0; i < dto.data().size(); i++) {
-            UBOData data = dto.data().get(i);
-            items.add(new UBOItem(data.getOffset(), data.getDataSize(), data.getChunkSize()));
-            keys.add(data.getName());
-        }
 
         this.blockName = dto.blockName();
         this.blockPoint = blockPointIncrement++;
@@ -35,18 +27,6 @@ public class UniformBufferObject implements IResource {
 
     public int getBuffer() {
         return buffer;
-    }
-
-    public static int getBlockPointIncrement() {
-        return blockPointIncrement;
-    }
-
-    public List<UBOItem> getItems() {
-        return items;
-    }
-
-    public List<String> getKeys() {
-        return keys;
     }
 
     public String getBlockName() {

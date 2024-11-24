@@ -1,14 +1,14 @@
 package com.pine.service.resource.fbo;
 
 import com.pine.EngineUtils;
-import com.pine.service.resource.IResource;
+import com.pine.service.resource.AbstractEngineResource;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FrameBufferObject implements IResource {
+public class FBO extends AbstractEngineResource {
     public final int width;
     public final int height;
     private final int FBO;
@@ -21,7 +21,7 @@ public class FrameBufferObject implements IResource {
     private int mainSampler;
     private int mainSamplerPrecision;
 
-    public FrameBufferObject(int width, int height) {
+    public FBO(int width, int height) {
         this.width = width;
         this.height = height;
         this.resolution[0] = width;
@@ -57,7 +57,7 @@ public class FrameBufferObject implements IResource {
         return samplers;
     }
 
-    public FrameBufferObject depthTexture() {
+    public com.pine.service.resource.fbo.FBO depthTexture() {
         use();
         this.depthSampler = EngineUtils.createTexture(
                 this.width,
@@ -86,7 +86,7 @@ public class FrameBufferObject implements IResource {
         return this;
     }
 
-    public FrameBufferObject depthTest() {
+    public com.pine.service.resource.fbo.FBO depthTest() {
         use();
         this.RBO = GL46.glGenRenderbuffers();
         GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, this.RBO);
@@ -96,17 +96,17 @@ public class FrameBufferObject implements IResource {
         return this;
     }
 
-    public FrameBufferObject addSampler() {
+    public com.pine.service.resource.fbo.FBO addSampler() {
         addSampler(this.width, this.height, 0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false);
         return this;
     }
 
-    public FrameBufferObject addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    public com.pine.service.resource.fbo.FBO addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         addSampler(this.width, this.height, attachment, precision, format, type, linear, repeat);
         return this;
     }
 
-    private FrameBufferObject addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    private com.pine.service.resource.fbo.FBO addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         use();
         int texture = getTexture(w, h, precision, format, type, linear, repeat);
         registerTexture(attachment, precision, texture);

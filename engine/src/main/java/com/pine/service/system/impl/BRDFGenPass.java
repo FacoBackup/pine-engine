@@ -1,6 +1,6 @@
 package com.pine.service.system.impl;
 
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.system.AbstractPass;
 
@@ -19,7 +19,7 @@ public class BRDFGenPass extends AbstractPass {
     }
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.brdfFBO;
     }
 

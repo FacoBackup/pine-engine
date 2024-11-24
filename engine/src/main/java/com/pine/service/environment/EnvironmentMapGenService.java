@@ -13,8 +13,10 @@ import com.pine.repository.streaming.StreamingRepository;
 import com.pine.service.camera.Camera;
 import com.pine.service.grid.WorldService;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.resource.ShaderService;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBOCreationData;
+import com.pine.service.resource.fbo.FBOService;
+import com.pine.service.resource.shader.ShaderService;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.streaming.impl.CubeMapFace;
 import com.pine.service.streaming.impl.TextureService;
 import org.joml.Vector3f;
@@ -30,6 +32,9 @@ public class EnvironmentMapGenService implements Loggable {
 
     @PInject
     public EngineRepository engineRepository;
+
+    @PInject
+    public FBOService fboService;
 
     @PInject
     public ImporterService importerService;
@@ -83,12 +88,12 @@ public class EnvironmentMapGenService implements Loggable {
     private void capture(String resourceId, Vector3f cameraPosition) {
         getLogger().warn("Baking probe {} at position X{} Y{} Z{}", resourceId, cameraPosition.x, cameraPosition.y, cameraPosition.z);
         int baseResolution = engineRepository.probeCaptureResolution;
-        var fbo = new FrameBufferObject(baseResolution, baseResolution).addSampler();
+        var fbo = fboService.create(new FBOCreationData(baseResolution, baseResolution, false, false).addSampler());
         engine.setTargetFBO(fbo);
         for (int i = 0; i < CubeMapFace.values().length; i++) {
             generate(i, resourceId, cameraPosition);
         }
-        fbo.dispose();
+        fboService.dispose(fbo);
     }
 
     private void generate(int index, String resourceId, Vector3f cameraPosition) {

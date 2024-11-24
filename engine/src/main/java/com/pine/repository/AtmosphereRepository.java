@@ -28,8 +28,17 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @InspectableField(label = "Render atmosphere")
     public boolean enabled = false;
 
-    @InspectableField(label = "Render shadows")
-    public boolean shadows;
+    @InspectableField(group = "Shadows", label = "Enabled")
+    public boolean shadows = true;
+
+    @InspectableField(group = "Shadows", label = "View size")
+    public float shadowsViewSize = 10;
+
+    @InspectableField(group = "Shadows", label = "Far plane")
+    public float shadowsFarPlane = 100000;
+
+    @InspectableField(group = "Shadows", label = "Near plane")
+    public float shadowsNearPlane = .1f;
 
     @InspectableField(group = "Time", label = "Elapsed time")
     public float elapsedTime = .5f;

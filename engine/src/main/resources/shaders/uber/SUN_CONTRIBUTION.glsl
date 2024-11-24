@@ -36,10 +36,7 @@ float sampleSoftShadows(vec2 coord, float compare, sampler2D shadowMapTexture, f
     return response/SAMPLES_SQUARED;
 }
 
-float directionalLightShadows(float distanceFromCamera, float shadowFalloffDistance, float bias, vec4 lightSpacePosition, vec2 faceOffset, sampler2D shadowMapTexture, float shadowMapsQuantity, float shadowMapResolution, float pcfSamples){
-    float attenuation = clamp(mix(1., 0., shadowFalloffDistance - distanceFromCamera), 0., 1.);
-    if (attenuation == 1.) return 1.;
-
+float directionalLightShadows(float bias, vec4 lightSpacePosition, sampler2D shadowMapTexture, float shadowMapResolution, float pcfSamples){
     float response = 1.0;
     vec3 pos = (lightSpacePosition.xyz / lightSpacePosition.w)* 0.5 + 0.5;
 
@@ -47,10 +44,10 @@ float directionalLightShadows(float distanceFromCamera, float shadowFalloffDista
     pos.z = 1.0;
 
     float compare = pos.z - bias;
-
-    response = sampleSoftShadows(vec2(pos.x/shadowMapsQuantity + faceOffset.x/shadowMapsQuantity, pos.y/shadowMapsQuantity + faceOffset.y/shadowMapsQuantity), compare, shadowMapTexture, shadowMapResolution, pcfSamples);
-    if (response < 1.)
-    return min(1., response + attenuation);
+    response = sampleSoftShadows(pos.xy, compare, shadowMapTexture, shadowMapResolution, pcfSamples);
+    if (response < 1.){
+        return min(1., response);
+    }
     return response;
 }
 
@@ -58,9 +55,8 @@ vec3 computeDirectionalLight(bool useScreenSpaceShadows){
     vec4 baseContribution = precomputeContribution(sunLightDirection.xyz);
     if (baseContribution.a == 0.) return vec3(0.);
 
-    float shadows = 1.;
-//    vec4 lightSpacePosition  = info.viewProjection * vec4(worldSpacePosition, 1.0);
-//    shadows = directionalLightShadows(distanceFromCamera, info.shadowAttenuationMinDistance, info.shadowBias, lightSpacePosition, info.atlasFace, shadowAtlas, shadowMapsQuantity, shadowMapResolution, pcfSamples);
+    vec4 lightSpacePosition  = lightSpaceMatrix * vec4(sunLightDirection.xyz, 1.0);
+    float shadows = directionalLightShadows(.01, lightSpacePosition, sunShadows, sunShadowsResolution, 2);
     if (shadows == 0.) {
         return vec3(0.);
     }
@@ -69,5 +65,5 @@ vec3 computeDirectionalLight(bool useScreenSpaceShadows){
     if (occlusion == 0.){
         return vec3(0.);
     }
-    return computeBRDF(baseContribution.rgb, baseContribution.a, sunLightColor);
+    return computeBRDF(baseContribution.rgb, baseContribution.a, sunLightColor.rgb);
 }

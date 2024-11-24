@@ -8,7 +8,9 @@ import com.pine.repository.EditorRepository;
 import com.pine.repository.RuntimeRepository;
 import com.pine.service.camera.Camera;
 import com.pine.service.camera.CameraMovementService;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FBOCreationData;
+import com.pine.service.resource.fbo.FBOService;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImVec2;
@@ -36,14 +38,17 @@ public abstract class AbstractViewportPanel extends AbstractEntityViewPanel {
     @PInject
     public CameraMovementService cameraMovementService;
 
-    private FrameBufferObject fbo;
+    @PInject
+    public FBOService fboService;
+
+    private FBO fbo;
     protected final ImVec2 sizeVec = new ImVec2();
     private boolean isFirstMovement;
     protected ImGuiIO io;
 
     @Override
     public void onInitialize() {
-        this.fbo = new FrameBufferObject(engine.runtimeRepository.getDisplayW(), engine.runtimeRepository.getDisplayH()).addSampler();
+        this.fbo = fboService.create(new FBOCreationData(engine.runtimeRepository.getDisplayW(), engine.runtimeRepository.getDisplayH(), false, false).addSampler());
         io = ImGui.getIO();
     }
 

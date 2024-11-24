@@ -10,4 +10,6 @@ uniform GlobalData{
     float timeOfDay;
     vec4 sunLightDirection;
     vec3 sunLightColor;
+    float sunShadowsResolution;
+    mat4 lightSpaceMatrix;
 };

@@ -1,9 +1,9 @@
 package com.pine.service.system.impl;
 
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
+import com.pine.service.resource.fbo.FBOCreationData;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.AbstractPass;
-import org.lwjgl.opengl.GL46;
 
 public class ShadowsPass extends AbstractPass {
     private long sinceLastRun;
@@ -12,15 +12,10 @@ public class ShadowsPass extends AbstractPass {
     private UniformDTO tilesScaleTranslation;
     private UniformDTO heightScale;
     private UniformDTO terrainOffset;
-    private UniformDTO lightSpaceMatrixTerrain;
-    private UniformDTO lightSpaceMatrixPrimitive;
 
     @Override
     public void onInitialize() {
         modelMatrix = shaderRepository.shadowsPrimitiveShader.addUniformDeclaration("modelMatrix");
-        lightSpaceMatrixPrimitive = shaderRepository.shadowsPrimitiveShader.addUniformDeclaration("lightSpaceMatrix");
-
-        lightSpaceMatrixTerrain = shaderRepository.shadowsTerrainShader.addUniformDeclaration("lightSpaceMatrix");
         textureSize = shaderRepository.shadowsTerrainShader.addUniformDeclaration("textureSize");
         terrainOffset = shaderRepository.shadowsTerrainShader.addUniformDeclaration("terrainOffset");
         tilesScaleTranslation = shaderRepository.shadowsTerrainShader.addUniformDeclaration("tilesScaleTranslation");
@@ -29,19 +24,19 @@ public class ShadowsPass extends AbstractPass {
 
     @Override
     protected boolean isRenderable() {
-        if(bufferRepository.shadowsBuffer == null || bufferRepository.shadowsBuffer.width != engineRepository.worldShadowsResolution){
-            if(bufferRepository.shadowsBuffer != null){
-                bufferRepository.shadowsBuffer.dispose();
+        if (bufferRepository.shadowsBuffer == null || bufferRepository.shadowsBuffer.width != engineRepository.sunShadowsResolution) {
+            if (bufferRepository.shadowsBuffer != null) {
+                fboService.dispose(bufferRepository.shadowsBuffer);
             }
 
-            bufferRepository.shadowsBuffer = new FrameBufferObject(engineRepository.worldShadowsResolution, engineRepository.worldShadowsResolution).depthTexture();
+            bufferRepository.shadowsBuffer = fboService.create(new FBOCreationData(engineRepository.sunShadowsResolution, engineRepository.sunShadowsResolution, true, true));
             bufferRepository.shadowsSampler = bufferRepository.shadowsBuffer.depthTest().getDepthSampler();
         }
-        return (clockRepository.totalTime - sinceLastRun) >= engineRepository.shadowsEveryMs;
+        return (clockRepository.totalTime - sinceLastRun) >= engineRepository.updateSunShadowsEvery;
     }
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.shadowsBuffer;
     }
 
@@ -49,9 +44,8 @@ public class ShadowsPass extends AbstractPass {
     protected void renderInternal() {
         sinceLastRun = clockRepository.totalTime;
 
-        if(atmosphere.shadows) {
+        if (atmosphere.shadows) {
             shaderService.bind(shaderRepository.shadowsTerrainShader);
-            shaderService.bindMat4(atmosphere.lightSpaceMatrix, lightSpaceMatrixTerrain);
             meshService.renderTerrain(textureSize, terrainOffset, heightScale, tilesScaleTranslation);
         }
     }

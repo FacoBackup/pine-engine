@@ -12,10 +12,11 @@ import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.terrain.TerrainRepository;
 import com.pine.service.grid.WorldService;
 import com.pine.service.importer.ImporterService;
-import com.pine.service.resource.SSBOService;
-import com.pine.service.resource.ShaderService;
-import com.pine.service.resource.UBOService;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBOService;
+import com.pine.service.resource.ssbo.SSBOService;
+import com.pine.service.resource.shader.ShaderService;
+import com.pine.service.resource.ubo.UBOService;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.StreamingService;
@@ -26,6 +27,8 @@ import com.pine.service.streaming.impl.TextureService;
 public abstract class AbstractPass extends MetricCollector {
     @PInject
     public AtmosphereRepository atmosphere;
+    @PInject
+    public FBOService fboService;
     @PInject
     public WorldRepository world;
     @PInject
@@ -80,7 +83,7 @@ public abstract class AbstractPass extends MetricCollector {
             endTracking();
             return;
         }
-        FrameBufferObject fbo = getTargetFBO();
+        FBO fbo = getTargetFBO();
         shaderService.bind(getShader());
         if (fbo != null) {
             fbo.startMapping(shouldClearFBO());
@@ -93,7 +96,7 @@ public abstract class AbstractPass extends MetricCollector {
         endTracking();
     }
 
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return null;
     }
 

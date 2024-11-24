@@ -1,13 +1,13 @@
 package com.pine.service.resource.shader;
 
 import com.pine.GLSLVersion;
-import com.pine.service.resource.IResource;
+import com.pine.service.resource.AbstractEngineResource;
 import org.lwjgl.opengl.GL46;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Shader implements IResource {
+public class Shader extends AbstractEngineResource {
     private int program;
     private final Map<String, UniformDTO> uniforms = new HashMap<>();
     private boolean valid = true;

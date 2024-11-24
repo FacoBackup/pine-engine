@@ -1,8 +1,10 @@
 package com.pine.service.resource.ubo;
 
+import com.pine.service.resource.IResourceCreationData;
+
 import java.util.List;
 
-public class UBOCreationData  {
+public class UBOCreationData implements IResourceCreationData {
     private final List<UBOData> data;
     private final String blockName;
 

@@ -4,28 +4,19 @@ import com.pine.Engine;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.service.importer.data.MeshImportData;
+import com.pine.service.module.Initializable;
 import com.pine.service.streaming.ref.MeshResourceRef;
 
 @PBean
-public class CoreMeshRepository implements CoreRepository {
+public class CoreMeshRepository implements Initializable {
     @PInject
     public Engine engine;
 
-    public MeshResourceRef planeMesh;
     public MeshResourceRef quadMesh;
     public MeshResourceRef cubeMesh;
 
     @Override
-    public void initialize() {
-        planeMesh = new MeshResourceRef("");
-        planeMesh.load(new MeshImportData(
-                null,
-                new float[]{-1, 0, 1, 1, 0, 1, -1, 0, -1, 1, 0, -1},
-                new int[]{0, 1, 3, 0, 3, 2},
-                null,
-                null
-        ));
-
+    public void onInitialize() {
         cubeMesh = new MeshResourceRef("");
         cubeMesh.load(new MeshImportData(
                 null,
@@ -43,12 +34,5 @@ public class CoreMeshRepository implements CoreRepository {
                 null,
                 null
         ));
-    }
-
-    @Override
-    public void dispose() {
-        quadMesh.dispose();
-        planeMesh.dispose();
-        cubeMesh.dispose();
     }
 }

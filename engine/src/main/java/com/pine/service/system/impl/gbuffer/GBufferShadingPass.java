@@ -1,6 +1,6 @@
 package com.pine.service.system.impl.gbuffer;
 
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.impl.AbstractQuadPass;
@@ -20,7 +20,7 @@ public class GBufferShadingPass extends AbstractQuadPass {
     private UniformDTO screenSpaceShadows;
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.gBufferTarget;
     }
 
@@ -69,7 +69,7 @@ public class GBufferShadingPass extends AbstractQuadPass {
         shaderService.bindSampler2dDirect(bufferRepository.gBufferMaterialSampler, 3);
         shaderService.bindSampler2dDirect(bufferRepository.brdfSampler, 4);
         shaderService.bindSampler2dDirect(bufferRepository.ssaoBlurredSampler, 5);
-//        shaderService.bindSampler2dDirect(fboRepository.ssgiSampler, 6);
+        shaderService.bindSampler2dDirect(bufferRepository.shadowsSampler, 6);
         shaderService.bindSampler2dDirect(bufferRepository.postProcessingSampler, 7);
         shaderService.bindSampler2dDirect(bufferRepository.gBufferDepthIndexSampler, 8);
         shaderService.bindSampler2dDirect(bufferRepository.gBufferIndirectSampler, 9);

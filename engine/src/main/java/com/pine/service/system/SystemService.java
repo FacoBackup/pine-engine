@@ -3,12 +3,13 @@ package com.pine.service.system;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
 import com.pine.injection.PInjector;
+import com.pine.service.module.Initializable;
 import com.pine.service.system.impl.*;
 import com.pine.service.system.impl.gbuffer.*;
 import com.pine.tasks.SyncTask;
 
 @PBean
-public class SystemService implements SyncTask {
+public class SystemService implements SyncTask, Initializable {
     @PInject
     public PInjector pInjector;
 
@@ -47,8 +48,8 @@ public class SystemService implements SyncTask {
         }
     }
 
-
-    public void initialize() {
+    @Override
+    public void onInitialize() {
         for (var sys : systems) {
             pInjector.inject(sys);
             sys.onInitialize();

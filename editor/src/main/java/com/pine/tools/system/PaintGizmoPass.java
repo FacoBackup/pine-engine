@@ -16,7 +16,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
-import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
+import static com.pine.service.resource.shader.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class PaintGizmoPass extends AbstractPass implements Loggable {
     private static final int LOCAL_SIZE_X = 8;

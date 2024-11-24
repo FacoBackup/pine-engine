@@ -1,8 +1,10 @@
 package com.pine.service.resource.ssbo;
 
+import com.pine.service.resource.IResourceCreationData;
+
 import java.nio.Buffer;
 
-public final class SSBOCreationData  {
+public final class SSBOCreationData implements IResourceCreationData {
     private final int bindingPoint;
     private Buffer data;
     private long expectedSize;

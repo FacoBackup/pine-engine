@@ -10,7 +10,7 @@ import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.repository.streaming.StreamingRepository;
 import com.pine.repository.terrain.TerrainChunk;
 import com.pine.repository.terrain.TerrainRepository;
-import com.pine.service.resource.ShaderService;
+import com.pine.service.resource.shader.ShaderService;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.StreamingService;
 import com.pine.service.streaming.data.StreamData;

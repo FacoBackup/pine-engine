@@ -2,7 +2,7 @@ package com.pine.service.system.impl.gbuffer;
 
 import com.pine.repository.ShadingMode;
 import com.pine.repository.rendering.RenderingMode;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.MaterialResourceRef;
 import com.pine.service.system.AbstractPass;
@@ -51,7 +51,7 @@ public abstract class AbstractGBufferPass extends AbstractPass {
     }
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.gBuffer;
     }
 

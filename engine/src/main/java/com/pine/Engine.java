@@ -1,15 +1,16 @@
 package com.pine;
 
+import com.pine.injection.Disposable;
 import com.pine.injection.EngineExternalModule;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
+import com.pine.messaging.Loggable;
 import com.pine.repository.RuntimeRepository;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.core.CoreMeshRepository;
 import com.pine.repository.core.CoreShaderRepository;
 import com.pine.service.module.EngineModulesService;
-import com.pine.service.resource.IResource;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.system.SystemService;
 import com.pine.tasks.AbstractTask;
 import com.pine.tasks.SyncTask;
@@ -23,10 +24,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @PBean
-public class Engine extends MetricCollector implements IResource {
+public class Engine extends MetricCollector implements Disposable, Loggable {
     public static final float PI_OVER_2 = (float) (Math.PI / 2);
     public static final int MAX_LIGHTS = 310;
-    private FrameBufferObject targetFBO;
+    private FBO targetFBO;
 
     @PInject
     public EngineModulesService modules;
@@ -40,6 +41,8 @@ public class Engine extends MetricCollector implements IResource {
     public CoreMeshRepository primitiveRepository;
     @PInject
     public RuntimeRepository runtimeRepository;
+    @PInject
+    public List<Disposable> disposables;
     @PInject
     public List<SyncTask> syncTasks;
     @PInject
@@ -55,10 +58,10 @@ public class Engine extends MetricCollector implements IResource {
 
         setupGL();
 
-        primitiveRepository.initialize();
-        bufferRepository.initialize();
-        shaderRepository.initialize();
-        systemsService.initialize();
+        primitiveRepository.onInitialize();
+        bufferRepository.onInitialize();
+        shaderRepository.onInitialize();
+        systemsService.onInitialize();
 
         targetFBO = bufferRepository.gBufferTarget;
 
@@ -105,7 +108,7 @@ public class Engine extends MetricCollector implements IResource {
             return;
         }
         startTracking();
-        for (FrameBufferObject fbo : bufferRepository.all) {
+        for (FBO fbo : bufferRepository.all) {
             fbo.clear();
         }
 
@@ -120,11 +123,11 @@ public class Engine extends MetricCollector implements IResource {
         MetricCollector.shouldCollect = false;
     }
 
-    public void setTargetFBO(@NotNull FrameBufferObject fbo) {
+    public void setTargetFBO(@NotNull FBO fbo) {
         this.targetFBO = fbo;
     }
 
-    public FrameBufferObject getTargetFBO() {
+    public FBO getTargetFBO() {
         return targetFBO;
     }
 
@@ -143,9 +146,6 @@ public class Engine extends MetricCollector implements IResource {
 
     @Override
     public void dispose() {
-        shaderRepository.dispose();
-        bufferRepository.dispose();
-        primitiveRepository.dispose();
+        disposables.forEach(Disposable::dispose);
     }
-
 }

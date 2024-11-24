@@ -1,30 +1,23 @@
 package com.pine.service.resource.fbo;
 
+import com.pine.service.resource.IResourceCreationData;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FBOCreationData  {
-
+public class FBOCreationData implements IResourceCreationData {
     private final List<FBOTextureData> colors = new ArrayList<>();
     private boolean depthTexture;
     private boolean depthTest;
     private final Integer w;
     private final Integer h;
 
-    public FBOCreationData(boolean depthTexture, boolean depthTest) {
+    public FBOCreationData(int w, int h, boolean depthTexture, boolean depthTest) {
         this.depthTexture = depthTexture;
         this.depthTest = depthTest;
-        this.w = null;
-        this.h = null;
-    }
-
-    public FBOCreationData(int w, int h) {
         this.w = w;
         this.h = h;
-        this.depthTexture = false;
-        this.depthTest = false;
     }
 
     public Integer getW() {
@@ -43,13 +36,8 @@ public class FBOCreationData  {
         return depthTexture;
     }
 
-    public FBOCreationData addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
-        colors.add(new FBOTextureData(w, h, attachment, precision, format, type, linear, repeat));
-        return this;
-    }
-
     public FBOCreationData addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
-        colors.add(new FBOTextureData(null, null, attachment, precision, format, type, linear, repeat));
+        colors.add(new FBOTextureData(attachment, precision, format, type, linear, repeat));
         return this;
     }
 

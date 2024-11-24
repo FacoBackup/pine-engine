@@ -1,22 +1,26 @@
-package com.pine.service.resource;
+package com.pine.service.resource.ubo;
 
 import com.pine.injection.PBean;
+import com.pine.service.resource.AbstractResourceService;
 import com.pine.service.resource.shader.GLSLType;
-import com.pine.service.resource.ubo.UBOData;
-import com.pine.service.resource.ubo.UniformBufferObject;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 import java.util.List;
 
 @PBean
-public class UBOService extends AbstractResourceService<UniformBufferObject> {
-    private UniformBufferObject currentUBO;
+public class UBOService extends AbstractResourceService<UBO, UBOCreationData> {
+    private UBO currentUBO;
 
     @Override
-    public void bind(UniformBufferObject instance) {
+    public void bind(UBO instance) {
         currentUBO = instance;
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
+    }
+
+    @Override
+    protected UBO createInternal(UBOCreationData data) {
+        return new UBO(data);
     }
 
     @Override
@@ -24,7 +28,7 @@ public class UBOService extends AbstractResourceService<UniformBufferObject> {
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, GL46.GL_NONE);
     }
 
-    public void bindWithShader(UniformBufferObject ubo, int shaderProgram) {
+    public void bindWithShader(UBO ubo, int shaderProgram) {
         bind(ubo);
         GL46.glUseProgram(shaderProgram);
         int index = GL46.glGetUniformBlockIndex(shaderProgram, currentUBO.getBlockName());
@@ -32,7 +36,7 @@ public class UBOService extends AbstractResourceService<UniformBufferObject> {
         unbind();
     }
 
-    public void updateBuffer(UniformBufferObject ubo, FloatBuffer data, int offset) {
+    public void updateBuffer(UBO ubo, FloatBuffer data, int offset) {
         currentUBO = ubo;
         GL46.glBindBuffer(GL46.GL_UNIFORM_BUFFER, currentUBO.getBuffer());
         GL46.glBufferSubData(GL46.GL_UNIFORM_BUFFER, offset, data);
@@ -74,7 +78,6 @@ public class UBOService extends AbstractResourceService<UniformBufferObject> {
 
             data.setOffset(offset);
             data.setChunkSize(size[1]);
-            data.setDataSize(size[1]);
 
             offset += size[1];
         }

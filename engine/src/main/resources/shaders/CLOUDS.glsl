@@ -201,5 +201,5 @@ vec4 computeClouds(vec3 rayDir){
         }
         dstTravelled += stepSize;
     }
-    return vec4(lightEnergy * sunLightColor, 1 - transmittance);
+    return vec4(lightEnergy * sunLightColor.rgb, 1 - transmittance);
 }

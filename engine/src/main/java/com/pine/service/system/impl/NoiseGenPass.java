@@ -1,6 +1,6 @@
 package com.pine.service.system.impl;
 
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import org.joml.Vector3f;
@@ -16,7 +16,7 @@ public class NoiseGenPass extends AbstractQuadPass {
     }
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.windNoiseBuffer;
     }
 

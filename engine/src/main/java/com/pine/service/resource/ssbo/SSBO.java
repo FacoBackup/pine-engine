@@ -1,18 +1,18 @@
 package com.pine.service.resource.ssbo;
 
-import com.pine.service.resource.IResource;
+import com.pine.service.resource.AbstractEngineResource;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-public class ShaderStorageBufferObject implements IResource {
+public class SSBO extends AbstractEngineResource {
 
     private int bindingPoint;
     private final int buffer;
 
-    public ShaderStorageBufferObject(SSBOCreationData dto) {
+    public SSBO(SSBOCreationData dto) {
         buffer = GL46.glCreateBuffers();
         GL46.glBindBuffer(GL46.GL_SHADER_STORAGE_BUFFER, buffer);
         if (dto.getData() != null) {

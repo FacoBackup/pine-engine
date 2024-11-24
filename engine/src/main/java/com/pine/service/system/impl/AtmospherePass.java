@@ -1,13 +1,13 @@
 package com.pine.service.system.impl;
 
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.streaming.ref.TextureResourceRef;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
-import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
+import static com.pine.service.resource.shader.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class AtmospherePass extends AbstractQuadPass {
     private static final int NUM_THREADS = 8;
@@ -81,7 +81,7 @@ public class AtmospherePass extends AbstractQuadPass {
     }
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.auxBufferQuaterRes;
     }
 

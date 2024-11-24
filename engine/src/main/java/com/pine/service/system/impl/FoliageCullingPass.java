@@ -12,11 +12,8 @@ import com.pine.service.system.AbstractPass;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
-import org.lwjgl.system.MemoryUtil;
 
-import java.nio.ByteBuffer;
-
-import static com.pine.service.resource.ShaderService.COMPUTE_RUNTIME_DATA;
+import static com.pine.service.resource.shader.ShaderService.COMPUTE_RUNTIME_DATA;
 
 public class FoliageCullingPass extends AbstractPass {
     private TextureResourceRef heightMap;

@@ -1,6 +1,6 @@
 package core.service.resource;
 
-import com.pine.service.resource.ShaderService;
+import com.pine.service.resource.shader.ShaderService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

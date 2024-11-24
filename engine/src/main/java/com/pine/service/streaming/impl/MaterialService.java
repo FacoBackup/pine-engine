@@ -7,7 +7,7 @@ import com.pine.repository.ClockRepository;
 import com.pine.repository.streaming.AbstractResourceRef;
 import com.pine.repository.streaming.StreamableResourceType;
 import com.pine.service.importer.data.MaterialImportData;
-import com.pine.service.resource.ShaderService;
+import com.pine.service.resource.shader.ShaderService;
 import com.pine.service.streaming.data.MaterialStreamData;
 import com.pine.service.streaming.data.StreamData;
 import com.pine.service.streaming.ref.MaterialResourceRef;

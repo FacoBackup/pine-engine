@@ -6,9 +6,8 @@ public class UBOData {
     private final String name;
     private final GLSLType type;
     private Integer offset;
-    private Integer dataSize;
     private Integer chunkSize;
-    private Integer dataLength;
+    private final Integer dataLength;
 
     public UBOData(String name, GLSLType type) {
         this(name, type, null);
@@ -36,14 +35,6 @@ public class UBOData {
         this.offset = offset;
     }
 
-    public Integer getDataSize() {
-        return dataSize;
-    }
-
-    public void setDataSize(Integer dataSize) {
-        this.dataSize = dataSize;
-    }
-
     public Integer getChunkSize() {
         return chunkSize;
     }
@@ -54,9 +45,5 @@ public class UBOData {
 
     public Integer getDataLength() {
         return dataLength;
-    }
-
-    public void setDataLength(Integer dataLength) {
-        this.dataLength = dataLength;
     }
 }

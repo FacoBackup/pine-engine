@@ -1,11 +1,9 @@
 package com.pine.tasks;
 
+import com.pine.EngineUtils;
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.repository.AtmosphereRepository;
-import com.pine.repository.CameraRepository;
-import com.pine.repository.ClockRepository;
-import com.pine.repository.WorldRepository;
+import com.pine.repository.*;
 import com.pine.repository.core.CoreBufferRepository;
 import com.pine.repository.rendering.RenderingRepository;
 import com.pine.repository.streaming.StreamableResourceType;
@@ -62,6 +60,9 @@ public class RenderingTask extends AbstractTask {
     @PInject
     public TerrainRepository terrainRepository;
 
+    @PInject
+    public EngineRepository engineRepository;
+
     @Override
     protected void tickInternal() {
         if (renderingRepository.infoUpdated) {
@@ -97,7 +98,7 @@ public class RenderingTask extends AbstractTask {
                     .length();
 
             int divider = 1;
-            for(int i = 0; i < Math.min(5, distance); i++) {
+            for (int i = 0; i < Math.min(5, distance); i++) {
                 divider *= 2;
             }
 
@@ -139,8 +140,15 @@ public class RenderingTask extends AbstractTask {
         if (atmosphere.incrementTime) {
             atmosphere.elapsedTime += .0005f * atmosphere.elapsedTimeSpeed;
         }
+
         Vector3f sunLightDirection = new Vector3f((float) Math.sin(atmosphere.elapsedTime), (float) Math.cos(atmosphere.elapsedTime), 0).mul(atmosphere.sunDistance);
         Vector3f sunLightColor = computeSunlightColor(sunLightDirection);
+
+        if (atmosphere.shadows) {
+            atmosphere.lightProjectionMatrix.ortho(-atmosphere.shadowsViewSize, atmosphere.shadowsViewSize, -atmosphere.shadowsViewSize, atmosphere.shadowsViewSize, atmosphere.shadowsNearPlane, atmosphere.shadowsFarPlane);
+            atmosphere.lightViewMatrix.lookAt(sunLightDirection, new Vector3f(0), new Vector3f(0, 1, 0));
+            atmosphere.lightSpaceMatrix.set(atmosphere.lightViewMatrix).mul(atmosphere.lightProjectionMatrix);
+        }
 
         bufferRepository.globalDataBuffer.put(87, atmosphere.elapsedTime);
 
@@ -152,6 +160,10 @@ public class RenderingTask extends AbstractTask {
         bufferRepository.globalDataBuffer.put(92, sunLightColor.x);
         bufferRepository.globalDataBuffer.put(93, sunLightColor.y);
         bufferRepository.globalDataBuffer.put(94, sunLightColor.z);
+
+        bufferRepository.globalDataBuffer.put(95, engineRepository.sunShadowsResolution);
+
+        EngineUtils.copyWithOffset(bufferRepository.globalDataBuffer, atmosphere.lightSpaceMatrix, 96);
     }
 
     private Vector3f computeSunlightColor(Vector3f sunDirection) {

@@ -2,11 +2,13 @@ package com.pine.repository.core;
 
 import com.pine.injection.PBean;
 import com.pine.injection.PInject;
-import com.pine.service.resource.ShaderService;
+import com.pine.service.module.Initializable;
+import com.pine.service.resource.shader.ShaderCreationData;
+import com.pine.service.resource.shader.ShaderService;
 import com.pine.service.resource.shader.Shader;
 
 @PBean
-public class CoreShaderRepository implements CoreRepository {
+public class CoreShaderRepository implements Initializable {
     public Shader spriteShader;
     public Shader gBufferShader;
     public Shader gBufferTerrainShader;
@@ -46,78 +48,40 @@ public class CoreShaderRepository implements CoreRepository {
     public ShaderService shaderService;
 
     @Override
-    public void initialize() {
-        compositingShader = shaderService.create("QUAD.vert", "COMPOSITE.frag");
-        noiseShader = shaderService.create("QUAD.vert", "NOISE.frag");
-        gBufferShading = shaderService.create("QUAD.vert", "uber/G_BUFFER_SHADING.frag");
-        brdfShader = shaderService.create("QUAD.vert", "BRDF_GEN.frag");
-        spriteShader = shaderService.create("SPRITE.vert", "SPRITE.frag");
-        gBufferShader = shaderService.create("uber/G_BUFFER.vert", "uber/G_BUFFER.frag");
-        shadowsPrimitiveShader = shaderService.create("shadows/PRIMITIVE.vert", "shadows/EMPTY.frag");
-        gBufferTerrainShader = shaderService.create("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag");
-        shadowsTerrainShader = shaderService.create("shadows/TERRAIN.vert", "shadows/EMPTY.frag");
-        gBufferFoliageShader = shaderService.create("uber/G_BUFFER_FOLIAGE.vert", "uber/G_BUFFER.frag");
-        foliageCullingCompute = shaderService.create("compute/FOLIAGE_CULLING_COMPUTE.glsl");
-        toScreenShader = shaderService.create("QUAD.vert", "TO_SCREEN.frag");
-        downscaleShader = shaderService.create("QUAD.vert", "BILINEAR_DOWNSCALE.glsl");
-        bilateralBlurShader = shaderService.create("QUAD.vert", "BILATERAL_BLUR.glsl");
-        bokehShader = shaderService.create("QUAD.vert", "BOKEH.frag");
-        irradianceShader = shaderService.create("CUBEMAP.vert", "IRRADIANCE_MAP.frag");
-        prefilteredShader = shaderService.create("CUBEMAP.vert", "PREFILTERED_MAP.frag");
-        ssgiShader = shaderService.create("QUAD.vert", "SSGI.frag");
-        mbShader = shaderService.create("QUAD.vert", "MOTION_BLUR.frag");
-        ssaoShader = shaderService.create("QUAD.vert", "SSAO.frag");
-        boxBlurShader = shaderService.create("QUAD.vert", "BOX-BLUR.frag");
-        directShadowsShader = shaderService.create("SHADOWS.vert", "DIRECTIONAL_SHADOWS.frag");
-        omniDirectShadowsShader = shaderService.create("SHADOWS.vert", "OMNIDIRECTIONAL_SHADOWS.frag");
-        frameComposition = shaderService.create("QUAD.vert", "FRAME_COMPOSITION.frag");
-        bloomShader = shaderService.create("QUAD.vert", "BRIGHTNESS_FILTER.frag");
-        postProcessing = shaderService.create("QUAD.vert", "LENS_POST_PROCESSING.frag");
-        gaussianShader = shaderService.create("QUAD.vert", "GAUSSIAN.frag");
-        upSamplingShader = shaderService.create("QUAD.vert", "UPSAMPLE_TENT.glsl");
-        voxelRaymarchingCompute = shaderService.create("compute/VOXEL_RAY_MARCHING_COMPUTE.glsl");
-        cloudDetailCompute = shaderService.create("compute/CLOUD_DETAIL_COMPUTE.glsl");
-        cloudShapeCompute = shaderService.create("compute/CLOUD_SHAPE_COMPUTE.glsl");
-        cloudsRaymarcher = shaderService.create("QUAD.vert", "ATMOSPHERE.frag");
-        gBufferDecalShader = shaderService.create("uber/G_BUFFER_DECAL.vert", "uber/G_BUFFER.frag");
-        copyQuadShader = shaderService.create("QUAD.vert", "QUAD_COPY.frag");
-
-    }
-
-    @Override
-    public void dispose() {
-        copyQuadShader.dispose();
-        gBufferShading.dispose();
-        spriteShader.dispose();
-        gBufferShader.dispose();
-        gBufferTerrainShader.dispose();
-        brdfShader.dispose();
-        gBufferFoliageShader.dispose();
-        foliageCullingCompute.dispose();
-        toScreenShader.dispose();
-        downscaleShader.dispose();
-        bilateralBlurShader.dispose();
-        bokehShader.dispose();
-        irradianceShader.dispose();
-        prefilteredShader.dispose();
-        ssgiShader.dispose();
-        mbShader.dispose();
-        ssaoShader.dispose();
-        boxBlurShader.dispose();
-        directShadowsShader.dispose();
-        omniDirectShadowsShader.dispose();
-        frameComposition.dispose();
-        bloomShader.dispose();
-        postProcessing.dispose();
-        gaussianShader.dispose();
-        upSamplingShader.dispose();
-        voxelRaymarchingCompute.dispose();
-        cloudDetailCompute.dispose();
-        cloudShapeCompute.dispose();
-        cloudsRaymarcher.dispose();
-        gBufferDecalShader.dispose();
-        shadowsTerrainShader.dispose();
-        shadowsPrimitiveShader.dispose();
-
+    public void onInitialize() {
+        compositingShader = shaderService.create(new ShaderCreationData("QUAD.vert", "COMPOSITE.frag"));
+        noiseShader = shaderService.create(new ShaderCreationData("QUAD.vert", "NOISE.frag"));
+        gBufferShading = shaderService.create(new ShaderCreationData("QUAD.vert", "uber/G_BUFFER_SHADING.frag"));
+        brdfShader = shaderService.create(new ShaderCreationData("QUAD.vert", "BRDF_GEN.frag"));
+        spriteShader = shaderService.create(new ShaderCreationData("SPRITE.vert", "SPRITE.frag"));
+        gBufferShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER.vert", "uber/G_BUFFER.frag"));
+        shadowsPrimitiveShader = shaderService.create(new ShaderCreationData("shadows/PRIMITIVE.vert", "shadows/EMPTY.frag"));
+        gBufferTerrainShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag"));
+        shadowsTerrainShader = shaderService.create(new ShaderCreationData("shadows/TERRAIN.vert", "shadows/EMPTY.frag"));
+        gBufferFoliageShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER_FOLIAGE.vert", "uber/G_BUFFER.frag"));
+        foliageCullingCompute = shaderService.create(new ShaderCreationData("compute/FOLIAGE_CULLING_COMPUTE.glsl"));
+        toScreenShader = shaderService.create(new ShaderCreationData("QUAD.vert", "TO_SCREEN.frag"));
+        downscaleShader = shaderService.create(new ShaderCreationData("QUAD.vert", "BILINEAR_DOWNSCALE.glsl"));
+        bilateralBlurShader = shaderService.create(new ShaderCreationData("QUAD.vert", "BILATERAL_BLUR.glsl"));
+        bokehShader = shaderService.create(new ShaderCreationData("QUAD.vert", "BOKEH.frag"));
+        irradianceShader = shaderService.create(new ShaderCreationData("CUBEMAP.vert", "IRRADIANCE_MAP.frag"));
+        prefilteredShader = shaderService.create(new ShaderCreationData("CUBEMAP.vert", "PREFILTERED_MAP.frag"));
+        ssgiShader = shaderService.create(new ShaderCreationData("QUAD.vert", "SSGI.frag"));
+        mbShader = shaderService.create(new ShaderCreationData("QUAD.vert", "MOTION_BLUR.frag"));
+        ssaoShader = shaderService.create(new ShaderCreationData("QUAD.vert", "SSAO.frag"));
+        boxBlurShader = shaderService.create(new ShaderCreationData("QUAD.vert", "BOX-BLUR.frag"));
+        directShadowsShader = shaderService.create(new ShaderCreationData("SHADOWS.vert", "DIRECTIONAL_SHADOWS.frag"));
+        omniDirectShadowsShader = shaderService.create(new ShaderCreationData("SHADOWS.vert", "OMNIDIRECTIONAL_SHADOWS.frag"));
+        frameComposition = shaderService.create(new ShaderCreationData("QUAD.vert", "FRAME_COMPOSITION.frag"));
+        bloomShader = shaderService.create(new ShaderCreationData("QUAD.vert", "BRIGHTNESS_FILTER.frag"));
+        postProcessing = shaderService.create(new ShaderCreationData("QUAD.vert", "LENS_POST_PROCESSING.frag"));
+        gaussianShader = shaderService.create(new ShaderCreationData("QUAD.vert", "GAUSSIAN.frag"));
+        upSamplingShader = shaderService.create(new ShaderCreationData("QUAD.vert", "UPSAMPLE_TENT.glsl"));
+        voxelRaymarchingCompute = shaderService.create(new ShaderCreationData("compute/VOXEL_RAY_MARCHING_COMPUTE.glsl"));
+        cloudDetailCompute = shaderService.create(new ShaderCreationData("compute/CLOUD_DETAIL_COMPUTE.glsl"));
+        cloudShapeCompute = shaderService.create(new ShaderCreationData("compute/CLOUD_SHAPE_COMPUTE.glsl"));
+        cloudsRaymarcher = shaderService.create(new ShaderCreationData("QUAD.vert", "ATMOSPHERE.frag"));
+        gBufferDecalShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER_DECAL.vert", "uber/G_BUFFER.frag"));
+        copyQuadShader = shaderService.create(new ShaderCreationData("QUAD.vert", "QUAD_COPY.frag"));
     }
 }

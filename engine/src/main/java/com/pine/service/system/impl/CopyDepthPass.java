@@ -1,11 +1,11 @@
 package com.pine.service.system.impl;
 
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 
 public class CopyDepthPass extends AbstractQuadPass {
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.sceneDepthCopy;
     }
 

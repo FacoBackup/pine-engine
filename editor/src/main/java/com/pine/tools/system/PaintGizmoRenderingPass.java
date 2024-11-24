@@ -4,7 +4,7 @@ import com.pine.injection.PInject;
 import com.pine.repository.BrushMode;
 import com.pine.repository.EditorMode;
 import com.pine.repository.EditorRepository;
-import com.pine.service.resource.fbo.FrameBufferObject;
+import com.pine.service.resource.fbo.FBO;
 import com.pine.service.resource.shader.Shader;
 import com.pine.service.resource.shader.UniformDTO;
 import com.pine.service.system.impl.AbstractQuadPass;
@@ -45,7 +45,7 @@ public class PaintGizmoRenderingPass extends AbstractQuadPass {
     }
 
     @Override
-    protected FrameBufferObject getTargetFBO() {
+    protected FBO getTargetFBO() {
         return bufferRepository.postProcessingBuffer;
     }
 
