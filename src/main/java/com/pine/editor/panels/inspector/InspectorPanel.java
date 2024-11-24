@@ -43,7 +43,6 @@ public class InspectorPanel extends AbstractDockPanel {
     private final ImString fieldSearch = new ImString();
     private final List<FormPanel> dynamicForms = new ArrayList<>();
     private final List<FormPanel> staticForms = new ArrayList<>();
-    private final List<AbstractView> additional = new ArrayList<>();
 
     @Override
     public void onInitialize() {
@@ -53,8 +52,6 @@ public class InspectorPanel extends AbstractDockPanel {
             staticForms.add(form);
             form.setCompactMode(true);
         }
-        additional.add(appendChild(new FoliagePanel()));
-        additional.add(appendChild(new MaterialPanel()));
     }
 
     private void handleChange(FieldDTO dto, Object newValue) {
@@ -79,15 +76,6 @@ public class InspectorPanel extends AbstractDockPanel {
             for (var form : staticForms) {
                 form.setSearch(search);
                 form.render();
-            }
-            if(search.isEmpty()) {
-                ImGui.separator();
-                ImGui.pushStyleColor(ImGuiCol.Header, theme.neutralPalette);
-
-                for (AbstractView form : additional) {
-                    form.render();
-                }
-                ImGui.popStyleColor();
             }
         }
         ImGui.endChild();

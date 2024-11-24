@@ -22,7 +22,6 @@ import java.util.UUID;
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
     public String materialMask = UUID.randomUUID().toString();
-    public String foliageMask = UUID.randomUUID().toString();
     public String heightMapTexture = UUID.randomUUID().toString();
     public TerrainChunk[] chunks = null;
 
@@ -30,20 +29,17 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     public transient ImporterService importer;
 
     @ExecutableField(label = "Import data")
-    public void reGenFoliage() {
+    public void importTerrain() {
         new Thread(() -> {
             tryDelete(materialMask);
-            tryDelete(foliageMask);
             tryDelete(heightMapTexture);
 
             int width = cellsX * quads;
             int height = cellsZ * quads;
 
-            String foliageMaskLocal = UUID.randomUUID().toString();
             String heightMapTextureLocal = UUID.randomUUID().toString();
             String materialMaskLocal = UUID.randomUUID().toString();
 
-            ImageUtil.generateTexture(width, height, importer.getPathToFile(foliageMaskLocal, StreamableResourceType.TEXTURE));
             ImageUtil.generateTexture(width, height, importer.getPathToFile(heightMapTextureLocal, StreamableResourceType.TEXTURE));
             ImageUtil.generateTexture(width, height, importer.getPathToFile(materialMaskLocal, StreamableResourceType.TEXTURE));
 
@@ -63,7 +59,6 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
                     index++;
                 }
             }
-            foliageMask = foliageMaskLocal;
             heightMapTexture = heightMapTextureLocal;
             materialMask = materialMaskLocal;
             chunks = newChunks;

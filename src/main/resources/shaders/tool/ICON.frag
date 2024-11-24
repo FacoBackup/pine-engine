@@ -8,13 +8,6 @@ uniform float imageIndex;
 uniform int renderIndex;
 uniform bool isSelected;
 
-layout (location = 0) out vec4 gBufferAlbedoSampler;
-layout (location = 1) out vec4 gBufferNormalSampler;
-layout (location = 2) out vec4 gBufferRMAOSampler;
-layout (location = 3) out vec4 gBufferMaterialSampler;
-layout (location = 4) out vec4 gBufferDepthSampler;
-layout (location = 5) out vec4 gBufferIndirect;
-
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 
 #include "../uber/G_BUFFER_UTIL.glsl"

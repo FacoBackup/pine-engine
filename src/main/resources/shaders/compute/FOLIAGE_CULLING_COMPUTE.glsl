@@ -1,6 +1,6 @@
 layout (local_size_x = 4, local_size_y = 4) in;
 
-layout (binding = 0) uniform sampler2D foliageMask;
+layout (binding = 0) uniform sampler2D materialMask;
 layout (binding = 1) uniform sampler2D heightMap;
 layout (binding = 2, offset = 0) uniform atomic_uint globalIndex;
 
@@ -23,6 +23,7 @@ uniform vec2 imageSize;
 uniform float heightScale;
 
 #define MAX_DISTANCE_FROM_CAMERA settings.x
+#define MAX_INSTANCES uint(settings.y)
 
 #include "../buffer_objects/GLOBAL_DATA_UBO.glsl"
 
@@ -37,7 +38,7 @@ shared int cols_per_thread;
 const int N = 1024;
 const ivec2 total_threads = ivec2(1024);
 
-vec3 getWorlPosition(vec2 uv, vec2 planeSize) {
+vec3 getWorldPosition(vec2 uv, vec2 planeSize) {
     float worldX = uv.x * planeSize.x + terrainOffset.x;
     float worldZ = uv.y * planeSize.y + terrainOffset.y;
     return vec3(worldX, 0, worldZ);
@@ -57,17 +58,25 @@ bool isEqual(float u, float v){
     return u == 0 || u == v;
 }
 
+vec2 hash(vec2 a) {
+    a = fract(a * vec2(.8));
+    a += dot(a, a.yx + 19.19);
+    return fract((a.xx + a.yx)*a.xy);
+}
+
 void doWork(int col, int row){
     vec2 scaledTexCoord= (vec2(round(cameraWorldPosition.x), round(cameraWorldPosition.z)) + vec2(row, col)) / imageSize;
     if (scaledTexCoord.x <= 1 && scaledTexCoord.x >= 0 && scaledTexCoord.y <= 1 && scaledTexCoord.y >= 0){
-        vec3 pixelColor = texture(foliageMask, scaledTexCoord).rgb;
+        vec3 pixelColor = texture(materialMask, scaledTexCoord).gba;
         if (pixelColor == colorToMatch){
-            vec3 worldSpaceCoord = getWorlPosition(scaledTexCoord, imageSize);
+            vec3 worldSpaceCoord = getWorldPosition(scaledTexCoord, imageSize);
+            worldSpaceCoord.xz += hash(worldSpaceCoord.xz);
             if (length(worldSpaceCoord.xz - cameraWorldPosition.xz) < MAX_DISTANCE_FROM_CAMERA){
+                scaledTexCoord = (worldSpaceCoord.xz - terrainOffset)/imageSize;
                 worldSpaceCoord.y = texture(heightMap, scaledTexCoord).r * heightScale;
                 if (isPointInsideFrustum(worldSpaceCoord)){
                     uint index = atomicCounterIncrement(globalIndex);
-                    if (index < uint(settings.y)){
+                    if (index < MAX_INSTANCES){
                         transformations[index] = worldSpaceCoord;
                     }
                 }

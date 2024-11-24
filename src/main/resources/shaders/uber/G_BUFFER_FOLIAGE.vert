@@ -19,6 +19,10 @@ smooth out vec2 initialUV;
 smooth out vec3 normalVec;
 smooth out vec3 worldSpacePosition;
 
+float hash(float seed) {
+    return fract(sin(seed * 0.1) * 43758.5453);
+}
+
 void main() {
     isDecalPass = 0;
     invModelMatrix = mat4(0);
@@ -28,7 +32,7 @@ void main() {
     vec2 normPos = normalize(terrainOffset + translation.xz);
 
     vec2 noiseVal = texture(noise, normPos).rg * position.y;
-    worldSpacePosition = position * objectScale + translation + vec3(noiseVal.x, 0, noiseVal.y);
+    worldSpacePosition = position * objectScale * hash(translation.x + translation.z / (max(0, abs(translation.y)))) + translation + vec3(noiseVal.x, 0, noiseVal.y);
     normalVec = normalize(normal);
     initialUV = uv;
 

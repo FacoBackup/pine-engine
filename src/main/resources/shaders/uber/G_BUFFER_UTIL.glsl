@@ -1,4 +1,108 @@
+#define ALBEDO 0
+#define NORMAL 1
+#define DEPTH 3
+#define AO 4
+#define LIGHT_ONLY 6
+#define METALLIC 7
+#define ROUGHNESS 8
+#define POSITION 11
+#define RANDOM 13
+#define WIREFRAME 17
+#define UV_FLAG 18
+#define INDIRECT 19
+#define TRIANGLE_ID 20
+#define HEIGHT 21
+#define MATERIAL_MASK 22
+#define LIT -1
+
+
+layout (location = 0) out vec4 gBufferAlbedoSampler;
+layout (location = 1) out vec4 gBufferNormalSampler;
+layout (location = 2) out vec4 gBufferRMAOSampler;
+
+// X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
+// Y channel: 16 bits for clearCoat + 16 bits for sheen
+// Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
+// W channel: 32 bit render index
+layout (location = 3) out vec4 gBufferMaterialSampler;
+layout (location = 4) out vec4 gBufferDepthSampler;
+layout (location = 5) out vec4 gBufferIndirect;
+
+uniform float probeFilteringLevels;
+uniform int debugShadingMode;
+layout (binding = 0) uniform samplerCube specularProbe;
+layout (binding = 1) uniform samplerCube irradianceProbe;
+layout (binding = 2) uniform samplerCube irradianceProbe1;
+
 #define PARALLAX_THRESHOLD 200.
+
+void sampleIndirectIllumination(inout vec3 V, inout vec3 N){
+    vec3 R = reflect(-V, N);
+    float specularFactor = 1.0 - gBufferRMAOSampler.r;
+    vec3 combinedReflection = mix(
+    texture(irradianceProbe, R).rgb,
+    textureLod(specularProbe, R, gBufferRMAOSampler.r * probeFilteringLevels).rgb,
+    specularFactor);
+    gBufferIndirect = vec4(combinedReflection, 1);
+}
+
+vec3 randomColor(int seed) {
+    float hash = fract(sin(float(seed)) * 43758.5453);
+
+    float r = fract(hash * 13.756);
+    float g = fract(hash * 15.734);
+    float b = fract(hash * 17.652);
+
+    return vec3(r, g, b);
+}
+
+void processDebugFlags(inout vec2 UV, inout vec3 W, int renderingIndex, float distanceFromCamera){
+    if (debugShadingMode != LIT){
+        switch (debugShadingMode) {
+            case RANDOM:
+            gBufferAlbedoSampler.rgb = randomColor(renderingIndex + 1);
+            break;
+            case WIREFRAME:
+            gBufferAlbedoSampler.rgb = vec3(1., 0., 1.);
+            break;
+            case LIGHT_ONLY:
+            gBufferAlbedoSampler.rgb = vec3(.5);
+            break;
+            case NORMAL:
+            gBufferAlbedoSampler = gBufferNormalSampler;
+            break;
+            case DEPTH:
+            gBufferAlbedoSampler.rgb = vec3(distanceFromCamera) / 10;
+            break;
+            case AO:
+            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.b);
+            break;
+            case METALLIC:
+            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.g);
+            break;
+            case ROUGHNESS:
+            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.r);
+            break;
+            case POSITION:
+            gBufferAlbedoSampler.rgb = vec3(W);
+            break;
+            case UV_FLAG:
+            gBufferAlbedoSampler.rgb = vec3(UV, 0);
+            break;
+            case INDIRECT:
+            gBufferAlbedoSampler.rgb = gBufferIndirect.rgb;
+            break;
+            case TRIANGLE_ID:
+            gBufferAlbedoSampler.rgb = randomColor(gl_PrimitiveID);
+            break;
+            case HEIGHT:
+            gBufferAlbedoSampler.rgb = vec3(W.y/10);
+            break;
+        }
+
+        gBufferAlbedoSampler.a = debugShadingMode != LIGHT_ONLY ? 1 : 0;
+    }
+}
 
 float encode(float depthFunc, float val) {
     float half_co = depthFunc * 0.5;
@@ -57,15 +161,4 @@ vec2 parallaxOcclusionMapping(vec2 initialUV, vec3 worldSpacePosition, sampler2D
 
     float weight = afterDepth / (afterDepth - beforeDepth);
     return prevTexCoords * weight + currentUVs * (1.0 - weight);
-}
-
-
-vec3 randomColor(int seed) {
-    float hash = fract(sin(float(seed)) * 43758.5453);
-
-    float r = fract(hash * 13.756);
-    float g = fract(hash * 15.734);
-    float b = fract(hash * 17.652);
-
-    return vec3(r, g, b);
 }

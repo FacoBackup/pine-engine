@@ -5,8 +5,7 @@ import com.pine.common.Icons;
 public enum EditorMode {
     TRANSFORM("Transform", Icons.transform, 0),
     TERRAIN("Terrain", Icons.terrain, 1),
-    FOLIAGE("Foliage", Icons.forest, 2),
-    MATERIAL("Material", Icons.format_paint, 3);
+    MATERIAL("Material", Icons.format_paint, 2);
 
     private static String[] options;
     public final String label;

@@ -32,7 +32,7 @@ public class ShadowsPass extends AbstractPass {
             bufferRepository.shadowsBuffer = fboService.create(new FBOCreationData(engineRepository.sunShadowsResolution, engineRepository.sunShadowsResolution, true).addDepthSampler("Sun Shadows"));
             bufferRepository.shadowsSampler = bufferRepository.shadowsBuffer.getDepthSampler();
         }
-        return (clockRepository.totalTime - sinceLastRun) >= engineRepository.updateSunShadowsEvery;
+        return (clockRepository.totalTime - sinceLastRun) >= engineRepository.updateSunShadowsEvery && atmosphere.shadows;
     }
 
     @Override
@@ -43,8 +43,7 @@ public class ShadowsPass extends AbstractPass {
     @Override
     protected void renderInternal() {
         sinceLastRun = clockRepository.totalTime;
-
-        if (atmosphere.shadows) {
+        if (terrainRepository.castsShadows) {
             shaderService.bind(shaderRepository.shadowsTerrainShader);
             meshService.renderTerrain(textureSize, terrainOffset, heightScale, tilesScaleTranslation);
         }

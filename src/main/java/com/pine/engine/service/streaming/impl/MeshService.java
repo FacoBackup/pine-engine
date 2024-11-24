@@ -154,7 +154,7 @@ public class MeshService extends AbstractStreamableService<MeshResourceRef> {
         shaderService.bindVec2(terrain.offset, terrainOffset);
 
         shaderService.bindInt(heightMap.width, textureSize);
-        shaderService.bindSampler2dDirect(heightMap, 8);
+        shaderService.bindSampler2dDirect(heightMap, 3);
 
         for (TerrainChunk chunk : terrain.chunks) {
             if (chunk.isCulled()) {

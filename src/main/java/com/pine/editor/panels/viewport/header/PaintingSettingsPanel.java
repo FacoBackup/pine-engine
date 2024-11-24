@@ -74,9 +74,6 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
             case TERRAIN -> {
                 return terrainRepository.heightMapTexture;
             }
-            case FOLIAGE -> {
-                return terrainRepository.foliageMask;
-            }
             case MATERIAL -> {
                 return terrainRepository.materialMask;
             }

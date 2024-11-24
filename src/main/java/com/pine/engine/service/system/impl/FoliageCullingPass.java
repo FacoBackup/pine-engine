@@ -17,7 +17,7 @@ import static com.pine.engine.service.resource.shader.ShaderService.COMPUTE_RUNT
 
 public class FoliageCullingPass extends AbstractPass {
     private TextureResourceRef heightMap;
-    private TextureResourceRef foliageMask;
+    private TextureResourceRef materialMask;
     private UniformDTO imageSizeU;
     private UniformDTO settingsU;
     private UniformDTO terrainOffsetU;
@@ -41,8 +41,8 @@ public class FoliageCullingPass extends AbstractPass {
             return false;
         }
         heightMap = terrainRepository.heightMapTexture != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE) : null;
-        foliageMask = heightMap != null && terrainRepository.foliageMask != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.foliageMask, StreamableResourceType.TEXTURE) : null;
-        return heightMap != null && foliageMask != null;
+        materialMask = heightMap != null && terrainRepository.materialMask != null ? (TextureResourceRef) streamingService.streamIn(terrainRepository.materialMask, StreamableResourceType.TEXTURE) : null;
+        return heightMap != null && materialMask != null;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FoliageCullingPass extends AbstractPass {
         COMPUTE_RUNTIME_DATA.groupZ = 1;
         COMPUTE_RUNTIME_DATA.memoryBarrier = GL46.GL_COMMAND_BARRIER_BIT | GL46.GL_SHADER_STORAGE_BARRIER_BIT;
 
-        shaderService.bindSampler2dDirect(foliageMask, 0);
+        shaderService.bindSampler2dDirect(materialMask, 0);
         shaderService.bindSampler2dDirect(heightMap, 1);
         shaderService.bindFloat(terrainRepository.heightScale, heightScale);
 

@@ -7,6 +7,7 @@ import com.pine.editor.panels.hierarchy.HierarchyPanel;
 import com.pine.editor.panels.inspector.InspectorPanel;
 import com.pine.editor.panels.metrics.MetricsPanel;
 import com.pine.editor.panels.resources.ResourcesPanel;
+import com.pine.editor.panels.terrain.TerrainPanel;
 import com.pine.editor.panels.viewport.ViewportPanel;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ public enum DockSpace {
     Inspector("Inspector", Icons.search, InspectorPanel.class),
     Console("Console", Icons.terminal, ConsolePanel.class),
     Files("Files", Icons.folder_open, FilesPanel.class),
+    Terrain("Terrain", Icons.terrain, TerrainPanel.class),
     Resources("Resources", Icons.data_array, ResourcesPanel.class),
     Metrics("Metrics", Icons.bar_chart, MetricsPanel.class);
 

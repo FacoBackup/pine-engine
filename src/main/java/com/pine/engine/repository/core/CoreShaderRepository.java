@@ -76,7 +76,7 @@ public class CoreShaderRepository implements Initializable {
         spriteShader = shaderService.create(new ShaderCreationData("SPRITE.vert", "SPRITE.frag"));
         gBufferShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER.vert", "uber/G_BUFFER.frag"));
         shadowsPrimitiveShader = shaderService.create(new ShaderCreationData("shadows/PRIMITIVE.vert", "shadows/EMPTY.frag"));
-        gBufferTerrainShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER.frag"));
+        gBufferTerrainShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER_TERRAIN.vert", "uber/G_BUFFER_TERRAIN.frag"));
         shadowsTerrainShader = shaderService.create(new ShaderCreationData("shadows/TERRAIN.vert", "shadows/EMPTY.frag"));
         gBufferFoliageShader = shaderService.create(new ShaderCreationData("uber/G_BUFFER_FOLIAGE.vert", "uber/G_BUFFER.frag"));
         foliageCullingCompute = shaderService.create(new ShaderCreationData("compute/FOLIAGE_CULLING_COMPUTE.glsl"));

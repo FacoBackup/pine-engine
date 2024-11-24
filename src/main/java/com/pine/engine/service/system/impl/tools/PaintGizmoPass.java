@@ -95,19 +95,9 @@ public class PaintGizmoPass extends AbstractPass implements Loggable {
     }
 
     private void bindUniforms() {
-        switch (editorRepository.editorMode){
-            case FOLIAGE ->{
-                if (editorRepository.foliageForPainting != null && terrainRepository.foliage.containsKey(editorRepository.foliageForPainting)) {
-                    shaderService.bindVec3(terrainRepository.foliage.get(editorRepository.foliageForPainting).color, colorForPainting);
-                }
-            }
-            case MATERIAL -> {
-                if (editorRepository.materialForPainting != null && terrainRepository.materials.containsKey(editorRepository.materialForPainting)) {
-                    shaderService.bindVec3(terrainRepository.materials.get(editorRepository.materialForPainting).color, colorForPainting);
-                }
-            }
+        if (editorRepository.editorMode == EditorMode.MATERIAL && editorRepository.materialForPainting != null && terrainRepository.materials.containsKey(editorRepository.materialForPainting)) {
+            shaderService.bindVec3(terrainRepository.materials.get(editorRepository.materialForPainting).color, colorForPainting);
         }
-
 
         radiusDensityMode.x = editorRepository.brushRadius;
         radiusDensityMode.y = editorRepository.brushDensity;
@@ -134,19 +124,12 @@ public class PaintGizmoPass extends AbstractPass implements Loggable {
     }
 
     private TextureResourceRef updateTargetTexture() {
-        switch (editorRepository.editorMode) {
-            case FOLIAGE: {
-                if (editorRepository.foliageForPainting != null) {
-                    return (TextureResourceRef) streamingService.streamIn(terrainRepository.foliageMask, StreamableResourceType.TEXTURE);
-                }
-            }
-            case TERRAIN: {
-                return (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
-            }
-            case MATERIAL: {
-                return (TextureResourceRef) streamingService.streamIn(terrainRepository.materialMask, StreamableResourceType.TEXTURE);
-            }
-        }
-        return null;
+        return switch (editorRepository.editorMode) {
+            case TERRAIN ->
+                    (TextureResourceRef) streamingService.streamIn(terrainRepository.heightMapTexture, StreamableResourceType.TEXTURE);
+            case MATERIAL ->
+                    (TextureResourceRef) streamingService.streamIn(terrainRepository.materialMask, StreamableResourceType.TEXTURE);
+            default -> null;
+        };
     }
 }

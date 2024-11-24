@@ -1,8 +1,7 @@
 layout (local_size_x = 8, local_size_y = 8) in;
 
 #define TERRAIN 1
-#define FOLIAGE 2
-#define MATERIAL 3
+#define MATERIAL 2
 
 layout (rgba8, binding = 0) uniform image2D targetImage;
 layout (binding = 2) uniform sampler2D sceneDepth;
@@ -62,9 +61,7 @@ void main() {
     if (paintMode == TERRAIN){
         float scale =  (distToCenter/radiusDensityMode.x) * radiusDensityMode.y;
         imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(vec3(originalYPosition - scale) / heightScale, 1) : vec4(vec3(originalYPosition + .1 * scale)/heightScale, 1));
-    } else if (paintMode == FOLIAGE && randomBoolean(radiusDensityMode.y * radiusDensityMode.y)){
+    } else if(paintMode == MATERIAL){
         imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(colorForPainting, 1));
-    }else if(paintMode == MATERIAL){
-        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(1, 0, 1, 1));
     }
 }

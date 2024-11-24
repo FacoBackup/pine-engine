@@ -98,8 +98,11 @@ public class RenderingTask extends AbstractTask {
                     .length();
 
             int divider = 1;
-            for (int i = 0; i < Math.min(5, distance); i++) {
-                divider *= 2;
+            int level = Math.min(4, distance - 1);
+            if(level > 0) {
+                for (int i = 0; i < level; i++) {
+                    divider *= 2;
+                }
             }
 
             float tiles = (float) terrainRepository.quads / divider;

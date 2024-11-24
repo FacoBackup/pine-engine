@@ -7,18 +7,14 @@ uniform vec2 terrainOffset;
 uniform int textureSize;
 uniform float heightScale;
 
-layout (binding = 8) uniform sampler2D heightMap;
+layout (binding = 3) uniform sampler2D heightMap;
 
-out mat4 invModelMatrix;
-flat out int isDecalPass;
 flat out int renderingIndex;
 smooth out vec2 initialUV;
 smooth out vec3 normalVec;
 smooth out vec3 worldSpacePosition;
 
 void main() {
-    isDecalPass = 0;
-    invModelMatrix = mat4(0);
     renderingIndex = int(tilesScaleTranslation.z + tilesScaleTranslation.w);
 
     TerrainData terrain = computeTerrainData(tilesScaleTranslation, terrainOffset, textureSize, heightMap, heightScale);

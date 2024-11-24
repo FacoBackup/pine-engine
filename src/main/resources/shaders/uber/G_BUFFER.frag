@@ -1,20 +1,3 @@
-#define ALBEDO 0
-#define NORMAL 1
-#define DEPTH 3
-#define AO 4
-#define LIGHT_ONLY 6
-#define METALLIC 7
-#define ROUGHNESS 8
-#define POSITION 11
-#define RANDOM 13
-#define WIREFRAME 17
-#define UV_FLAG 18
-#define INDIRECT 19
-#define TRIANGLE_ID 20
-#define HEIGHT 21
-#define MATERIAL_MASK 22
-#define LIT -1
-
 #define ISOTROPIC 1
 #define ANISOTROPIC 2
 #define SHEEN 3
@@ -23,7 +6,6 @@
 
 #define DECAL_DEPTH_THRESHOLD 1.
 
-
 in mat4 invModelMatrix;
 flat in int isDecalPass;
 flat in int renderingIndex;
@@ -31,9 +13,6 @@ smooth in vec2 initialUV;
 smooth in vec3 normalVec;
 smooth in vec3 worldSpacePosition;
 
-layout (binding = 0) uniform samplerCube specularProbe;
-layout (binding = 1) uniform samplerCube irradianceProbe;
-layout (binding = 2) uniform samplerCube irradianceProbe1;
 layout (binding = 3) uniform sampler2D albedo;
 layout (binding = 4) uniform sampler2D roughness;
 layout (binding = 5) uniform sampler2D metallic;
@@ -47,10 +26,8 @@ uniform vec2 roughnessMetallic;
 uniform vec4 useAlbedoRoughnessMetallicAO;
 uniform bool useNormalTexture;
 
-uniform float probeFilteringLevels;
 uniform float parallaxHeightScale;
 uniform int parallaxLayers;
-uniform int debugShadingMode;
 uniform bool useParallax;
 
 uniform bool fallbackMaterial;
@@ -61,18 +38,6 @@ uniform float sheen;
 uniform float sheenTint;
 uniform int renderingMode;
 uniform bool ssrEnabled;
-
-layout (location = 0) out vec4 gBufferAlbedoSampler;
-layout (location = 1) out vec4 gBufferNormalSampler;
-layout (location = 2) out vec4 gBufferRMAOSampler;
-
-// X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
-// Y channel: 16 bits for clearCoat + 16 bits for sheen
-// Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
-// W channel: 32 bit render index
-layout (location = 3) out vec4 gBufferMaterialSampler;
-layout (location = 4) out vec4 gBufferDepthSampler;
-layout (location = 5) out vec4 gBufferIndirect;
 
 #include "../util/SCENE_DEPTH_UTILS.glsl"
 
@@ -139,58 +104,7 @@ void main() {
     }
     gBufferNormalSampler = vec4(N, 1);
 
+    sampleIndirectIllumination(V, N);
 
-    vec3 R = reflect(-V, N);
-    float specularFactor = 1.0 - gBufferRMAOSampler.r;
-    vec3 combinedReflection = mix(
-    texture(irradianceProbe, R).rgb,
-    textureLod(specularProbe, R, gBufferRMAOSampler.r * probeFilteringLevels).rgb,
-    specularFactor);
-    gBufferIndirect = vec4(combinedReflection, 1);
-
-    if (debugShadingMode != LIT){
-        switch (debugShadingMode) {
-            case RANDOM:
-            gBufferAlbedoSampler.rgb = randomColor(renderingIndex + 1);
-            break;
-            case WIREFRAME:
-            gBufferAlbedoSampler.rgb = vec3(1., 0., 1.);
-            break;
-            case LIGHT_ONLY:
-            gBufferAlbedoSampler.rgb = vec3(.5);
-            break;
-            case NORMAL:
-            gBufferAlbedoSampler = gBufferNormalSampler;
-            break;
-            case DEPTH:
-            gBufferAlbedoSampler.rgb = vec3(distanceFromCamera) / 10;
-            break;
-            case AO:
-            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.b);
-            break;
-            case METALLIC:
-            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.g);
-            break;
-            case ROUGHNESS:
-            gBufferAlbedoSampler.rgb = vec3(gBufferRMAOSampler.r);
-            break;
-            case POSITION:
-            gBufferAlbedoSampler.rgb = vec3(W);
-            break;
-            case UV_FLAG:
-            gBufferAlbedoSampler.rgb = vec3(UV, 0);
-            break;
-            case INDIRECT:
-            gBufferAlbedoSampler.rgb = gBufferIndirect.rgb;
-            break;
-            case TRIANGLE_ID:
-            gBufferAlbedoSampler.rgb = randomColor(gl_PrimitiveID);
-            break;
-            case HEIGHT:
-            gBufferAlbedoSampler.rgb = vec3(texture(heightMap, UV).r);
-            break;
-        }
-
-        gBufferAlbedoSampler.a = debugShadingMode != LIGHT_ONLY ? 1 : 0;
-    }
+    processDebugFlags(UV, W, renderingIndex, distanceFromCamera);
 }
