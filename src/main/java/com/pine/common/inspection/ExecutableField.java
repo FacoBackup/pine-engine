@@ -8,6 +8,4 @@ public @interface ExecutableField {
     String label() default "-";
 
     String group() default "";
-
-    String icon() default "";
 }

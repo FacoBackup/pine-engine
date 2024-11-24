@@ -29,7 +29,7 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @PInject
     public transient ImporterService importer;
 
-    @ExecutableField(label = Icons.calculate + "Import data")
+    @ExecutableField(label = "Import data")
     public void reGenFoliage() {
         new Thread(() -> {
             tryDelete(materialMask);

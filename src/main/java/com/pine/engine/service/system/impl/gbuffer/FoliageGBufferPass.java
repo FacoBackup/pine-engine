@@ -11,14 +11,12 @@ import org.lwjgl.opengl.GL46;
 
 public class FoliageGBufferPass extends AbstractGBufferPass {
     private UniformDTO terrainOffsetU;
-    private UniformDTO transformOffset;
     private UniformDTO objectScale;
 
     @Override
     public void onInitialize() {
         super.onInitialize();
         terrainOffsetU = addUniformDeclaration("terrainOffset");
-        transformOffset = addUniformDeclaration("transformOffset");
         objectScale = addUniformDeclaration("objectScale");
     }
 
@@ -47,7 +45,6 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
             bindMaterial(material);
             if (mesh != null) {
                 shaderService.bindVec3(foliage.objectScale, objectScale);
-                shaderService.bindInt(foliage.offset, transformOffset);
                 meshService.bind(mesh);
                 GL46.glBindBuffer(GL46.GL_DRAW_INDIRECT_BUFFER, foliage.indirectDrawBuffer);
                 GL46.glBindBufferBase(GL46.GL_SHADER_STORAGE_BUFFER, 3, foliage.transformationsBuffer);

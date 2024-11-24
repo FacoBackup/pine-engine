@@ -29,7 +29,9 @@ public class WorldRepository implements SerializableRepository {
     public final Map<String, TransformationComponent> bagTransformationComponent = new HashMap<>();
 
     public final Map<String, Entity> entityMap = new HashMap<>() {{
-        put(ROOT_ID, new Entity(ROOT_ID, "World"));
+        var entity = new Entity(ROOT_ID, "World");
+        put(ROOT_ID, entity);
+        entity.setContainer(true);
     }};
     public final Map<String, LinkedList<String>> parentChildren = new HashMap<>() {{
         put(ROOT_ID, new LinkedList<>());

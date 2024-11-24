@@ -13,7 +13,7 @@ import com.pine.engine.service.voxelization.VoxelizationService;
 public class VoxelRepository extends Inspectable implements SerializableRepository {
     @PInject
     public transient VoxelizationService voxelizationService;
-    @ExecutableField(icon = Icons.apps, label = "Bake voxelized scene")
+    @ExecutableField(label = "Bake voxelized scene")
     public void process(){
         if(!voxelizationService.bake()){
             getLogger().error("Already voxelizing scene");

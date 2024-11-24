@@ -16,6 +16,10 @@ import java.util.function.BiConsumer;
 public class FormPanel extends AbstractView {
     private final BiConsumer<FieldDTO, Object> changeHandler;
     private Inspectable inspectable;
+    private final Map<String, AccordionPanel> groups = new HashMap<>();
+    private String search;
+    private boolean compactMode;
+    private boolean somethingMatches;
 
     public FormPanel(BiConsumer<FieldDTO, Object> changeHandler) {
         this.changeHandler = changeHandler;
@@ -27,16 +31,16 @@ public class FormPanel extends AbstractView {
         }
         this.inspectable = data;
         children.clear();
+        groups.clear();
 
         if (data == null) {
             return;
         }
-        Map<String, AccordionPanel> groups = new HashMap<>();
-        processMethods(data, groups);
-        processFields(data, groups);
+        processMethods(data);
+        processFields(data);
     }
 
-    private void processMethods(Inspectable data, Map<String, AccordionPanel> groups) {
+    private void processMethods(Inspectable data) {
         for (MethodDTO methodDTO : data.getMethodsAnnotated()) {
             if (!groups.containsKey(methodDTO.getGroup())) {
                 groups.put(methodDTO.getGroup(), appendChild(new AccordionPanel()));
@@ -44,11 +48,11 @@ public class FormPanel extends AbstractView {
 
             AccordionPanel group = groups.get(methodDTO.getGroup());
             group.title = methodDTO.getGroup();
-            group.appendChild(new ExecutableFunctionField(methodDTO));
+            group.append(new ExecutableFunctionField(methodDTO));
         }
     }
 
-    private void processFields(Inspectable data, Map<String, AccordionPanel> groups) {
+    private void processFields(Inspectable data) {
         for (FieldDTO field : data.getFieldsAnnotated()) {
             if (!groups.containsKey(field.getGroup())) {
                 groups.put(field.getGroup(), appendChild(new AccordionPanel()));
@@ -59,39 +63,39 @@ public class FormPanel extends AbstractView {
             switch (field.getType()) {
                 case STRING:
                     if (field.getField().isAnnotationPresent(ResourceTypeField.class)) {
-                        group.appendChild(new ResourceField(field, changeHandler));
+                        group.append(new ResourceField(field, changeHandler));
                     } else if (field.getField().isAnnotationPresent(TypePreviewField.class)) {
-                        group.appendChild(new PreviewField(field, changeHandler));
+                        group.append(new PreviewField(field, changeHandler));
                     } else {
-                        group.appendChild(new StringField(field, changeHandler));
+                        group.append(new StringField(field, changeHandler));
                     }
                     break;
                 case INT:
-                    group.appendChild(new IntField(field, changeHandler));
+                    group.append(new IntField(field, changeHandler));
                     break;
                 case FLOAT:
-                    group.appendChild(new FloatField(field, changeHandler));
+                    group.append(new FloatField(field, changeHandler));
                     break;
                 case BOOLEAN:
-                    group.appendChild(new BooleanField(field, changeHandler));
+                    group.append(new BooleanField(field, changeHandler));
                     break;
                 case VECTOR2:
-                    group.appendChild(new Vector2Field(field, changeHandler));
+                    group.append(new Vector2Field(field, changeHandler));
                     break;
                 case VECTOR3:
-                    group.appendChild(new Vector3Field(field, changeHandler));
+                    group.append(new Vector3Field(field, changeHandler));
                     break;
                 case VECTOR4:
-                    group.appendChild(new Vector4Field(field, changeHandler));
+                    group.append(new Vector4Field(field, changeHandler));
                     break;
                 case QUATERNION:
-                    group.appendChild(new QuaternionField(field, changeHandler));
+                    group.append(new QuaternionField(field, changeHandler));
                     break;
                 case COLOR:
-                    group.appendChild(new ColorField(field, changeHandler));
+                    group.append(new ColorField(field, changeHandler));
                     break;
                 case OPTIONS:
-                    group.appendChild(new OptionsField(field, changeHandler));
+                    group.append(new OptionsField(field, changeHandler));
                     break;
             }
         }
@@ -104,9 +108,48 @@ public class FormPanel extends AbstractView {
     @Override
     public void render() {
         if (inspectable != null) {
-            ImGui.text(inspectable.getIcon() + inspectable.getTitle());
-            ImGui.separator();
-            super.render();
+            if (search == null || search.isEmpty()) {
+                if (compactMode) {
+                    if (ImGui.collapsingHeader(inspectable.getIcon() + inspectable.getTitle() + imguiId)) {
+                        super.render();
+                        ImGui.separator();
+                    }
+                } else {
+                    renderTitle();
+                    super.render();
+                }
+            } else {
+                if (somethingMatches) {
+                    renderTitle();
+                }
+                somethingMatches = false;
+                for (var group : groups.values()) {
+                    boolean groupMatches = group.title.toLowerCase().contains(search);
+                    if (groupMatches) {
+                        ImGui.text(group.title);
+                        ImGui.separator();
+                    }
+                    for (var view : group.getViews()) {
+                        if (groupMatches || view.getName().toLowerCase().contains(search)) {
+                            view.render();
+                            somethingMatches = true;
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private void renderTitle() {
+        ImGui.text(inspectable.getIcon() + inspectable.getTitle());
+        ImGui.separator();
+    }
+
+    public void setSearch(String fieldSearch) {
+        this.search = fieldSearch;
+    }
+
+    public void setCompactMode(boolean v) {
+        this.compactMode = v;
     }
 }

@@ -44,7 +44,7 @@ public class ThemeService {
             ImGui.styleColorsDark();
             setDarkMode();
         }
-
+        var accentDarker = new ImVec4(editorRepository.accentColor.x, editorRepository.accentColor.y, editorRepository.accentColor.z, 1).times(.85f, .85f, .85f, 1);
         textDisabled = new ImVec4(palette6.x / 2f, palette6.y / 2f, palette6.z / 2f, 1);
         colors[ImGuiCol.Text] = palette6;
         colors[ImGuiCol.TextDisabled] = textDisabled;
@@ -60,22 +60,22 @@ public class ThemeService {
         colors[ImGuiCol.MenuBarBg] = palette0;
         colors[ImGuiCol.ScrollbarBg] = palette0;
         colors[ImGuiCol.ScrollbarGrab] = palette3;
-        colors[ImGuiCol.ScrollbarGrabHovered] = palette4;
+        colors[ImGuiCol.ScrollbarGrabHovered] = accentDarker;
         colors[ImGuiCol.ScrollbarGrabActive] = palette2;
         colors[ImGuiCol.SliderGrab] = palette4;
         colors[ImGuiCol.ButtonActive] = palette2;
         colors[ImGuiCol.Separator] = palette5;
-        colors[ImGuiCol.SeparatorHovered] = palette6;
+        colors[ImGuiCol.SeparatorHovered] = accentDarker;
         colors[ImGuiCol.SeparatorActive] = palette6;
         colors[ImGuiCol.ResizeGrip] = palette4;
         colors[ImGuiCol.Tab] = palette2;
-        colors[ImGuiCol.TabHovered] = palette3;
+        colors[ImGuiCol.TabHovered] = accentDarker;
         colors[ImGuiCol.DockingPreview] = palette4;
         colors[ImGuiCol.DockingEmptyBg] = palette6;
         colors[ImGuiCol.PlotLines] = palette5;
-        colors[ImGuiCol.PlotLinesHovered] = palette6;
+        colors[ImGuiCol.PlotLinesHovered] = accentDarker;
         colors[ImGuiCol.PlotHistogram] = palette5;
-        colors[ImGuiCol.PlotHistogramHovered] = palette6;
+        colors[ImGuiCol.PlotHistogramHovered] = accentDarker;
         colors[ImGuiCol.DragDropTarget] = palette4;
         colors[ImGuiCol.NavHighlight] = palette3;
         colors[ImGuiCol.NavWindowingHighlight] = palette2;
@@ -86,18 +86,22 @@ public class ThemeService {
         editorRepository.accent.z = editorRepository.accentColor.z;
         editorRepository.accent.x = editorRepository.accentColor.x;
         editorRepository.accent.w = 1;
-        editorRepository.accentU32 = ImGui.getColorU32(editorRepository.accent);
+        editorRepository.accentU32 = ImGui.getColorU32(new ImVec4(editorRepository.accent.x, editorRepository.accent.y, editorRepository.accent.z, .4f));
 
-        colors[ImGuiCol.FrameBgHovered] = editorRepository.accent;
+        colors[ImGuiCol.FrameBgHovered] = accentDarker;
         colors[ImGuiCol.FrameBgActive] = editorRepository.accent;
         colors[ImGuiCol.CheckMark] = editorRepository.accent;
         colors[ImGuiCol.SliderGrabActive] = editorRepository.accent;
-        colors[ImGuiCol.Button] = editorRepository.accent;
-        colors[ImGuiCol.ButtonHovered] = editorRepository.accent;
-        colors[ImGuiCol.Header] = editorRepository.accent;
-        colors[ImGuiCol.HeaderHovered] = editorRepository.accent;
+
+        colors[ImGuiCol.Button] = neutralPalette;
+        colors[ImGuiCol.ButtonHovered] = accentDarker;
+        colors[ImGuiCol.ButtonActive] = editorRepository.accent;
+
+        colors[ImGuiCol.Header] = neutralPalette;
+        colors[ImGuiCol.HeaderHovered] = accentDarker;
         colors[ImGuiCol.HeaderActive] = editorRepository.accent;
-        colors[ImGuiCol.ResizeGripHovered] = editorRepository.accent;
+
+        colors[ImGuiCol.ResizeGripHovered] = accentDarker;
         colors[ImGuiCol.ResizeGripActive] = editorRepository.accent;
         colors[ImGuiCol.TextSelectedBg] = editorRepository.accent;
 

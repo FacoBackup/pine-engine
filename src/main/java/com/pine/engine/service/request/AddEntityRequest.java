@@ -28,6 +28,7 @@ public class AddEntityRequest extends AbstractRequest {
     @Override
     public void run() {
         entity = new Entity();
+        entity.setContainer(components.isEmpty());
         world.entityMap.put(entity.id(), entity);
 
         world.parentChildren.putIfAbsent(WorldRepository.ROOT_ID, new LinkedList<>());

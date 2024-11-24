@@ -20,7 +20,7 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @PInject
     public transient EnvironmentMapGenService environmentMapGenService;
 
-    @ExecutableField(label = "Bake environment maps", icon = Icons.panorama_photosphere)
+    @ExecutableField(label = "Bake environment maps")
     public void process() {
         environmentMapGenService.bake();
     }

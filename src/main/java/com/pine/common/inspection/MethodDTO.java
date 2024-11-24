@@ -1,5 +1,7 @@
 package com.pine.common.inspection;
 
+import com.pine.common.Icons;
+
 import java.lang.reflect.Method;
 import java.util.UUID;
 
@@ -11,7 +13,7 @@ public class MethodDTO {
 
     public MethodDTO(ExecutableField delegate, Method method, Object instance) {
         this.delegate = delegate;
-        this.label =  delegate.icon() + delegate.label() + "##" + UUID.randomUUID().toString().replaceAll("-", "");
+        this.label =  Icons.play_arrow + delegate.label() + "##" + UUID.randomUUID().toString().replaceAll("-", "");
         this.method = method;
         this.instance = instance;
     }

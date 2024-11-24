@@ -5,11 +5,12 @@ import com.pine.editor.core.AbstractView;
 
 import java.util.function.BiConsumer;
 
-public abstract class AbstractFormField extends AbstractView {
+public abstract class AbstractFormField extends AbstractFieldView {
     protected final FieldDTO dto;
     protected final BiConsumer<FieldDTO, Object> changerHandler;
 
     public AbstractFormField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
+        super(dto.getLabel());
         this.dto = dto;
         this.changerHandler = changerHandler;
     }

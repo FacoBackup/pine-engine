@@ -6,11 +6,19 @@ import com.pine.editor.core.AbstractView;
 import com.pine.editor.core.UIUtil;
 import com.pine.editor.repository.EditorMode;
 import com.pine.editor.repository.EditorRepository;
+import com.pine.engine.component.ComponentType;
 import com.pine.engine.repository.CameraRepository;
 import com.pine.engine.repository.EngineRepository;
 import com.pine.engine.repository.ShadingMode;
+import com.pine.engine.service.rendering.RequestProcessingService;
+import com.pine.engine.service.request.AddComponentRequest;
+import com.pine.engine.service.request.AddEntityRequest;
 import imgui.ImGui;
 import imgui.type.ImInt;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static com.pine.common.Icons.ONLY_ICON_BUTTON_SIZE;
 
@@ -29,6 +37,17 @@ public class GlobalSettingsPanel extends AbstractView {
     @PInject
     public CameraRepository cameraRepository;
 
+    @PInject
+    public RequestProcessingService requestProcessingService;
+
+    private final List<String> types = new ArrayList<>();
+
+    @Override
+    public void onInitialize() {
+        types.add(Icons.add + " Add entity");
+        types.addAll(ComponentType.getSoleTypes().stream().map(a -> a.getIcon() + a.getTitle()).toList());
+    }
+
     @Override
     public void render() {
         editorMode.set(editorRepository.editorMode.index);
@@ -36,6 +55,20 @@ public class GlobalSettingsPanel extends AbstractView {
         if (ImGui.combo(imguiId, editorMode, EditorMode.getOptions())) {
             editorRepository.editorMode = EditorMode.valueOfIndex(editorMode.get());
         }
+
+        ImGui.sameLine();
+        ImGui.setNextItemWidth(150);
+        if (ImGui.beginCombo(imguiId + "entities", types.getFirst())) {
+            for (int i = 1; i < types.size(); i++) {
+                String type = types.get(i);
+                if (ImGui.selectable(type)) {
+                    ComponentType entityComponent = ComponentType.getSoleTypes().get(i - 1);
+                    requestProcessingService.addRequest(new AddEntityRequest(List.of(entityComponent)));
+                }
+            }
+            ImGui.endCombo();
+        }
+
         cameraMode();
         shadingMode();
     }
@@ -53,7 +86,7 @@ public class GlobalSettingsPanel extends AbstractView {
         ImGui.sameLine();
         cameraSensitivity[0] = cameraRepository.movementSensitivity;
         ImGui.setNextItemWidth(75);
-        if (ImGui.dragFloat( "##speedCamera", cameraSensitivity, .1f, .1f)) {
+        if (ImGui.dragFloat("##speedCamera", cameraSensitivity, .1f, .1f)) {
             cameraRepository.movementSensitivity = Math.max(0, cameraSensitivity[0]);
         }
     }

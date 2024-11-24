@@ -8,8 +8,6 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL46;
 
 public class FoliageInstance extends AbstractDataInstance {
-    public int count = 0;
-    public int offset = 0;
 
     @ResourceTypeField(type = StreamableResourceType.MATERIAL)
     @InspectableField(label = "Material")

@@ -94,7 +94,7 @@ public class WorldGrid implements Loggable {
 
     private void putAdjacentTile(int[] tileLocation, WorldTile newTile) {
         String tileId = WorldTile.getId(tileLocation[0], tileLocation[1]);
-        if(tiles.containsKey(tileId)) {
+        if (tiles.containsKey(tileId)) {
             var tile = tiles.get(tileId);
             tile.putAdjacentTile(newTile);
             newTile.putAdjacentTile(tile);
@@ -107,9 +107,11 @@ public class WorldGrid implements Loggable {
 
     public void removeTile(String id) {
         var tileToRemove = tiles.get(id);
-        tiles.remove(id);
-        for (var tile : tiles.values()) {
-            tile.removeAdjacentTile(tileToRemove);
+        if (tileToRemove != null) {
+            tiles.remove(id);
+            for (var tile : tiles.values()) {
+                tile.removeAdjacentTile(tileToRemove);
+            }
         }
     }
 

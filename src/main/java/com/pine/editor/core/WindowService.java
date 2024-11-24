@@ -77,7 +77,6 @@ public class WindowService implements Disposable, Loggable {
                     if (!isMinimized) {
                         startFrame();
                         window.render();
-                        ImGui.popStyleColor(3);
                         ImGui.render();
                         imGuiGl3.renderDrawData(ImGui.getDrawData());
                     }
@@ -205,10 +204,6 @@ public class WindowService implements Disposable, Loggable {
         imGuiGl3.newFrame();
         imGuiGlfw.newFrame();
         ImGui.newFrame();
-
-        ImGui.pushStyleColor(ImGuiCol.Button, window.getNeutralPalette());
-        ImGui.pushStyleColor(ImGuiCol.ButtonHovered, window.getAccentColor());
-        ImGui.pushStyleColor(ImGuiCol.ButtonActive, window.getAccentColor());
     }
 
     private void clearBuffer() {

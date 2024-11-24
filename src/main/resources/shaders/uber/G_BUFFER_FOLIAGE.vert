@@ -11,7 +11,6 @@ layout(std430, binding = 3) buffer TransformationBuffer {
 layout(binding = 10) uniform sampler2D noise;
 uniform vec2 terrainOffset;
 uniform vec3 objectScale;
-uniform int transformOffset;
 
 out mat4 invModelMatrix;
 flat out int isDecalPass;
@@ -24,7 +23,7 @@ void main() {
     isDecalPass = 0;
     invModelMatrix = mat4(0);
 
-    vec3 translation = transformations[gl_InstanceID + transformOffset];
+    vec3 translation = transformations[gl_InstanceID];
     renderingIndex = int(length(translation));
     vec2 normPos = normalize(terrainOffset + translation.xz);
 

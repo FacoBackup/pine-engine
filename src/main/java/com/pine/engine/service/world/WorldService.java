@@ -96,10 +96,13 @@ public class WorldService implements SyncTask, Loggable {
     }
 
     private void addMissingTiles() {
+        int squared = engineRepository.numberOfTiles * engineRepository.numberOfTiles;
         int half = engineRepository.numberOfTiles / 2;
         for (int x = -half; x < half; x++) {
             for (int z = -half; z < half; z++) {
-                repo.worldGrid.createIfAbsent(x, z);
+                if(getTiles().size() + 1 <= squared) {
+                    repo.worldGrid.createIfAbsent(x, z);
+                }
             }
         }
     }

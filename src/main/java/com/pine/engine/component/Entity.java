@@ -1,8 +1,10 @@
 package com.pine.engine.component;
 
 import com.pine.common.Icons;
+import com.pine.common.inspection.Color;
 import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.InspectableField;
+import com.pine.editor.core.UIUtil;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -15,6 +17,9 @@ public class Entity extends Inspectable implements Serializable {
     @InspectableField(label = "Name")
     public String name;
 
+    @InspectableField(label = "Color (container only)")
+    public final Color color = new Color(UIUtil.DIRECTORY_COLOR.x, UIUtil.DIRECTORY_COLOR.y, UIUtil.DIRECTORY_COLOR.z);
+
     @InspectableField(label = "Identifier", disabled = true)
     public final String id;
 
@@ -23,6 +28,8 @@ public class Entity extends Inspectable implements Serializable {
 
     @InspectableField(label = "Render index", disabled = true)
     public int renderIndex;
+
+    public boolean isContainer = false;
 
     public Entity(String id, String name) {
         this.id = id;
@@ -40,7 +47,7 @@ public class Entity extends Inspectable implements Serializable {
 
     @Override
     public String getTitle() {
-        return name;
+        return "Entity metadata";
     }
 
     @Override
@@ -50,5 +57,13 @@ public class Entity extends Inspectable implements Serializable {
 
     public Entity cloneEntity() {
         return new Entity(UUID.randomUUID().toString(), name + " (clone)");
+    }
+
+    public boolean isContainer() {
+        return isContainer;
+    }
+
+    public void setContainer(boolean container) {
+        isContainer = container;
     }
 }

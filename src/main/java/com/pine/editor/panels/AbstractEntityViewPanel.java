@@ -30,7 +30,7 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
     public WorldRepository world;
 
     protected void hotKeys() {
-        if((!ImGui.isWindowHovered() && !isWindowFocused) || ImGuizmo.isUsing()){
+        if (!ImGui.isWindowHovered() || !isWindowFocused || ImGuizmo.isUsing()) {
             return;
         }
         var isNotEmptyOfSelection = !stateRepository.selected.isEmpty();
@@ -46,21 +46,21 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
         }
 
         if (isNotEmptyOfSelection && ImGui.isKeyPressed(ImGuiKey.C)) {
-            messageRepository.pushMessage("Copying "  + stateRepository.selected.size() + " entities", MessageSeverity.WARN);
+            messageRepository.pushMessage("Copying " + stateRepository.selected.size() + " entities", MessageSeverity.WARN);
             stateRepository.copied.clear();
             stateRepository.copied.addAll(stateRepository.selected.keySet());
         }
 
         if (ctrlDown && ImGui.isKeyPressed(ImGuiKey.A)) {
-            for(var tile : worldService.getLoadedTiles()){
-                if(tile != null) {
+            for (var tile : worldService.getLoadedTiles()) {
+                if (tile != null) {
                     selectionService.addAllSelected(world.entityMap.values());
                 }
             }
         }
 
         if (!stateRepository.copied.isEmpty() && ctrlDown && ImGui.isKeyPressed(ImGuiKey.V)) {
-            messageRepository.pushMessage("Pasting "  + stateRepository.copied.size() + " entities", MessageSeverity.WARN);
+            messageRepository.pushMessage("Pasting " + stateRepository.copied.size() + " entities", MessageSeverity.WARN);
             var request = new CopyEntitiesRequest(stateRepository.copied, selectionService.stateRepository.mainSelection);
             requestProcessingService.addRequest(request);
         }
@@ -68,6 +68,6 @@ public abstract class AbstractEntityViewPanel extends AbstractDockPanel {
         hotKeysInternal();
     }
 
-    protected void hotKeysInternal(){
+    protected void hotKeysInternal() {
     }
 }

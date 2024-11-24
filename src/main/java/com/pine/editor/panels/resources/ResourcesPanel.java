@@ -58,20 +58,7 @@ public class ResourcesPanel extends AbstractDockPanel {
 
             render("Terrain triangles rendered", totalTerrainTriangles);
 
-            int total = 0;
-            for (FoliageInstance f : terrainRepository.foliage.values()) {
-                total += f.count;
-                if (f.mesh != null) {
-                    var mesh = (MeshResourceRef) streamingService.streamIn(f.mesh, StreamableResourceType.MESH);
-                    if (mesh != null) {
-                        totalTriangles += mesh.triangleCount * f.count;
-                    }
-                }
-            }
-            totalTriangles += totalTerrainTiles;
-            render("Foliage instances", total);
-
-            render("Triangles being rendered", totalTriangles);
+            render("Triangles being rendered", totalTriangles + totalTerrainTiles);
 
             render("Textures", getTotalTextureCount());
 

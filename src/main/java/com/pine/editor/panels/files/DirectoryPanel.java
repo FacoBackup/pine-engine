@@ -3,6 +3,7 @@ package com.pine.editor.panels.files;
 import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
 import com.pine.editor.core.AbstractView;
+import com.pine.editor.core.UIUtil;
 import com.pine.editor.panels.component.impl.PreviewField;
 import com.pine.editor.repository.EditorRepository;
 import com.pine.editor.repository.FSEntry;
@@ -36,12 +37,7 @@ import java.util.Map;
 import static com.pine.editor.panels.viewport.ViewportPanel.INV_Y;
 
 public class DirectoryPanel extends AbstractView {
-    private static final ImVec4 DIRECTORY_COLOR = new ImVec4(
-            1,
-            0.8352941f,
-            0.38039216f,
-            1
-    );
+
     private static final int CARD_SIZE = 90;
     private static final int TEXT_OFFSET = 28;
     private static final ImVec2 TEXTURE_SIZE = new ImVec2(CARD_SIZE - 15, CARD_SIZE - TEXT_OFFSET - 4);
@@ -111,7 +107,7 @@ public class DirectoryPanel extends AbstractView {
             isSomethingHovered = isSomethingHovered || fEntry.isHovered;
             onClick(fEntry);
             if (fEntry.isDirectory()) {
-                ImGui.textColored(DIRECTORY_COLOR, Icons.folder);
+                ImGui.textColored(UIUtil.DIRECTORY_COLOR, Icons.folder);
             } else if (fEntry.type == StreamableResourceType.TEXTURE) {
                 var texture = streamingService.streamIn(child, StreamableResourceType.TEXTURE);
                 if (texture != null) {

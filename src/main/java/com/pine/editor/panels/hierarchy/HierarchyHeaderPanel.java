@@ -14,7 +14,7 @@ import static com.pine.common.Icons.ONLY_ICON_BUTTON_SIZE;
 public class HierarchyHeaderPanel extends AbstractView {
     private static final String FILTER_OFF_LABEL = Icons.filter_list_off + "##hierarchyFilter";
     private static final String FILTER_ON_LABEL = Icons.filter_list + "##hierarchyFilter";
-    private static final String ADD_LABEL = Icons.add + "##hierarchyAdd";
+    private static final String ADD_LABEL = Icons.inventory_2 + "##hierarchyAdd";
 
     @PInject
     public RequestProcessingService requestProcessingService;

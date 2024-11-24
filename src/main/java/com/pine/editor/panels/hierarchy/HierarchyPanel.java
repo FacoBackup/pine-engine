@@ -2,7 +2,9 @@ package com.pine.editor.panels.hierarchy;
 
 import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
+import com.pine.editor.core.UIUtil;
 import com.pine.editor.panels.AbstractEntityViewPanel;
+import com.pine.editor.repository.EditorRepository;
 import com.pine.editor.service.ThemeService;
 import com.pine.engine.component.AbstractComponent;
 import com.pine.engine.component.Entity;
@@ -27,6 +29,7 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
     private static final ImVec4 TRANSPARENT = new ImVec4(0, 0, 0, 0);
     private static final ImVec2 PADDING = new ImVec2(0, 0);
 
+    private final ImVec4 rowColor = new ImVec4(0, 0, 0, 1);
     private HierarchyHeaderPanel header;
     private Entity onDrag;
     private final ImString search = new ImString();
@@ -37,6 +40,9 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     @PInject
     public ThemeService theme;
+
+    @PInject
+    public EditorRepository editorRepository;
 
     @Override
     public void onInitialize() {
@@ -82,16 +88,29 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
         boolean isSearchMatch = matchSearch(entity);
         ImGui.tableNextRow();
+        if (stateRepository.selected.containsKey(entityId)) {
+            ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg0, editorRepository.accentU32);
+            ImGui.tableSetBgColor(ImGuiTableBgTarget.RowBg1, editorRepository.accentU32);
+        }
         ImGui.tableNextColumn();
         int flags = getFlags(entity);
         boolean open;
 
-        if(world.culled.containsKey(entityId)) {
+        if (world.culled.containsKey(entityId) || world.hiddenEntities.containsKey(entityId)) {
             ImGui.pushStyleColor(ImGuiCol.Text, theme.textDisabled);
-            open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
+            open = isOpen(entity, flags);
             ImGui.popStyleColor();
-        }else{
-            open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
+        } else {
+            if (entity.isContainer()) {
+                rowColor.x = entity.color.x;
+                rowColor.y = entity.color.y;
+                rowColor.z = entity.color.z;
+                ImGui.pushStyleColor(ImGuiCol.Text, rowColor);
+                open = isOpen(entity, flags);
+                ImGui.popStyleColor();
+            } else {
+                open = isOpen(entity, flags);
+            }
         }
 
         if (!Objects.equals(entity.id(), WorldRepository.ROOT_ID)) {
@@ -109,14 +128,20 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
         return isSearchMatch;
     }
 
+    private boolean isOpen(Entity entity, int flags) {
+        boolean open;
+        open = ImGui.treeNodeEx(getNodeLabel(entity, true), flags);
+        return open;
+    }
+
     private @NotNull String getNodeLabel(Entity node, boolean addId) {
-        return (Objects.equals(WorldRepository.ROOT_ID, node.id()) ? Icons.inventory_2 : Icons.view_in_ar) + node.getTitle() + (addId ? ("##" + node.id() + imguiId) : "");
+        return (node.isContainer() ? Icons.inventory_2 : Icons.view_in_ar) + node.name + (addId ? ("##" + node.id() + imguiId) : "");
     }
 
     private boolean matchSearch(Entity node) {
         boolean isSearchMatch = false;
         if (isOnSearch) {
-            isSearchMatch = node.getTitle().contains(search.get());
+            isSearchMatch = node.name.contains(search.get());
             if (isSearchMatch) {
                 searchMatch.put(node.id(), BYTE);
             } else {
@@ -173,9 +198,6 @@ public class HierarchyPanel extends AbstractEntityViewPanel {
 
     private int getFlags(Entity node) {
         int flags = ImGuiTreeNodeFlags.SpanFullWidth;
-        if (stateRepository.selected.containsKey(node.id())) {
-            flags |= ImGuiTreeNodeFlags.Selected;
-        }
         if (isOnSearch) {
             flags |= ImGuiTreeNodeFlags.DefaultOpen;
         }

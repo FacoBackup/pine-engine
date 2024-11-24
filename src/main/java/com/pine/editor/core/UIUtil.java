@@ -10,6 +10,9 @@ import imgui.type.ImBoolean;
 import static com.pine.common.Icons.ONLY_ICON_BUTTON_SIZE;
 
 public class UIUtil {
+    public static final ImVec4 DIRECTORY_COLOR = new ImVec4(
+            188 / 255f, 128 / 255f, 78 / 255f, 1
+    );
     public static final int FIXED_WINDOW_FLAGS = ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
     public static final ImBoolean OPEN = new ImBoolean(true);
     private static final ImVec2 MEDIUM_SPACING = new ImVec2(5, 0);
