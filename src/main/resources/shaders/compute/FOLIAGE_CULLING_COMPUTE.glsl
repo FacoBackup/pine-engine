@@ -58,7 +58,7 @@ bool isEqual(float u, float v){
 }
 
 void doWork(int col, int row){
-    vec2 scaledTexCoord= (cameraWorldPosition.xz + vec2(row, col)) / imageSize;
+    vec2 scaledTexCoord= (vec2(round(cameraWorldPosition.x), round(cameraWorldPosition.z)) + vec2(row, col)) / imageSize;
     if (scaledTexCoord.x <= 1 && scaledTexCoord.x >= 0 && scaledTexCoord.y <= 1 && scaledTexCoord.y >= 0){
         vec3 pixelColor = texture(foliageMask, scaledTexCoord).rgb;
         if (pixelColor == colorToMatch){

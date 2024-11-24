@@ -47,7 +47,7 @@ public abstract class AbstractTerrainDataPanel extends AbstractView {
     public void render() {
         if(ImGui.collapsingHeader(getTitle())){
             ImGui.dummy(0, 8);
-            if (ImGui.button(getTitle() + imguiId)) {
+            if (ImGui.button(Icons.add + "Add new" + imguiId)) {
                 addNewInstance(getDataMap().size() + 1);
             }
             ImGui.dummy(0, 8);

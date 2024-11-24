@@ -97,7 +97,7 @@ public class ThemeService {
         colors[ImGuiCol.ButtonHovered] = accentDarker;
         colors[ImGuiCol.ButtonActive] = editorRepository.accent;
 
-        colors[ImGuiCol.Header] = neutralPalette;
+        colors[ImGuiCol.Header] = editorRepository.accent;
         colors[ImGuiCol.HeaderHovered] = accentDarker;
         colors[ImGuiCol.HeaderActive] = editorRepository.accent;
 

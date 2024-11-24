@@ -57,7 +57,7 @@ public class FBO extends AbstractEngineResource {
         return samplers;
     }
 
-    public com.pine.engine.service.resource.fbo.FBO depthTexture() {
+    public void depthTexture() {
         use();
         this.depthSampler = EngineUtils.createTexture(
                 this.width,
@@ -83,34 +83,25 @@ public class FBO extends AbstractEngineResource {
         );
 
         stop();
-        return this;
     }
 
-    public com.pine.engine.service.resource.fbo.FBO depthTest() {
+    public void depthTest() {
         use();
         this.RBO = GL46.glGenRenderbuffers();
         GL46.glBindRenderbuffer(GL46.GL_RENDERBUFFER, this.RBO);
         GL46.glRenderbufferStorage(GL46.GL_RENDERBUFFER, GL46.GL_DEPTH_COMPONENT24, this.width, this.height);
         GL46.glFramebufferRenderbuffer(GL46.GL_FRAMEBUFFER, GL46.GL_DEPTH_ATTACHMENT, GL46.GL_RENDERBUFFER, this.RBO);
         clearFlag = GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT;
-        return this;
     }
 
-    public com.pine.engine.service.resource.fbo.FBO addSampler() {
-        addSampler(this.width, this.height, 0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false);
-        return this;
-    }
-
-    public com.pine.engine.service.resource.fbo.FBO addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    public void addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         addSampler(this.width, this.height, attachment, precision, format, type, linear, repeat);
-        return this;
     }
 
-    private com.pine.engine.service.resource.fbo.FBO addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+    private void addSampler(int w, int h, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
         use();
         int texture = getTexture(w, h, precision, format, type, linear, repeat);
         registerTexture(attachment, precision, texture);
-        return this;
     }
 
     public void registerTexture(int attachment, int precision, int texture) {

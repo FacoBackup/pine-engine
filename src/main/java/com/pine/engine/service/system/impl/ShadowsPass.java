@@ -29,8 +29,8 @@ public class ShadowsPass extends AbstractPass {
                 fboService.dispose(bufferRepository.shadowsBuffer);
             }
 
-            bufferRepository.shadowsBuffer = fboService.create(new FBOCreationData(engineRepository.sunShadowsResolution, engineRepository.sunShadowsResolution, true, true));
-            bufferRepository.shadowsSampler = bufferRepository.shadowsBuffer.depthTest().getDepthSampler();
+            bufferRepository.shadowsBuffer = fboService.create(new FBOCreationData(engineRepository.sunShadowsResolution, engineRepository.sunShadowsResolution, true).addDepthSampler("Sun Shadows"));
+            bufferRepository.shadowsSampler = bufferRepository.shadowsBuffer.getDepthSampler();
         }
         return (clockRepository.totalTime - sinceLastRun) >= engineRepository.updateSunShadowsEvery;
     }

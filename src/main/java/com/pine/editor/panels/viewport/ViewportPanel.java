@@ -23,7 +23,7 @@ public class ViewportPanel extends AbstractViewportPanel {
     @PInject
     public ViewportPickingService viewportPickingService;
 
-    private AbstractView headerPanel;
+    private ViewportHeaderPanel headerPanel;
     private AbstractView cameraPanel;
     private GizmoPanel gizmoPanel;
 
@@ -41,6 +41,9 @@ public class ViewportPanel extends AbstractViewportPanel {
         hotKeys();
         tick();
 
+        if(headerPanel.getViewBuffer() == -1){
+            headerPanel.setViewBuffer(fbo.getMainSampler());
+        }
         renderFrame();
 
         if (editorRepository.editorMode == EditorMode.TRANSFORM) {
@@ -48,6 +51,11 @@ public class ViewportPanel extends AbstractViewportPanel {
         }
         headerPanel.render();
         cameraPanel.render();
+    }
+
+    @Override
+    protected int getSampler() {
+        return headerPanel.getViewBuffer();
     }
 
     @Override

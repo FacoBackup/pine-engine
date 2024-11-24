@@ -87,7 +87,7 @@ public class EnvironmentMapGenService implements Loggable {
     private void capture(String resourceId, Vector3f cameraPosition) {
         getLogger().warn("Baking probe {} at position X{} Y{} Z{}", resourceId, cameraPosition.x, cameraPosition.y, cameraPosition.z);
         int baseResolution = engineRepository.probeCaptureResolution;
-        var fbo = fboService.create(new FBOCreationData(baseResolution, baseResolution, false, false).addSampler());
+        var fbo = fboService.create(new FBOCreationData(baseResolution, baseResolution, false).addSampler("Environment map"));
         engine.setTargetFBO(fbo);
         for (int i = 0; i < CubeMapFace.values().length; i++) {
             generate(i, resourceId, cameraPosition);

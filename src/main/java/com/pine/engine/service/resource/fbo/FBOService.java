@@ -3,8 +3,12 @@ package com.pine.engine.service.resource.fbo;
 import com.pine.common.injection.PBean;
 import com.pine.engine.service.resource.AbstractResourceService;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @PBean
 public class FBOService extends AbstractResourceService<FBO, FBOCreationData> {
+    public final Map<String, FBOCreationData> data = new HashMap<>();
     private FBO current;
 
     @Override
@@ -18,13 +22,16 @@ public class FBOService extends AbstractResourceService<FBO, FBOCreationData> {
             h = data.getH();
         }
         var fbo = new FBO(w, h);
+        this.data.put(fbo.id, data);
         data.getSamplers().forEach(color -> {
-            fbo.addSampler(color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
+            if (color.isDepth()) {
+                fbo.depthTexture();
+                color.setId(fbo.getDepthSampler());
+            } else {
+                fbo.addSampler(color.attachment(), color.precision(), color.format(), color.type(), color.linear(), color.repeat());
+                color.setId(fbo.getSamplers().getLast());
+            }
         });
-
-        if (data.isDepthTexture()) {
-            fbo.depthTexture();
-        }
 
         if (data.isDepthTest()) {
             fbo.depthTest();
@@ -46,5 +53,11 @@ public class FBOService extends AbstractResourceService<FBO, FBOCreationData> {
         }
         current = instance;
         current.use();
+    }
+
+    @Override
+    public void dispose(FBO instance) {
+        super.dispose(instance);
+        this.data.remove(instance.id);
     }
 }

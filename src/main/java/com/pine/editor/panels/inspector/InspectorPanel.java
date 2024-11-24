@@ -4,9 +4,11 @@ import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
 import com.pine.common.inspection.FieldDTO;
 import com.pine.common.inspection.Inspectable;
+import com.pine.editor.core.AbstractView;
 import com.pine.editor.core.dock.AbstractDockPanel;
 import com.pine.editor.panels.component.FormPanel;
 import com.pine.editor.repository.EditorRepository;
+import com.pine.editor.service.ThemeService;
 import com.pine.engine.component.Entity;
 import com.pine.engine.repository.WorldRepository;
 import com.pine.engine.repository.terrain.TerrainRepository;
@@ -14,6 +16,7 @@ import com.pine.engine.service.rendering.RequestProcessingService;
 import com.pine.engine.service.request.UpdateFieldRequest;
 import com.pine.engine.service.world.WorldService;
 import imgui.ImGui;
+import imgui.flag.ImGuiCol;
 import imgui.type.ImString;
 
 import java.util.ArrayList;
@@ -32,12 +35,15 @@ public class InspectorPanel extends AbstractDockPanel {
     @PInject
     public TerrainRepository terrainRepository;
     @PInject
+    public ThemeService theme;
+    @PInject
     public List<Inspectable> repositories;
 
     private String selectedId;
     private final ImString fieldSearch = new ImString();
     private final List<FormPanel> dynamicForms = new ArrayList<>();
     private final List<FormPanel> staticForms = new ArrayList<>();
+    private final List<AbstractView> additional = new ArrayList<>();
 
     @Override
     public void onInitialize() {
@@ -47,8 +53,8 @@ public class InspectorPanel extends AbstractDockPanel {
             staticForms.add(form);
             form.setCompactMode(true);
         }
-        appendChild(new FoliagePanel());
-        appendChild(new MaterialPanel());
+        additional.add(appendChild(new FoliagePanel()));
+        additional.add(appendChild(new MaterialPanel()));
     }
 
     private void handleChange(FieldDTO dto, Object newValue) {
@@ -73,6 +79,15 @@ public class InspectorPanel extends AbstractDockPanel {
             for (var form : staticForms) {
                 form.setSearch(search);
                 form.render();
+            }
+            if(search.isEmpty()) {
+                ImGui.separator();
+                ImGui.pushStyleColor(ImGuiCol.Header, theme.neutralPalette);
+
+                for (AbstractView form : additional) {
+                    form.render();
+                }
+                ImGui.popStyleColor();
             }
         }
         ImGui.endChild();

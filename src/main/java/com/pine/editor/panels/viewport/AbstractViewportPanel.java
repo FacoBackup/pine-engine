@@ -39,20 +39,24 @@ public abstract class AbstractViewportPanel extends AbstractEntityViewPanel {
     @PInject
     public FBOService fboService;
 
-    private FBO fbo;
+    protected FBO fbo;
     protected final ImVec2 sizeVec = new ImVec2();
     private boolean isFirstMovement;
     protected ImGuiIO io;
 
     @Override
     public void onInitialize() {
-        this.fbo = fboService.create(new FBOCreationData(engine.runtimeRepository.getDisplayW(), engine.runtimeRepository.getDisplayH(), false, false).addSampler());
+        this.fbo = fboService.create(new FBOCreationData(engine.runtimeRepository.getDisplayW(), engine.runtimeRepository.getDisplayH(), false).addSampler("Viewport"));
         io = ImGui.getIO();
     }
 
     final protected void renderFrame() {
         engine.render();
-        ImGui.image(engine.getTargetFBO().getMainSampler(), sizeVec, ViewportPanel.INV_Y, ViewportPanel.INV_X);
+        ImGui.image(getSampler(), sizeVec, ViewportPanel.INV_Y, ViewportPanel.INV_X);
+    }
+
+    protected int getSampler() {
+        return engine.getTargetFBO().getMainSampler();
     }
 
     final protected void updateCamera() {

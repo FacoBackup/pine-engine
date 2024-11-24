@@ -126,26 +126,27 @@ public class CoreBufferRepository implements Initializable {
         final int halfResH = runtimeRepository.getDisplayH() / 2;
 
         // TOOLS
-        outlineBuffer = fboService.create(new FBOCreationData(displayW, displayH, false, false).addSampler(0, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false));
+        outlineBuffer = fboService.create(new FBOCreationData(displayW, displayH, false)
+                .addSampler("Tool outline", 0, GL46.GL_R16F, GL46.GL_RED, GL46.GL_FLOAT, false, false));
         outlineSampler = outlineBuffer.getSamplers().getFirst();
         icons = TextureUtil.loadTextureFromResource("/textures/icons.png");
         // TOOLS
 
-        windNoiseBuffer = fboService.create(new FBOCreationData(256, 256, false, false)
-                .addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, true));
+        windNoiseBuffer = fboService.create(new FBOCreationData(256, 256, false)
+                .addSampler("Wind noise", 0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, true));
         windNoiseSampler = windNoiseBuffer.getSamplers().getFirst();
 
-        brdfFBO = fboService.create(new FBOCreationData(512, 512, false, false)
-                .addSampler(0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false));
+        brdfFBO = fboService.create(new FBOCreationData(512, 512, false)
+                .addSampler("BRDF LUT", 0, GL46.GL_RG16F, GL46.GL_RG, GL46.GL_FLOAT, false, false));
         brdfSampler = brdfFBO.getSamplers().getFirst();
 
         createGBuffer(displayW, displayH);
         createMainBuffers(displayW, displayH);
 
-        ssao = fboService.create(new FBOCreationData(halfResW, halfResH, false, false)
-                .addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false));
-        ssaoBlurred = fboService.create(new FBOCreationData(halfResW, halfResH, false, false)
-                .addSampler(0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false));
+        ssao = fboService.create(new FBOCreationData(halfResW, halfResH, false)
+                .addSampler("SSAO raw", 0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false));
+        ssaoBlurred = fboService.create(new FBOCreationData(halfResW, halfResH, false)
+                .addSampler("SSAO final", 0, GL46.GL_R8, GL46.GL_RED, GL46.GL_UNSIGNED_BYTE, true, false));
 
         int Q = 7;
         int w = runtimeRepository.getDisplayW();
@@ -153,14 +154,14 @@ public class CoreBufferRepository implements Initializable {
         for (int i = 0; i < Q; i++) {
             w /= 2;
             h /= 2;
-            downscaleBloom.add(fboService.create(new FBOCreationData(w, h, false, false)
-                    .addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false)));
+            downscaleBloom.add(fboService.create(new FBOCreationData(w, h, false)
+                    .addSampler("Bloom downscale " + i * 2, 0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false)));
         }
         for (int i = 0; i < (Q / 2 - 1); i++) {
             w *= 4;
             h *= 4;
-            upscaleBloom.add(fboService.create(new FBOCreationData(w, h, false, false)
-                    .addSampler(0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false)));
+            upscaleBloom.add(fboService.create(new FBOCreationData(w, h, false)
+                    .addSampler("Bloom upscale " + i * 4, 0, GL46.GL_RGBA, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false)));
         }
 
         ssaoBlurredSampler = ssaoBlurred.getSamplers().getFirst();
@@ -183,17 +184,17 @@ public class CoreBufferRepository implements Initializable {
     }
 
     private void createGBuffer(int displayW, int displayH) {
-        gBuffer = fboService.create(new FBOCreationData(displayW, displayH, false, true)
-                .addSampler(0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false) // Albedo + Emissive flag
-                .addSampler(1, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Normal
-                .addSampler(2, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Roughness + Metallic + AO
+        gBuffer = fboService.create(new FBOCreationData(displayW, displayH, true)
+                .addSampler("G-Buffer albedo", 0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false) // Albedo + Emissive flag
+                .addSampler("G-Buffer normal", 1, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Normal
+                .addSampler("G-Buffer roughness | metallic | AO", 2, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false) // Roughness + Metallic + AO
 
                 // X channel: 16 bits for anisotropicRotation + 16 bits for anisotropy
                 // Y channel: 16 bits for clearCoat + 16 bits for sheen
                 // Z channel: 16 bits for sheenTint + 15 bits for renderingMode + 1 bit for ssrEnabled
-                .addSampler(3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
-                .addSampler(4, GL46.GL_RGBA32F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index + UV
-                .addSampler(5, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false));
+                .addSampler("G-Buffer material info", 3, GL46.GL_RGB32F, GL46.GL_RGB, GL46.GL_FLOAT, false, false)
+                .addSampler("G-Buffer depth | render index | uv", 4, GL46.GL_RGBA32F, GL46.GL_RED, GL46.GL_FLOAT, false, false) // Log depth + render index + UV
+                .addSampler("G-Buffer indirect illumination", 5, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false));
         gBufferAlbedoSampler = gBuffer.getSamplers().get(0);
         gBufferNormalSampler = gBuffer.getSamplers().get(1);
         gBufferRMAOSampler = gBuffer.getSamplers().get(2);
@@ -203,24 +204,24 @@ public class CoreBufferRepository implements Initializable {
     }
 
     private void createMainBuffers(int displayW, int displayH) {
-        gBufferTarget = fboService.create(new FBOCreationData(displayW, displayH, false, true)
-                .addSampler(0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false));
+        gBufferTarget = fboService.create(new FBOCreationData(displayW, displayH, true)
+                .addSampler("Shaded G-Buffer", 0, GL46.GL_RGBA16F, GL46.GL_RGBA, GL46.GL_FLOAT, false, false));
         gBufferTargetSampler = gBufferTarget.getSamplers().getFirst();
 
-        compositingBuffer = fboService.create(new FBOCreationData(displayW, displayH, false, false)
-                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false));
+        compositingBuffer = fboService.create(new FBOCreationData(displayW, displayH, false)
+                .addSampler("Compositing", 0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, false, false));
         compositingSampler = compositingBuffer.getSamplers().getFirst();
 
-        auxBufferQuaterRes = fboService.create(new FBOCreationData(displayW / 4, displayH / 4, false, false)
-                .addSampler(0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, true, false));
+        auxBufferQuaterRes = fboService.create(new FBOCreationData(displayW / 4, displayH / 4, false)
+                .addSampler("Aux compositing", 0, GL46.GL_RGB16F, GL46.GL_RGB, GL46.GL_FLOAT, true, false));
         auxBufferQuaterResSampler = auxBufferQuaterRes.getMainSampler();
 
-        postProcessingBuffer = fboService.create(new FBOCreationData(displayW, displayH, false, false)
-                .addSampler(0, GL46.GL_RGB, GL46.GL_RGB, GL46.GL_UNSIGNED_BYTE, false, false));
+        postProcessingBuffer = fboService.create(new FBOCreationData(displayW, displayH, false)
+                .addSampler("Post processing", 0, GL46.GL_RGB, GL46.GL_RGB, GL46.GL_UNSIGNED_BYTE, false, false));
         postProcessingSampler = postProcessingBuffer.getSamplers().getFirst();
 
-        sceneDepthCopy = fboService.create(new FBOCreationData(displayW, displayH, false, false)
-                .addSampler(0, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_FLOAT, false, false));
+        sceneDepthCopy = fboService.create(new FBOCreationData(displayW, displayH, false)
+                .addSampler("Scene depth copy", 0, GL46.GL_RG32F, GL46.GL_RG, GL46.GL_FLOAT, false, false));
         sceneDepthCopySampler = sceneDepthCopy.getSamplers().getFirst();
     }
 }

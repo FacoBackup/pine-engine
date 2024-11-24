@@ -13,8 +13,7 @@ public class FBOCreationData implements IResourceCreationData {
     private final Integer w;
     private final Integer h;
 
-    public FBOCreationData(int w, int h, boolean depthTexture, boolean depthTest) {
-        this.depthTexture = depthTexture;
+    public FBOCreationData(int w, int h, boolean depthTest) {
         this.depthTest = depthTest;
         this.w = w;
         this.h = h;
@@ -36,27 +35,22 @@ public class FBOCreationData implements IResourceCreationData {
         return depthTexture;
     }
 
-    public FBOCreationData addSampler(int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
-        colors.add(new FBOTextureData(attachment, precision, format, type, linear, repeat));
+    public FBOCreationData addSampler(String name, int attachment, int precision, int format, int type, boolean linear, boolean repeat) {
+        colors.add(new FBOTextureData(name, attachment, precision, format, type, linear, repeat));
         return this;
     }
 
-    public FBOCreationData addSampler() {
-        addSampler(0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false);
+    public FBOCreationData addSampler(String name) {
+        addSampler(name, 0, GL46.GL_RGBA8, GL46.GL_RGBA, GL46.GL_UNSIGNED_BYTE, false, false);
+        return this;
+    }
+
+    public FBOCreationData addDepthSampler(String name) {
+        colors.add(new FBOTextureData(name));
         return this;
     }
 
     public boolean isDepthTest() {
         return depthTest;
-    }
-
-    public FBOCreationData setDepthTest(boolean depthTest) {
-        this.depthTest = depthTest;
-        return this;
-    }
-
-    public FBOCreationData setDepthTexture(boolean depthTexture) {
-        this.depthTexture = depthTexture;
-        return this;
     }
 }

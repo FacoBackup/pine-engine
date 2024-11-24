@@ -1,13 +1,17 @@
 package com.pine.editor.panels.component;
 
+import com.pine.common.injection.PInject;
 import com.pine.common.inspection.FieldDTO;
 import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.MethodDTO;
 import com.pine.editor.core.AbstractView;
 import com.pine.editor.panels.component.impl.*;
+import com.pine.editor.repository.EditorRepository;
+import com.pine.editor.service.ThemeService;
 import com.pine.engine.inspection.ResourceTypeField;
 import com.pine.engine.inspection.TypePreviewField;
 import imgui.ImGui;
+import imgui.flag.ImGuiCol;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +24,9 @@ public class FormPanel extends AbstractView {
     private String search;
     private boolean compactMode;
     private boolean somethingMatches;
+
+    @PInject
+    public ThemeService theme;
 
     public FormPanel(BiConsumer<FieldDTO, Object> changeHandler) {
         this.changeHandler = changeHandler;
@@ -108,6 +115,7 @@ public class FormPanel extends AbstractView {
     @Override
     public void render() {
         if (inspectable != null) {
+            ImGui.pushStyleColor(ImGuiCol.Header, theme.neutralPalette);
             if (search == null || search.isEmpty()) {
                 if (compactMode) {
                     if (ImGui.collapsingHeader(inspectable.getIcon() + inspectable.getTitle() + imguiId)) {
@@ -137,6 +145,7 @@ public class FormPanel extends AbstractView {
                     }
                 }
             }
+            ImGui.popStyleColor();
         }
     }
 
