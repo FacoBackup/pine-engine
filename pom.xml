@@ -6,17 +6,15 @@
     <groupId>com.pine</groupId>
     <artifactId>pineengine</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>pine-engine</name>
     <description>pine-engine</description>
 
-    <modules>
-        <module>engine</module>
-        <module>editor</module>
-        <module>common</module>
-    </modules>
-
     <properties>
+        <maven.compiler.source>22</maven.compiler.source>
+        <maven.compiler.target>22</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <lwjgl.version>3.3.4</lwjgl.version>
         <lwjgl.natives>natives-windows</lwjgl.natives>
     </properties>
@@ -210,6 +208,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -226,5 +225,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
