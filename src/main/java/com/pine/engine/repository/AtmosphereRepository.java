@@ -59,7 +59,7 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     public Color nightColor = new Color(.1f, .1f, .1f);
 
     @InspectableField(group = "Sun", label = "Midday color")
-    public Color middayColor = new Color(1, 1, 1);
+    public Color middayColor = new Color(.9f, .9f, .9f);
 
     @InspectableField(label = "Screen space shadows")
     public boolean screenSpaceShadows = false;
@@ -93,44 +93,32 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @InspectableField(group = "Clouds", label = "Layer altitude")
     public int cloudsAltitude = 1000;
 
-    @InspectableField(group = "Cloud detail", label = "Detail noise scale", min = 0)
-    public float detailNoiseScale = 1;
-    @InspectableField(group = "Cloud detail", label = "Detail noise weight", min = 1)
-    public float detailNoiseWeight = 1;
-    @InspectableField(group = "Cloud detail", label = "Detail noise weights", min = 0)
-    public Vector3f detailWeights = new Vector3f(0, 0, 1);
-    @InspectableField(group = "Cloud detail", label = "Detail offset")
-    public Vector3f detailOffset = new Vector3f(0);
-    @InspectableField(group = "Cloud detail", label = "Detail scroll speed", min = 0, max = 1)
+    @InspectableField(group = "Clouds", label = "Detail noise scale", min = 0)
+    public float detailNoiseScale = 2;
+    @InspectableField(group = "Clouds", label = "Detail scroll speed", min = 0)
     public float detailScrollSpeed = 1;
-
-    @InspectableField(group = "Cloud shape", label = "Shape noise weights")
-    public Vector4f shapeNoiseWeights = new Vector4f(0, 0, 1, -.75f);
-    @InspectableField(group = "Cloud shape", label = "Shape offset")
-    public Vector3f shapeOffset = new Vector3f(0);
-    @InspectableField(group = "Cloud shape", label = "Shape scroll speed", min = 0)
+    @InspectableField(group = "Clouds", label = "Shape scroll speed", min = 0)
     public float shapeScrollSpeed = 1;
+    @InspectableField(group = "Clouds", label = "Erosion strength", min = 1)
+    public float cloudErosionStrength = 52;
+
 
     @InspectableField(group = "Clouds", label = "Density multiplier", min = 0)
     public float densityMultiplier = 1;
-    @InspectableField(group = "Clouds", label = "Density offset", min = 0)
-    public float densityOffset = 0;
-    @InspectableField(group = "Clouds", label = "Scale", min = 0)
-    public float scale = .2f;
+    @InspectableField(group = "Clouds", label = "Cloud coverage", min = 0)
+    public float cloudCoverage = 0;
+    @InspectableField(group = "Clouds", label = "Scale", min = 1)
+    public float scale = 3;
 
-    @InspectableField(group = "Clouds", label = "Phase params")
-    public Vector4f phaseParams = new Vector4f(0, 0, .3f, 1);
     @InspectableField(group = "Clouds", label = "Light step count", max = 10, min = 0)
     public int numStepsLight = 5;
     @InspectableField(group = "Clouds", label = "Ray offset strength", min = 0)
-    public float rayOffsetStrength = 1;
+    public float rayOffsetStrength = 10;
 
     @InspectableField(group = "Clouds", label = "Light absorption toward sun", min = 0, max = 1)
-    public float lightAbsorptionTowardSun = 1;
+    public float lightAbsorptionTowardSun = .5f;
     @InspectableField(group = "Clouds", label = "Light absorption through cloud", min = 0, max = 1)
-    public float lightAbsorptionThroughCloud = .5f;
-    @InspectableField(group = "Clouds", label = "Darkness threshold", min = 0, max = 1)
-    public float darknessThreshold = 0;
+    public float lightAbsorptionThroughCloud = .175f;
 
     public final Matrix4f lightSpaceMatrix = new Matrix4f();
     public final Matrix4f lightViewMatrix = new Matrix4f();

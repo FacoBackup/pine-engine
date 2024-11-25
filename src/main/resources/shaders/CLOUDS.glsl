@@ -2,37 +2,22 @@ layout(binding = 0) uniform sampler3D uShapeNoise;
 layout(binding = 1) uniform sampler3D uDetailNoise;
 
 uniform float densityMultiplier;
-uniform float densityOffset;
+uniform float cloudCoverage;
 uniform float scale;
 uniform float detailNoiseScale;
-uniform float detailNoiseWeight;
-uniform vec3 detailWeights;
-uniform vec4 shapeNoiseWeights;
+uniform float cloudErosionStrength;
 uniform vec4 phaseParams;
 uniform int numStepsLight;
 uniform float rayOffsetStrength;
 uniform vec3 boundsMin;
 uniform vec3 boundsMax;
-uniform vec3 shapeOffset;
-uniform vec3 detailOffset;
 uniform float lightAbsorptionTowardSun;
 uniform float lightAbsorptionThroughCloud;
-uniform float darknessThreshold;
 uniform float baseSpeed;
 uniform float detailSpeed;
 
 float remap(float v, float minOld, float maxOld, float minNew, float maxNew) {
     return minNew + (v-minOld) * (maxNew - minNew) / (maxOld-minOld);
-}
-
-vec2 squareUV(vec2 uv) {
-    float width = bufferResolution.x;
-    float height = bufferResolution.y;
-    //float minDim = min(width, height);
-    float scale = 1000;
-    float x = uv.x * width;
-    float y = uv.y * height;
-    return vec2 (x/scale, y/scale);
 }
 
 // Returns (dstToBox, dstInsideBox). If ray misses box, dstInsideBox will be zero
@@ -52,22 +37,6 @@ vec2 rayBoxDst(vec3 boundsMin, vec3 boundsMax, vec3 rayOrigin, vec3 invRaydir) {
     return vec2(dstToBox, dstInsideBox);
 }
 
-// Henyey-Greenstein
-float hg(float a, float g) {
-    float g2 = g*g;
-    return (1-g2) / (4*3.1415*pow(1+g2-2*g*(a), 1.5));
-}
-
-float phase(float a) {
-    float blend = .5;
-    float hgBlend = hg(a, phaseParams.x) * (1-blend) + hg(a, -phaseParams.y) * blend;
-    return phaseParams.z + hgBlend*phaseParams.w;
-}
-
-float remap01(float v, float low, float high) {
-    return (v-low)/(high-low);
-}
-
 float sampleDensity(vec3 rayPos) {
     // Constants:
     const int mipLevel = 0;
@@ -77,7 +46,7 @@ float sampleDensity(vec3 rayPos) {
     vec3 size = boundsMax - boundsMin;
     vec3 boundsCentre = (boundsMin+boundsMax) * .5;
     vec3 uvw = (size * .5 + rayPos) * baseScale * scale;
-    vec3 shapeSamplePos = uvw + shapeOffset * offsetSpeed + vec3(timeOfDay, timeOfDay*0.1, timeOfDay*0.2) * baseSpeed;
+    vec3 shapeSamplePos = uvw + offsetSpeed + vec3(timeOfDay, timeOfDay*0.1, timeOfDay*0.2) * baseSpeed;
 
     // Calculate falloff at along x/z edges of the cloud container
     const float containerEdgeFadeDst = 50;
@@ -94,23 +63,21 @@ float sampleDensity(vec3 rayPos) {
 
     // Calculate base shape density
     vec4 shapeNoise = texture(uShapeNoise, shapeSamplePos, mipLevel);
-    vec4 normalizedShapeWeights = shapeNoiseWeights / dot(shapeNoiseWeights, vec4(1));
-    float shapeFBM = dot(shapeNoise, normalizedShapeWeights) * heightGradient;
-    float baseShapeDensity = shapeFBM + densityOffset * .1;
+    float shapeFBM = dot(shapeNoise, vec4(0.25)) * heightGradient;
+    float baseShapeDensity = shapeFBM + cloudCoverage * .1;
 
     // Save sampling from detail tex if shape density <= 0
     if (baseShapeDensity > 0) {
         // Sample detail noise
 
-        vec3 detailSamplePos = uvw*detailNoiseScale + detailOffset * offsetSpeed + vec3(timeOfDay*.4, -timeOfDay, timeOfDay*0.1)*detailSpeed;
-        vec3 detailNoise = texture(uDetailNoise, detailSamplePos, mipLevel).rgb;
-        vec3 normalizedDetailWeights = detailWeights / dot(detailWeights, vec3(1));
-        float detailFBM = dot(detailNoise, normalizedDetailWeights);
+        vec3 detailSamplePos = uvw*detailNoiseScale + offsetSpeed + vec3(timeOfDay*.4, -timeOfDay, timeOfDay*0.1)*detailSpeed;
+        vec4 detailNoise = texture(uDetailNoise, detailSamplePos, mipLevel);
+        float detailFBM = dot(detailNoise, vec4(.25));
 
         // Subtract detail noise from base shape (weighted by inverse density so that edges get eroded more than centre)
         float oneMinusShape = 1 - shapeFBM;
         float detailErodeWeight = oneMinusShape * oneMinusShape * oneMinusShape;
-        float cloudDensity = baseShapeDensity - (1-detailFBM) * detailErodeWeight * detailNoiseWeight;
+        float cloudDensity = baseShapeDensity - (1-detailFBM) * detailErodeWeight * cloudErosionStrength;
 
         return cloudDensity * densityMultiplier * 0.1;
     }
@@ -119,7 +86,7 @@ float sampleDensity(vec3 rayPos) {
 
 // Calculate proportion of light that reaches the given point from the lightsource
 float lightmarch(vec3 position) {
-    vec3 dirToLight = sunLightDirection.xyz;
+    vec3 dirToLight = normalize(sunLightDirection.xyz);
     float dstInsideBox = rayBoxDst(boundsMin, boundsMax, position, 1/dirToLight).y;
 
     float stepSize = dstInsideBox/numStepsLight;
@@ -130,8 +97,7 @@ float lightmarch(vec3 position) {
         totalDensity += max(0, sampleDensity(position) * stepSize);
     }
 
-    float transmittance = exp(-totalDensity * lightAbsorptionTowardSun);
-    return darknessThreshold + transmittance * (1-darknessThreshold);
+    return exp(-totalDensity * lightAbsorptionTowardSun);
 }
 
 // Hash function for pseudo-random numbers
@@ -155,6 +121,35 @@ float blueNoise(vec2 uv) {
     return mix(mix(a, b, blend.x), mix(c, d, blend.x), blend.y);
 }
 
+
+
+float beer_law(float density)
+{
+    float d = -density * lightAbsorptionTowardSun;
+    return max(exp(d), exp(d * 0.5f) * 0.7f);
+}
+
+// ------------------------------------------------------------------
+float u_HenyeyGreensteinGForward = 0.4f;
+float u_HenyeyGreensteinGBackward = 0.179f;
+float henyey_greenstein_phase(float cos_angle, float g)
+{
+    float g2 = g * g;
+    return ((1.0f - g2) / pow(1.0f + g2 - 2.0f * g * cos_angle, 1.5f)) / 4.0f * 3.1415f;
+}
+float powder_effect(float _density, float _cos_angle)
+{
+    float powder = 1.0f - exp(-_density * 2.0f);
+    return mix(1.0f, powder, clamp((-_cos_angle * 0.5f) + 0.5f, 0.0f, 1.0f));
+}
+float calculate_light_energy(float _density, float _cos_angle, float _powder_density)
+{
+    float beer_powder = 2.0f * beer_law(_density) * powder_effect(_powder_density, _cos_angle);
+    float HG = max(henyey_greenstein_phase(_cos_angle, u_HenyeyGreensteinGForward), henyey_greenstein_phase(_cos_angle, u_HenyeyGreensteinGBackward)) * 0.07f + 0.8f;
+    return beer_powder * HG;
+}
+
+
 vec4 computeClouds(vec3 rayDir){
     // Create ray
     vec3 rayPos = cameraWorldPosition.xyz;
@@ -169,11 +164,9 @@ vec4 computeClouds(vec3 rayDir){
 
     vec3 entryPoint = rayPos + rayDir * dstToBox;
 
-    float randomOffset = blueNoise(texCoords);
-    randomOffset *= rayOffsetStrength;
+    float randomOffset = blueNoise(texCoords) * rayOffsetStrength;
 
-    float cosAngle = dot(rayDir, sunLightDirection.xyz);
-    float phaseVal = phase(cosAngle);
+    float cosAngle = dot(rayDir, normalize(sunLightDirection.xyz));
 
     float dstTravelled = randomOffset;
     float dstLimit = min(dstToBox, dstInsideBox);
@@ -183,6 +176,7 @@ vec4 computeClouds(vec3 rayDir){
 
     // March through volume:
     float transmittance = 1;
+    float alpha = 0;
     vec3 lightEnergy = vec3(0);
 
     while (dstTravelled < dstLimit) {
@@ -191,7 +185,9 @@ vec4 computeClouds(vec3 rayDir){
 
         if (density > 0) {
             float lightTransmittance = lightmarch(rayPos);
-            lightEnergy += density * stepSize * transmittance * lightTransmittance * phaseVal;
+            float phaseVal = 1; // TODO
+            alpha += (1.0f - transmittance) * (1.0f - alpha);
+            lightEnergy += calculate_light_energy(density * stepSize, cosAngle, lightTransmittance * stepSize) * sunLightColor.rgb * alpha * transmittance * density;
             transmittance *= exp(-density * stepSize * lightAbsorptionThroughCloud);
 
             // Exit early if T is close to zero as further samples won't affect the result much
@@ -201,5 +197,5 @@ vec4 computeClouds(vec3 rayDir){
         }
         dstTravelled += stepSize;
     }
-    return vec4(lightEnergy * sunLightColor.rgb, 1 - transmittance);
+    return vec4(lightEnergy, 1 - transmittance);
 }

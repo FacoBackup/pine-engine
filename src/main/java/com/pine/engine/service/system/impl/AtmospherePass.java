@@ -14,19 +14,14 @@ public class AtmospherePass extends AbstractQuadPass {
     private boolean hasSamplersComputed = false;
 
     private UniformDTO densityMultiplier;
-    private UniformDTO densityOffset;
+    private UniformDTO cloudCoverage;
     private UniformDTO scale;
     private UniformDTO detailNoiseScale;
-    private UniformDTO detailNoiseWeight;
-    private UniformDTO detailWeights;
-    private UniformDTO shapeNoiseWeights;
-    private UniformDTO phaseParams;
+    private UniformDTO cloudErosionStrength;
     private UniformDTO numStepsLight;
     private UniformDTO rayOffsetStrength;
     private UniformDTO boundsMin;
     private UniformDTO boundsMax;
-    private UniformDTO shapeOffset;
-    private UniformDTO detailOffset;
     private UniformDTO lightAbsorptionTowardSun;
     private UniformDTO lightAbsorptionThroughCloud;
     private UniformDTO darknessThreshold;
@@ -60,22 +55,16 @@ public class AtmospherePass extends AbstractQuadPass {
         samples = addUniformDeclaration("samples");
 
         densityMultiplier = addUniformDeclaration("densityMultiplier");
-        densityOffset = addUniformDeclaration("densityOffset");
+        cloudCoverage = addUniformDeclaration("cloudCoverage");
         scale = addUniformDeclaration("scale");
         detailNoiseScale = addUniformDeclaration("detailNoiseScale");
-        detailNoiseWeight = addUniformDeclaration("detailNoiseWeight");
-        detailWeights = addUniformDeclaration("detailWeights");
-        shapeNoiseWeights = addUniformDeclaration("shapeNoiseWeights");
-        phaseParams = addUniformDeclaration("phaseParams");
+        cloudErosionStrength = addUniformDeclaration("cloudErosionStrength");
         numStepsLight = addUniformDeclaration("numStepsLight");
         rayOffsetStrength = addUniformDeclaration("rayOffsetStrength");
         boundsMin = addUniformDeclaration("boundsMin");
         boundsMax = addUniformDeclaration("boundsMax");
-        shapeOffset = addUniformDeclaration("shapeOffset");
-        detailOffset = addUniformDeclaration("detailOffset");
         lightAbsorptionTowardSun = addUniformDeclaration("lightAbsorptionTowardSun");
         lightAbsorptionThroughCloud = addUniformDeclaration("lightAbsorptionThroughCloud");
-        darknessThreshold = addUniformDeclaration("darknessThreshold");
         baseSpeed = addUniformDeclaration("baseSpeed");
         detailSpeed = addUniformDeclaration("detailSpeed");
     }
@@ -124,14 +113,11 @@ public class AtmospherePass extends AbstractQuadPass {
     protected void bindUniforms() {
         shaderService.bindSampler3dDirect(bufferRepository.cloudShapeTexture, 0);
         shaderService.bindSampler3dDirect(bufferRepository.cloudNoiseTexture, 1);
-        shaderService.bindFloat(atmosphere.densityMultiplier, densityMultiplier);
-        shaderService.bindFloat(atmosphere.densityOffset, densityOffset);
-        shaderService.bindFloat(atmosphere.scale, scale);
+        shaderService.bindFloat(atmosphere.densityMultiplier/10, densityMultiplier);
+        shaderService.bindFloat(atmosphere.cloudCoverage, cloudCoverage);
+        shaderService.bindFloat(atmosphere.scale/100, scale);
         shaderService.bindFloat(atmosphere.detailNoiseScale, detailNoiseScale);
-        shaderService.bindFloat(atmosphere.detailNoiseWeight, detailNoiseWeight);
-        shaderService.bindVec3(atmosphere.detailWeights, detailWeights);
-        shaderService.bindVec4(atmosphere.shapeNoiseWeights, shapeNoiseWeights);
-        shaderService.bindVec4(atmosphere.phaseParams, phaseParams);
+        shaderService.bindFloat(atmosphere.cloudErosionStrength, cloudErosionStrength);
         shaderService.bindInt(atmosphere.numStepsLight, numStepsLight);
         shaderService.bindFloat(atmosphere.rayOffsetStrength, rayOffsetStrength);
 
@@ -144,11 +130,8 @@ public class AtmospherePass extends AbstractQuadPass {
 
         shaderService.bindVec3(boundsMinVal, boundsMin);
         shaderService.bindVec3(boundsMaxVal, boundsMax);
-        shaderService.bindVec3(atmosphere.shapeOffset, shapeOffset);
-        shaderService.bindVec3(atmosphere.detailOffset, detailOffset);
         shaderService.bindFloat(atmosphere.lightAbsorptionTowardSun, lightAbsorptionTowardSun);
         shaderService.bindFloat(atmosphere.lightAbsorptionThroughCloud, lightAbsorptionThroughCloud);
-        shaderService.bindFloat(atmosphere.darknessThreshold, darknessThreshold);
         shaderService.bindFloat(atmosphere.shapeScrollSpeed, baseSpeed);
         shaderService.bindFloat(atmosphere.detailScrollSpeed, detailSpeed);
 
