@@ -5,6 +5,7 @@ import com.pine.common.inspection.FieldDTO;
 import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.MethodDTO;
 import com.pine.editor.core.AbstractView;
+import com.pine.editor.core.UIUtil;
 import com.pine.editor.panels.component.impl.*;
 import com.pine.editor.repository.EditorRepository;
 import com.pine.editor.service.ThemeService;
@@ -119,8 +120,10 @@ public class FormPanel extends AbstractView {
             if (search == null || search.isEmpty()) {
                 if (compactMode) {
                     if (ImGui.collapsingHeader(inspectable.getIcon() + inspectable.getTitle() + imguiId)) {
+                        ImGui.indent(UIUtil.IDENT);
                         super.render();
                         ImGui.separator();
+                        ImGui.unindent(UIUtil.IDENT);
                     }
                 } else {
                     renderTitle();

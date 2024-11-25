@@ -15,6 +15,7 @@ public class UIUtil {
     );
     public static final int FIXED_WINDOW_FLAGS = ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
     public static final ImBoolean OPEN = new ImBoolean(true);
+    public static final float IDENT = 32;
     private static final ImVec2 MEDIUM_SPACING = new ImVec2(5, 0);
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
 

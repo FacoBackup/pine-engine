@@ -1,6 +1,7 @@
 package com.pine.editor.panels.component;
 
 import com.pine.editor.core.AbstractView;
+import com.pine.editor.core.UIUtil;
 import imgui.ImGui;
 import imgui.ImVec4;
 import imgui.flag.ImGuiCol;
@@ -30,7 +31,9 @@ public class AccordionPanel extends AbstractView {
         }
 
         if (ImGui.collapsingHeader(title + imguiId)) {
+            ImGui.indent(UIUtil.IDENT);
             renderInternal();
+            ImGui.unindent(UIUtil.IDENT);
         }
     }
 
