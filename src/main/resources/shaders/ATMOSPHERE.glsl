@@ -1,28 +1,19 @@
 #define PI 3.14159265
-#define ONLY_MIE 0
-#define ONLY_RAYLEIGH 1
-#define COMBINED  2
-
-uniform int type;
-uniform vec3 rayleighBeta;
-uniform vec3 mieBeta;
-uniform float atmosphereRadius;
-uniform float planetRadius;
-uniform float rayleighHeight;
-uniform float mieHeight;
-uniform float threshold;
-uniform int samples;
+#define ATMOSPHERE_RADIUS 6420e3
+#define PLANET_RADIUS 6360e3
+#define THRESHOLD -.1f
+#define RAYLEIGH_HEIGHT 7994.0
+#define MIE_HEIGHT 700.
+#define INTENSITY 20.
+#define SAMPLES 10
+#define RAYLEIGH_BETA vec3(3.8e-6, 13.5e-6, 33.1e-6)
+#define MIE_BETA vec3(210e-5, 210e-5, 210e-5)
+#define G 0.76
 
 float mu;
 float muSquared;
-
 vec3 sunDirection;
-vec3 rayleighBeta1 = vec3(rayleighBeta);
-vec3 mieBeta1 = vec3(mieBeta);
-float atmosphereRadius1 = atmosphereRadius;
-float planetRadius1 = planetRadius;
 
-float G = 0.76;
 
 float raySphereIntersect(vec3 rayOrigin, vec3 rayDirection, vec3 sphereCenter, float sphereRadius) {
     float a = dot(rayDirection, rayDirection);
@@ -50,9 +41,8 @@ vec3 scatteringAtHeight(vec3 scatteringAtSea, float height, float heightScale) {
 }
 
 float getSampleHeight(vec3 point) {
-    return (length(point) - planetRadius1);
+    return (length(point) - PLANET_RADIUS);
 }
-
 
 vec3 transmittance(vec3 pa, vec3 pb, int samples, float scaleHeight, vec3 scatCoeffs) {
     float opticalDepth = 0.0;
@@ -75,26 +65,23 @@ vec3 getSkyColor(vec3 pa, vec3 pb) {
     float phaseM = miePhase();
     vec3 rayleighColor = vec3(0.0, 0.0, 0.0);
     vec3 mieColor = vec3(0.0, 0.0, 0.0);
-    float segmentLength = length(pb - pa) / float(samples);
+    float fSamples = float(SAMPLES);
+    float segmentLength = length(pb - pa) / fSamples;
 
-    for (int i = 0; i < samples; i++) {
+    for (int i = 0; i < SAMPLES; i++) {
 
-        vec3 samplePoint = mix(pa, pb, (float(i) + 0.5) / float(samples));
+        vec3 samplePoint = mix(pa, pb, (float(i) + 0.5) / fSamples);
         float sampleHeight = getSampleHeight(samplePoint);
-        float distanceToAtmosphere = raySphereIntersect(samplePoint, sunDirection, vec3(0.0, 0.0, 0.0), atmosphereRadius1);
+        float distanceToAtmosphere = raySphereIntersect(samplePoint, sunDirection, vec3(0.0, 0.0, 0.0), ATMOSPHERE_RADIUS);
         vec3 atmosphereIntersect = samplePoint + sunDirection * distanceToAtmosphere;
 
-        if (type == ONLY_RAYLEIGH || type == COMBINED) {
-            vec3 trans1R = transmittance(pa, samplePoint, 10, rayleighHeight, rayleighBeta1);
-            vec3 trans2R = transmittance(samplePoint, atmosphereIntersect, 10, rayleighHeight, rayleighBeta1);
-            rayleighColor += trans1R * trans2R * scatteringAtHeight(rayleighBeta1, sampleHeight, rayleighHeight) * segmentLength;
-        }
+        vec3 trans1R = transmittance(pa, samplePoint, 10, RAYLEIGH_HEIGHT, RAYLEIGH_BETA);
+        vec3 trans2R = transmittance(samplePoint, atmosphereIntersect, 10, RAYLEIGH_HEIGHT, RAYLEIGH_BETA);
+        rayleighColor += trans1R * trans2R * scatteringAtHeight(RAYLEIGH_BETA, sampleHeight, RAYLEIGH_HEIGHT) * segmentLength;
 
-        if (type == ONLY_MIE || type == COMBINED) {
-            vec3 trans1M = transmittance(pa, samplePoint, 10, mieHeight, mieBeta1);
-            vec3 trans2M = transmittance(samplePoint, atmosphereIntersect, 10, mieHeight, mieBeta1);
-            mieColor += trans1M * trans2M * scatteringAtHeight(mieBeta1, sampleHeight, mieHeight) * segmentLength;
-        }
+        vec3 trans1M = transmittance(pa, samplePoint, 10, MIE_HEIGHT, MIE_BETA);
+        vec3 trans2M = transmittance(samplePoint, atmosphereIntersect, 10, MIE_HEIGHT, MIE_BETA);
+        mieColor += trans1M * trans2M * scatteringAtHeight(MIE_BETA, sampleHeight, MIE_HEIGHT) * segmentLength;
     }
 
     rayleighColor =  phaseR * rayleighColor;
@@ -103,27 +90,15 @@ vec3 getSkyColor(vec3 pa, vec3 pb) {
     return rayleighColor + mieColor;
 }
 
-vec4 computeAtmpshere(vec3 rayDir){
-    rayleighBeta1.x *= 263157.;
-    rayleighBeta1.y *= 74074.;
-    rayleighBeta1.z *= 30211.;
-
-    rayleighBeta1 = 1. / rayleighBeta1;
-
-    mieBeta1 *= 476.;
-    mieBeta1 = 1. / mieBeta1;
-
-    atmosphereRadius1 *= 6420e3;
-    planetRadius1 *= 6360e3;
-
+vec3 computeAtmpshere(vec3 rayDir){
     sunDirection = normalize(sunLightDirection.xyz);
 
-    if (rayDir.y >= threshold) {
-        vec3 origin = vec3(0.0, planetRadius1 + 1.0, 0.0);
+    if (rayDir.y >= THRESHOLD) {
+        vec3 origin = vec3(0.0, PLANET_RADIUS + 1.0, 0.0);
 
-        float distanceToAtmosphere = raySphereIntersect(origin, rayDir, vec3(0.0, 0.0, 0.0), atmosphereRadius1);
+        float distanceToAtmosphere = raySphereIntersect(origin, rayDir, vec3(0.0, 0.0, 0.0), ATMOSPHERE_RADIUS);
         vec3 atmosphereIntersect = origin + rayDir * distanceToAtmosphere;
-        return vec4(getSkyColor(origin, atmosphereIntersect), 1);
+        return getSkyColor(origin, atmosphereIntersect) * INTENSITY;
     }
-    return vec4(0);
+    return vec3(0);
 }

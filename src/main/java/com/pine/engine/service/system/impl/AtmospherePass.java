@@ -24,36 +24,14 @@ public class AtmospherePass extends AbstractQuadPass {
     private UniformDTO boundsMax;
     private UniformDTO lightAbsorptionTowardSun;
     private UniformDTO lightAbsorptionThroughCloud;
-    private UniformDTO darknessThreshold;
     private UniformDTO baseSpeed;
     private UniformDTO detailSpeed;
-    private UniformDTO type;
-    private UniformDTO rayleighBeta;
-    private UniformDTO mieBeta;
-    private UniformDTO intensity;
-    private UniformDTO atmosphereRadius;
-    private UniformDTO planetRadius;
-    private UniformDTO rayleighHeight;
-    private UniformDTO mieHeight;
-    private UniformDTO threshold;
-    private UniformDTO samples;
 
     private final Vector3f boundsMinVal = new Vector3f();
     private final Vector3f boundsMaxVal = new Vector3f();
 
     @Override
     public void onInitialize() {
-        type = addUniformDeclaration("type");
-        rayleighBeta = addUniformDeclaration("rayleighBeta");
-        mieBeta = addUniformDeclaration("mieBeta");
-        intensity = addUniformDeclaration("intensity");
-        atmosphereRadius = addUniformDeclaration("atmosphereRadius");
-        planetRadius = addUniformDeclaration("planetRadius");
-        rayleighHeight = addUniformDeclaration("rayleighHeight");
-        mieHeight = addUniformDeclaration("mieHeight");
-        threshold = addUniformDeclaration("threshold");
-        samples = addUniformDeclaration("samples");
-
         densityMultiplier = addUniformDeclaration("densityMultiplier");
         cloudCoverage = addUniformDeclaration("cloudCoverage");
         scale = addUniformDeclaration("scale");
@@ -134,18 +112,6 @@ public class AtmospherePass extends AbstractQuadPass {
         shaderService.bindFloat(atmosphere.lightAbsorptionThroughCloud, lightAbsorptionThroughCloud);
         shaderService.bindFloat(atmosphere.shapeScrollSpeed, baseSpeed);
         shaderService.bindFloat(atmosphere.detailScrollSpeed, detailSpeed);
-
-        // ATMOSPHERE
-        shaderService.bindInt(atmosphere.renderingType.getId(), type);
-        shaderService.bindVec3(atmosphere.betaRayleigh, rayleighBeta);
-        shaderService.bindVec3(atmosphere.betaMie, mieBeta);
-        shaderService.bindFloat(atmosphere.intensity, intensity);
-        shaderService.bindFloat(atmosphere.atmosphereRadius, atmosphereRadius);
-        shaderService.bindFloat(atmosphere.planetRadius, planetRadius);
-        shaderService.bindFloat(atmosphere.rayleighHeight, rayleighHeight);
-        shaderService.bindFloat(atmosphere.mieHeight, mieHeight);
-        shaderService.bindFloat(atmosphere.threshold, threshold);
-        shaderService.bindInt(atmosphere.maxSamples, samples);
     }
 
     @Override

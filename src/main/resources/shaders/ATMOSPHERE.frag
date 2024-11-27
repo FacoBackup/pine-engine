@@ -2,7 +2,6 @@
 
 in vec2 texCoords;
 out vec4 finalColor;
-uniform float intensity;
 
 vec3 createRay() {
     vec2 pxNDS = texCoords * 2. - 1.;
@@ -21,9 +20,8 @@ vec3 createRay() {
 void main(){
     vec3 rayDir = createRay();
     vec4 clouds = computeClouds(rayDir);
-    vec4 sky = vec4(1);
     if(clouds.a < 1){
-        sky = computeAtmpshere(rayDir) * intensity;
+        vec3 sky = computeAtmpshere(rayDir);
         clouds = vec4(clouds.rgb + (1.0f - clouds.a) * sky.rgb, 1);
     }
     finalColor = clouds;

@@ -37,7 +37,7 @@ vec2 rayBoxDst(vec3 boundsMin, vec3 boundsMax, vec3 rayOrigin, vec3 invRaydir) {
     return vec2(dstToBox, dstInsideBox);
 }
 
-float sampleDensity(vec3 rayPos) {
+float sampleDensity(vec3 rayPos, bool sampleDetail) {
     // Constants:
     const int mipLevel = 0;
     const float baseScale = 1/1000.0;
@@ -70,9 +70,12 @@ float sampleDensity(vec3 rayPos) {
     if (baseShapeDensity > 0) {
         // Sample detail noise
 
-        vec3 detailSamplePos = uvw*detailNoiseScale + offsetSpeed + vec3(timeOfDay*.4, -timeOfDay, timeOfDay*0.1)*detailSpeed;
-        vec4 detailNoise = texture(uDetailNoise, detailSamplePos, mipLevel);
-        float detailFBM = dot(detailNoise, vec4(.25));
+        float detailFBM = 0;
+        if(sampleDetail){
+            vec3 detailSamplePos = uvw*detailNoiseScale + offsetSpeed + vec3(timeOfDay*.4, -timeOfDay, timeOfDay*0.1)*detailSpeed;
+            vec3 detailNoise = texture(uDetailNoise, detailSamplePos, mipLevel).rgb;
+            detailFBM = dot(detailNoise, vec3(.25));
+        }
 
         // Subtract detail noise from base shape (weighted by inverse density so that edges get eroded more than centre)
         float oneMinusShape = 1 - shapeFBM;
@@ -94,7 +97,7 @@ float lightmarch(vec3 position) {
 
     for (int step = 0; step < numStepsLight; step ++) {
         position += dirToLight * stepSize;
-        totalDensity += max(0, sampleDensity(position) * stepSize);
+        totalDensity += max(0, sampleDensity(position, step < 2) * stepSize);
     }
 
     return exp(-totalDensity * lightAbsorptionTowardSun);
@@ -178,11 +181,9 @@ vec4 computeClouds(vec3 rayDir){
     float transmittance = 1;
     float alpha = 0;
     vec3 lightEnergy = vec3(0);
-
     while (dstTravelled < dstLimit) {
         rayPos = entryPoint + rayDir * dstTravelled;
-        float density = sampleDensity(rayPos);
-
+        float density = sampleDensity(rayPos, true);
         if (density > 0) {
             float lightTransmittance = lightmarch(rayPos);
             float phaseVal = 1; // TODO

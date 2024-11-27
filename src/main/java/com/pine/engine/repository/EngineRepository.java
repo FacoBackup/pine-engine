@@ -9,10 +9,6 @@ import com.pine.common.inspection.InspectableField;
 
 @PBean
 public class EngineRepository extends Inspectable implements SerializableRepository {
-
-    @InspectableField(label = "Background color")
-    public Color backgroundColor = new Color(0.23f, 0.23f, 0.23f);
-
     @InspectableField(group = "World", label = "Number of tiles (X by X)")
     public int numberOfTiles = 24;
 

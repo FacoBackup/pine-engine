@@ -64,28 +64,6 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @InspectableField(label = "Screen space shadows")
     public boolean screenSpaceShadows = false;
 
-    @InspectableField(group = "Atmospheric scattering", label = "Max samples", max = 20, min = 1)
-    public int maxSamples = 5;
-    @InspectableField(group = "Atmospheric scattering", label = "Mie height")
-    public int mieHeight = 1000;
-    @InspectableField(group = "Atmospheric scattering", label = "Rayleigh Height")
-    public int rayleighHeight = 8000;
-    @InspectableField(group = "Atmospheric scattering", label = "Atmosphere Radius", min = 1)
-    public float atmosphereRadius = 1;
-    @InspectableField(group = "Atmospheric scattering", label = "Planet Radius", max = 1, min = 0)
-    public float planetRadius = 1;
-    @InspectableField(group = "Atmospheric scattering", label = "Intensity", max = 20, min = 1)
-    public float intensity = 10;
-    @InspectableField(group = "Atmospheric scattering", label = "Rendering Type")
-    public AtmosphereType renderingType = AtmosphereType.COMBINED;
-    @InspectableField(group = "Atmospheric scattering", label = "Beta Rayleigh")
-    public final Vector3f betaRayleigh = new Vector3f(1);
-    @InspectableField(group = "Atmospheric scattering", label = "Beta Mie")
-    public final Vector3f betaMie = new Vector3f(1);
-    @InspectableField(group = "Atmospheric scattering", label = "Threshold", max = 10, min = -1)
-    public float threshold = -.1f;
-
-
     @InspectableField(group = "Clouds", label = "Layer height", min = 1)
     public int cloudsHeight = 500;
     @InspectableField(group = "Clouds", label = "Layer width and depth", min = 1)
