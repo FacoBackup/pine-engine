@@ -67,7 +67,7 @@ public class FoliageCullingPass extends AbstractPass {
         imageSize.y = heightMap.height;
         shaderService.bindVec2(imageSize, imageSizeU);
 
-        for (var foliage : terrainRepository.foliage.values()) {
+        for (var foliage : terrainRepository.foliage) {
             boolean isNotReady = isFoliageNotReady(foliage);
             if (foliage.isNotFrozen() || isNotReady) {
                 if (foliage.prevMaximumNumberOfInstances != foliage.maximumNumberOfInstances) {
@@ -94,7 +94,7 @@ public class FoliageCullingPass extends AbstractPass {
                 settings.y = foliage.maximumNumberOfInstances;
                 settings.z = ((MeshResourceRef) mesh).indicesCount;
                 shaderService.bindVec4(settings, settingsU);
-                shaderService.bindVec3(foliage.color, colorToMatchU);
+                shaderService.bindVec4(terrainRepository.materialLayers.getLayer(foliage.materialMaskIndex).channel, colorToMatchU);
 
                 shaderService.dispatch(COMPUTE_RUNTIME_DATA);
             }

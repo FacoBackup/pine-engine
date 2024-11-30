@@ -35,7 +35,7 @@ public class FoliageGBufferPass extends AbstractGBufferPass {
         prepareCall();
         shaderService.bindVec2(terrainRepository.offset, terrainOffsetU);
         shaderService.bindSampler2dDirect(bufferRepository.windNoiseSampler, 10);
-        for (var foliage : terrainRepository.foliage.values()) {
+        for (var foliage : terrainRepository.foliage) {
             if(FoliageCullingPass.isFoliageNotReady(foliage)){
                 continue;
             }

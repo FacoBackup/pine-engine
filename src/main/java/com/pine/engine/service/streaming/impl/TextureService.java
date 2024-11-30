@@ -11,6 +11,7 @@ import com.pine.engine.service.streaming.data.TextureStreamData;
 import com.pine.engine.service.streaming.ref.TextureResourceRef;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.stb.STBImageWrite;
 import org.lwjgl.system.MemoryStack;
@@ -64,8 +65,8 @@ public class TextureService extends AbstractStreamableService<TextureResourceRef
     public void writeTexture(String pathToFile, int width, int height, int textureId){
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4); // 4 bytes per pixel for RGBA
-        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        GL11.glGetTexImage(GL11.GL_TEXTURE_2D, GL46.GL_NONE, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
         STBImageWrite.stbi_write_png(pathToFile, width, height, 4, buffer, width * 4);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, GL46.GL_NONE);
     }
 }

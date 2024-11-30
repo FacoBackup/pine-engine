@@ -1,5 +1,7 @@
 package com.pine.common.inspection;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
@@ -11,14 +13,16 @@ public class FieldDTO {
     private final Object instance;
     private final List<SelectableEnum> options;
     private final InspectableField delegate;
+    private final ListInspection listInspection;
 
-    public FieldDTO(FieldType type, InspectableField delegate, Field field, Object instance, List<SelectableEnum> options) {
+    public FieldDTO(FieldType type, InspectableField delegate, Field field, Object instance, List<SelectableEnum> options, @Nullable ListInspection listInspection) {
         this.type = type;
         this.delegate = delegate;
-        this.id =  "##" + UUID.randomUUID().toString().replaceAll("-", "");
+        this.id = "##" + UUID.randomUUID().toString().replaceAll("-", "");
         this.field = field;
         this.instance = instance;
         this.options = options;
+        this.listInspection = listInspection;
     }
 
     public String getId() {
@@ -75,5 +79,16 @@ public class FieldDTO {
 
     public String getGroup() {
         return delegate.group();
+    }
+
+    public Class<?> getClassType() {
+        if (isList()) {
+            return listInspection.clazzType();
+        }
+        return null;
+    }
+
+    public boolean isList() {
+        return listInspection != null;
     }
 }

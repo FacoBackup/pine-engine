@@ -20,5 +20,7 @@ public class CompositeInspectableField extends AbstractFormField {
         super.onInitialize();
         FormPanel form = appendChild(new FormPanel(changeHandler));
         form.setInspection(value);
+        form.setCompactMode(true);
+        form.setDefaultOpen(true);
     }
 }

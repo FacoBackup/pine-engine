@@ -89,7 +89,7 @@ void main() {
         bool useAO = useAlbedoRoughnessMetallicAO.a != 0;
 
         vec4 al = texture(albedo, UV);
-        if(al.a < 0.1){
+        if(al.a < .5){
             discard;
         }
         gBufferAlbedoSampler = vec4(useAlbedo ? al.rgb : albedoColor, 0);

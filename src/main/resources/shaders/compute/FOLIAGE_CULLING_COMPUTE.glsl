@@ -17,7 +17,7 @@ layout(std430, binding = 4) writeonly buffer IndirectBuffer {
 } drawCommand;
 
 uniform vec2 terrainOffset;
-uniform vec3 colorToMatch;
+uniform vec4 colorToMatch;
 uniform vec4 settings;
 uniform vec2 imageSize;
 uniform float heightScale;
@@ -64,11 +64,15 @@ vec2 hash(vec2 a) {
     return fract((a.xx + a.yx)*a.xy);
 }
 
+bool check(float v, float v1){
+    return v != 0 && v1 != 0;
+}
+
 void doWork(int col, int row){
     vec2 scaledTexCoord= (vec2(round(cameraWorldPosition.x), round(cameraWorldPosition.z)) + vec2(row, col)) / imageSize;
     if (scaledTexCoord.x <= 1 && scaledTexCoord.x >= 0 && scaledTexCoord.y <= 1 && scaledTexCoord.y >= 0){
-        vec3 pixelColor = texture(materialMask, scaledTexCoord).gba;
-        if (pixelColor == colorToMatch){
+        vec4 pixelColor = texture(materialMask, scaledTexCoord);
+        if (check(pixelColor.r, colorToMatch.r) || check(pixelColor.g, colorToMatch.g) || check(pixelColor.b, colorToMatch.b) || check(pixelColor.a, colorToMatch.a)){
             vec3 worldSpaceCoord = getWorldPosition(scaledTexCoord, imageSize);
             worldSpaceCoord.xz += hash(worldSpaceCoord.xz);
             if (length(worldSpaceCoord.xz - cameraWorldPosition.xz) < MAX_DISTANCE_FROM_CAMERA){

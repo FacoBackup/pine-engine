@@ -3,6 +3,7 @@ package com.pine.editor.panels.component.impl;
 import com.pine.common.Icons;
 import com.pine.common.injection.PInject;
 import com.pine.common.inspection.FieldDTO;
+import com.pine.editor.core.UIUtil;
 import com.pine.editor.panels.component.AbstractFormField;
 import com.pine.editor.repository.FSEntry;
 import com.pine.editor.repository.FilesRepository;
@@ -90,6 +91,7 @@ public class ResourceField extends AbstractFormField {
             ImGui.columns(1);
         } else {
             ImGui.text(dto.getLabel());
+            ImGui.setNextItemWidth(ImGui.getContentRegionAvailX() - Icons.ONLY_ICON_BUTTON_SIZE - 16);
             renderCombo();
             ImGui.sameLine();
             renderRemove();
@@ -97,7 +99,7 @@ public class ResourceField extends AbstractFormField {
     }
 
     private void renderRemove() {
-        if (ImGui.button(Icons.close + imguiId)) {
+        if (ImGui.button(Icons.close + imguiId, Icons.ONLY_ICON_BUTTON_SIZE, Icons.ONLY_ICON_BUTTON_SIZE)) {
             selected.set(-1);
             changeHandler.accept(dto, null);
         }

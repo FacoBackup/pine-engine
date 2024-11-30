@@ -12,6 +12,7 @@ import com.pine.engine.inspection.ResourceTypeField;
 import com.pine.engine.inspection.TypePreviewField;
 import imgui.ImGui;
 import imgui.flag.ImGuiCol;
+import imgui.flag.ImGuiTreeNodeFlags;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class FormPanel extends AbstractView {
 
     @PInject
     public ThemeService theme;
+    private boolean isDefaultOpen;
 
     public FormPanel(BiConsumer<FieldDTO, Object> changeHandler) {
         this.changeHandler = changeHandler;
@@ -80,6 +82,9 @@ public class FormPanel extends AbstractView {
                 case INT:
                     group.append(new IntField(field, changeHandler));
                     break;
+                case LIST:
+                    group.append(new ListField(field, changeHandler));
+                    break;
                 case FLOAT:
                     group.append(new FloatField(field, changeHandler));
                     break;
@@ -122,7 +127,7 @@ public class FormPanel extends AbstractView {
             ImGui.pushStyleColor(ImGuiCol.Header, theme.neutralPalette);
             if (search == null || search.isEmpty()) {
                 if (compactMode) {
-                    if (ImGui.collapsingHeader(inspectable.getIcon() + inspectable.getTitle() + imguiId)) {
+                    if (ImGui.collapsingHeader(inspectable.getIcon() + inspectable.getTitle() + imguiId, isDefaultOpen ? ImGuiTreeNodeFlags.DefaultOpen : ImGuiTreeNodeFlags.None)) {
                         ImGui.indent(UIUtil.IDENT);
                         super.render();
                         ImGui.separator();
@@ -166,5 +171,9 @@ public class FormPanel extends AbstractView {
 
     public void setCompactMode(boolean v) {
         this.compactMode = v;
+    }
+
+    public void setDefaultOpen(boolean defaultOpen) {
+        isDefaultOpen = defaultOpen;
     }
 }

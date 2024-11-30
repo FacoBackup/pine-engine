@@ -7,17 +7,29 @@ import com.pine.common.injection.PInject;
 import com.pine.common.inspection.ExecutableField;
 import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.InspectableField;
+import com.pine.common.inspection.ListInspection;
 import com.pine.engine.inspection.ResourceTypeField;
+import com.pine.engine.repository.core.CoreBufferRepository;
+import com.pine.engine.repository.core.CoreMeshRepository;
+import com.pine.engine.repository.core.CoreShaderRepository;
+import com.pine.engine.repository.rendering.RenderingMode;
 import com.pine.engine.repository.streaming.StreamableResourceType;
 import com.pine.engine.service.importer.ImporterService;
+import com.pine.engine.service.resource.fbo.FBO;
+import com.pine.engine.service.resource.fbo.FBOCreationData;
+import com.pine.engine.service.resource.fbo.FBOService;
+import com.pine.engine.service.resource.shader.ShaderService;
+import com.pine.engine.service.streaming.StreamingService;
+import com.pine.engine.service.streaming.impl.MeshService;
+import com.pine.engine.service.streaming.impl.TextureService;
 import com.pine.engine.util.ImageUtil;
 import org.joml.Vector2f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL46;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @PBean
 public class TerrainRepository extends Inspectable implements SerializableRepository {
@@ -27,6 +39,57 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
 
     @PInject
     public transient ImporterService importer;
+    @PInject
+    public transient ShaderService shaderService;
+    @PInject
+    public transient StreamingService streamingService;
+    @PInject
+    public transient FBOService fboService;
+    @PInject
+    public transient CoreShaderRepository coreShaderRepository;
+    @PInject
+    public transient CoreMeshRepository coreMeshRepository;
+    @PInject
+    public transient MeshService meshService;
+    @PInject
+    public transient TextureService textureService;
+
+    @ExecutableField(label = "Re-Gen material mask")
+    public void genMaterialMask() {
+        String path = importer.getPathToFile(materialMask, StreamableResourceType.TEXTURE);
+        String pathToHeightMap = importer.getPathToFile(heightMapTexture, StreamableResourceType.TEXTURE);
+        var materialMask = streamingService.streamTextureSync(path);
+        var heightMap = streamingService.streamTextureSync(pathToHeightMap);
+
+        if(heightMap != null && materialMask != null) {
+            FBO fbo = fboService.create(new FBOCreationData(materialMask.width, materialMask.height, false).addSampler("TESTTTTTTTTTTTTTT"));
+
+            shaderService.bind(coreShaderRepository.terrainMaterialMaskGenShader);
+            fbo.startMapping(true);
+
+            shaderService.bindVec4(materialLayers.materialLayerA.channel, coreShaderRepository.terrainMaterialMaskGenShader.addUniformDeclaration("color1"));
+            shaderService.bindVec4(materialLayers.materialLayerB.channel, coreShaderRepository.terrainMaterialMaskGenShader.addUniformDeclaration("color2"));
+            shaderService.bindVec4(materialLayers.materialLayerC.channel, coreShaderRepository.terrainMaterialMaskGenShader.addUniformDeclaration("color3"));
+            shaderService.bindVec4(materialLayers.materialLayerD.channel, coreShaderRepository.terrainMaterialMaskGenShader.addUniformDeclaration("color4"));
+
+            shaderService.bindSampler2dDirect(heightMap.texture, 0);
+
+            meshService.bind(coreMeshRepository.quadMesh);
+            meshService.setRenderingMode(RenderingMode.TRIANGLES);
+            GL46.glDisable(GL11.GL_DEPTH_TEST);
+            GL46.glDisable(GL11.GL_BLEND);
+            meshService.draw();
+            shaderService.unbind();
+            fbo.stop();
+            GL46.glBindTexture(GL46.GL_TEXTURE_2D, 0);
+
+            textureService.writeTexture(path, materialMask.width, materialMask.height, fbo.getMainSampler());
+            fboService.dispose(fbo);
+            materialMask.dispose();
+            streamingService.repository.streamed.remove(this.materialMask);
+        }
+    }
+
 
     @ExecutableField(label = "Import data")
     public void importTerrain() {
@@ -100,8 +163,10 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @InspectableField(label = "Materials")
     public MaterialLayers materialLayers = new MaterialLayers();
 
-    public final Map<String, FoliageInstance> foliage = new HashMap<>();
 
+    @ListInspection(clazzType = FoliageInstance.class)
+    @InspectableField(label = "Foliage")
+    public final List<FoliageInstance> foliage = new ArrayList<>();
 
     @Override
     public String getTitle() {

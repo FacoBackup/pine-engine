@@ -3,6 +3,10 @@ package com.pine.engine.repository.terrain;
 import com.pine.common.Icons;
 import com.pine.common.inspection.Inspectable;
 import com.pine.common.inspection.InspectableField;
+import com.pine.common.inspection.ListInspection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MaterialLayers extends Inspectable {
 
@@ -26,7 +30,7 @@ public class MaterialLayers extends Inspectable {
 
     @Override
     public String getIcon() {
-        return Icons.format_paint;
+        return Icons.layers;
     }
 
     public MaterialLayer getLayer(int i) {

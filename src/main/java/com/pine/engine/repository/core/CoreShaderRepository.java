@@ -53,6 +53,7 @@ public class CoreShaderRepository implements Initializable {
     public Shader noiseShader;
     public Shader shadowsTerrainShader;
     public Shader shadowsPrimitiveShader;
+    public Shader terrainMaterialMaskGenShader;
 
     @PInject
     public ShaderService shaderService;
@@ -69,6 +70,7 @@ public class CoreShaderRepository implements Initializable {
         paintGizmoCompute = shaderService.create(new ShaderCreationData("compute/PAINT_GIZMO_COMPUTE.glsl"));
 
 
+        terrainMaterialMaskGenShader = shaderService.create(new ShaderCreationData("QUAD.vert", "TERRAIN_MATERIAL_MASK_GEN.frag"));
         compositingShader = shaderService.create(new ShaderCreationData("QUAD.vert", "COMPOSITE.frag"));
         noiseShader = shaderService.create(new ShaderCreationData("QUAD.vert", "NOISE.frag"));
         gBufferShading = shaderService.create(new ShaderCreationData("QUAD.vert", "uber/G_BUFFER_SHADING.frag"));

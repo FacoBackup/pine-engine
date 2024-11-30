@@ -28,11 +28,12 @@ void main() {
     invModelMatrix = mat4(0);
 
     vec3 translation = transformations[gl_InstanceID];
+    float hashedValue = hash(translation.x + translation.z / (max(0, abs(translation.y))));
+
     renderingIndex = int(length(translation));
     vec2 normPos = normalize(terrainOffset + translation.xz);
-
     vec2 noiseVal = texture(noise, normPos).rg * position.y;
-    worldSpacePosition = position * objectScale * hash(translation.x + translation.z / (max(0, abs(translation.y)))) + translation + vec3(noiseVal.x, 0, noiseVal.y);
+    worldSpacePosition = position * objectScale * max(hashedValue, .5) + translation + vec3(noiseVal.x, 0, noiseVal.y);
     normalVec = normalize(normal);
     initialUV = uv;
 

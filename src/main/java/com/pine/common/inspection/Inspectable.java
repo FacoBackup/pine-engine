@@ -31,7 +31,8 @@ public abstract class Inspectable implements Mutable {
                                 inspectableField,
                                 field,
                                 this,
-                                getOptions(field)
+                                getOptions(field),
+                                field.getAnnotation(ListInspection.class)
                         ));
                     }
                 }

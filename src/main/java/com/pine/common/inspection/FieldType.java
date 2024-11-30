@@ -1,5 +1,6 @@
 package com.pine.common.inspection;
 
+import com.pine.engine.repository.terrain.FoliageInstance;
 import com.pine.engine.repository.terrain.MaterialLayer;
 import com.pine.engine.repository.terrain.MaterialLayers;
 import org.joml.Quaternionf;
