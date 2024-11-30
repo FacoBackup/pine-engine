@@ -9,7 +9,7 @@ layout (binding = 2) uniform sampler2D sceneDepth;
 uniform int paintMode;
 uniform float heightScale;
 uniform vec2 xyMouse;
-uniform vec3 colorForPainting;
+uniform vec4 colorForPainting;
 uniform vec2 targetImageSize;
 uniform vec3 radiusDensityMode;
 
@@ -62,6 +62,6 @@ void main() {
         float scale =  (distToCenter/radiusDensityMode.x) * radiusDensityMode.y;
         imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? vec4(vec3(originalYPosition - scale) / heightScale, 1) : vec4(vec3(originalYPosition + .1 * scale)/heightScale, 1));
     } else if(paintMode == MATERIAL){
-        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : vec4(colorForPainting, 1));
+        imageStore(targetImage, uvScaled, radiusDensityMode.z < 1 ? NONE : colorForPainting);
     }
 }

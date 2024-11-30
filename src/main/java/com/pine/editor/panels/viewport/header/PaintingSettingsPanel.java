@@ -57,10 +57,10 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
             ImGui.sameLine();
             ImGui.setNextItemWidth(150);
             var selected = terrainRepository.materialLayers.getLayer(editorRepository.selectedMaterialLayer);
-            if (ImGui.beginCombo(imguiId + "materialLayers", selected.getFormattedName())) {
+            if (ImGui.beginCombo(imguiId + "materialLayers", selected.name)) {
                 for (int i = 0; i < MaterialLayers.MAX_LAYERS; i++) {
                     MaterialLayer type = terrainRepository.materialLayers.getLayer(i);
-                    if (ImGui.selectable(type.getFormattedName())) {
+                    if (ImGui.selectable(type.name)) {
                         editorRepository.selectedMaterialLayer = i;
                     }
                 }

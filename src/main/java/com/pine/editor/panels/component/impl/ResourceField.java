@@ -97,7 +97,7 @@ public class ResourceField extends AbstractFormField {
     }
 
     private void renderRemove() {
-        if (ImGui.button(Icons.close + "Remove" + imguiId)) {
+        if (ImGui.button(Icons.close + imguiId)) {
             selected.set(-1);
             changeHandler.accept(dto, null);
         }

@@ -105,7 +105,7 @@ void main() {
         discard;
     }
     vec4 albedoEmissive = texture(gBufferAlbedoSampler, quadUV);
-    if (albedoEmissive.a == 1) { // EMISSION
+    if (albedoEmissive.a > 0) { // EMISSION
         color = vec4(albedoEmissive.rgb, 1.);
         return;
     }

@@ -107,5 +107,5 @@ void main() {
 
     sampleIndirectIllumination(V, N);
 
-    processDebugFlags(UV, W, renderingIndex, distanceFromCamera, vec3(0));
+    processDebugFlags(UV, W, renderingIndex, distanceFromCamera, vec4(0));
 }

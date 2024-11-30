@@ -170,6 +170,8 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
     private void bindLayer(MaterialLayer layer, List<UniformDTO> materialUniforms) {
         var material = (MaterialResourceRef) streamingService.streamIn(layer.material, StreamableResourceType.MATERIAL);
         if (material != null) {
+            material.lastUse = clockRepository.totalTime;
+
             bindTexture(material.albedo, samplerIndex);
             samplerIndex++;
             bindTexture(material.roughness, samplerIndex);
@@ -180,7 +182,7 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
             samplerIndex++;
 
             layer.channel.mul(layer.weight);
-            shaderService.bindVec3(layer.channel, materialUniforms.get(matIndex));
+            shaderService.bindVec4(layer.channel, materialUniforms.get(matIndex));
             matIndex++;
         }
     }
