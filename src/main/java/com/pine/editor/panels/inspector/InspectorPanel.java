@@ -35,8 +35,6 @@ public class InspectorPanel extends AbstractDockPanel {
     @PInject
     public TerrainRepository terrainRepository;
     @PInject
-    public ThemeService theme;
-    @PInject
     public List<Inspectable> repositories;
 
     private String selectedId;

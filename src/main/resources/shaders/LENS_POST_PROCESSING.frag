@@ -61,12 +61,22 @@ vec3 PBRNeutralToneMapping( vec3 color ) {
     return mix(color, newPeak * vec3(1, 1, 1), g);
 }
 
+vec3 aces( vec3 x ) {
+    // Narkowicz 2015, "ACES Filmic Tone Mapping Curve"
+    const float a = 2.51;
+    const float b = 0.03;
+    const float c = 2.43;
+    const float d = 0.59;
+    const float e = 0.14;
+    return (x * (a * x + b)) / (x * (c * x + d) + e);
+}
+
 void main(void) {
 
     vec2 texCoords = distortionEnabled ? lensDistortion(texCoords, distortionIntensity * .5) : texCoords;
-    vec3 color = bloomEnabled ? PBRNeutralToneMapping(texture(bloomColor, texCoords).rgb) : vec3(0.);
+    vec3 color = bloomEnabled ? aces(texture(bloomColor, texCoords).rgb) : vec3(0.);
     color += chromaticAberrationEnabled ? chromaticAberration(texCoords) : texture(sceneColor, texCoords).rgb;
-    fragColor = vec4(PBRNeutralToneMapping(color), 1.);
+    fragColor = vec4(aces(color), 1.);
 
     if (vignetteEnabled) {
         vec2 uv = texCoords;

@@ -1,6 +1,9 @@
 package com.pine.editor.repository;
 
 
+import com.pine.common.Icons;
+import com.pine.common.inspection.Inspectable;
+import com.pine.common.inspection.InspectableField;
 import com.pine.engine.repository.streaming.StreamableResourceType;
 import com.pine.engine.service.importer.ImporterService;
 
@@ -8,11 +11,14 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FSEntry {
+public class FSEntry extends Inspectable {
     private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
     public final String id;
+
+    @InspectableField(label = "Name")
     public String name;
+
     public final StreamableResourceType type;
     public final String sizeText;
     public String creationDateString;
@@ -46,5 +52,15 @@ public class FSEntry {
 
     public StreamableResourceType getType() {
         return type;
+    }
+
+    @Override
+    public String getTitle() {
+        return name;
+    }
+
+    @Override
+    public String getIcon() {
+        return isDirectory ? Icons.folder : Icons.file_open;
     }
 }

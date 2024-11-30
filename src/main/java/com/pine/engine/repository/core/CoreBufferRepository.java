@@ -108,9 +108,10 @@ public class CoreBufferRepository implements Initializable {
                 new UBOData("logDepthFC", GLSLType.FLOAT), // Offset: 86
                 new UBOData("timeOfDay", GLSLType.FLOAT), // Offset: 88
 
-                new UBOData("sunLightDirection", GLSLType.VEC_4), // Offset: 89, 90, 91
-                new UBOData("sunLightColor", GLSLType.VEC_3), // Offset: 92, 93, 94
-                new UBOData("sunShadowsResolution", GLSLType.FLOAT), // Offset: 92, 93, 94
+                new UBOData("sunLightDirection", GLSLType.VEC_3), // Offset: 89, 90, 91
+                new UBOData("sunLightIntensity", GLSLType.FLOAT),
+                new UBOData("sunLightColor", GLSLType.VEC_3),
+                new UBOData("sunShadowsResolution", GLSLType.FLOAT),
                 new UBOData("lightSpaceMatrix", GLSLType.MAT_4)
         ));
 

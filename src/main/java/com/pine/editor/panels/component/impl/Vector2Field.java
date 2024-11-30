@@ -27,7 +27,7 @@ public class Vector2Field extends AbstractFormField {
             ImGui.text("Y: " + values[1]);
         } else {
             if (ImGui.dragFloat2(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
-                changerHandler.accept(dto, values);
+                changeHandler.accept(dto, values);
             }
         }
     }

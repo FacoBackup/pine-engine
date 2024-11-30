@@ -6,6 +6,8 @@ import com.pine.editor.repository.BrushMode;
 import com.pine.editor.repository.EditorMode;
 import com.pine.engine.repository.core.CoreBufferRepository;
 import com.pine.engine.repository.streaming.StreamableResourceType;
+import com.pine.engine.repository.terrain.MaterialLayer;
+import com.pine.engine.repository.terrain.MaterialLayers;
 import com.pine.engine.repository.terrain.TerrainRepository;
 import com.pine.engine.service.streaming.ref.TextureResourceRef;
 import imgui.ImGui;
@@ -47,6 +49,23 @@ public class PaintingSettingsPanel extends AbstractViewportSettingsPanel {
         ImGui.setNextItemWidth(150);
         if (ImGui.dragFloat("Brush density", brushDensity, .001f, 0, 1)) {
             editorRepository.brushDensity = brushDensity[0];
+        }
+
+        if (editorRepository.editorMode == EditorMode.MATERIAL) {
+            UIUtil.spacing();
+            ImGui.text("Selected layer");
+            ImGui.sameLine();
+            ImGui.setNextItemWidth(150);
+            var selected = terrainRepository.materialLayers.getLayer(editorRepository.selectedMaterialLayer);
+            if (ImGui.beginCombo(imguiId + "materialLayers", selected.getFormattedName())) {
+                for (int i = 0; i < MaterialLayers.MAX_LAYERS; i++) {
+                    MaterialLayer type = terrainRepository.materialLayers.getLayer(i);
+                    if (ImGui.selectable(type.getFormattedName())) {
+                        editorRepository.selectedMaterialLayer = i;
+                    }
+                }
+                ImGui.endCombo();
+            }
         }
     }
 

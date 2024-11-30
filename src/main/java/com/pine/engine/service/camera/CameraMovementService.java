@@ -9,7 +9,8 @@ import org.joml.Vector3f;
 
 @PBean
 public class CameraMovementService {
-    public static final float PI_2 = (float) ((float) Math.PI / 2.0);
+    public static final float PI_OVER_2 = (float) ((float) Math.PI / 2.0);
+    public static final float PI_2 = (float) ((float) Math.PI * 2.0);
     private static final float MIN_MAX_PITCH = (float) Math.toRadians(89.0f);
     private final Vector3f toApplyTranslation = new Vector3f(0);
     private final Vector3f xAxis = new Vector3f();
@@ -32,9 +33,9 @@ public class CameraMovementService {
                 (float) -Math.cos(camera.yaw) * (float) Math.cos(camera.pitch)   // -cos(yaw)
         );
         Vector3f right = new Vector3f(
-                (float) Math.sin(camera.yaw - PI_2),
+                (float) Math.sin(camera.yaw - PI_OVER_2),
                 0,
-                (float) Math.cos(camera.yaw - PI_2)
+                (float) Math.cos(camera.yaw - PI_OVER_2)
         );
         forward.normalize();
         right.normalize();
@@ -93,6 +94,10 @@ public class CameraMovementService {
         updateDelta(isFirstMovement);
 
         camera.yaw -= (float) Math.toRadians(cameraRepository.deltaX);
+        if (Math.abs(camera.yaw) >= PI_2) {
+            float mapped = Math.abs(camera.yaw) - PI_2;
+            camera.yaw = camera.yaw < 0 ? -1 * mapped : mapped;
+        }
         camera.pitch += (float) Math.toRadians(cameraRepository.deltaY);
         camera.pitch = Math.max(-MIN_MAX_PITCH, Math.min(MIN_MAX_PITCH, camera.pitch));
 

@@ -27,9 +27,9 @@ public class NoiseGenPass extends AbstractQuadPass {
 
     @Override
     protected void bindUniforms() {
-        settings.x = terrainRepository.windAmplitude;
-        settings.y = terrainRepository.windFrequency;
-        settings.z = terrainRepository.windStrength;
+        settings.x = atmosphere.windAmplitude;
+        settings.y = atmosphere.windFrequency;
+        settings.z = atmosphere.windStrength;
         shaderService.bindVec3(settings, settingsU);
     }
 

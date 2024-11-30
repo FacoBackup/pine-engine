@@ -49,8 +49,20 @@ public class AtmosphereRepository extends Inspectable implements SerializableRep
     @InspectableField(group = "Time", label = "Time of day speed")
     public float elapsedTimeSpeed = 1;
 
+    @InspectableField(group = "Wind", label = "Frequency", min = 1)
+    public float windFrequency = 20;
+
+    @InspectableField(group = "Wind", label = "Strength", min = 0, max = 1)
+    public float windStrength = .5f;
+
+    @InspectableField(group = "Wind", label = "Amplitude", min = 0)
+    public float windAmplitude = .15f;
+
     @InspectableField(group = "Sun", label = "Sun distance")
     public float sunDistance = 100_000;
+
+    @InspectableField(group = "Sun", label = "Light intensity")
+    public float sunLightIntensity = 2;
 
     @InspectableField(group = "Sun", label = "Dawn color")
     public Color dawnColor = new Color(1, .39f, .19f);

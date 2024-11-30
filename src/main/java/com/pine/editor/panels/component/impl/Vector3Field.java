@@ -29,7 +29,7 @@ public class Vector3Field extends AbstractFormField {
             ImGui.text("Z: " + values[2]);
         } else {
             if (ImGui.dragFloat3(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
-                changerHandler.accept(dto, values);
+                changeHandler.accept(dto, values);
             }
         }
     }

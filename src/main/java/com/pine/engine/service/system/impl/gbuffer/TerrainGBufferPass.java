@@ -1,8 +1,10 @@
 package com.pine.engine.service.system.impl.gbuffer;
 
 import com.pine.engine.repository.streaming.StreamableResourceType;
+import com.pine.engine.repository.terrain.MaterialLayer;
 import com.pine.engine.service.resource.shader.Shader;
 import com.pine.engine.service.resource.shader.UniformDTO;
+import com.pine.engine.service.streaming.ref.MaterialResourceRef;
 import com.pine.engine.service.streaming.ref.TextureResourceRef;
 
 import java.util.ArrayList;
@@ -42,33 +44,8 @@ public class TerrainGBufferPass extends AbstractGBufferPass {
     @Override
     protected void renderInternal() {
         prepareCall();
-
-        bindTexture(terrainRepository.materialMask, 4);
-        int index = 5;
-        int matIndex = 0;
-        for (var material : terrainRepository.materials.values()) {
-
-            shaderService.bindVec3(material.color, materials.get(matIndex));
-            matIndex++;
-
-            bindTexture(material.albedo, index);
-            index++;
-            bindTexture(material.roughness, index);
-            index++;
-            bindTexture(material.metallic, index);
-            index++;
-            bindTexture(material.normal, index);
-            index++;
-        }
+        materialService.bindMaterialLayers(terrainRepository.materialMask, terrainRepository.materialLayers, materials);
         meshService.renderTerrain(textureSize, terrainOffset, heightScale, tilesScaleTranslation);
-    }
-
-    private void bindTexture(String sampler, int index) {
-        var normal = (TextureResourceRef) streamingService.streamIn(sampler, StreamableResourceType.TEXTURE);
-        if (normal != null) {
-            shaderService.bindSampler2dDirect(normal.texture, index);
-            normal.lastUse = clockRepository.totalTime;
-        }
     }
 
     @Override

@@ -21,7 +21,7 @@ public class BooleanField extends AbstractFormField {
         } else {
             if (ImGui.checkbox(dto.getLabel(), value)) {
                 value = !value;
-                changerHandler.accept(dto, value);
+                changeHandler.accept(dto, value);
             }
         }
     }

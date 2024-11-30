@@ -80,7 +80,7 @@ public class ResourceField extends AbstractFormField {
             ImGui.columns(2, "##resourceColumns" + imguiId, false);
             ImGui.setColumnWidth(0, 65);
             if (previewField == null) {
-                previewField = appendChild(new PreviewField(dto, changerHandler));
+                previewField = appendChild(new PreviewField(dto, changeHandler));
                 previewField.setSmallSize(true);
             }
             previewField.render();
@@ -99,13 +99,13 @@ public class ResourceField extends AbstractFormField {
     private void renderRemove() {
         if (ImGui.button(Icons.close + "Remove" + imguiId)) {
             selected.set(-1);
-            changerHandler.accept(dto, null);
+            changeHandler.accept(dto, null);
         }
     }
 
     private void renderCombo() {
         if (ImGui.combo(imguiId, selected, itemsArr)) {
-            changerHandler.accept(dto, allByType.get(selected.get()).getId());
+            changeHandler.accept(dto, allByType.get(selected.get()).getId());
         }
     }
 }

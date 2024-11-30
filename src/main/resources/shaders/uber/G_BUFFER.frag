@@ -13,12 +13,13 @@ smooth in vec2 initialUV;
 smooth in vec3 normalVec;
 smooth in vec3 worldSpacePosition;
 
-layout (binding = 3) uniform sampler2D albedo;
 layout (binding = 4) uniform sampler2D roughness;
 layout (binding = 5) uniform sampler2D metallic;
 layout (binding = 6) uniform sampler2D ao;
-layout (binding = 7) uniform sampler2D normal;
 layout (binding = 8) uniform sampler2D heightMap;
+
+layout (binding = 3) uniform sampler2D albedo;
+layout (binding = 7) uniform sampler2D normal;
 layout (binding = 9) uniform sampler2D sceneDepth;
 
 uniform vec3 albedoColor;
@@ -106,5 +107,5 @@ void main() {
 
     sampleIndirectIllumination(V, N);
 
-    processDebugFlags(UV, W, renderingIndex, distanceFromCamera);
+    processDebugFlags(UV, W, renderingIndex, distanceFromCamera, vec3(0));
 }

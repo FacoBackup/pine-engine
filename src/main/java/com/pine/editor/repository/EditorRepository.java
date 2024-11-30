@@ -88,7 +88,7 @@ public class EditorRepository extends Inspectable implements SerializableReposit
     public float brushRadius = 10;
     public float brushDensity = .5f;
     public String foliageForPainting;
-    public String materialForPainting;
+    public int selectedMaterialLayer = 0;
     public boolean fullScreen;
     public boolean showPaintingMask = false;
 

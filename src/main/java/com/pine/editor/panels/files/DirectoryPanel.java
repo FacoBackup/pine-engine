@@ -200,9 +200,7 @@ public class DirectoryPanel extends AbstractView {
                 inspection = null;
             } else {
                 selected.put(root.getId(), true);
-                if (!root.isDirectory()) {
-                    inspection = root;
-                }
+                inspection = root;
             }
         }
         if (root.isHovered && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left)) {

@@ -22,7 +22,7 @@ public class StringField extends AbstractFormField {
             ImGui.textDisabled(value.get());
         } else {
             if (ImGui.inputText(dto.getId(), value)) {
-                changerHandler.accept(dto, value.get());
+                changeHandler.accept(dto, value.get());
             }
         }
     }

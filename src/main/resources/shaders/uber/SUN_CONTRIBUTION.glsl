@@ -65,5 +65,5 @@ vec3 computeDirectionalLight(bool useScreenSpaceShadows){
     if (occlusion == 0.){
         return vec3(0.);
     }
-    return computeBRDF(baseContribution.rgb, baseContribution.a, sunLightColor.rgb);
+    return computeBRDF(baseContribution.rgb, baseContribution.a, sunLightColor.rgb * sunLightIntensity);
 }

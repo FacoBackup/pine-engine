@@ -31,7 +31,7 @@ public class Vector4Field extends AbstractFormField {
             ImGui.text("W: " + values[3]);
         } else {
             if (ImGui.dragFloat4(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
-                changerHandler.accept(dto, values);
+                changeHandler.accept(dto, values);
             }
         }
     }

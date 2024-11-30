@@ -28,9 +28,7 @@ public abstract class AbstractTerrainDataPanel extends AbstractView {
 
     @Override
     public void onInitialize() {
-        form = appendChild(new FormPanel((field, value) -> {
-            requestProcessingService.addRequest(new UpdateFieldRequest(field, value));
-        }));
+        form = appendChild(new FormPanel(requestProcessingService::defaultChangeHandler));
     }
 
     protected abstract Map<String, ? extends AbstractDataInstance> getDataMap();

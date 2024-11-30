@@ -54,15 +54,13 @@ uniform bool ssrEnabled;
 
 #include "../uber/G_BUFFER_UTIL.glsl"
 
-bool testMaterial(inout vec3 color, vec3 colorToMatch, inout vec2 UV, sampler2D albedo, sampler2D roughness, sampler2D metallic, sampler2D normal){
-    if (colorToMatch == color){
+void blendMaterial(inout vec3 color, vec3 colorToMatch, inout vec2 UV, sampler2D albedo, sampler2D roughness, sampler2D metallic, sampler2D normal){
+    if (colorToMatch.r != 0 && color.r != 0 || colorToMatch.g != 0 && color.g != 0 || colorToMatch.b != 0 && color.b != 0){
         gBufferAlbedoSampler = vec4(texture(albedo, UV).rgb, 0);
         gBufferRMAOSampler = vec4(texture(roughness, UV).r, texture(metallic, UV).r, 0, 1);
         gBufferMaterialSampler = vec4(packValues(0, 0, 0, 0, 0, ISOTROPIC, false), 1);
         gBufferNormalSampler = vec4(vec3(normalize(computeTBN(worldSpacePosition, UV, normalVec, 0) * ((texture(normal, UV).rgb * 2.0)- 1.0))), 1);
-        return true;
     }
-    return false;
 }
 
 void main() {
@@ -79,18 +77,12 @@ void main() {
         gBufferMaterialSampler = vec4(packValues(0, 0, 0, 0, 0, ISOTROPIC, false), 1);
         gBufferNormalSampler = vec4(N, 1);
     }else{
-        bool match = testMaterial(materialId, material0, UV, albedo, roughness, metallic, normal);
-        if (!match){
-            match = testMaterial(materialId, material1, UV, albedo1, roughness1, metallic1, normal1);
-        }
-        if (!match){
-            match = testMaterial(materialId, material2, UV, albedo2, roughness2, metallic2, normal2);
-        }
-        if (!match){
-            match = testMaterial(materialId, material3, UV, albedo3, roughness3, metallic3, normal3);
-        }
+        blendMaterial(materialId, material0, UV, albedo, roughness, metallic, normal);
+       blendMaterial(materialId, material1, UV, albedo1, roughness1, metallic1, normal1);
+       blendMaterial(materialId, material2, UV, albedo2, roughness2, metallic2, normal2);
+       blendMaterial(materialId, material3, UV, albedo3, roughness3, metallic3, normal3);
     }
 
     sampleIndirectIllumination(V, gBufferNormalSampler.rgb);
-    processDebugFlags(UV, W, renderingIndex, length(V));
+    processDebugFlags(UV, W, renderingIndex, length(V), materialId * 100.);
 }

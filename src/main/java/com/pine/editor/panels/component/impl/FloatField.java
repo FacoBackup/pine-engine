@@ -25,7 +25,7 @@ public class FloatField extends AbstractFormField {
         } else {
             ImGui.text(dto.getLabel());
             if (ImGui.dragFloat(imguiId, values, .01f, dto.getMin(), dto.getMax())) {
-                changerHandler.accept(dto, values[0]);
+                changeHandler.accept(dto, values[0]);
             }
         }
     }

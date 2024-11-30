@@ -68,7 +68,7 @@ public class SerializationService implements Loggable {
     }
 
     private String getFilePath(String projectDirectory, SerializableRepository repository) {
-        return projectDirectory + File.separator + DigestUtils.sha1Hex(repository.getClass().getSimpleName()) + ".json";
+        return projectDirectory + File.separator + repository.getClass().getSimpleName() + ".json";
     }
 
     public void deserialize(String projectDirectory) {

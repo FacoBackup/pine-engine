@@ -56,7 +56,7 @@ vec3 randomColor(int seed) {
     return vec3(r, g, b);
 }
 
-void processDebugFlags(inout vec2 UV, inout vec3 W, int renderingIndex, float distanceFromCamera){
+void processDebugFlags(inout vec2 UV, inout vec3 W, int renderingIndex, float distanceFromCamera, vec3 materialMask){
     if (debugShadingMode != LIT){
         switch (debugShadingMode) {
             case RANDOM:
@@ -97,6 +97,9 @@ void processDebugFlags(inout vec2 UV, inout vec3 W, int renderingIndex, float di
             break;
             case HEIGHT:
             gBufferAlbedoSampler.rgb = vec3(W.y/10);
+            break;
+            case MATERIAL_MASK:
+            gBufferAlbedoSampler.rgb = materialMask;
             break;
         }
 

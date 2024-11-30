@@ -1,5 +1,7 @@
 package com.pine.common.inspection;
 
+import com.pine.engine.repository.terrain.MaterialLayer;
+import com.pine.engine.repository.terrain.MaterialLayers;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -20,7 +22,9 @@ public enum FieldType {
     VECTOR2(Vector2f.class),
     VECTOR3(Vector3f.class),
     VECTOR4(Vector4f.class),
-    QUATERNION(Quaternionf.class);
+    QUATERNION(Quaternionf.class),
+    MATERIAL_LAYERS(MaterialLayers.class),
+    MATERIAL_LAYER(MaterialLayer.class);
 
     private final Class<?> clazz;
 

@@ -34,14 +34,12 @@ public class TextureResourceRef extends AbstractResourceRef<TextureStreamData> {
 
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, GL46.GL_REPEAT);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, GL46.GL_REPEAT);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR);
+        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_LINEAR_MIPMAP_LINEAR);
         GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_LINEAR);
 
         GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, data.internalFormat, data.width, data.height, 0, data.format, data.type, data.imageBuffer);
 
-        if (data.mipmap) {
-            GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
-        }
+        GL46.glGenerateMipmap(GL46.GL_TEXTURE_2D);
         GL46C.glBindTexture(GL46C.GL_TEXTURE_2D, GL46.GL_NONE);
 
         STBImage.stbi_image_free(data.imageBuffer);

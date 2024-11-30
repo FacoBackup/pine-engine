@@ -36,14 +36,16 @@ public class FileInspectorPanel extends AbstractView {
                 currentMetadata = null;
                 return;
             }
-            currentMetadata = (AbstractResourceMetadata) FSUtil.readBinary(importerService.getPathToMetadata(inspection.id, inspection.getType()));
-            if (currentMetadata != null) {
-                if (currentMetadata.getResourceType().isMutable()) {
-                    dataForm.setInspection(importerService.readFile(currentMetadata));
-                } else {
-                    dataForm.setInspection(null);
+            if(!inspection.isDirectory) {
+                currentMetadata = (AbstractResourceMetadata) FSUtil.readBinary(importerService.getPathToMetadata(inspection.id, inspection.getType()));
+                if (currentMetadata != null) {
+                    if (currentMetadata.getResourceType().isMutable()) {
+                        dataForm.setInspection(importerService.readFile(currentMetadata));
+                    } else {
+                        dataForm.setInspection(null);
+                    }
+                    metadataForm.setInspection(currentMetadata);
                 }
-                metadataForm.setInspection(currentMetadata);
             }
         }
         this.inspection = inspection;
@@ -54,8 +56,8 @@ public class FileInspectorPanel extends AbstractView {
 
     @Override
     public void onInitialize() {
-        appendChild(dataForm = new FormPanel(this::handleChange));
         appendChild(metadataForm = new FormPanel(this::handleMetadataChange));
+        appendChild(dataForm = new FormPanel(this::handleChange));
     }
 
     private void handleChange(FieldDTO dto, Object object) {
@@ -87,10 +89,11 @@ public class FileInspectorPanel extends AbstractView {
     public void render() {
         if (ImGui.beginChild(imguiId)) {
             if (inspection != null) {
-                ImGui.textDisabled(inspection.id);
+                ImGui.text("Name");
                 if (ImGui.inputText("##name" + imguiId, inspectionName)) {
                     inspection.name = inspectionName.get();
                 }
+                ImGui.separator();
             }
             super.render();
         }

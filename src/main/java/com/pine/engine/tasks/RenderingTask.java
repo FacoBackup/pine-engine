@@ -158,7 +158,7 @@ public class RenderingTask extends AbstractTask {
         bufferRepository.globalDataBuffer.put(88, sunLightDirection.x);
         bufferRepository.globalDataBuffer.put(89, sunLightDirection.y);
         bufferRepository.globalDataBuffer.put(90, sunLightDirection.z);
-        bufferRepository.globalDataBuffer.put(91, clockRepository.totalTime - clockRepository.start);
+        bufferRepository.globalDataBuffer.put(91, atmosphere.sunLightIntensity);
 
         bufferRepository.globalDataBuffer.put(92, sunLightColor.x);
         bufferRepository.globalDataBuffer.put(93, sunLightColor.y);

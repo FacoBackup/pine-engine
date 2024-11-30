@@ -95,8 +95,9 @@ public class PaintGizmoPass extends AbstractPass implements Loggable {
     }
 
     private void bindUniforms() {
-        if (editorRepository.editorMode == EditorMode.MATERIAL && editorRepository.materialForPainting != null && terrainRepository.materials.containsKey(editorRepository.materialForPainting)) {
-            shaderService.bindVec3(terrainRepository.materials.get(editorRepository.materialForPainting).color, colorForPainting);
+        if(editorRepository.editorMode == EditorMode.MATERIAL) {
+            var layer = terrainRepository.materialLayers.getLayer(editorRepository.selectedMaterialLayer);
+            shaderService.bindVec3(layer.channel.mul(layer.weight), colorForPainting);
         }
 
         radiusDensityMode.x = editorRepository.brushRadius;

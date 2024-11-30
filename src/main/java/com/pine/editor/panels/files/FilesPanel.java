@@ -96,6 +96,7 @@ public class FilesPanel extends AbstractDockPanel {
             filesRepository.parentChildren.put(id, new ArrayList<>());
             filesRepository.parentChildren.get(currentDirectory).add(id);
             filesRepository.entry.put(id, d);
+            filesService.serialize();
         }
         if (!Objects.equals(currentDirectory, FilesRepository.ROOT_DIRECTORY_ID)) {
             ImGui.sameLine();

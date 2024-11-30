@@ -72,25 +72,12 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
         }
     }
 
-    @InspectableField(group = "Wind", label = "Frequency", min = 1)
-    public float windFrequency = 20;
-
-    @InspectableField(group = "Wind", label = "Strength", min = 0, max = 1)
-    public float windStrength = .5f;
-
-    @InspectableField(group = "Wind", label = "Amplitude", min = 0)
-    public float windAmplitude = .15f;
-
     @InspectableField(label = "Render terrain")
     public boolean enabled = false;
 
     @ResourceTypeField(type = StreamableResourceType.TEXTURE)
     @InspectableField(label = "Height map to import")
     public String heightMapTextureToImport;
-
-    @ResourceTypeField(type = StreamableResourceType.MATERIAL)
-    @InspectableField(label = "Material")
-    public String material;
 
     @InspectableField(group = "Terrain", label = "Casts shadows")
     public boolean castsShadows = true;
@@ -110,8 +97,11 @@ public class TerrainRepository extends Inspectable implements SerializableReposi
     @InspectableField(group = "Terrain", label = "Offset")
     public Vector2f offset = new Vector2f(0);
 
+    @InspectableField(label = "Materials")
+    public MaterialLayers materialLayers = new MaterialLayers();
+
     public final Map<String, FoliageInstance> foliage = new HashMap<>();
-    public final Map<String, MaterialInstance> materials = new HashMap<>();
+
 
     @Override
     public String getTitle() {

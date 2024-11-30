@@ -1,17 +1,16 @@
 package com.pine.editor.panels.component;
 
 import com.pine.common.inspection.FieldDTO;
-import com.pine.editor.core.AbstractView;
 
 import java.util.function.BiConsumer;
 
 public abstract class AbstractFormField extends AbstractFieldView {
     protected final FieldDTO dto;
-    protected final BiConsumer<FieldDTO, Object> changerHandler;
+    protected final BiConsumer<FieldDTO, Object> changeHandler;
 
-    public AbstractFormField(FieldDTO dto, BiConsumer<FieldDTO, Object> changerHandler) {
+    public AbstractFormField(FieldDTO dto, BiConsumer<FieldDTO, Object> changeHandler) {
         super(dto.getLabel());
         this.dto = dto;
-        this.changerHandler = changerHandler;
+        this.changeHandler = changeHandler;
     }
 }

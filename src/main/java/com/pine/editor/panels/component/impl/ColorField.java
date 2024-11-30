@@ -29,7 +29,7 @@ public class ColorField extends AbstractFormField {
         }else {
             ImGui.text(dto.getLabel());
             if (ImGui.colorPicker3(dto.getId(), valuesV, ImGuiColorEditFlags.NoSidePreview | ImGuiColorEditFlags.DisplayRGB | ImGuiColorEditFlags.NoAlpha)) {
-                changerHandler.accept(dto, valuesV);
+                changeHandler.accept(dto, valuesV);
             }
         }
     }

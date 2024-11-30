@@ -13,9 +13,10 @@ public class UIUtil {
     public static final ImVec4 DIRECTORY_COLOR = new ImVec4(
             188 / 255f, 128 / 255f, 78 / 255f, 1
     );
-    public static final int FIXED_WINDOW_FLAGS = ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
+    public static final int FIXED_WINDOW_FLAGS = ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoCollapse;
     public static final ImBoolean OPEN = new ImBoolean(true);
     public static final float IDENT = 32;
+    public static final ImVec2 DEFAULT_PADDING = new ImVec2(4,4);
     private static final ImVec2 MEDIUM_SPACING = new ImVec2(5, 0);
     private static final ImVec2 LARGE_SPACING = new ImVec2(40, 0);
 

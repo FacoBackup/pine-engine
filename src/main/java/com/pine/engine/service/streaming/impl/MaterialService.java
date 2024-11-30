@@ -6,8 +6,12 @@ import com.pine.common.injection.PInject;
 import com.pine.engine.repository.ClockRepository;
 import com.pine.engine.repository.streaming.AbstractResourceRef;
 import com.pine.engine.repository.streaming.StreamableResourceType;
+import com.pine.engine.repository.terrain.MaterialLayer;
+import com.pine.engine.repository.terrain.MaterialLayers;
 import com.pine.engine.service.importer.data.MaterialImportData;
 import com.pine.engine.service.resource.shader.ShaderService;
+import com.pine.engine.service.resource.shader.UniformDTO;
+import com.pine.engine.service.streaming.StreamingService;
 import com.pine.engine.service.streaming.data.MaterialStreamData;
 import com.pine.engine.service.streaming.data.StreamData;
 import com.pine.engine.service.streaming.ref.MaterialResourceRef;
@@ -15,6 +19,7 @@ import com.pine.engine.service.streaming.ref.TextureResourceRef;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import java.util.List;
 import java.util.Map;
 
 @PBean
@@ -26,6 +31,8 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
     public ShaderService shaderService;
     @PInject
     public ClockRepository clockRepository;
+    @PInject
+    public StreamingService streamingService;
 
     private final Vector4f useAlbedoRoughnessMetallicAO = new Vector4f();
     private final Vector2f roughnessMetallic = new Vector2f();
@@ -142,5 +149,46 @@ public class MaterialService extends AbstractStreamableService<MaterialResourceR
         shaderService.bindFloat(request.parallaxHeightScale, request.parallaxHeightScaleUniform);
         shaderService.bindInt(request.parallaxLayers, request.parallaxLayersUniform);
         shaderService.bindBoolean(request.useParallax, request.useParallaxUniform);
+    }
+
+    int samplerIndex = 5;
+    int matIndex = 0;
+
+    public void bindMaterialLayers(String materialMask, MaterialLayers layers, List<UniformDTO> materialUniforms) {
+        var materialMaskTexture = (TextureResourceRef) streamingService.streamIn(materialMask, StreamableResourceType.TEXTURE);
+        bindTexture(materialMaskTexture, 4);
+
+        samplerIndex = 5;
+        matIndex = 0;
+
+        bindLayer(layers.materialLayerA, materialUniforms);
+        bindLayer(layers.materialLayerB, materialUniforms);
+        bindLayer(layers.materialLayerC, materialUniforms);
+        bindLayer(layers.materialLayerD, materialUniforms);
+    }
+
+    private void bindLayer(MaterialLayer layer, List<UniformDTO> materialUniforms) {
+        var material = (MaterialResourceRef) streamingService.streamIn(layer.material, StreamableResourceType.MATERIAL);
+        if (material != null) {
+            bindTexture(material.albedo, samplerIndex);
+            samplerIndex++;
+            bindTexture(material.roughness, samplerIndex);
+            samplerIndex++;
+            bindTexture(material.metallic, samplerIndex);
+            samplerIndex++;
+            bindTexture(material.normal, samplerIndex);
+            samplerIndex++;
+
+            layer.channel.mul(layer.weight);
+            shaderService.bindVec3(layer.channel, materialUniforms.get(matIndex));
+            matIndex++;
+        }
+    }
+
+    private void bindTexture(TextureResourceRef texture, int index) {
+        if (texture != null) {
+            shaderService.bindSampler2dDirect(texture.texture, index);
+            texture.lastUse = clockRepository.totalTime;
+        }
     }
 }

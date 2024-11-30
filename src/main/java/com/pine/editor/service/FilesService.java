@@ -85,9 +85,13 @@ public class FilesService implements Loggable {
             }
 
             messageRepository.pushMessage(paths.size() + " files imported", MessageSeverity.SUCCESS);
-            projectService.serializationService.serializeRepository(projectService.getProjectDirectory(), filesRepository);
+            serialize();
             filesRepository.isImporting = false;
         });
+    }
+
+    public void serialize(){
+        projectService.serializationService.serializeRepository(projectService.getProjectDirectory(), filesRepository);
     }
 
     public void createEntry(String currentDirectory, AbstractResourceMetadata r) {
@@ -96,5 +100,6 @@ public class FilesService implements Loggable {
         filesRepository.entry.put(entry.id, entry);
         filesRepository.childParent.put(entry.id, currentDirectory);
         filesRepository.byType.get(entry.type).add(entry.id);
+        serialize();
     }
 }

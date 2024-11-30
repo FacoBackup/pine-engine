@@ -8,7 +8,8 @@ uniform GlobalData{
     vec2 bufferResolution;
     float logDepthFC;
     float timeOfDay;
-    vec4 sunLightDirection;
+    vec3 sunLightDirection;
+    float sunLightIntensity;
     vec3 sunLightColor;
     float sunShadowsResolution;
     mat4 lightSpaceMatrix;

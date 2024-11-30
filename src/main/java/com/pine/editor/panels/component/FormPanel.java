@@ -7,7 +7,6 @@ import com.pine.common.inspection.MethodDTO;
 import com.pine.editor.core.AbstractView;
 import com.pine.editor.core.UIUtil;
 import com.pine.editor.panels.component.impl.*;
-import com.pine.editor.repository.EditorRepository;
 import com.pine.editor.service.ThemeService;
 import com.pine.engine.inspection.ResourceTypeField;
 import com.pine.engine.inspection.TypePreviewField;
@@ -104,6 +103,10 @@ public class FormPanel extends AbstractView {
                     break;
                 case OPTIONS:
                     group.append(new OptionsField(field, changeHandler));
+                    break;
+                case MATERIAL_LAYER:
+                case MATERIAL_LAYERS:
+                    group.append(new CompositeInspectableField(field, changeHandler));
                     break;
             }
         }

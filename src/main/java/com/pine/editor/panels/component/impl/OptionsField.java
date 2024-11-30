@@ -25,7 +25,7 @@ public class OptionsField extends AbstractFormField {
             for (var op : dto.getOptions()) {
                 if (ImGui.checkbox(op.getTitle(), selected == op)) {
                     selected = op;
-                    changerHandler.accept(dto, op);
+                    changeHandler.accept(dto, op);
                 }
             }
         }
