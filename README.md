@@ -12,6 +12,10 @@ for everything.
 - LOD management
 
 ## Sample images
+### Terrain
+![c-1](artifacts/FOLIAGE-MATERIAL-INTEGRATION-1.png)
+![c-1](artifacts/MATERIAL-LAYERS.png)
+
 ### Voxelization
 ![c-1](artifacts/POST_VOXELIZATION.png)
 ![c0](artifacts/LORENZ-ATTRACTOR.png)
